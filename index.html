@@ -47,11 +47,16 @@
   .platform{position:absolute;width:130px;background:linear-gradient(#fbfcfe,var(--panel));
     border:3px solid var(--panel-edge);border-radius:16px;padding:4px 5px 6px;
     box-shadow:0 6px 0 rgba(0,0,0,.12)}
-  .plat-head{display:flex;align-items:center;gap:4px;height:14px;margin:0 2px 3px;
-    font-size:9px;font-weight:800;color:#8a93a1;letter-spacing:.8px}
-  .plat-head .n{margin-left:auto;opacity:.75}
+  .plat-head{display:flex;align-items:center;justify-content:space-between;height:14px;
+    margin:0 2px 3px;font-size:9px;font-weight:800;color:#8a93a1;letter-spacing:.8px}
+  .plat-head .n{opacity:.75}
   .grid{display:grid;grid-template-columns:repeat(8,13px);gap:2px;justify-content:center;
     min-height:90px;align-content:start}
+  /* The queue is served from whichever edge faces the road. Panels sitting to
+     the LEFT of the road fill right-to-left, so their front cell is top-right
+     and the survivors shift right; panels on the RIGHT keep the default
+     left-to-right flow, front cell top-left, survivors shifting left. */
+  .platform.front-right .grid{direction:rtl}
   /* a "sticky man": rounded head + body token */
   .man{width:13px;height:15px;position:relative;animation:pop .18s ease-out}
   .man i{position:absolute;left:3px;top:0;width:7px;height:7px;border-radius:50%;
@@ -89,15 +94,17 @@
     display:flex;justify-content:center;gap:12px}
   .lane{position:relative;width:132px;height:220px;border-radius:18px 18px 0 0;
     background:linear-gradient(#585e68,#474c55);border:3px solid #6d747f;border-bottom:none;
-    padding:10px 8px;overflow:hidden}
+    padding:6px 8px;overflow:hidden}
   .lane:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;
     background:repeating-linear-gradient(#fff 0 12px,transparent 12px 26px);opacity:.18}
-  .qbus{position:relative;width:112px;height:46px;margin:0 auto 7px;border-radius:10px;
+  /* Queued buses stand on end: portrait card, seat grid turned to 2 x 4.
+     Buses already out on the road keep their horizontal silhouette. */
+  .qbus{position:relative;width:38px;height:48px;margin:0 auto 4px;border-radius:9px;
     border:2px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;
     box-shadow:0 4px 0 rgba(0,0,0,.28);opacity:.6;filter:saturate(.75);
     transition:transform .2s ease,opacity .2s ease,filter .2s}
-  .qbus .win{width:78px;height:28px;background:#2a2f38;border-radius:5px;padding:3px;
-    display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:3px}
+  .qbus .win{width:24px;height:34px;background:#2a2f38;border-radius:4px;padding:3px;
+    display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr);gap:2px}
   .qbus .seat{border-radius:2px;background:rgba(255,255,255,.14)}
   .qbus.active{opacity:1;filter:none;cursor:pointer;
     box-shadow:0 0 0 3px #fff,0 6px 0 rgba(0,0,0,.3)}
@@ -317,6 +324,20 @@ const ROAD_D = catmullRomPath(ROAD_WAYPOINTS);
 ["#roadKerb", "#roadEdge", "#roadPath", "#roadLine"].forEach(s => $(s).setAttribute("d", ROAD_D));
 const ROAD_LEN = els.roadPath.getTotalLength();
 
+/* The loop-tunnel connector, measured in drawScenery once the scenery exists. */
+let loopPathEl = null, LOOP_LEN = 0, LOOP_ENTRY_SECONDS = 1;
+
+/** Stage-space point along the loop connector (0 = tunnel mouth, 1 = road entry). */
+function pointAtLoopT(t) {
+  const p = loopPathEl.getPointAtLength(Math.max(0, Math.min(1, t)) * LOOP_LEN);
+  return { x: p.x, y: p.y };
+}
+
+/** Where a bus currently sits, on the road or on the re-entry connector. */
+function busPoint(bus) {
+  return bus.state === "reentering" ? pointAtLoopT(bus.loopT) : pointAtT(bus.t);
+}
+
 /** Stage-space point for a progress value t in [0,1] (0 = entry, 1 = tunnel). */
 function pointAtT(t) {
   const p = els.roadPath.getPointAtLength(Math.max(0, Math.min(1, t)) * ROAD_LEN);
@@ -349,7 +370,7 @@ function drawScenery() {
     <g>
       <path d="M 72 754 C 72 772, 150 774, ${bottom.x} ${bottom.y}"
             stroke="var(--road-edge)" stroke-width="38" fill="none" stroke-linecap="round"/>
-      <path d="M 72 754 C 72 772, 150 774, ${bottom.x} ${bottom.y}"
+      <path id="loopPath" d="M 72 754 C 72 772, 150 774, ${bottom.x} ${bottom.y}"
             stroke="var(--road)" stroke-width="30" fill="none" stroke-linecap="round"/>
       <rect x="34" y="696" width="76" height="58" rx="24"
             fill="url(#tunnelG)" stroke="#a9b2bd" stroke-width="3"/>
@@ -357,6 +378,13 @@ function drawScenery() {
       <circle cx="42" cy="708" r="3.5" fill="#ffd66b"/>
       <circle cx="102" cy="708" r="3.5" fill="#ffd66b"/>
     </g>`;
+
+  // The connector is re-created with the scenery, so re-measure it here. It is
+  // authored to END at pointAtT(0) — the very same spot fresh buses launch
+  // from — so a looping bus rejoins the road exactly where a new one does.
+  loopPathEl = document.getElementById("loopPath");
+  LOOP_LEN = loopPathEl.getTotalLength();
+  LOOP_ENTRY_SECONDS = LAP_SECONDS * (LOOP_LEN / ROAD_LEN);  // same speed as the road
 }
 
 /* ---------- game state --------------------------------------------------- */
@@ -384,10 +412,16 @@ function buildPlatforms() {
   els.connectors.innerHTML = "";
   platforms = PLATFORM_DATA.map((data, idx) => {
     const p = pointAtT(data.t);
+    // The front of the queue is always the edge closest to the road: a panel on
+    // the LEFT of the road is served from its right edge, one on the RIGHT from
+    // its left edge. The marker and the grid flow both follow from that.
+    const frontRight = data.side === "left";
     const el = document.createElement("div");
-    el.className = "platform";
-    el.innerHTML = `<div class="plat-head"><span>FRONT &#9656;</span>
-                    <span class="n">P${idx + 1}</span></div><div class="grid"></div>`;
+    el.className = "platform " + (frontRight ? "front-right" : "front-left");
+    const num   = `<span class="n">P${idx + 1}</span>`;
+    const front = `<span class="lbl">${frontRight ? "FRONT &#9656;" : "&#9666; FRONT"}</span>`;
+    el.innerHTML = `<div class="plat-head">${frontRight ? num + front : front + num}</div>
+                    <div class="grid"></div>`;
     els.platforms.appendChild(el);
 
     const left = data.side === "left" ? 6 : 344;
@@ -461,7 +495,7 @@ function makeBusEl(bus) {
 }
 
 function renderBus(bus) {
-  const p = pointAtT(bus.t);
+  const p = busPoint(bus);
   bus.el.style.left = p.x + "px";
   bus.el.style.top  = p.y + "px";
   const seats = bus.el.querySelectorAll(".seat");
@@ -515,7 +549,8 @@ function tryAutoLaunch() {
 function launchBus(colorIdx) {
   const bus = {
     id: ++busSeq, color: colorIdx, passengers: 0,
-    t: 0, lastT: 0, state: "driving", el: null, waitingOn: null,
+    // t = 0 is the road entry point — the same spot looping buses rejoin at.
+    t: 0, lastT: 0, loopT: 0, state: "driving", el: null, waitingOn: null,
   };
   bus.el = makeBusEl(bus);
   activeBuses.push(bus);
@@ -526,6 +561,19 @@ function launchBus(colorIdx) {
 
 /* ---------- movement ----------------------------------------------------- */
 function updateBusPosition(bus, dt) {
+  // Rolling out of the loop tunnel: drive the short connector, then join the
+  // road at t = 0 — the identical entry point a freshly launched bus starts on.
+  if (bus.state === "reentering") {
+    bus.loopT += dt / LOOP_ENTRY_SECONDS;
+    if (bus.loopT >= 1) {
+      bus.loopT = 1;
+      bus.t = 0;                 // shared road entry, passengers preserved
+      bus.lastT = 0;
+      bus.state = "driving";
+    }
+    renderBus(bus);
+    return;
+  }
   if (bus.state !== "driving") return;
   bus.lastT = bus.t;
   bus.t += dt / LAP_SECONDS;
@@ -601,7 +649,7 @@ function flyPassengerToBus(ch, bus) {
   flyer.style.top  = sy + "px";
   els.stage.appendChild(flyer);
 
-  const target = pointAtT(bus.t);
+  const target = busPoint(bus);
   requestAnimationFrame(() => {
     flyer.style.transform = `translate(${target.x - sx}px, ${target.y - sy}px) scale(.55)`;
     flyer.style.opacity = "0";
@@ -646,13 +694,15 @@ function handleTunnelArrival(bus) {
       tryAutoLaunch();
       if (!checkWinCondition()) checkFailCondition();
     } else {
-      // Not full: loop back out of the bottom tunnel, passengers kept.
+      // Not full: re-emerge from the bottom-left loop tunnel keeping the
+      // passengers, then drive the connector into the shared road entry point.
       setTimeout(() => {
         if (!running) return;
+        bus.state = "reentering";
+        bus.loopT = 0;                 // at the loop tunnel mouth
         bus.t = 0; bus.lastT = 0;
-        renderBus(bus);
+        renderBus(bus);                // place it before fading back in
         bus.el.classList.remove("gone");
-        bus.state = "driving";
       }, LOOP_DELAY_MS);
     }
   }, TUNNEL_MS);
