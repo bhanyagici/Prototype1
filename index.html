@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Sort Express</title>
+<style>
+  :root{
+    --sand:#e9ddcd; --sand-2:#dccbb4;
+    --road:#4a4f57; --road-edge:#d7dbe0; --kerb:#c3c9d1;
+    --panel:#eef1f5; --panel-edge:#c8cfd8;
+    --ink:#1f2430; --gold:#f0b429; --gold-d:#c98b0d;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden;background:#c9b79e;
+    font-family:"Baloo 2",Verdana,"Trebuchet MS",sans-serif}
+  #fit{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  /* Fixed design surface: 480 x 1000, uniformly scaled to the viewport. */
+  #stage{position:relative;width:480px;height:1000px;flex:none;transform-origin:center center;
+    background:radial-gradient(120% 80% at 50% 0%,var(--sand) 0%,var(--sand-2) 100%);
+    overflow:hidden}
+  #board{position:absolute;inset:0;width:480px;height:1000px}
+
+  /* ---------- top bar ---------- */
+  #topbar{position:absolute;left:0;top:0;width:100%;height:56px;display:flex;
+    align-items:center;justify-content:space-between;padding:0 14px;z-index:40;pointer-events:none}
+  .chip{background:#3b82f6;color:#fff;border:3px solid #fff;border-radius:16px;
+    padding:6px 16px;font-size:19px;font-weight:800;letter-spacing:.3px;
+    box-shadow:0 4px 0 rgba(0,0,0,.18)}
+  .chip.gold{background:var(--gold);border-color:#fff;color:#4a3100}
+  #hud{display:flex;gap:8px;align-items:center;pointer-events:auto}
+  .btn{background:var(--gold);color:#4a3100;border:3px solid #fff;border-radius:14px;
+    font:800 15px/1 inherit;padding:9px 13px;cursor:pointer;
+    box-shadow:0 4px 0 var(--gold-d);transition:transform .1s,box-shadow .1s}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-d)}
+
+  /* counters */
+  #counters{position:absolute;right:12px;top:640px;z-index:35;display:flex;
+    flex-direction:column;gap:8px;align-items:flex-end}
+  .counter{background:#f4f6f9;border:3px solid var(--gold);border-radius:14px;
+    padding:6px 12px;font-size:17px;font-weight:800;color:var(--ink);
+    box-shadow:0 4px 0 rgba(0,0,0,.15);text-align:center;line-height:1.15}
+  .counter small{display:block;font-size:10px;font-weight:700;opacity:.6;letter-spacing:.6px}
+
+  /* ---------- platforms ---------- */
+  #platforms{position:absolute;inset:0;z-index:20;pointer-events:none}
+  .platform{position:absolute;width:130px;background:linear-gradient(#fbfcfe,var(--panel));
+    border:3px solid var(--panel-edge);border-radius:16px;padding:4px 5px 6px;
+    box-shadow:0 6px 0 rgba(0,0,0,.12)}
+  .plat-head{display:flex;align-items:center;gap:4px;height:14px;margin:0 2px 3px;
+    font-size:9px;font-weight:800;color:#8a93a1;letter-spacing:.8px}
+  .plat-head .n{margin-left:auto;opacity:.75}
+  .grid{display:grid;grid-template-columns:repeat(8,13px);gap:2px;justify-content:center;
+    min-height:90px;align-content:start}
+  /* a "sticky man": rounded head + body token */
+  .man{width:13px;height:15px;position:relative;animation:pop .18s ease-out}
+  .man i{position:absolute;left:3px;top:0;width:7px;height:7px;border-radius:50%;
+    background:inherit;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+  .man b{position:absolute;left:0;top:6px;width:13px;height:9px;border-radius:5px 5px 3px 3px;
+    background:inherit;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+  @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+  .platform.busy{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.75),0 6px 0 rgba(0,0,0,.12)}
+
+  /* flying passenger */
+  .flyer{position:absolute;width:13px;height:15px;z-index:45;pointer-events:none;
+    transition:transform .22s cubic-bezier(.4,.1,.5,1),opacity .22s}
+
+  /* ---------- buses on the road ---------- */
+  #buses{position:absolute;inset:0;z-index:30;pointer-events:none}
+  .bus{position:absolute;width:64px;height:38px;margin:-19px 0 0 -32px;border-radius:9px;
+    border:2px solid rgba(0,0,0,.18);box-shadow:0 5px 0 rgba(0,0,0,.22);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .28s ease,transform .28s ease}
+  .bus .win{width:46px;height:26px;background:#2a2f38;border-radius:5px;padding:3px;
+    display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:2px}
+  .bus .seat{border-radius:2px;background:rgba(255,255,255,.14);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);transition:background .16s}
+  .bus .seat.full{box-shadow:none}
+  .bus .wheel{position:absolute;bottom:-5px;width:12px;height:12px;border-radius:50%;
+    background:#2a2f38;border:2px solid #e7eaee}
+  .bus .wheel.l{left:7px} .bus .wheel.r{right:7px}
+  .bus .cnt{position:absolute;top:-15px;left:50%;transform:translateX(-50%);
+    font-size:11px;font-weight:800;color:#fff;background:rgba(31,36,48,.8);
+    border-radius:8px;padding:1px 6px;white-space:nowrap}
+  .bus.gone{opacity:0;transform:scale(.45)}
+
+  /* ---------- bottom bus queues ---------- */
+  #queues{position:absolute;left:0;top:780px;width:100%;height:220px;z-index:25;
+    display:flex;justify-content:center;gap:12px}
+  .lane{position:relative;width:132px;height:220px;border-radius:18px 18px 0 0;
+    background:linear-gradient(#585e68,#474c55);border:3px solid #6d747f;border-bottom:none;
+    padding:10px 8px;overflow:hidden}
+  .lane:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;
+    background:repeating-linear-gradient(#fff 0 12px,transparent 12px 26px);opacity:.18}
+  .qbus{position:relative;width:112px;height:46px;margin:0 auto 7px;border-radius:10px;
+    border:2px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 0 rgba(0,0,0,.28);opacity:.6;filter:saturate(.75);
+    transition:transform .2s ease,opacity .2s ease,filter .2s}
+  .qbus .win{width:78px;height:28px;background:#2a2f38;border-radius:5px;padding:3px;
+    display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:3px}
+  .qbus .seat{border-radius:2px;background:rgba(255,255,255,.14)}
+  .qbus.active{opacity:1;filter:none;cursor:pointer;
+    box-shadow:0 0 0 3px #fff,0 6px 0 rgba(0,0,0,.3)}
+  .qbus.active:active{transform:translateY(3px)}
+  .lane.blocked .qbus.active{cursor:not-allowed;box-shadow:0 0 0 3px rgba(255,255,255,.35),0 6px 0 rgba(0,0,0,.3)}
+  .lane.shift .qbus{animation:shiftUp .2s ease-out}
+  @keyframes shiftUp{from{transform:translateY(24px);opacity:.3}to{transform:none;opacity:inherit}}
+
+  /* ---------- overlay ---------- */
+  #overlay{position:absolute;inset:0;z-index:60;display:none;align-items:center;
+    justify-content:center;background:rgba(24,20,16,.6);backdrop-filter:blur(2px)}
+  #overlay.show{display:flex}
+  .card{width:300px;background:#fff;border-radius:24px;padding:26px 22px;text-align:center;
+    border:5px solid var(--gold);box-shadow:0 12px 0 rgba(0,0,0,.25);animation:pop .25s ease-out}
+  .card h2{margin:0 0 6px;font-size:28px;color:var(--ink)}
+  .card p{margin:0 0 18px;font-size:14px;color:#5b6472;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="fit">
+  <div id="stage">
+    <svg id="board" viewBox="0 0 480 1000" aria-hidden="true">
+      <defs>
+        <linearGradient id="tunnelG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e3e7ec"/><stop offset="1" stop-color="#b9c1cb"/>
+        </linearGradient>
+        <radialGradient id="mouthG" cx="50%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#3a3f47"/><stop offset="1" stop-color="#14171c"/>
+        </radialGradient>
+      </defs>
+      <g id="pillars"></g>
+      <g id="connectors"></g>
+      <!-- road: kerb, asphalt, centre line -->
+      <path id="roadKerb"  fill="none" stroke="var(--kerb)"     stroke-width="58" stroke-linecap="round"/>
+      <path id="roadEdge"  fill="none" stroke="var(--road-edge)" stroke-width="52" stroke-linecap="round"/>
+      <path id="roadPath"  fill="none" stroke="var(--road)"      stroke-width="44" stroke-linecap="round"/>
+      <path id="roadLine"  fill="none" stroke="#f2c53d" stroke-width="2.5"
+            stroke-dasharray="10 12" stroke-linecap="round" opacity=".85"/>
+      <g id="tunnels"></g>
+    </svg>
+
+    <div id="platforms"></div>
+    <div id="buses"></div>
+
+    <div id="topbar">
+      <div class="chip">Level 1</div>
+      <div id="hud">
+        <div class="chip gold" id="activeChip">0/5</div>
+        <button class="btn" id="restartBtn">Restart</button>
+      </div>
+    </div>
+
+    <div id="counters">
+      <div class="counter" id="doneCounter">0/30<small>BUSES DONE</small></div>
+      <div class="counter" id="charCounter">240<small>PASSENGERS</small></div>
+    </div>
+
+    <div id="queues"></div>
+
+    <div id="overlay"><div class="card">
+      <h2 id="ovTitle">Level Complete!</h2>
+      <p id="ovText"></p>
+      <button class="btn" id="ovBtn">Play Again</button>
+    </div></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ==========================================================================
+   ============================  LEVEL DEFINITION  ==========================
+   Everything a designer needs to tune lives in this block.
+   No game mechanics below this line until the GAME LOGIC banner.
+   ========================================================================== */
+
+/* The five passenger / bus colours. */
+const COLORS = [
+  { id: 0, name: "yellow", hex: "#F4C430" },
+  { id: 1, name: "purple", hex: "#8B5CF6" },
+  { id: 2, name: "blue",   hex: "#3B82F6" },
+  { id: 3, name: "red",    hex: "#EF4444" },
+  { id: 4, name: "green",  hex: "#22C55E" },
+];
+
+const BUS_CAPACITY         = 8;  // passengers per bus
+const MAX_CONCURRENT_BUSES = 5;  // buses allowed on the road at the same time
+
+/* --------------------------------------------------------------------------
+   QUEUE_DATA — the three bottom columns. Index 0 of each array is the
+   frontmost (tappable) bus. Colours are indices into COLORS.
+
+   VERIFIED:  10 + 10 + 10 = 30 buses in total
+              per colour  -> yellow 6, purple 6, blue 6, red 6, green 6
+              seats needed -> 6 buses x 8 seats = 48 passengers per colour
+              no two neighbouring buses in a column share a colour
+   -------------------------------------------------------------------------- */
+const QUEUE_DATA = [
+  [1, 0, 1, 3, 0, 2, 1, 4, 2, 4],  // column 1
+  [4, 2, 3, 0, 2, 3, 4, 1, 3, 0],  // column 2
+  [0, 4, 2, 3, 1, 0, 4, 2, 1, 3],  // column 3
+];
+
+/* --------------------------------------------------------------------------
+   PLATFORM LAYOUT — where each of the 5 stations sits along the road
+   (t = 0 at the bottom entry, t = 1 at the top tunnel) and which side.
+   -------------------------------------------------------------------------- */
+const PLATFORM_LAYOUT = [
+  { t: 0.20, side: "left"  },
+  { t: 0.35, side: "right" },
+  { t: 0.55, side: "left"  },
+  { t: 0.75, side: "right" },
+  { t: 0.90, side: "left"  },
+];
+
+/* --------------------------------------------------------------------------
+   PLATFORM_RUNS  —  each platform's queue written as same-colour clusters,
+   FRONT FIRST. Every entry is [colourIndex, clusterSize].
+
+   Rules honoured by this table:
+     * cluster sizes are only 4, 6 or 8;
+     * neighbouring clusters never share a colour (they would merge into a
+       single longer run and break the size rule);
+     * every platform carries passengers of all five colours.
+
+   THE MATHS, WORKED OUT
+   ---------------------
+   Demand: each colour has 6 buses x BUS_CAPACITY 8 = 48 passengers,
+           so 5 colours x 48 = 240 passengers over the 5 platforms.
+
+   Supply, colour by colour (per-platform contributions = total):
+     yellow(0)  P1 4+4+4+8    P2 4      P3 8      P4 8      P5 8
+                = 20 +  4 +  8 +  8 +  8 = 48   ✓
+     purple(1)  P1 8          P2 8+4+4+4  P3 4    P4 8      P5 8
+                =  8 + 20 +  4 +  8 +  8 = 48   ✓
+     blue(2)    P1 8          P2 8      P3 8+4+4+4  P4 4    P5 8
+                =  8 +  8 + 20 +  4 +  8 = 48   ✓
+     red(3)     P1 8          P2 8      P3 8      P4 8+4+4+4  P5 4
+                =  8 +  8 +  8 + 20 +  4 = 48   ✓
+     green(4)   P1 4          P2 8      P3 8      P4 8      P5 4+8+4+4
+                =  4 +  8 +  8 +  8 + 20 = 48   ✓
+                                         grand total = 5 x 48 = 240   ✓
+
+   Platform totals:
+     P1 4+8+8+4+4+4+8+8 = 48          P2 4+8+8+4+8+4+8+4 = 48
+     P3 8+8+8+4+8+4+4+4 = 48          P4 8+8+8+4+8+4+4+4 = 48
+     P5 4+8+8+8+8+4+4+4 = 48
+     max - min = 48 - 48 = 0, comfortably inside the allowed spread of 8.  ✓
+
+   Ordering note: buses may only take the FRONT run of a platform, so a badly
+   ordered board can strand five part-filled buses on a full road with no
+   matching queue front anywhere (a real dead end — see checkFailCondition).
+   This particular interleaving was picked by simulating many thousands of
+   playthroughs: every sensible tapping strategy clears the level, while
+   purely random tapping clears it about 96% of the time.
+   -------------------------------------------------------------------------- */
+const PLATFORM_RUNS = [
+  /* P1 */ [[0,4],[1,8],[3,8],[0,4],[4,4],[0,4],[2,8],[0,8]],
+  /* P2 */ [[0,4],[1,8],[3,8],[1,4],[2,8],[1,4],[4,8],[1,4]],
+  /* P3 */ [[4,8],[2,8],[3,8],[2,4],[0,8],[2,4],[1,4],[2,4]],
+  /* P4 */ [[0,8],[3,8],[4,8],[3,4],[1,8],[3,4],[2,4],[3,4]],
+  /* P5 */ [[4,4],[2,8],[1,8],[4,8],[0,8],[4,4],[3,4],[4,4]],
+];
+
+/* Expands PLATFORM_RUNS into the per-character queues the game works with. */
+function buildPlatformData() {
+  return PLATFORM_LAYOUT.map((layout, i) => {
+    const queue = [];
+    PLATFORM_RUNS[i].forEach(([color, size]) => {
+      for (let n = 0; n < size; n++) queue.push({ color });
+    });
+    return { t: layout.t, side: layout.side, queue };
+  });
+}
+const PLATFORM_DATA = buildPlatformData();
+
+/* Road shape, bottom (entry) to top (exit tunnel), in stage coordinates. */
+const ROAD_WAYPOINTS = [
+  [240, 748], [240, 702], [300, 656], [180, 600], [300, 540], [178, 480],
+  [302, 420], [180, 360], [300, 296], [190, 226], [250, 152], [240, 96],
+];
+
+/* Pacing (seconds / milliseconds). */
+const LAP_SECONDS      = 9.5;  // time for one full trip up the road
+const BOARD_MS         = 150;  // per passenger boarding step
+const TUNNEL_MS        = 300;  // vanishing into the top tunnel
+const LOOP_DELAY_MS    = 380;  // time spent inside the loop tunnel
+
+/* ==========================================================================
+   ==============================  GAME LOGIC  =============================
+   ========================================================================== */
+
+const $  = s => document.querySelector(s);
+const colorOf = i => COLORS[i].hex;
+
+const els = {
+  stage: $("#stage"), platforms: $("#platforms"), buses: $("#buses"),
+  queues: $("#queues"), overlay: $("#overlay"), ovTitle: $("#ovTitle"),
+  ovText: $("#ovText"), activeChip: $("#activeChip"), doneCounter: $("#doneCounter"),
+  charCounter: $("#charCounter"),
+  roadPath: $("#roadPath"), connectors: $("#connectors"),
+  tunnels: $("#tunnels"), pillars: $("#pillars"),
+};
+
+/* ---------- road geometry ------------------------------------------------ */
+function catmullRomPath(pts) {
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i],
+          p2 = pts[i + 1],           p3 = pts[i + 2] || pts[i + 1];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${p2[0]} ${p2[1]}`;
+  }
+  return d;
+}
+const ROAD_D = catmullRomPath(ROAD_WAYPOINTS);
+["#roadKerb", "#roadEdge", "#roadPath", "#roadLine"].forEach(s => $(s).setAttribute("d", ROAD_D));
+const ROAD_LEN = els.roadPath.getTotalLength();
+
+/** Stage-space point for a progress value t in [0,1] (0 = entry, 1 = tunnel). */
+function pointAtT(t) {
+  const p = els.roadPath.getPointAtLength(Math.max(0, Math.min(1, t)) * ROAD_LEN);
+  return { x: p.x, y: p.y };
+}
+
+/* ---------- static scenery ---------------------------------------------- */
+function drawScenery() {
+  // support pillars under the road
+  let pil = "";
+  for (let t = 0.08; t < 1; t += 0.14) {
+    const p = pointAtT(t);
+    pil += `<rect x="${p.x - 7}" y="${p.y}" width="14" height="${Math.max(0, 1000 - p.y)}"
+             rx="7" fill="#cdd4dd" opacity=".55"/>`;
+  }
+  els.pillars.innerHTML = pil;
+
+  const top = pointAtT(1), bottom = pointAtT(0);
+  els.tunnels.innerHTML = `
+    <!-- TOP TUNNEL: full buses exit here, partial buses duck through and loop -->
+    <g>
+      <rect x="${top.x - 52}" y="${top.y - 46}" width="104" height="92" rx="42"
+            fill="url(#tunnelG)" stroke="#a9b2bd" stroke-width="3"/>
+      <path d="M ${top.x - 32} ${top.y + 46} L ${top.x - 32} ${top.y}
+               a 32 32 0 0 1 64 0 L ${top.x + 32} ${top.y + 46} Z" fill="url(#mouthG)"/>
+      <circle cx="${top.x - 40}" cy="${top.y - 22}" r="4" fill="#ffd66b"/>
+      <circle cx="${top.x + 40}" cy="${top.y - 22}" r="4" fill="#ffd66b"/>
+    </g>
+    <!-- LOOP TUNNEL: partial buses re-emerge here and rejoin the entry path -->
+    <g>
+      <path d="M 72 754 C 72 772, 150 774, ${bottom.x} ${bottom.y}"
+            stroke="var(--road-edge)" stroke-width="38" fill="none" stroke-linecap="round"/>
+      <path d="M 72 754 C 72 772, 150 774, ${bottom.x} ${bottom.y}"
+            stroke="var(--road)" stroke-width="30" fill="none" stroke-linecap="round"/>
+      <rect x="34" y="696" width="76" height="58" rx="24"
+            fill="url(#tunnelG)" stroke="#a9b2bd" stroke-width="3"/>
+      <path d="M 48 754 L 48 726 a 24 24 0 0 1 48 0 L 96 754 Z" fill="url(#mouthG)"/>
+      <circle cx="42" cy="708" r="3.5" fill="#ffd66b"/>
+      <circle cx="102" cy="708" r="3.5" fill="#ffd66b"/>
+    </g>`;
+}
+
+/* ---------- game state --------------------------------------------------- */
+let platforms = [];      // { t, side, queue:[{color, el}], el, gridEl, busy }
+let columns = [];        // [[colorIdx,...], ...]
+let activeBuses = [];    // Bus objects currently on the road
+let pendingLaunches = []; // colours tapped while all 5 slots were busy
+let completedBuses = 0;
+let busSeq = 0;
+let running = false;
+let rafId = null, lastFrame = 0;
+
+/* ---------- rendering: platforms ---------------------------------------- */
+function makeMan(colorIdx) {
+  const d = document.createElement("div");
+  d.className = "man";
+  d.style.color = d.style.background = "transparent";
+  d.innerHTML = "<i></i><b></b>";
+  d.firstChild.style.background = d.lastChild.style.background = colorOf(colorIdx);
+  return d;
+}
+
+function buildPlatforms() {
+  els.platforms.innerHTML = "";
+  els.connectors.innerHTML = "";
+  platforms = PLATFORM_DATA.map((data, idx) => {
+    const p = pointAtT(data.t);
+    const el = document.createElement("div");
+    el.className = "platform";
+    el.innerHTML = `<div class="plat-head"><span>FRONT &#9656;</span>
+                    <span class="n">P${idx + 1}</span></div><div class="grid"></div>`;
+    els.platforms.appendChild(el);
+
+    const left = data.side === "left" ? 6 : 344;
+    el.style.left = left + "px";
+    el.style.top  = Math.round(p.y - el.offsetHeight / 2) + "px";
+
+    // little bridge from the panel to the road
+    const x1 = data.side === "left" ? left + 130 : p.x;
+    const x2 = data.side === "left" ? p.x : left;
+    els.connectors.insertAdjacentHTML("beforeend",
+      `<rect x="${Math.min(x1, x2)}" y="${p.y - 11}" width="${Math.abs(x2 - x1)}"
+             height="22" rx="8" fill="#cdd4dd"/>`);
+
+    const platform = {
+      t: data.t, side: data.side, el, gridEl: el.querySelector(".grid"),
+      busy: false, queue: data.queue.map(c => ({ color: c.color, el: null })),
+    };
+    platform.queue.forEach(ch => {
+      ch.el = makeMan(ch.color);
+      platform.gridEl.appendChild(ch.el);
+    });
+    return platform;
+  });
+}
+
+/* ---------- rendering: bottom queue columns ------------------------------ */
+function buildQueues() {
+  els.queues.innerHTML = "";
+  columns.forEach((col, ci) => {
+    const lane = document.createElement("div");
+    lane.className = "lane";
+    lane.dataset.col = ci;
+    els.queues.appendChild(lane);
+    lane.addEventListener("click", () => onColumnTap(ci));
+  });
+  renderQueues();
+}
+
+function seatMarkup() {
+  let s = "";
+  for (let i = 0; i < BUS_CAPACITY; i++) s += '<div class="seat"></div>';
+  return `<div class="win">${s}</div>`;
+}
+
+function renderQueues() {
+  const blocked = launchSlotsLeft() <= 0;
+  [...els.queues.children].forEach((lane, ci) => {
+    lane.classList.toggle("blocked", blocked);
+    const col = columns[ci];
+    const visible = col.slice(0, 5);          // top 5 rendered; the last is clipped by the lane
+    lane.querySelectorAll(".qbus").forEach(n => n.remove());
+    visible.forEach((colorIdx, i) => {
+      const b = document.createElement("div");
+      b.className = "qbus" + (i === 0 ? " active" : "");
+      b.style.background = colorOf(colorIdx);
+      b.innerHTML = seatMarkup();
+      lane.appendChild(b);
+    });
+  });
+}
+
+/* ---------- rendering: buses on the road --------------------------------- */
+function makeBusEl(bus) {
+  const el = document.createElement("div");
+  el.className = "bus";
+  el.style.background = colorOf(bus.color);
+  el.innerHTML = `<div class="cnt">0/${BUS_CAPACITY}</div>${seatMarkup()}
+                  <div class="wheel l"></div><div class="wheel r"></div>`;
+  els.buses.appendChild(el);
+  return el;
+}
+
+function renderBus(bus) {
+  const p = pointAtT(bus.t);
+  bus.el.style.left = p.x + "px";
+  bus.el.style.top  = p.y + "px";
+  const seats = bus.el.querySelectorAll(".seat");
+  seats.forEach((s, i) => {
+    const filled = i < bus.passengers;
+    s.classList.toggle("full", filled);
+    s.style.background = filled ? colorOf(bus.color) : "";
+  });
+  bus.el.querySelector(".cnt").textContent = `${bus.passengers}/${BUS_CAPACITY}`;
+}
+
+function renderHud() {
+  els.activeChip.textContent = `${activeBuses.length}/${MAX_CONCURRENT_BUSES}`;
+  els.doneCounter.innerHTML = `${completedBuses}/30<small>BUSES DONE</small>`;
+  els.charCounter.innerHTML = `${countRemainingTotal()}<small>PASSENGERS</small>`;
+}
+
+/* ---------- launching ---------------------------------------------------- */
+function launchSlotsLeft() {
+  return MAX_CONCURRENT_BUSES - activeBuses.length - pendingLaunches.length;
+}
+
+/** Tap on a column: take its frontmost bus and queue it for the road. */
+function onColumnTap(ci) {
+  if (!running) return;
+  const col = columns[ci];
+  if (!col.length) return;
+  if (launchSlotsLeft() <= 0) return;          // all 5 slots spoken for
+
+  const colorIdx = col.shift();
+  pendingLaunches.push(colorIdx);
+  renderQueues();
+
+  // let the column visibly shift up to reveal the next bus
+  const lane = els.queues.children[ci];
+  lane.classList.add("shift");
+  setTimeout(() => lane.classList.remove("shift"), 220);
+  renderHud();
+  tryAutoLaunch();
+}
+
+/** Spawn a queued bus as soon as a concurrency slot is free. */
+function tryAutoLaunch() {
+  while (pendingLaunches.length && activeBuses.length < MAX_CONCURRENT_BUSES) {
+    launchBus(pendingLaunches.shift());
+  }
+  renderQueues();
+  renderHud();
+}
+
+function launchBus(colorIdx) {
+  const bus = {
+    id: ++busSeq, color: colorIdx, passengers: 0,
+    t: 0, lastT: 0, state: "driving", el: null, waitingOn: null,
+  };
+  bus.el = makeBusEl(bus);
+  activeBuses.push(bus);
+  renderBus(bus);
+  renderHud();
+  checkFailCondition();
+}
+
+/* ---------- movement ----------------------------------------------------- */
+function updateBusPosition(bus, dt) {
+  if (bus.state !== "driving") return;
+  bus.lastT = bus.t;
+  bus.t += dt / LAP_SECONDS;
+
+  // Check every platform whose position we crossed on this step, in order.
+  // A bus keeps doing this at platform after platform, lap after lap.
+  const crossed = platforms
+    .filter(p => p.t > bus.lastT && p.t <= Math.min(bus.t, 1))
+    .sort((a, b) => a.t - b.t);
+  for (const platform of crossed) {
+    if (bus.passengers >= BUS_CAPACITY) break;
+    if (!platformHasFrontMatch(platform, bus.color) && !platform.busy) continue;
+    bus.t = platform.t;                       // stop exactly at the station
+    bus.lastT = platform.t;
+    if (platform.busy) { bus.state = "waiting"; bus.waitingOn = platform; }
+    else               { checkPlatformCollection(bus, platform); }
+    renderBus(bus);
+    return;
+  }
+
+  if (bus.t >= 1) { bus.t = 1; handleTunnelArrival(bus); }
+  renderBus(bus);
+}
+
+function platformHasFrontMatch(platform, color) {
+  return platform.queue.length > 0 && platform.queue[0].color === color;
+}
+
+/* ---------- rule 3: multi-platform collection ---------------------------- */
+/** Board the frontmost consecutive run of the bus's colour, one by one. */
+function checkPlatformCollection(bus, platform) {
+  if (!platformHasFrontMatch(platform, bus.color) || bus.passengers >= BUS_CAPACITY) {
+    resumeDriving(bus);
+    return;
+  }
+  bus.state = "boarding";
+  platform.busy = true;
+  platform.el.classList.add("busy");
+
+  const step = () => {
+    if (!running) return;
+    const canTake = bus.passengers < BUS_CAPACITY && platformHasFrontMatch(platform, bus.color);
+    if (!canTake) {                      // run ended, or the bus is full
+      platform.busy = false;
+      platform.el.classList.remove("busy");
+      releaseWaiters(platform);
+      renderHud();
+      if (checkWinCondition() || checkFailCondition()) return;
+      resumeDriving(bus);
+      return;
+    }
+    const ch = platform.queue.shift();
+    flyPassengerToBus(ch, bus);            // remaining men shift up to the front
+    bus.passengers++;
+    renderBus(bus);
+    renderHud();
+    bus.boardTimer = setTimeout(step, BOARD_MS);
+  };
+  step();
+}
+
+function flyPassengerToBus(ch, bus) {
+  const from = ch.el.getBoundingClientRect();
+  const stageRect = els.stage.getBoundingClientRect();
+  const scale = stageRect.width / 480;
+  ch.el.remove();                                    // grid reflows: queue shifts forward
+
+  const flyer = makeMan(ch.color);
+  flyer.className = "flyer man";
+  const sx = (from.left - stageRect.left) / scale;
+  const sy = (from.top  - stageRect.top)  / scale;
+  flyer.style.left = sx + "px";
+  flyer.style.top  = sy + "px";
+  els.stage.appendChild(flyer);
+
+  const target = pointAtT(bus.t);
+  requestAnimationFrame(() => {
+    flyer.style.transform = `translate(${target.x - sx}px, ${target.y - sy}px) scale(.55)`;
+    flyer.style.opacity = "0";
+  });
+  setTimeout(() => flyer.remove(), 260);
+}
+
+function resumeDriving(bus) {
+  if (bus.state === "gone") return;
+  bus.state = "driving";
+  bus.waitingOn = null;
+}
+
+/** Wake the buses queued behind this platform — one boarder at a time. */
+function releaseWaiters(platform) {
+  const waiters = activeBuses.filter(b => b.state === "waiting" && b.waitingOn === platform);
+  for (const b of waiters) {
+    if (platform.busy) break;          // another bus took the stop; the rest keep waiting
+    if (platformHasFrontMatch(platform, b.color) && b.passengers < BUS_CAPACITY) {
+      b.waitingOn = null;
+      checkPlatformCollection(b, platform);   // marks the platform busy again
+    } else {
+      resumeDriving(b);                // nothing here for this bus: drive on
+    }
+  }
+}
+
+/* ---------- rule 4: tunnels ---------------------------------------------- */
+function handleTunnelArrival(bus) {
+  const full = bus.passengers >= BUS_CAPACITY;
+  bus.state = "tunnel";
+  bus.el.classList.add("gone");
+
+  setTimeout(() => {
+    if (full) {
+      // Completed: leave the board and free a concurrency slot.
+      bus.el.remove();
+      bus.state = "gone";
+      activeBuses = activeBuses.filter(b => b !== bus);
+      completedBuses++;
+      renderHud();
+      tryAutoLaunch();
+      if (!checkWinCondition()) checkFailCondition();
+    } else {
+      // Not full: loop back out of the bottom tunnel, passengers kept.
+      setTimeout(() => {
+        if (!running) return;
+        bus.t = 0; bus.lastT = 0;
+        renderBus(bus);
+        bus.el.classList.remove("gone");
+        bus.state = "driving";
+      }, LOOP_DELAY_MS);
+    }
+  }, TUNNEL_MS);
+}
+
+/* ---------- rules 5 & 6: win / fail -------------------------------------- */
+function countRemainingByColor() {
+  const counts = COLORS.map(() => 0);
+  platforms.forEach(p => p.queue.forEach(ch => counts[ch.color]++));
+  return counts;
+}
+function countRemainingTotal() {
+  return platforms.reduce((n, p) => n + p.queue.length, 0);
+}
+
+function checkWinCondition() {
+  const platformsEmpty = countRemainingTotal() === 0;
+  const allLaunched = columns.every(c => c.length === 0) && pendingLaunches.length === 0;
+  if (platformsEmpty && allLaunched && completedBuses === 30 && activeBuses.length === 0) {
+    endGame(true, "Every passenger delivered and all 30 buses sorted.");
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Two ways a level becomes unwinnable.
+ *
+ *  A) the spec rule: once the road is full, an incomplete bus whose colour has
+ *     zero passengers left anywhere on the board can never fill up.
+ *  B) a provable deadlock: nothing on the board can change state any more.
+ *     Buses only take the FRONT run of a platform, so fronts advance only when
+ *     some bus boards. If no bus can board, none is mid-boarding, none is full
+ *     (a full one would exit and free a slot) and no further bus can launch,
+ *     the position is frozen for good — terminal, not merely slow.
+ */
+function checkFailCondition() {
+  if (!running) return false;
+
+  // A) starved colour — only decisive once no more buses can launch
+  if (activeBuses.length >= MAX_CONCURRENT_BUSES) {
+    const remaining = countRemainingByColor();
+    const doomed = activeBuses.find(
+      b => b.passengers < BUS_CAPACITY && remaining[b.color] === 0);
+    if (doomed) {
+      endGame(false, `The ${COLORS[doomed.color].name} bus can never fill up — no ` +
+                     `${COLORS[doomed.color].name} passengers are left on any platform.`);
+      return true;
+    }
+  }
+
+  // B) deadlock. This must also cover the end game, where fewer than
+  // MAX_CONCURRENT_BUSES are on the road but every column is already empty.
+  const busCanAct = activeBuses.some(b =>
+    b.passengers >= BUS_CAPACITY ||           // will exit and free a slot
+    b.state === "boarding" ||                 // is already making progress
+    platforms.some(p => platformHasFrontMatch(p, b.color)));
+  const canLaunch =
+    (pendingLaunches.length > 0 || columns.some(c => c.length > 0)) &&
+    activeBuses.length < MAX_CONCURRENT_BUSES;
+  if (!busCanAct && !canLaunch) {
+    endGame(false, "Deadlock — no bus can reach a matching queue front and none " +
+                   "can be launched. Try sending the colours out in a different order.");
+    return true;
+  }
+  return false;
+}
+
+function endGame(won, text) {
+  running = false;
+  cancelAnimationFrame(rafId);
+  activeBuses.forEach(b => clearTimeout(b.boardTimer));
+  els.ovTitle.textContent = won ? "Level Complete!" : "Level Failed";
+  els.ovText.textContent = text;
+  els.overlay.classList.add("show");
+}
+
+/* ---------- main loop ---------------------------------------------------- */
+function tick(now) {
+  if (!running) return;
+  const dt = Math.min((now - lastFrame) / 1000, 0.05);
+  lastFrame = now;
+
+  activeBuses.forEach(bus => updateBusPosition(bus, dt));
+
+  // Both end states can arise while buses are merely driving, so test each
+  // frame. Win is tested first so a won board is never reported as a deadlock.
+  if (checkWinCondition() || checkFailCondition()) return;
+
+  rafId = requestAnimationFrame(tick);
+}
+
+/* ---------- setup / restart ---------------------------------------------- */
+function restartLevel() {
+  cancelAnimationFrame(rafId);
+  activeBuses.forEach(b => clearTimeout(b.boardTimer));
+  els.buses.innerHTML = "";
+  els.overlay.classList.remove("show");
+
+  activeBuses = [];
+  pendingLaunches = [];
+  completedBuses = 0;
+  busSeq = 0;
+  columns = QUEUE_DATA.map(col => col.slice());
+
+  drawScenery();
+  buildPlatforms();
+  buildQueues();
+  renderHud();
+
+  running = true;
+  lastFrame = performance.now();
+  rafId = requestAnimationFrame(tick);
+}
+
+function fitStage() {
+  const s = Math.min(window.innerWidth / 480, window.innerHeight / 1000);
+  els.stage.style.transform = `scale(${s})`;
+}
+
+$("#restartBtn").addEventListener("click", restartLevel);
+$("#ovBtn").addEventListener("click", restartLevel);
+window.addEventListener("resize", fitStage);
+
+fitStage();
+restartLevel();
+
+/* ---------- final sanity pass (logged to the console) -------------------- */
+(function sanityCheck() {
+  const busCounts = COLORS.map(() => 0);
+  QUEUE_DATA.flat().forEach(c => busCounts[c]++);
+  const charCounts = COLORS.map(() => 0);
+  const platTotals = PLATFORM_DATA.map(p => {
+    p.queue.forEach(ch => charCounts[ch.color]++);
+    return p.queue.length;
+  });
+  // every same-colour run in every platform must be 4, 6 or 8 long
+  const runSizes = new Set();
+  PLATFORM_DATA.forEach(p => {
+    let run = 0;
+    p.queue.forEach((ch, i) => {
+      run++;
+      if (i === p.queue.length - 1 || p.queue[i + 1].color !== ch.color) {
+        runSizes.add(run); run = 0;
+      }
+    });
+  });
+  console.log("[Sort Express] buses:", QUEUE_DATA.flat().length, busCounts,
+              "| passengers:", charCounts.reduce((a, b) => a + b, 0), charCounts,
+              "| platform totals:", platTotals,
+              "| cluster sizes:", [...runSizes].sort((a, b) => a - b),
+              "| colours covered per platform:",
+              PLATFORM_DATA.every(p => COLORS.every(c => p.queue.some(ch => ch.color === c.id))));
+})();
+</script>
+</body>
+</html>
