@@ -70,9 +70,12 @@ const IN = { x:TRAY.x+TRAY_PAD, y:TRAY.y+TRAY_PAD, w:TRAY.w-2*TRAY_PAD, h:TRAY.h
 const CW = IN.w/GRID_W, CH = IN.h/GRID_H;
 
 const PATH_W = 104, CURB = 18;
-const PATH_PTS = [[150,430],[146,330],[172,240],[228,204],[290,248],[296,344],[280,446],
-                  [296,520],[350,570],[430,592],[498,612],[540,662],[526,714],[468,754],
-                  [400,794],[340,844],[300,902],[272,968],[258,1024]];  // last point runs off under the tray rim
+/* Defined ENTRY first: progress 0 is the bottom-left end of the path, just above
+   the static slot row; progress 1 is the top-left tunnel, where docks vanish and
+   loop back round to the entry. Same shape as before, walked the other way. */
+const PATH_PTS = [[272,968],[300,902],[340,844],[400,794],[468,754],[526,714],[540,662],
+                  [498,612],[430,592],[350,570],[296,520],[280,446],[296,344],[290,248],
+                  [228,204],[172,240],[146,330],[150,430]];
 
 const SLOT_ROW = { y:1066, r:56 };
 const SLOT_X = [162,306,450,594,738];
@@ -203,6 +206,7 @@ const STATIC = (function buildStatic(){
   const solid=new Uint8Array(N_CELLS), isPath=new Uint8Array(N_CELLS);
   const dp=new Float32Array(N_CELLS).fill(9999);
   const sd=new Int8Array(N_CELLS);
+  const nearK=new Int32Array(N_CELLS).fill(-1);
   const R=180;
 
   for(let k=0;k<=PATH.N;k++){
@@ -212,14 +216,26 @@ const STATIC = (function buildStatic(){
     for(let gy=gy0;gy<=gy1;gy++) for(let gx=gx0;gx<=gx1;gx++){
       const c=gy*GRID_W+gx, ddx=cellX(gx)-px, ddy=cellY(gy)-py;
       const d=Math.sqrt(ddx*ddx+ddy*ddy);
-      if(d<dp[c]){ dp[c]=d; sd[c]=(PATH.tx[k]*ddy-PATH.ty[k]*ddx)>=0?1:-1; }
+      if(d<dp[c]){ dp[c]=d; nearK[c]=k; sd[c]=(PATH.tx[k]*ddy-PATH.ty[k]*ddx)>=0?1:-1; }
     }
   }
-  // "left of the path" = the side the lower path flank faces, i.e. smaller x while
-  // heading downward. Resolve it from a probe point well to the left of the path.
-  (function(){ const k=Math.round(PATH.N*0.75), px=PATH.xs[k], py=PATH.ys[k];
-    const ddx=-60, ddy=0;
-    SIDE_LEFT = (PATH.tx[k]*ddy-PATH.ty[k]*ddx)>=0?1:-1; })();
+  // Which sign of sd[] means "screen-left of the path". The cross product flips
+  // with the direction the path is walked, and a single probe sample is unsafe:
+  // the most vertical stretch is the hairpin leg that DESCENDS into the tunnel,
+  // which points the opposite way to the rest of the path. So take a weighted
+  // majority over every cell near the path, letting near-vertical stretches vote
+  // (there "screen-left" is unambiguous) in proportion to how vertical they are.
+  (function(){
+    let vote=0;
+    for(let c=0;c<N_CELLS;c++){
+      const k=nearK[c];
+      if(k<0||dp[c]>260) continue;
+      const w=Math.abs(PATH.ty[k]);
+      if(w<0.5) continue;
+      vote += (cellX(c%GRID_W) < PATH.xs[k] ? 1 : -1) * sd[c] * w;
+    }
+    SIDE_LEFT = vote>=0 ? 1 : -1;
+  })();
 
   for(let c=0;c<N_CELLS;c++){
     const gx=c%GRID_W, gy=(c/GRID_W)|0;
@@ -357,6 +373,13 @@ function frontWindow(u){                      // [lo,hi) indices of front cells 
 
 const LOOP = 1+RETURN_FRAC, DOCK_SPACING = LOOP/DOCK_COUNT;
 
+/* Progress at which the path stops climbing. Docks must move UP the screen all
+   the way to here; past it the path crests the top-left hairpin and dips down
+   into the tunnel mouth, which is the one stretch where y legitimately grows. */
+const PATH_APEX_U=(function(){ let bi=0,by=1e9;
+  for(let k=0;k<=PATH.N;k++) if(PATH.ys[k]<by){ by=PATH.ys[k]; bi=k; }
+  return bi/PATH.N; })();
+
 function targetGrains(){
   const t={1:0,2:0,3:0,4:0};
   for(const col of LEVEL_COLUMNS) for(const [k,n] of col) t[CIDX[k]] += n*GRAINS_PER_UNIT;
@@ -488,7 +511,7 @@ function makeBucket(color,units){
            bounce:0, fly:null, shake:0, pop:0 };
 }
 
-function emptyDockNearestTunnel(g){               // smallest progress = closest to the tunnel
+function emptyDockNearestEntry(g){                // smallest progress = closest to the entry
   let best=-1,bp=1e9;
   for(let i=0;i<DOCK_COUNT;i++){
     if(g.docks[i].bucket) continue;
@@ -516,7 +539,7 @@ function sendFront(g,col){
   const q=g.columns[col];
   if(!q.length) return false;
   const from=queueXY(col,0);
-  const di=emptyDockNearestTunnel(g);
+  const di=emptyDockNearestEntry(g);
   if(di>=0){
     const b=makeBucket(q[0].color,q[0].units); q.shift();
     g.docks[di].bucket=b; b.travel=0;
@@ -538,7 +561,7 @@ function sendStatic(g,si){
   if(g.phase!=="play") return false;
   const b=g.statics[si];
   if(!b||b.fly) return false;
-  const di=emptyDockNearestTunnel(g);
+  const di=emptyDockNearestEntry(g);
   if(di<0){ b.shake=0.35; return false; }
   g.statics[si]=null;
   g.docks[di].bucket=b; b.travel=0; b.acc=0;
@@ -590,13 +613,30 @@ function takeGrains(g,b,wx,wy,dt){
   }
 }
 
+/** While the conveyor runs every dock must move UP the screen, except on the
+ *  frame it wraps tunnel -> entry and on the final dip into the tunnel mouth. */
+function checkDockDirection(g){
+  if(!g._pdP){ g._pdY=new Float64Array(DOCK_COUNT); g._pdP=new Float64Array(DOCK_COUNT).fill(-1); }
+  for(let i=0;i<DOCK_COUNT;i++){
+    const p=dockPos(g,i), y=pathAt(Math.min(p,1)).y, pp=g._pdP[i];
+    if(pp>=0 && p>pp && p<=PATH_APEX_U && y>g._pdY[i]+0.25 && !g._dirWarned){
+      g._dirWarned=true;
+      console.warn("[dir] dock "+i+" moved DOWN the screen while climbing: y "+
+        g._pdY[i].toFixed(1)+" -> "+y.toFixed(1)+
+        "  (progress "+pp.toFixed(4)+" -> "+p.toFixed(4)+", apex at "+PATH_APEX_U.toFixed(3)+")");
+    }
+    g._pdY[i]=y; g._pdP[i]=p;
+  }
+}
+
 function update(g,dt){
   g.time+=dt;
   if(g.phase!=="play"){ updateFx(g,dt); return; }
 
   /* --- conveyor: runs only while at least one dock carries a bucket --- */
   const carrying=g.docks.some(d=>d.bucket);
-  if(carrying) g.base=(g.base+CONVEYOR_SPEED*dt)%LOOP;
+  if(carrying){ g.base=(g.base+CONVEYOR_SPEED*dt)%LOOP; checkDockDirection(g); }
+  else { g._pdP=null; }
 
   /* --- flights --- */
   for(const b of allBuckets(g)) if(b.fly){
@@ -665,7 +705,7 @@ function collectableCounts(g){
 function botStep(g){
   if(g.phase!=="play") return;
   const counts=collectableCounts(g);
-  const di=emptyDockNearestTunnel(g);
+  const di=emptyDockNearestEntry(g);
   if(di>=0){
     let bi=-1,bv=-1;                                   // static buckets go first
     for(let i=0;i<STATIC_COUNT;i++){
@@ -780,17 +820,18 @@ function drawPath(){
   ctx.strokeStyle="#BEC4D2"; ctx.lineWidth=PATH_W;           ctx.stroke(PATH_2D);
 }
 
-/** Short raised tube over the start of the path: buckets roll out from under it. */
+/** Short raised tube over the END of the path: buckets disappear under it. */
+const TUNNEL_FRAC=0.085;
 function drawTunnel(){
-  const END=Math.round(PATH.N*0.085);
-  const p=new Path2D(); p.moveTo(PATH.xs[0],PATH.ys[0]);
-  for(let k=1;k<=END;k++) p.lineTo(PATH.xs[k],PATH.ys[k]);
+  const START=Math.round(PATH.N*(1-TUNNEL_FRAC));
+  const p=new Path2D(); p.moveTo(PATH.xs[START],PATH.ys[START]);
+  for(let k=START+1;k<=PATH.N;k++) p.lineTo(PATH.xs[k],PATH.ys[k]);
   ctx.lineCap="round"; ctx.lineJoin="round";
   ctx.strokeStyle="rgba(62,56,110,.26)"; ctx.lineWidth=PATH_W+26; ctx.stroke(p);
   ctx.strokeStyle="#A7AEC0";             ctx.lineWidth=PATH_W+22; ctx.stroke(p);
   ctx.strokeStyle="#D6DBE6";             ctx.lineWidth=PATH_W+12; ctx.stroke(p);
   ctx.strokeStyle="rgba(255,255,255,.60)";ctx.lineWidth=PATH_W*0.20; ctx.stroke(p);
-  const q=pathAt(END/PATH.N);                                 // dark mouth at the open end
+  const q=pathAt(START/PATH.N);                               // dark mouth where they enter
   ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(Math.atan2(q.ty,q.tx));
   ctx.fillStyle="rgba(56,50,94,.38)";
   ctx.beginPath(); ctx.ellipse(0,0,11,(PATH_W+16)/2,0,0,Math.PI*2); ctx.fill();
@@ -996,6 +1037,16 @@ function drawDebug(g){
     ctx.fillStyle="hsl("+Math.round(250-t*250)+",90%,"+Math.round(28+t*46)+"%)";
     ctx.fillRect(IN.x+gx*CW,IN.y+gy*CH,CW,CH);
   }
+  // travel direction: arrows point along increasing progress, up toward the tunnel
+  for(let u=0.02;u<1;u+=0.045){
+    const q=pathAt(u);
+    ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(Math.atan2(q.ty,q.tx));
+    ctx.beginPath(); ctx.moveTo(17,0); ctx.lineTo(-10,-12); ctx.lineTo(-3,0); ctx.lineTo(-10,12);
+    ctx.closePath();
+    ctx.fillStyle="rgba(255,255,255,.95)"; ctx.fill();
+    ctx.strokeStyle="rgba(24,24,56,.8)"; ctx.lineWidth=2; ctx.stroke();
+    ctx.restore();
+  }
   ctx.globalAlpha=1; ctx.fillStyle="#fff";
   for(let i=0;i<FRONT.n;i++){
     const c=FRONT.cells[i]; if(!g.grain[c]) continue;
@@ -1004,7 +1055,7 @@ function drawDebug(g){
   }
   ctx.restore();
   ctx.fillStyle="#12203a"; ctx.font='700 24px system-ui,sans-serif'; ctx.textAlign="left";
-  ctx.fillText("DEBUG  flow field + collectable front   grains "+g.grainsLeft+"/"+g.grainsTotal,24,1150);
+  ctx.fillText("DEBUG  flow field + front + travel direction   grains "+g.grainsLeft+"/"+g.grainsTotal,24,1150);
 }
 
 function drawOverlay(g){
@@ -1115,6 +1166,34 @@ game=newGame(12345,false);
                 "  ("+(got[i]/GRAINS_PER_UNIT)+" units)"+(got[i]===want[i]?"  OK":"  MISMATCH")); }
   console.log("[sand] total "+game.grainsTotal+" grains, targets "+(ok?"all exact":"MISMATCH"));
 })();
+/* ---- verification: dock travel direction over one full loop ---- */
+(function dockDirectionSelfTest(){
+  const g=newGame(1,true);
+  g.docks[0].bucket=makeBucket("blue",99);                 // makes the conveyor run
+  const dt=1/60, steps=Math.ceil(LOOP/(CONVEYOR_SPEED*dt))+20;
+  const prevY=new Float64Array(DOCK_COUNT), prevP=new Float64Array(DOCK_COUNT).fill(-1);
+  let up=0, viol=0, wraps=0, dips=0;
+  for(let s=0;s<steps;s++){
+    g.base=(g.base+CONVEYOR_SPEED*dt)%LOOP;
+    for(let i=0;i<DOCK_COUNT;i++){
+      const p=dockPos(g,i), y=pathAt(Math.min(p,1)).y;
+      if(prevP[i]>=0){
+        if(p<prevP[i]) wraps++;                            // tunnel -> entry
+        else if(p>PATH_APEX_U) dips++;                      // cresting into the tunnel
+        else if(y>prevY[i]+0.25) viol++;
+        else if(y<prevY[i]) up++;
+      }
+      prevY[i]=y; prevP[i]=p;
+    }
+  }
+  console.log("[dir] entry (progress 0) at y="+Math.round(pathAt(0).y)+
+              ", tunnel (progress 1) at y="+Math.round(pathAt(1).y)+
+              ", apex at progress "+PATH_APEX_U.toFixed(3));
+  console.log("[dir] one full loop: "+up+" upward steps, "+viol+" downward violations before the apex, "+
+              wraps+" tunnel->entry wraps, "+dips+" steps cresting into the tunnel mouth  "+
+              (viol?"-- FAIL":"-- OK"));
+})();
+
 requestAnimationFrame(frame);
 
 /* ---- verification: 20 headless greedy-bot runs, logged when finished ---- */

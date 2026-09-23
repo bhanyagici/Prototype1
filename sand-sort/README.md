@@ -5,15 +5,20 @@ libraries, no build step — open it in a browser and play.
 
 ## Playing
 
+The path runs from its bottom-left end, just above the static slot row
+(progress 0), up through the S-curve to the top-left tunnel (progress 1); docks
+climb, vanish into the tunnel and re-appear at the entry, keeping even spacing.
+
 Tap the front bucket of any of the three bottom columns. It flies to the empty
-dock nearest the tunnel, or to a static slot if every dock is taken. Riding
+dock nearest the bottom-left entry, or to a static slot if every dock is taken. Riding
 buckets scoop grains of their own colour out of the sand rank pressed against
 the path curb; every 4 grains knocks 1 off the bucket's number. At 0 it pops and
 frees its dock. A bucket that completes a lap parks in a free static slot, or
 rides round again if the static row is full. Tap a parked bucket to send it back
 out. Clear all 3,600 grains to win; fill all 10 slots at once and you lose.
 
-Keys: **D** flow-field debug overlay, **B** auto-play bot, **R** restart.
+Keys: **D** flow-field debug overlay (with arrows showing travel direction),
+**B** auto-play bot, **R** restart.
 
 ## Tuning
 
@@ -49,8 +54,15 @@ times. Current output:
 [sand] yellow grains 880  target 880  (220 units)  OK
 [sand] pink   grains 560  target 560  (140 units)  OK
 [sand] total 3600 grains, targets all exact
+[dir] entry (progress 0) at y=968, tunnel (progress 1) at y=430, apex at progress 0.805
+[dir] one full loop: 3970 upward steps, 0 downward violations before the apex, 5 tunnel->entry wraps, ...
 [bot] 20 headless runs -> WIN 20  FAIL 0  TIMEOUT 0
-[bot] winning runs took 288-384s of game time
+[bot] winning runs took 289-363s of game time
 ```
+
+`[dir]` is the dock-travel check: every dock must move up the screen while the
+conveyor runs. The one stretch where y legitimately grows is past the path's
+apex, where it crests the top-left hairpin and dips into the tunnel mouth; that
+stretch is excluded, and a genuine downward step logs a console warning.
 
 The level data is exactly as supplied and was not adjusted.
