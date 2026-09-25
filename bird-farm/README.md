@@ -11,12 +11,15 @@ colour with a count tag. The pool holds **5 heaps** whatever their counts; tap a
 cob with the pool full and it just shakes — that is not a fail.
 
 A bird is **exposed** if it sits on the grid's outer border, or if any of its 4
-orthogonal neighbours is an empty spot. While a heap has kernels left and a
-matching exposed bird exists, that bird takes off and flies to the heap, pecks
-once and is gone, taking 1 off the count. Birds nearest the outer border go
-first, ties going to the one nearest the pool; a bird's spot empties the moment
-it takes off, which can expose its neighbours. Heaps of the same colour are fed
-oldest first, and a heap with no matching exposed bird simply waits.
+orthogonal neighbours is an empty spot. A heap calls **every** exposed bird of
+its colour, up to its remaining count — there is no cap on birds in the air, so
+a heap of 20 with 20 exposed birds calls all 20. They leave nearest-to-the-heap
+first, one every `TAKEOFF_STAGGER`, so the heap draws a flowing stream rather
+than a single frame of jumps. A bird's spot empties the moment it takes off, and
+any bird that exposes joins the same stream straight away, again nearest first.
+The count only drops as birds arrive and peck, so the tag ticks down while the
+stream is still landing. Heaps of the same colour are fed oldest first, and a
+heap with no matching exposed bird simply waits.
 
 Feed all 144 birds to win. Lose if the pool holds 5 heaps, nothing is in the
 air, and none of the heaps has an exposed bird of its colour.
@@ -25,9 +28,9 @@ Keys: **D** outline the exposed birds, **B** auto-play bot, **R** restart.
 
 ## Tuning
 
-Constants at the top of the script: `MAX_FLYING`, `FLIGHT_TIME`, `PECK_TIME`,
-`SEND_TIME`, `POOL_CAPACITY`, plus the level tables `BIRD_ROWS` and
-`CORN_QUEUE`.
+Constants at the top of the script: `TAKEOFF_STAGGER`, `FLIGHT_TIME`,
+`PECK_TIME`, `SEND_TIME`, `POOL_CAPACITY`, plus the level tables `BIRD_ROWS`
+and `CORN_QUEUE`.
 
 ## Verification
 

@@ -19,7 +19,7 @@
 /* =====================================================================
    =============================  TUNING  ==============================
    ===================================================================== */
-const MAX_FLYING    = 6;     // birds in the air at once
+const TAKEOFF_STAGGER = 0.05;  // seconds between take-offs, so a heap calls a stream
 const FLIGHT_TIME   = 0.85;  // seconds, bird -> heap
 const PECK_TIME     = 0.22;  // seconds pecking before it vanishes
 const SEND_TIME     = 0.45;  // seconds, cob -> grinder
@@ -125,15 +125,18 @@ function exposedCounts(s){
   for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(isExposed(s,r,c)) n[s.grid[r*N+c]]++;
   return n;
 }
-/** Closest to the outer border; ties go to the one closest to the pool. */
-function pickExposed(s,color){
-  let best=null,bRing=1e9,bPool=1e9;
+/**
+ * The exposed bird of this colour nearest to (px,py) -- the heap calling it, so a
+ * heap draws its stream nearest-first. Called with no point it answers the cheaper
+ * question "is there an exposed bird of this colour at all".
+ */
+function pickExposed(s,color,px,py){
+  let best=null,bd=1e9;
   for(let r=0;r<N;r++) for(let c=0;c<N;c++){
     if(s.grid[r*N+c]!==color||!isExposed(s,r,c)) continue;
-    const ring=Math.min(r,c,N-1-r,N-1-c);
-    if(ring>bRing) continue;
-    const pool=Math.hypot(gx(c)-POOL.cx, gy(r)-POOL.cy);
-    if(ring<bRing||pool<bPool){ best={r,c}; bRing=ring; bPool=pool; }
+    if(px===undefined) return {r,c};
+    const dx=gx(c)-px, dy=gy(r)-py, d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best={r,c}; }
   }
   return best;
 }
@@ -157,7 +160,7 @@ function sendFront(s,ci){
   const g = useRight?GRIND_R:GRIND_L;
   // the heap takes its pool spot immediately, so capacity can't be oversold
   const heap={ color:cob.color, count:cob.count, start:cob.count, reserved:0,
-               spot, id:s.hid++, ready:false, scale:0, tag:0, pour:0 };
+               spot, id:s.hid++, ready:false, scale:0, tag:0, pour:0, takeoff:0 };
   s.heaps.push(heap);
   s.cobs.push({ color:cob.color, count:cob.count, fx:from.x, fy:from.y,
                 tx:g.x, ty:g.y-34, t:0, dur:SEND_TIME, side:useRight?1:0, heap });
@@ -170,23 +173,31 @@ function launchBird(s,heap,b){
   s.grid[b.r*N+b.c]="";                                   // empty the moment it takes off
   heap.reserved++;
   const sp=SPOTS[heap.spot];
+  const R=heapRadius(heap);
   s.flying.push({ color:heap.color, heap, t:0, phase:"fly",
-                  fx:gx(b.c), fy:gy(b.r), tx:sp.x, ty:sp.y-heapRadius(heap)-10,
+                  fx:gx(b.c), fy:gy(b.r),
+                  tx:sp.x+(Math.random()-0.5)*R*0.9, ty:sp.y-R-10+(Math.random()-0.5)*14,
                   ax:(gx(b.c)+sp.x)/2+(Math.random()-0.5)*90,
                   ay:Math.min(gy(b.r),sp.y)-170-Math.random()*70,
                   flip:Math.random()<0.5?1:-1 });
 }
-/** One bird per heap per round, oldest heap first, until nothing more can go. */
-function tryFeed(s){
-  let progress=true;
-  while(progress && s.flying.length<MAX_FLYING){
-    progress=false;
-    for(const h of s.heaps){
-      if(s.flying.length>=MAX_FLYING) break;
-      if(!h.ready || h.count-h.reserved<=0) continue;
-      const b=pickExposed(s,h.color);
-      if(!b) continue;
-      launchBird(s,h,b); progress=true;
+/**
+ * No cap on birds in the air. Every heap calls as many birds as it still has
+ * uncommitted count, nearest to the heap first, one every TAKEOFF_STAGGER so they
+ * leave as a stream rather than in one frame. Each take-off empties its spot, so
+ * any bird it exposes can join the same stream on a later tick. Heaps are walked
+ * oldest-first, which keeps same-colour heaps in age order.
+ */
+function tryFeed(s,dt){
+  for(const h of s.heaps){
+    if(!h.ready) continue;
+    if(h.takeoff>0) h.takeoff-=dt;
+    const sp=SPOTS[h.spot];
+    while(h.takeoff<=0 && h.count-h.reserved>0){
+      const b=pickExposed(s,h.color,sp.x,sp.y);
+      if(!b) break;                        // nothing exposed: wait, keep the count
+      launchBird(s,h,b);
+      h.takeoff+=TAKEOFF_STAGGER;
     }
   }
 }
@@ -235,7 +246,7 @@ function update(s,dt){
     if(h.tag>0) h.tag=Math.max(0,h.tag-dt*3.2);
   }
 
-  tryFeed(s);
+  tryFeed(s,dt);
 
   for(let i=s.flying.length-1;i>=0;i--){                  // birds in the air
     const f=s.flying[i]; f.t+=dt;
@@ -279,7 +290,8 @@ function feedInstant(s){
     let did=false;
     for(const h of s.heaps){
       if(h.count<=0) continue;
-      const b=pickExposed(s,h.color);
+      const sp=SPOTS[h.spot];
+      const b=pickExposed(s,h.color,sp.x,sp.y);
       if(!b) continue;
       s.grid[b.r*N+b.c]=""; h.count--; s.eaten++; did=true; break;
     }
