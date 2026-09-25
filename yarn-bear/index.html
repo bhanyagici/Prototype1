@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Yarn Bear</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0b1730;touch-action:none;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{position:relative;width:864px;height:1872px;flex:none;transform-origin:center center;
+    background:radial-gradient(120% 70% at 50% 28%,#21406E 0%,#162C54 45%,#0E1D3B 100%);
+    overflow:hidden;user-select:none}
+  #gl{position:absolute;left:0;top:150px;width:864px;height:862px;display:block}
+  #yarn{position:absolute;left:0;top:0;width:864px;height:1872px;pointer-events:none}
+
+  /* ---------------- top bar ---------------- */
+  #topbar{position:absolute;left:0;top:0;width:100%;height:150px;pointer-events:none}
+  .tbtn{position:absolute;top:58px;width:78px;height:78px;border-radius:24px;background:#2C4B80;
+    box-shadow:inset 0 -5px 0 rgba(0,0,0,.28),0 5px 0 rgba(0,0,0,.35);pointer-events:auto;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+  .tbtn:active{transform:translateY(3px)}
+  #btnSet{left:30px} #btnRst{left:124px}
+  .tbtn svg{width:44px;height:44px;fill:none;stroke:#DCE8FA;stroke-width:5;
+    stroke-linecap:round;stroke-linejoin:round}
+  #levelPill{position:absolute;left:50%;top:64px;transform:translateX(-50%);
+    min-width:262px;height:66px;border-radius:33px;border:3px solid #3C5E9B;
+    display:flex;align-items:center;justify-content:center;color:#EAF2FF;
+    font-size:38px;font-weight:800;letter-spacing:.5px}
+  #coins{position:absolute;right:104px;top:64px;height:66px;border-radius:33px;
+    background:#233F6E;border:3px solid #3C5E9B;display:flex;align-items:center;gap:10px;
+    padding:0 18px 0 10px;color:#fff;font-size:34px;font-weight:800}
+  #coins i{width:44px;height:44px;border-radius:50%;background:
+    radial-gradient(circle at 36% 32%,#FFE27A,#F0B429 60%,#C98B0D);display:block}
+  #plus{position:absolute;right:26px;top:64px;width:66px;height:66px;border-radius:22px;
+    background:#3FBB4F;box-shadow:inset 0 -5px 0 rgba(0,0,0,.25);display:flex;
+    align-items:center;justify-content:center;color:#fff;font-size:44px;font-weight:800}
+
+  /* ---------------- slot row ---------------- */
+  #slots{position:absolute;left:33px;top:1028px;width:798px;height:150px;
+    display:flex;gap:12px}
+  .slot{width:150px;height:150px;border-radius:30px;background:#16294C;
+    box-shadow:inset 0 6px 14px rgba(0,0,0,.55),inset 0 -3px 0 rgba(255,255,255,.05);
+    border:3px solid #2A4472;box-sizing:border-box;position:relative}
+
+  /* ---------------- queue ---------------- */
+  #queue{position:absolute;left:0;top:1200px;width:864px;height:672px}
+  .col{position:absolute;top:0;width:216px;height:100%}
+  .spool{position:absolute;left:50%;width:158px;height:140px;margin-left:-79px;
+    cursor:pointer;transition:top .18s ease,transform .18s ease}
+  .spool.shake{animation:shk .32s}
+  @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-11px)}
+    60%{transform:translateX(9px)}}
+  .sp-wrap{position:absolute;inset:0}
+  .fl{position:absolute;left:0;width:158px;height:46px;border-radius:50%;
+    background:var(--fl);box-shadow:inset 0 -6px 0 rgba(0,0,0,.20)}
+  .fl.top{top:0}
+  .fl.bot{bottom:0;box-shadow:inset 0 -8px 0 rgba(0,0,0,.30)}
+  .hole{position:absolute;left:50%;top:12px;width:44px;height:22px;margin-left:-22px;
+    border-radius:50%;background:rgba(0,0,0,.42)}
+  .body{position:absolute;left:19px;top:30px;width:120px;height:82px;border-radius:14px;
+    background:var(--c);background-image:repeating-linear-gradient(
+      to bottom,rgba(255,255,255,.22) 0 3px,rgba(0,0,0,0) 3px 9px,rgba(0,0,0,.16) 9px 13px);
+    background-size:100% 13px;box-shadow:inset 10px 0 16px rgba(0,0,0,.22),
+      inset -10px 0 16px rgba(0,0,0,.22)}
+  .spool.wind .body{animation:wind .5s linear infinite}
+  @keyframes wind{from{background-position:0 0}to{background-position:0 13px}}
+  .num{position:absolute;left:0;top:44px;width:158px;text-align:center;
+    font-size:46px;font-weight:900;color:#fff;
+    text-shadow:-3px 0 0 #1a1a2e,3px 0 0 #1a1a2e,0 -3px 0 #1a1a2e,0 3px 0 #1a1a2e,
+      -3px -3px 0 #1a1a2e,3px 3px 0 #1a1a2e,-3px 3px 0 #1a1a2e,3px -3px 0 #1a1a2e}
+  .slot .spool{position:absolute;left:50%;top:5px;transform:scale(.88);transform-origin:50% 50%}
+
+  /* ---------------- overlay ---------------- */
+  #ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(6,14,30,.68);z-index:20}
+  #ovl.on{display:flex}
+  #card{width:620px;padding:52px 40px;border-radius:44px;background:#1B3161;
+    border:5px solid #3C5E9B;text-align:center;color:#EAF2FF}
+  #card h2{margin:0 0 14px;font-size:58px}
+  #card p{margin:0 0 34px;font-size:26px;color:#A9BEDF}
+  #card button{font:800 40px system-ui,sans-serif;color:#fff;background:#3FBB4F;
+    border:none;border-radius:44px;padding:22px 64px;cursor:pointer;
+    box-shadow:0 7px 0 #2A8A38}
+  #hud{position:absolute;left:24px;top:1186px;width:820px;color:#9FB6DB;font:700 17px system-ui,sans-serif;
+    display:none;z-index:15;text-shadow:0 1px 2px #000}
+  #hud.on{display:block}
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <canvas id="gl"></canvas>
+  <canvas id="yarn"></canvas>
+  <div id="topbar">
+    <div class="tbtn" id="btnSet"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="7"/>
+      <path d="M22 4v6M22 34v6M4 22h6M34 22h6M9 9l4 4M31 31l4 4M35 9l-4 4M13 31l-4 4"/></svg></div>
+    <div class="tbtn" id="btnRst"><svg viewBox="0 0 44 44">
+      <path d="M34 22a12 12 0 1 1-4-9"/><path d="M31 5v9h-9" fill="none"/></svg></div>
+    <div id="levelPill">Level 12</div>
+    <div id="coins"><i></i><span>320</span></div>
+    <div id="plus">+</div>
+  </div>
+  <div id="slots"></div>
+  <div id="queue"></div>
+  <div id="hud"></div>
+  <div id="ovl"><div id="card"><h2 id="ovlTitle">Level Complete</h2>
+    <p id="ovlText"></p><button id="ovlBtn">Replay</button></div></div>
+</div></div>
+<script type="module">
+import * as THREE from "three";
+
+/* =====================================================================
+   =============================  TUNING  ==============================
+   ===================================================================== */
+const AUTO_ROTATE_SPEED  = 0.28;   // radians / second around Y
+const AUTO_RESUME_DELAY  = 1.6;    // seconds after release before it spins again
+const PULL_RATE          = 9;      // stitches pulled per second, per spool
+const VOXEL_RESOLUTION   = 28;     // voxel cells along the bear's height
+const SLOT_COUNT         = 5;
+const VISIBILITY_MS      = 100;    // how often the visible set is recomputed
+const SPOOL_MIN = 10, SPOOL_MAX = 40, SPOOL_TAIL_MIN = 5;
+
+/* =====================================================================
+   ============================  PALETTE  ==============================
+   ===================================================================== */
+const COLORS = ["brown","cream","red","yellow","green","blue","purple"];
+const HEX = { brown:"#8B5A2B", cream:"#F1DEC0", red:"#E53935", yellow:"#FDD835",
+              green:"#43A047", blue:"#1E88E5", purple:"#8E24AA" };
+const CIX = {}; COLORS.forEach((c,i)=>CIX[c]=i);
+
+function mulberry32(a){ return function(){ a|=0;a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t;
+  return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* =====================================================================
+   ==========================  THE BEAR  ===============================
+   Simple volumes, voxelized, then coloured by region and depth.
+   ===================================================================== */
+const P = {
+  head:{c:[0,0.50,0], r:0.34},
+  earL:{c:[-0.28,0.78,-0.03], r:0.142}, earR:{c:[0.28,0.78,-0.03], r:0.142},
+  innL:{c:[-0.29,0.79,0.055], r:0.078}, innR:{c:[0.29,0.79,0.055], r:0.078},
+  muzzle:{c:[0,0.40,0.26], r:[0.165,0.125,0.125]},
+  body:{c:[0,-0.04,0], r:[0.38,0.40,0.30]},
+  armL:{a:[-0.31,0.12,0.02], b:[-0.47,-0.20,0.08], r:0.125},
+  armR:{a:[ 0.31,0.12,0.02], b:[ 0.47,-0.20,0.08], r:0.125},
+  legL:{a:[-0.17,-0.36,0.04], b:[-0.27,-0.44,0.26], r:0.165},
+  legR:{a:[ 0.17,-0.36,0.04], b:[ 0.27,-0.44,0.26], r:0.165},
+};
+const BBOX={lo:[-0.62,-0.62,-0.40], hi:[0.62,0.92,0.44]};
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const len3=a=>Math.sqrt(dot3(a,a));
+const inSph=(p,s)=>len3(sub(p,s.c))<=s.r;
+const inEll=(p,e)=>{const d=sub(p,e.c);
+  return (d[0]/e.r[0])**2+(d[1]/e.r[1])**2+(d[2]/e.r[2])**2<=1;};
+function inCap(p,k){
+  const ab=sub(k.b,k.a), ap=sub(p,k.a);
+  let t=dot3(ap,ab)/dot3(ab,ab); t=Math.max(0,Math.min(1,t));
+  return len3(sub(p,[k.a[0]+ab[0]*t,k.a[1]+ab[1]*t,k.a[2]+ab[2]*t]))<=k.r;
+}
+function regionAt(p){
+  if(inSph(p,P.innL)||inSph(p,P.innR)) return "inner";
+  if(inEll(p,P.muzzle)) return "muzzle";
+  if(inSph(p,P.earL)||inSph(p,P.earR)) return "ear";
+  if(inSph(p,P.head)) return "head";
+  if(inCap(p,P.legL)||inCap(p,P.legR)) return "leg";
+  if(inCap(p,P.armL)||inCap(p,P.armR)) return "arm";
+  if(inEll(p,P.body)) return "body";
+  return null;
+}
+/* sweater stripes, top to bottom */
+const STRIPES=["blue","yellow","red","yellow","green","purple"];
+function surfaceColor(reg,p){
+  if(reg==="inner"||reg==="muzzle") return "cream";
+  if(reg==="leg"){                                            // small cream pad on each foot
+    const e=(p[0]<0)?P.legL.b:P.legR.b;
+    return len3(sub(p,e))<0.125 ? "cream" : "brown";
+  }
+  if(reg==="body"){
+    if(p[1]>0.205 && p[1]<0.325) return "red";               // scarf round the neck
+    if(p[1]>-0.34 && p[1]<=0.205){
+      const t=(0.205-p[1])/(0.205+0.34);
+      return STRIPES[Math.min(STRIPES.length-1,Math.floor(t*STRIPES.length))];
+    }
+  }
+  return "brown";
+}
+/* what each surface colour turns into as you peel inward, in bands of BAND voxels */
+const LAYERS={
+  brown:["brown","cream","brown","purple","green"],
+  cream:["cream","brown","cream","yellow","blue"],
+  red:  ["red","yellow","green","blue","brown"],
+  blue: ["blue","red","yellow","green","cream"],
+  yellow:["yellow","purple","blue","red","brown"],
+  green:["green","blue","red","yellow","cream"],
+  purple:["purple","yellow","green","brown","red"],
+};
+const BAND=1;   // one voxel shell per colour: max depth is only ~5, so all layers get used
+const NB6=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+
+function buildBear(){
+  const vs=(BBOX.hi[1]-BBOX.lo[1])/VOXEL_RESOLUTION;
+  const nx=Math.ceil((BBOX.hi[0]-BBOX.lo[0])/vs), ny=VOXEL_RESOLUTION,
+        nz=Math.ceil((BBOX.hi[2]-BBOX.lo[2])/vs);
+  const idx=(x,y,z)=>(y*nz+z)*nx+x;
+  const total=nx*ny*nz;
+  const alive=new Uint8Array(total), region=new Array(total).fill(null);
+  const cx=x=>BBOX.lo[0]+(x+0.5)*vs, cy=y=>BBOX.lo[1]+(y+0.5)*vs, cz=z=>BBOX.lo[2]+(z+0.5)*vs;
+  for(let y=0;y<ny;y++)for(let z=0;z<nz;z++)for(let x=0;x<nx;x++){
+    const r=regionAt([cx(x),cy(y),cz(z)]);
+    if(r){ const i=idx(x,y,z); alive[i]=1; region[i]=r; }
+  }
+  const has=(x,y,z)=>x>=0&&y>=0&&z>=0&&x<nx&&y<ny&&z<nz&&alive[idx(x,y,z)];
+  /* depth: BFS inward from the surface */
+  const depth=new Int16Array(total).fill(-1);
+  const q=new Int32Array(total); let qh=0,qt=0;
+  for(let y=0;y<ny;y++)for(let z=0;z<nz;z++)for(let x=0;x<nx;x++){
+    const i=idx(x,y,z); if(!alive[i]) continue;
+    for(const [dx,dy,dz] of NB6) if(!has(x+dx,y+dy,z+dz)){ depth[i]=0; q[qt++]=i; break; }
+  }
+  while(qh<qt){
+    const i=q[qh++], x=i%nx, z=((i/nx)|0)%nz, y=(i/(nx*nz))|0, d=depth[i]+1;
+    for(const [dx,dy,dz] of NB6){
+      const X=x+dx,Y=y+dy,Z=z+dz; if(!has(X,Y,Z)) continue;
+      const j=idx(X,Y,Z); if(depth[j]!==-1) continue;
+      depth[j]=d; q[qt++]=j;
+    }
+  }
+  /* surface colour flooded inward, then shifted along its layer sequence by depth */
+  const surf=new Array(total).fill(null), color=new Uint8Array(total);
+  const order=[]; for(let i=0;i<total;i++) if(alive[i]) order.push(i);
+  order.sort((a,b)=>depth[a]-depth[b]);
+  for(const i of order){
+    const x=i%nx, z=((i/nx)|0)%nz, y=(i/(nx*nz))|0;
+    if(depth[i]===0) surf[i]=surfaceColor(region[i],[cx(x),cy(y),cz(z)]);
+    else{
+      let s=null;
+      for(const [dx,dy,dz] of NB6){
+        const X=x+dx,Y=y+dy,Z=z+dz; if(!has(X,Y,Z)) continue;
+        const j=idx(X,Y,Z);
+        if(depth[j]===depth[i]-1 && surf[j]){ s=surf[j]; break; }
+      }
+      surf[i]=s||"brown";
+    }
+    const seq=LAYERS[surf[i]]||LAYERS.brown;
+    color[i]=CIX[seq[Math.min(seq.length-1,Math.floor(depth[i]/BAND))]];
+  }
+  return {nx,ny,nz,vs,idx,total,alive,region,depth,color,cx,cy,cz};
+}
+
+/* =====================================================================
+   =====================  LEVEL DATA + SOLVABILITY  ====================
+   ===================================================================== */
+/** Split a colour's voxel total into spools of 10..40, remainder never below 5. */
+function splitCounts(T,rnd){
+  const out=[]; let rem=T;
+  while(rem>SPOOL_MAX){
+    let n=SPOOL_MIN+Math.floor(rnd()*(SPOOL_MAX-SPOOL_MIN+1));
+    if(rem-n<SPOOL_TAIL_MIN) n=rem-SPOOL_TAIL_MIN;
+    n=Math.max(SPOOL_MIN,Math.min(SPOOL_MAX,n));
+    if(rem-n<SPOOL_TAIL_MIN) n=Math.max(SPOOL_MIN,rem-SPOOL_TAIL_MIN);
+    out.push(n); rem-=n;
+  }
+  if(rem>0) out.push(rem);
+  return out;
+}
+
+/**
+ * Headless solvability bot. Every exposed voxel counts as reachable, because the
+ * player can always rotate the bear to face it; greedy sends the front spool whose
+ * colour has the most exposed voxels and never sends into a full slot row.
+ * Exposed sets are maintained incrementally, so 50 seeds cost a few hundred ms.
+ */
+function botRun(B,columns){
+  const {nx,ny,nz,idx,total}=B;
+  const alive=Uint8Array.from(B.alive);
+  const has=(x,y,z)=>x>=0&&y>=0&&z>=0&&x<nx&&y<ny&&z<nz&&alive[idx(x,y,z)];
+  const XYZ=i=>[i%nx,(i/(nx*nz))|0,((i/nx)|0)%nz];
+  const isExp=i=>{ const [x,y,z]=XYZ(i);
+    for(const [dx,dy,dz] of NB6) if(!has(x+dx,y+dy,z+dz)) return true;
+    return false; };
+  const sets=COLORS.map(()=>new Set());
+  let remaining=0;
+  for(let i=0;i<total;i++) if(alive[i]){ remaining++; if(isExp(i)) sets[B.color[i]].add(i); }
+  const kill=i=>{
+    const [x,y,z]=XYZ(i);
+    alive[i]=0; remaining--; sets[B.color[i]].delete(i);
+    for(const [dx,dy,dz] of NB6){
+      const X=x+dx,Y=y+dy,Z=z+dz;
+      if(X<0||Y<0||Z<0||X>=nx||Y>=ny||Z>=nz) continue;
+      const j=idx(X,Y,Z); if(alive[j]&&isExp(j)) sets[B.color[j]].add(j);
+    }
+  };
+  const cols=columns.map(c=>c.slice());
+  const slots=new Array(SLOT_COUNT).fill(null), moves=[];
+  for(let iter=0;iter<400000;iter++){
+    let did=false;
+    for(let s=0;s<SLOT_COUNT;s++){
+      const sp=slots[s]; if(!sp) continue;
+      const it=sets[sp.color].values().next();
+      if(it.done) continue;
+      kill(it.value); sp.n--; did=true;
+      if(sp.n<=0) slots[s]=null;
+    }
+    if(did) continue;
+    if(remaining===0) return {result:"win",moves};
+    const free=slots.indexOf(null);
+    if(free<0) return {result:"fail",moves,why:"slots full, no spool colour on the surface",
+      slots:slots.map(s=>s&&COLORS[s.color]+s.n)};
+    let best=-1,bv=-1;
+    for(let c=0;c<cols.length;c++){
+      if(!cols[c].length) continue;
+      const v=sets[cols[c][0].color].size; if(v>bv){ bv=v; best=c; }
+    }
+    if(best<0) return {result:"fail",moves,why:"no spools left, "+remaining+" voxels remain"};
+    const sp=cols[best].shift(); slots[free]={color:sp.color,n:sp.n};
+    moves.push("c"+(best+1)+":"+COLORS[sp.color][0].toUpperCase()+sp.n);
+  }
+  return {result:"timeout",moves};
+}
+
+/** Build the spool queue and keep reshuffling until the bot can clear it. */
+function makeLevel(B){
+  const counts=COLORS.map(()=>0);
+  for(let i=0;i<B.total;i++) if(B.alive[i]) counts[B.color[i]]++;
+  const avgDepth=COLORS.map((_,ci)=>{
+    let s=0,n=0;
+    for(let i=0;i<B.total;i++) if(B.alive[i]&&B.color[i]===ci){ s+=B.depth[i]; n++; }
+    return n?s/n:99;
+  });
+  for(let seed=1;seed<=50;seed++){
+    const rnd=mulberry32(seed*7919);
+    const all=[];
+    counts.forEach((t,ci)=>{ if(t) splitCounts(t,rnd).forEach(n=>all.push({color:ci,n})); });
+    // Surface colours toward the front, deeper ones later, but spread each colour's
+    // own spools down the queue so the front row is not 40 brown spools in a row.
+    const seen=COLORS.map(()=>0), tot=COLORS.map(()=>0);
+    all.forEach(s=>tot[s.color]++);
+    all.forEach(s=>{ s._k=avgDepth[s.color] + (seen[s.color]++/tot[s.color])*2.2
+                             + (rnd()-0.5)*0.9; });
+    all.sort((a,b)=>a._k-b._k);
+    const cols=[[],[],[],[]];
+    all.forEach((s,i)=>cols[i%4].push(s));
+    const r=botRun(B,cols);
+    if(r.result==="win") return {cols,counts,seed,bot:r,spools:all.length};
+    if(seed===50) return {cols,counts,seed,bot:r,spools:all.length,failedAll:true};
+  }
+}
+
+/* =====================================================================
+   ===========================  3D SCENE  ==============================
+   ===================================================================== */
+const glCv=document.getElementById("gl"), yarnCv=document.getElementById("yarn");
+const stage=document.getElementById("stage");
+const GL_W=864, GL_H=862, GL_TOP=150, ST_W=864, ST_H=1872;
+
+const renderer=new THREE.WebGLRenderer({canvas:glCv,antialias:true,alpha:true});
+renderer.setClearColor(0x000000,0);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,GL_W/GL_H,0.1,30);
+camera.position.set(0,0.16,3.08); camera.lookAt(0,0.06,0);
+const group=new THREE.Group(); scene.add(group);
+scene.add(new THREE.AmbientLight(0xffffff,0.62));
+const key=new THREE.DirectionalLight(0xfff3e0,1.05); key.position.set(2.2,3.4,2.6); scene.add(key);
+const rim=new THREE.DirectionalLight(0x9db9ff,0.42); rim.position.set(-2.4,0.6,-2.2); scene.add(rim);
+
+/** Small canvas texture that gives each cube a soft knitted-V face. */
+function knitTexture(){
+  const s=64, c=document.createElement("canvas"); c.width=c.height=s;
+  const g=c.getContext("2d");
+  g.fillStyle="#ffffff"; g.fillRect(0,0,s,s);
+  g.strokeStyle="rgba(0,0,0,.16)"; g.lineWidth=6; g.lineCap="round";
+  g.beginPath(); g.moveTo(10,14); g.lineTo(s/2,s-16); g.lineTo(s-10,14); g.stroke();
+  g.strokeStyle="rgba(255,255,255,.55)"; g.lineWidth=4;
+  g.beginPath(); g.moveTo(10,8); g.lineTo(s/2,s-22); g.lineTo(s-10,8); g.stroke();
+  g.strokeStyle="rgba(0,0,0,.22)"; g.lineWidth=5;
+  g.beginPath(); g.moveTo(0,s-3); g.lineTo(s,s-3); g.stroke();
+  const t=new THREE.CanvasTexture(c);
+  t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=2;
+  return t;
+}
+/** Box with its edges and corners rounded off, so a stitch reads as soft. */
+function roundedBox(size,r,seg){
+  const g=new THREE.BoxGeometry(size,size,size,seg,seg,seg);
+  const p=g.attributes.position, h=size/2-r;
+  const cl=(v,a,b)=>v<a?a:v>b?b:v;
+  for(let i=0;i<p.count;i++){
+    const x=p.getX(i), y=p.getY(i), z=p.getZ(i);
+    const qx=cl(x,-h,h), qy=cl(y,-h,h), qz=cl(z,-h,h);
+    let dx=x-qx, dy=y-qy, dz=z-qz;
+    const L=Math.hypot(dx,dy,dz);
+    if(L>1e-9){ const k=r/L; p.setXYZ(i,qx+dx*k,qy+dy*k,qz+dz*k); }
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+let B=null, mesh=null, vlist=null, instOf=null, alive=null;
+let drawn=null, baseCol=null, noise=null;
+const M4=new THREE.Matrix4(), V3=new THREE.Vector3(), COL=new THREE.Color();
+
+function hasCell(x,y,z){
+  return x>=0&&y>=0&&z>=0&&x<B.nx&&y<B.ny&&z<B.nz&&alive[B.idx(x,y,z)];
+}
+const cellXYZ=i=>[i%B.nx,(i/(B.nx*B.nz))|0,((i/B.nx)|0)%B.nz];
+function isExposed(i){
+  const [x,y,z]=cellXYZ(i);
+  for(const [dx,dy,dz] of NB6) if(!hasCell(x+dx,y+dy,z+dz)) return true;
+  return false;
+}
+
+function buildMesh(){
+  if(mesh){ group.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+  vlist=[]; for(let i=0;i<B.total;i++) if(alive[i]) vlist.push(i);
+  instOf=new Int32Array(B.total).fill(-1);
+  vlist.forEach((c,k)=>instOf[c]=k);
+  const geo=roundedBox(B.vs*0.95,B.vs*0.95*0.27,2);
+  const mat=new THREE.MeshLambertMaterial({map:knitTexture()});
+  mesh=new THREE.InstancedMesh(geo,mat,vlist.length);
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  drawn=new Uint8Array(vlist.length);
+  noise=new Float32Array(vlist.length);
+  const rnd=mulberry32(1337);
+  baseCol=new Float32Array(vlist.length*3);
+  for(let k=0;k<vlist.length;k++){
+    noise[k]=0.88+rnd()*0.24;
+    COL.set(HEX[COLORS[B.color[vlist[k]]]]).multiplyScalar(noise[k]);
+    baseCol[k*3]=COL.r; baseCol[k*3+1]=COL.g; baseCol[k*3+2]=COL.b;
+    mesh.setColorAt(k,COL);
+    refreshInstance(k);
+  }
+  mesh.instanceColor.needsUpdate=true;
+  mesh.instanceMatrix.needsUpdate=true;
+  mesh.frustumCulled=false;
+  group.add(mesh);
+}
+/** Only voxels with an open face are drawn; the rest collapse to zero scale. */
+function refreshInstance(k){
+  const cell=vlist[k];
+  const show=alive[cell]&&isExposed(cell);
+  drawn[k]=show?1:0;
+  if(!show){ M4.makeScale(0,0,0); mesh.setMatrixAt(k,M4); return; }
+  const [x,y,z]=cellXYZ(cell);
+  M4.makeTranslation(B.cx(x),B.cy(y),B.cz(z));
+  mesh.setMatrixAt(k,M4);
+}
+function killVoxel(cell){
+  alive[cell]=0;
+  const k=instOf[cell];
+  refreshInstance(k);
+  const [x,y,z]=cellXYZ(cell);
+  for(const [dx,dy,dz] of NB6){
+    const X=x+dx,Y=y+dy,Z=z+dz;
+    if(X<0||Y<0||Z<0||X>=B.nx||Y>=B.ny||Z>=B.nz) continue;
+    const j=B.idx(X,Y,Z);
+    if(alive[j]) refreshInstance(instOf[j]);
+  }
+  mesh.instanceMatrix.needsUpdate=true;
+}
+
+/* ------------------- visibility: face test + grid ray ------------------- */
+const visibleByColor=COLORS.map(()=>[]);
+function rayClear(sx,sy,sz,dx,dy,dz){
+  let ix=sx,iy=sy,iz=sz;
+  const stX=dx>0?1:(dx<0?-1:0), stY=dy>0?1:(dy<0?-1:0), stZ=dz>0?1:(dz<0?-1:0);
+  const tdX=dx!==0?Math.abs(1/dx):Infinity, tdY=dy!==0?Math.abs(1/dy):Infinity,
+        tdZ=dz!==0?Math.abs(1/dz):Infinity;
+  let tX=stX?tdX*0.5:Infinity, tY=stY?tdY*0.5:Infinity, tZ=stZ?tdZ*0.5:Infinity;
+  for(let n=0;n<256;n++){
+    if(tX<tY&&tX<tZ){ ix+=stX; tX+=tdX; }
+    else if(tY<tZ){ iy+=stY; tY+=tdY; }
+    else { iz+=stZ; tZ+=tdZ; }
+    if(ix<0||iy<0||iz<0||ix>=B.nx||iy>=B.ny||iz>=B.nz) return true;
+    if(alive[B.idx(ix,iy,iz)]) return false;
+  }
+  return true;
+}
+function computeVisible(){
+  const cam=group.worldToLocal(camera.position.clone());
+  const gx=(cam.x-BBOX.lo[0])/B.vs, gy=(cam.y-BBOX.lo[1])/B.vs, gz=(cam.z-BBOX.lo[2])/B.vs;
+  for(const a of visibleByColor) a.length=0;
+  for(let k=0;k<vlist.length;k++){
+    if(!drawn[k]) continue;                       // only open-faced voxels can be seen
+    const cell=vlist[k], [x,y,z]=cellXYZ(cell);
+    let dx=gx-(x+0.5), dy=gy-(y+0.5), dz=gz-(z+0.5);
+    const L=Math.hypot(dx,dy,dz)||1; dx/=L; dy/=L; dz/=L;
+    let faces=false;
+    for(const [ox,oy,oz] of NB6){
+      if(hasCell(x+ox,y+oy,z+oz)) continue;       // that face is closed off
+      if(ox*dx+oy*dy+oz*dz>0){ faces=true; break; }
+    }
+    if(!faces) continue;
+    if(!rayClear(x,y,z,dx,dy,dz)) continue;
+    visibleByColor[B.color[cell]].push(cell);
+  }
+}
+/** World position of a voxel, projected into stage pixel coordinates. */
+function projectCell(cell){
+  const [x,y,z]=cellXYZ(cell);
+  V3.set(B.cx(x),B.cy(y),B.cz(z));
+  group.localToWorld(V3); V3.project(camera);
+  return { x:(V3.x*0.5+0.5)*GL_W, y:(-V3.y*0.5+0.5)*GL_H+GL_TOP };
+}
+
+/* =====================================================================
+   ========================  SPOOLS + SLOTS  ===========================
+   ===================================================================== */
+const ROW_Y=[70,247,424,601];                    // 3 full spools + half of a 4th
+const SLOT_X0=33, SLOT_W=150, SLOT_GAP=12, SLOT_Y=1028;
+const slotsEl=document.getElementById("slots"), queueEl=document.getElementById("queue");
+const yctx=yarnCv.getContext("2d");
+
+function shadeHex(hex,amt){
+  const n=parseInt(hex.slice(1),16); let r=n>>16,g=n>>8&255,b=n&255;
+  if(amt>=0){ r+=(255-r)*amt; g+=(255-g)*amt; b+=(255-b)*amt; }
+  else { r*=1+amt; g*=1+amt; b*=1+amt; }
+  return "#"+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1);
+}
+function makeSpoolEl(ci,n){
+  const d=document.createElement("div"); d.className="spool";
+  const hex=HEX[COLORS[ci]];
+  d.style.setProperty("--c",hex);
+  d.style.setProperty("--fl",shadeHex(hex,0.16));
+  d.innerHTML='<div class="fl bot"></div><div class="body"></div>'+
+              '<div class="fl top"></div><div class="hole"></div>'+
+              '<div class="num">'+n+'</div>';
+  return d;
+}
+const slotCenter=s=>({ x:SLOT_X0+s*(SLOT_W+SLOT_GAP)+SLOT_W/2, y:SLOT_Y+42 });
+
+const G={ cols:[[],[],[],[]], slots:new Array(SLOT_COUNT).fill(null),
+          phase:"play", remaining:0, pulled:0, bursts:[], wobble:0 };
+
+function buildDOM(){
+  slotsEl.innerHTML=""; queueEl.innerHTML="";
+  for(let s=0;s<SLOT_COUNT;s++){
+    const d=document.createElement("div"); d.className="slot"; d.dataset.i=s;
+    slotsEl.appendChild(d);
+  }
+  for(let c=0;c<4;c++){
+    const col=document.createElement("div"); col.className="col";
+    col.style.left=(c*216)+"px"; queueEl.appendChild(col);
+  }
+  layoutQueue();
+}
+function layoutQueue(){
+  const colEls=queueEl.children;
+  for(let c=0;c<4;c++){
+    const host=colEls[c];
+    const want=G.cols[c].slice(0,4);
+    [...host.children].forEach(ch=>{ if(!want.some(s=>s.el===ch)) ch.remove(); });
+    want.forEach((sp,r)=>{
+      if(!sp.el){ sp.el=makeSpoolEl(sp.color,sp.n);
+        sp.el.addEventListener("pointerdown",e=>{ e.stopPropagation(); trySend(c); }); }
+      if(sp.el.parentNode!==host) host.appendChild(sp.el);
+      sp.el.style.top=ROW_Y[r]+"px";
+      sp.el.style.transform=r===0?"scale(1.12)":"scale(1)";
+      sp.el.style.zIndex=String(10-r);
+    });
+  }
+}
+function trySend(c){
+  if(G.phase!=="play") return;
+  const q=G.cols[c]; if(!q.length) return;
+  const free=G.slots.indexOf(null);
+  if(free<0){                                     // all five taken: nudge, not a fail
+    const el=q[0].el;
+    if(el){ el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+    return;
+  }
+  const sp=q.shift();
+  if(sp.el) sp.el.remove();
+  sp.el=makeSpoolEl(sp.color,sp.n);
+  sp.acc=0; sp.strand=0; sp.lastGrid=null; sp.anchorPos=null;
+  G.slots[free]=sp;
+  slotsEl.children[free].appendChild(sp.el);
+  sp.el.animate([{transform:"scale(.5)",opacity:0},{transform:"scale(.88)",opacity:1}],
+                {duration:220,easing:"ease-out"});
+  layoutQueue();
+  return true;
+}
+
+/* ---------------------------- pulling ---------------------------- */
+function pickNext(sp){
+  const arr=visibleByColor[sp.color];
+  let best=-1,bd=Infinity;
+  for(let i=0;i<arr.length;i++){
+    const cell=arr[i]; if(!alive[cell]) continue;
+    if(!sp.lastGrid) return cell;
+    const [x,y,z]=cellXYZ(cell), L=sp.lastGrid;
+    const d=(x-L[0])**2+(y-L[1])**2+(z-L[2])**2;
+    if(d<bd){ bd=d; best=cell; }
+  }
+  return best>=0?best:-1;
+}
+function pullStep(dt){
+  for(let s=0;s<SLOT_COUNT;s++){
+    const sp=G.slots[s]; if(!sp) continue;
+    if(sp.strand>0) sp.strand-=dt;
+    sp.acc+=PULL_RATE*dt;
+    let spun=false;
+    while(sp.acc>=1 && sp.n>0){
+      const cell=pickNext(sp);
+      if(cell<0){ sp.acc=Math.min(sp.acc,1); break; }   // nothing visible: wait in the slot
+      sp.acc-=1;
+      const [x,y,z]=cellXYZ(cell);
+      sp.lastGrid=[x,y,z];
+      sp.anchorPos=new THREE.Vector3(B.cx(x),B.cy(y),B.cz(z));
+      sp.strand=0.5; spun=true;
+      killVoxel(cell); G.remaining--; G.pulled++;
+      sp.n--; sp.el.querySelector(".num").textContent=sp.n;
+      sp.el.animate([{transform:"scale(.88)"},{transform:"scale(.98)"},{transform:"scale(.88)"}],
+                    {duration:140});
+      G.wobble=0.9;
+      if(sp.n<=0){
+        const c=slotCenter(s), hex=HEX[COLORS[sp.color]];
+        for(let i=0;i<16;i++){ const a=Math.random()*Math.PI*2, v=140+Math.random()*260;
+          G.bursts.push({x:c.x,y:c.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-130,t:0,life:.55,c:hex}); }
+        sp.el.remove(); G.slots[s]=null;
+        break;
+      }
+    }
+    if(sp && G.slots[s]===sp) sp.el.classList.toggle("wind",spun||sp.strand>0);
+  }
+}
+
+/* ---------------------------- yarn + bursts ---------------------------- */
+function drawOverlay(){
+  yctx.setTransform(DPR,0,0,DPR,0,0);      // backing store is DPR-scaled; draw in stage units
+  yctx.clearRect(0,0,ST_W,ST_H);
+  for(let s=0;s<SLOT_COUNT;s++){
+    const sp=G.slots[s]; if(!sp||!sp.anchorPos||sp.strand<=0) continue;
+    const w=V3.copy(sp.anchorPos); group.localToWorld(w); w.project(camera);
+    const p={x:(w.x*0.5+0.5)*GL_W, y:(-w.y*0.5+0.5)*GL_H+GL_TOP};
+    const q=slotCenter(s);
+    yctx.globalAlpha=Math.min(1,sp.strand/0.35);
+    yctx.strokeStyle=HEX[COLORS[sp.color]];
+    yctx.lineWidth=8; yctx.lineCap="round";
+    yctx.beginPath(); yctx.moveTo(p.x,p.y);
+    yctx.quadraticCurveTo((p.x+q.x)/2+(s-2)*46,(p.y+q.y)/2-90,q.x,q.y);
+    yctx.stroke();
+    yctx.globalAlpha=1;
+    yctx.fillStyle=HEX[COLORS[sp.color]];
+    yctx.beginPath(); yctx.arc(p.x,p.y,7,0,Math.PI*2); yctx.fill();
+  }
+  for(const b of G.bursts){
+    yctx.globalAlpha=Math.max(0,1-b.t/b.life); yctx.fillStyle=b.c;
+    yctx.beginPath(); yctx.arc(b.x,b.y,8,0,Math.PI*2); yctx.fill();
+  }
+  yctx.globalAlpha=1;
+}
+
+/* =====================================================================
+   =====================  END STATES + CONTROLS  =======================
+   ===================================================================== */
+let expCount=COLORS.map(()=>0);
+const ovl=document.getElementById("ovl");
+function showOverlay(){
+  document.getElementById("ovlTitle").textContent = G.phase==="win"?"Level Complete":"Out of Space";
+  document.getElementById("ovlText").textContent = G.phase==="win"
+    ? "Every stitch unravelled."
+    : (G.failWhy==="stuck" ? "No spools left and nothing on the surface to pull."
+                           : "All five slots are full and none of those colours is on the surface.");
+  document.getElementById("ovlBtn").textContent = G.phase==="win"?"Replay":"Retry";
+  ovl.classList.add("on");
+}
+function checkEnd(){
+  if(G.phase!=="play") return;
+  if(G.remaining<=0){ G.phase="win"; showOverlay(); return; }
+  // a spool whose colour is exposed ANYWHERE keeps the level alive, even if the
+  // current camera angle cannot see it -- the player can always rotate to it
+  if(G.slots.some(s=>s&&expCount[s.color]>0)) return;
+  if(G.slots.every(s=>s)){ G.phase="fail"; G.failWhy="space"; showOverlay(); return; }
+  if(G.cols.every(c=>!c.length)&&G.slots.some(s=>s)){
+    G.phase="fail"; G.failWhy="stuck"; showOverlay();
+  }
+}
+
+let VS=1, DPR=1;
+function resize(){
+  VS=Math.min(window.innerWidth/ST_W, window.innerHeight/ST_H);
+  stage.style.transform="scale("+VS+")";
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  renderer.setPixelRatio(DPR); renderer.setSize(GL_W,GL_H,false);
+  yarnCv.width=ST_W*DPR; yarnCv.height=ST_H*DPR;
+  yctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener("resize",resize);
+
+let dragging=false,lastX=0,lastY=0,idleT=99;
+const YAXIS=new THREE.Vector3(0,1,0), XAXIS=new THREE.Vector3(1,0,0);
+glCv.addEventListener("pointerdown",e=>{
+  dragging=true; lastX=e.clientX; lastY=e.clientY; idleT=0;
+  glCv.setPointerCapture(e.pointerId);
+});
+window.addEventListener("pointermove",e=>{
+  if(!dragging) return;
+  const dx=(e.clientX-lastX)/VS, dy=(e.clientY-lastY)/VS;
+  lastX=e.clientX; lastY=e.clientY; idleT=0;
+  const q=new THREE.Quaternion();
+  q.setFromAxisAngle(YAXIS,dx*0.0055); group.quaternion.premultiply(q);
+  q.setFromAxisAngle(XAXIS,dy*0.0055); group.quaternion.premultiply(q);
+});
+window.addEventListener("pointerup",()=>{ dragging=false; idleT=0; });
+window.addEventListener("pointercancel",()=>{ dragging=false; idleT=0; });
+
+let DEBUG=false, botOn=false, botT=0;
+const hud=document.getElementById("hud");
+function applyColors(){
+  const hi=new Set();
+  if(DEBUG) for(const s of G.slots) if(s) for(const cell of visibleByColor[s.color]) hi.add(cell);
+  for(let k=0;k<vlist.length;k++){
+    const cell=vlist[k];
+    if(hi.has(cell)) COL.setRGB(1,1,1).lerp(new THREE.Color(HEX[COLORS[B.color[cell]]]),0.30);
+    else COL.setRGB(baseCol[k*3],baseCol[k*3+1],baseCol[k*3+2]);
+    mesh.setColorAt(k,COL);
+  }
+  mesh.instanceColor.needsUpdate=true;
+}
+window.addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="d"){ DEBUG=!DEBUG; hud.classList.toggle("on",DEBUG); applyColors(); }
+  if(k==="b"){ botOn=!botOn; console.log("[bot] live play "+(botOn?"ON":"OFF")); }
+  if(k==="r") restart();
+});
+
+function botTick(dt){
+  botT+=dt; if(botT<0.4) return; botT=0;
+  const free=G.slots.indexOf(null);
+  if(free>=0){
+    let best=-1,bv=-1;
+    for(let c=0;c<4;c++){ if(!G.cols[c].length) continue;
+      const v=expCount[G.cols[c][0].color]; if(v>bv){ bv=v; best=c; } }
+    if(best>=0){ trySend(best); return; }
+  }
+  for(const sp of G.slots){                        // turn the bear toward a needed colour
+    if(!sp) continue;
+    if(visibleByColor[sp.color].some(c=>alive[c])) continue;
+    if(expCount[sp.color]<=0) continue;
+    for(let k=0;k<vlist.length;k++){
+      if(!drawn[k]||B.color[vlist[k]]!==sp.color) continue;
+      const [x,y,z]=cellXYZ(vlist[k]);
+      const wp=new THREE.Vector3(B.cx(x),B.cy(y),B.cz(z));
+      group.localToWorld(wp);
+      group.rotateOnWorldAxis(YAXIS,-Math.atan2(wp.x,wp.z)*0.6);
+      break;
+    }
+    break;
+  }
+}
+
+/* =====================================================================
+   ============================  BOOT  =================================
+   ===================================================================== */
+let LEVEL=null;
+function resetState(){
+  alive=Uint8Array.from(B.alive);
+  G.remaining=0; for(let i=0;i<B.total;i++) if(alive[i]) G.remaining++;
+  G.slots=new Array(SLOT_COUNT).fill(null);
+  G.cols=LEVEL.cols.map(col=>col.map(s=>({color:s.color,n:s.n,el:null})));
+  G.phase="play"; G.pulled=0; G.bursts.length=0; G.wobble=0;
+  ovl.classList.remove("on");
+  buildMesh(); buildDOM(); computeVisible(); recountExposed();
+}
+function restart(){ resetState(); }
+document.getElementById("ovlBtn").addEventListener("click",restart);
+document.getElementById("btnRst").addEventListener("click",restart);
+
+function recountExposed(){
+  expCount=COLORS.map(()=>0);
+  for(let k=0;k<vlist.length;k++) if(drawn[k]) expCount[B.color[vlist[k]]]++;
+}
+
+let last=0, visT=0;
+function frame(ts){
+  const dt=Math.min(((ts-last)/1000)||0,0.05); last=ts;
+  if(!dragging){ idleT+=dt;
+    if(idleT>AUTO_RESUME_DELAY) group.rotateOnWorldAxis(YAXIS,AUTO_ROTATE_SPEED*dt); }
+  visT+=dt;
+  if(visT>=VISIBILITY_MS/1000){ visT=0; computeVisible(); recountExposed(); if(DEBUG) applyColors(); }
+  if(G.phase==="play"){ if(botOn) botTick(dt); pullStep(dt); }
+  if(G.wobble>0){ G.wobble=Math.max(0,G.wobble-dt*3.2);
+    group.scale.setScalar(1+Math.sin(G.wobble*22)*0.015*G.wobble); }
+  else group.scale.setScalar(1);
+  for(let i=G.bursts.length-1;i>=0;i--){ const b=G.bursts[i];
+    b.t+=dt; b.x+=b.vx*dt; b.y+=b.vy*dt; b.vy+=1200*dt;
+    if(b.t>=b.life) G.bursts.splice(i,1); }
+  renderer.render(scene,camera);
+  drawOverlay();
+  if(DEBUG) hud.textContent="left "+G.remaining+" | slot-visible "+
+    (G.slots.filter(Boolean).map(s=>COLORS[s.color][0].toUpperCase()+
+      visibleByColor[s.color].filter(c=>alive[c]).length).join(" ")||"-")+
+    " | exposed "+COLORS.map((c,i)=>c[0].toUpperCase()+expCount[i]).join(" ");
+  checkEnd();
+  requestAnimationFrame(frame);
+}
+
+(function boot(){
+  const t0=performance.now();
+  B=buildBear(); alive=Uint8Array.from(B.alive);
+  const counts=COLORS.map(()=>0);
+  let total=0; for(let i=0;i<B.total;i++) if(B.alive[i]){ counts[B.color[i]]++; total++; }
+  console.log("[bear] grid "+B.nx+"x"+B.ny+"x"+B.nz+"   voxels "+total+
+              "   (built in "+Math.round(performance.now()-t0)+"ms)");
+  console.log("[bear] voxels per colour: "+COLORS.map((c,i)=>c+" "+counts[i]).join("  "));
+
+  LEVEL=makeLevel(B);
+  const sums=COLORS.map(()=>0);
+  LEVEL.cols.forEach(col=>col.forEach(s=>sums[s.color]+=s.n));
+  let exact=true, range=true;
+  COLORS.forEach((c,i)=>{ if(sums[i]!==counts[i]) exact=false; });
+  LEVEL.cols.forEach(col=>col.forEach(s=>{ if(s.n<SPOOL_TAIL_MIN||s.n>SPOOL_MAX) range=false; }));
+  console.log("[level] spool counts per colour: "+COLORS.map((c,i)=>c+" "+sums[i]).join("  "));
+  console.log("[level] spool totals match voxel counts: "+(exact?"YES":"NO")+
+              "   every spool within "+SPOOL_TAIL_MIN+".."+SPOOL_MAX+": "+(range?"YES":"NO")+
+              "   spools "+LEVEL.spools);
+  if(LEVEL.failedAll){
+    console.warn("[level] no seed out of 50 produced a solvable order -- shipping seed 50. "+
+                 "Bot said: "+LEVEL.bot.why);
+  } else {
+    console.log("[level] solvable: seed "+LEVEL.seed+" passed, "+LEVEL.bot.moves.length+" sends");
+    console.log("[level] moves: "+LEVEL.bot.moves.join(" "));
+  }
+  window.__verify={voxels:total,exact,range,seed:LEVEL.seed,
+                   bot:LEVEL.failedAll?"fail":"win",sends:LEVEL.bot.moves.length};
+  // handles for the automated checks
+  window.__g={ G, LEVEL, COLORS, HEX, trySend, restart, computeVisible, recountExposed, pullStep, checkEnd, killVoxel,
+    group, camera, isExposed, cellXYZ, visibleByColor, projectCell,
+    get alive(){return alive}, get B(){return B}, get expCount(){return expCount},
+    get drawn(){return drawn}, get vlist(){return vlist},
+    get DEBUG(){return DEBUG}, get botOn(){return botOn}, get idleT(){return idleT},
+    setBot(v){ botOn=v; }, setDebug(v){ DEBUG=v; } };
+
+  resize(); resetState();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
