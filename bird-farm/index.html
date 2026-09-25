@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bird Farm</title>
+<style>
+  html,body{margin:0;height:100%;background:#4e8f2a;overflow:hidden;touch-action:none;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+  #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  canvas{display:block;touch-action:none}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="cv"></canvas></div>
+<script>
+"use strict";
+
+/* =====================================================================
+   =============================  TUNING  ==============================
+   ===================================================================== */
+const MAX_FLYING    = 6;     // birds in the air at once
+const FLIGHT_TIME   = 0.85;  // seconds, bird -> heap
+const PECK_TIME     = 0.22;  // seconds pecking before it vanishes
+const SEND_TIME     = 0.45;  // seconds, cob -> grinder
+const POOL_CAPACITY = 5;     // heaps the pool can hold, whatever their counts
+
+/* =====================================================================
+   ===========================  LEVEL DATA  ============================
+   Row 0 is the top row, left to right.
+   ===================================================================== */
+const BIRD_ROWS = [
+  "BBBBBGGBBBBB",
+  "BBBBGGGGBBBB",
+  "BBBGGGGGGBBB",
+  "BBRRRGGRRRBB",
+  "BRRYRRRRYRRB",
+  "BRRRRYRRRRRB",
+  "BRYRRRRYRRRB",
+  "BBRRYRRRRRBB",
+  "BBRRRRYRRRBB",
+  "BBBRRRRRRBBB",
+  "BBBBRRYRBBBB",
+  "BBBBBRRBBBBB",
+];
+/* front of each column first */
+const CORN_QUEUE = [
+  [["B",20],["G",8],["R",15],["B",10],["Y",3]],
+  [["B",16],["R",20],["B",12],["Y",5]],
+  [["G",6],["R",12],["B",8],["R",9]],
+];
+const COLORS = { B:"#7EC8F2", R:"#E53935", G:"#43A047", Y:"#FDD835" };
+const KEYS = ["B","R","G","Y"];
+
+/* =====================================================================
+   ============================  GEOMETRY  =============================
+   ===================================================================== */
+const DW=864, DH=1872;                                  // design surface, 9:19.5
+const N=12;
+const BOARD={x:28,y:142,w:800,h:772,r:32};
+const PLAY ={x:74,y:188,w:708,h:680};
+const CW=PLAY.w/N, CH=PLAY.h/N, CHICK_R=24;
+const gx = c => PLAY.x+(c+0.5)*CW;
+const gy = r => PLAY.y+(r+0.5)*CH;
+
+const POOL   ={cx:432,cy:1192,rx:374,ry:148};
+const POOL_IN={cx:432,cy:1200,rx:336,ry:116};
+const GRIND_L={x:170,y:1024}, GRIND_R={x:694,y:1024};
+const PANEL  ={x:352,y:1304,w:160,h:48};
+const SPOTS=[{x:288,y:1140},{x:578,y:1140},{x:226,y:1240},{x:432,y:1248},{x:638,y:1240}];
+
+const COL_X=[205,432,659], STRIP_W=208, STRIP_TOP=1392;
+const COB_Y=[1502,1668,1834], COB_W=128;
+
+const BTN_SET={x:84,y:100,r:38}, BTN_RST={x:180,y:100,r:38};
+
+/* =====================================================================
+   ============================  HELPERS  ==============================
+   ===================================================================== */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeOut=t=>1-(1-t)*(1-t);
+const easeInOut=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function shade(hex,amt){
+  const n=parseInt(hex.slice(1),16); let r=n>>16,g=n>>8&255,b=n&255;
+  if(amt>=0){ r+=(255-r)*amt; g+=(255-g)*amt; b+=(255-b)*amt; }
+  else { r*=1+amt; g*=1+amt; b*=1+amt; }
+  return "#"+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1);
+}
+function rr(ctx,x,y,w,h,r){ ctx.beginPath(); rrSub(ctx,x,y,w,h,r); }
+function rrSub(ctx,x,y,w,h,r){
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+function ell(ctx,x,y,rx,ry){ ctx.beginPath(); ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); }
+
+/* =====================================================================
+   =========================  RULES / STATE  ===========================
+   The same functions drive the live game and the instant headless run.
+   ===================================================================== */
+function mkState(){
+  const grid=new Array(N*N);
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++) grid[r*N+c]=BIRD_ROWS[r][c];
+  return {
+    grid,
+    columns:CORN_QUEUE.map(col=>col.map(([color,count])=>({color,count}))),
+    heaps:[], flying:[], cobs:[], kernels:[], puffs:[],
+    eaten:0, total:N*N, hid:0, phase:"play", time:0,
+    grindSpin:[0,0], shake:[0,0,0], moves:[],
+  };
+}
+const inB=(r,c)=>r>=0&&r<N&&c>=0&&c<N;
+
+/** On the outer border, or orthogonally next to an empty spot. */
+function isExposed(s,r,c){
+  if(!s.grid[r*N+c]) return false;
+  if(r===0||c===0||r===N-1||c===N-1) return true;
+  return !s.grid[(r-1)*N+c] || !s.grid[(r+1)*N+c] ||
+         !s.grid[r*N+c-1]   || !s.grid[r*N+c+1];
+}
+function exposedCounts(s){
+  const n={B:0,R:0,G:0,Y:0};
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++) if(isExposed(s,r,c)) n[s.grid[r*N+c]]++;
+  return n;
+}
+/** Closest to the outer border; ties go to the one closest to the pool. */
+function pickExposed(s,color){
+  let best=null,bRing=1e9,bPool=1e9;
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    if(s.grid[r*N+c]!==color||!isExposed(s,r,c)) continue;
+    const ring=Math.min(r,c,N-1-r,N-1-c);
+    if(ring>bRing) continue;
+    const pool=Math.hypot(gx(c)-POOL.cx, gy(r)-POOL.cy);
+    if(ring<bRing||pool<bPool){ best={r,c}; bRing=ring; bPool=pool; }
+  }
+  return best;
+}
+const poolFull = s => s.heaps.length>=POOL_CAPACITY;
+function freeSpot(s){
+  const used=new Set(s.heaps.map(h=>h.spot));
+  for(let i=0;i<SPOTS.length;i++) if(!used.has(i)) return i;
+  return -1;
+}
+
+/* ---------------------------- sending ---------------------------- */
+function sendFront(s,ci){
+  if(s.phase!=="play") return false;
+  const q=s.columns[ci];
+  if(!q.length) return false;
+  if(poolFull(s)){ s.shake[ci]=0.32; return false; }      // not a fail, just a nudge
+  const cob=q.shift();
+  const spot=freeSpot(s);
+  const from={x:COL_X[ci],y:COB_Y[0]};
+  const useRight = Math.abs(COL_X[ci]-GRIND_R.x) < Math.abs(COL_X[ci]-GRIND_L.x);
+  const g = useRight?GRIND_R:GRIND_L;
+  // the heap takes its pool spot immediately, so capacity can't be oversold
+  const heap={ color:cob.color, count:cob.count, start:cob.count, reserved:0,
+               spot, id:s.hid++, ready:false, scale:0, tag:0, pour:0 };
+  s.heaps.push(heap);
+  s.cobs.push({ color:cob.color, count:cob.count, fx:from.x, fy:from.y,
+                tx:g.x, ty:g.y-34, t:0, dur:SEND_TIME, side:useRight?1:0, heap });
+  s.moves.push("c"+(ci+1)+":"+cob.color+cob.count);
+  return true;
+}
+
+/* ---------------------------- feeding ---------------------------- */
+function launchBird(s,heap,b){
+  s.grid[b.r*N+b.c]="";                                   // empty the moment it takes off
+  heap.reserved++;
+  const sp=SPOTS[heap.spot];
+  s.flying.push({ color:heap.color, heap, t:0, phase:"fly",
+                  fx:gx(b.c), fy:gy(b.r), tx:sp.x, ty:sp.y-heapRadius(heap)-10,
+                  ax:(gx(b.c)+sp.x)/2+(Math.random()-0.5)*90,
+                  ay:Math.min(gy(b.r),sp.y)-170-Math.random()*70,
+                  flip:Math.random()<0.5?1:-1 });
+}
+/** One bird per heap per round, oldest heap first, until nothing more can go. */
+function tryFeed(s){
+  let progress=true;
+  while(progress && s.flying.length<MAX_FLYING){
+    progress=false;
+    for(const h of s.heaps){
+      if(s.flying.length>=MAX_FLYING) break;
+      if(!h.ready || h.count-h.reserved<=0) continue;
+      const b=pickExposed(s,h.color);
+      if(!b) continue;
+      launchBird(s,h,b); progress=true;
+    }
+  }
+}
+
+function heapRadius(h){ return Math.min(88, 34+Math.sqrt(Math.max(0,h.count))*12.5); }
+
+/* ------------------------- win / fail ---------------------------- */
+function checkEnd(s){
+  if(s.phase!=="play") return;
+  if(s.eaten>=s.total){ s.phase="win"; return; }
+  if(s.flying.length||s.cobs.length) return;
+  if(s.heaps.some(h=>!h.ready)) return;
+  if(!s.heaps.length) return;
+  // a heap that still has a matching exposed bird keeps the level alive
+  if(s.heaps.some(h=>h.count>0 && pickExposed(s,h.color))) return;
+  if(poolFull(s)){ s.phase="fail"; s.failWhy="pool"; return; }
+  // not the spec's fail, but equally terminal: nothing left to send either
+  if(s.columns.every(c=>!c.length)){ s.phase="fail"; s.failWhy="stuck"; }
+}
+
+/* ---------------------------- update ----------------------------- */
+function update(s,dt){
+  s.time+=dt;
+  for(let i=0;i<3;i++) if(s.shake[i]>0) s.shake[i]=Math.max(0,s.shake[i]-dt);
+  s.grindSpin[0]=Math.max(0,s.grindSpin[0]-dt);
+  s.grindSpin[1]=Math.max(0,s.grindSpin[1]-dt);
+
+  for(let i=s.cobs.length-1;i>=0;i--){                    // cob -> grinder
+    const c=s.cobs[i]; c.t+=dt;
+    if(c.t>=c.dur){
+      s.grindSpin[c.side]=0.75;
+      const g=c.side?GRIND_R:GRIND_L, sp=SPOTS[c.heap.spot];
+      for(let k=0;k<Math.min(26,8+c.count);k++)           // kernels pour out
+        s.kernels.push({ x:g.x+(Math.random()-0.5)*20, y:g.y+14, t:-k*0.012, dur:0.42,
+          tx:sp.x+(Math.random()-0.5)*40, ty:sp.y-6-Math.random()*16,
+          ax:(g.x+sp.x)/2, ay:g.y-70-Math.random()*50, c:COLORS[c.color] });
+      c.heap.pour=0.34;
+      s.cobs.splice(i,1);
+    }
+  }
+  for(const h of s.heaps){
+    if(!h.ready){
+      if(h.pour>0){ h.pour-=dt; if(h.pour<=0) h.ready=true; }
+      h.scale=Math.min(1,h.scale+dt*3.4);
+    }
+    if(h.tag>0) h.tag=Math.max(0,h.tag-dt*3.2);
+  }
+
+  tryFeed(s);
+
+  for(let i=s.flying.length-1;i>=0;i--){                  // birds in the air
+    const f=s.flying[i]; f.t+=dt;
+    if(f.phase==="fly" && f.t>=FLIGHT_TIME){ f.phase="peck"; f.t=0; }
+    else if(f.phase==="peck" && f.t>=PECK_TIME){
+      const h=f.heap;
+      h.count--; h.reserved--; h.tag=1; s.eaten++;
+      if(h.count<=0){
+        for(let k=0;k<12;k++){ const a=Math.random()*Math.PI*2, sp=110+Math.random()*180;
+          s.puffs.push({x:SPOTS[h.spot].x,y:SPOTS[h.spot].y-14,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-140,
+                        t:0,life:0.5,c:COLORS[h.color]}); }
+        s.heaps=s.heaps.filter(x=>x!==h);
+      }
+      s.flying.splice(i,1);
+    }
+  }
+  for(let i=s.kernels.length-1;i>=0;i--){ const k=s.kernels[i]; k.t+=dt; if(k.t>=k.dur) s.kernels.splice(i,1); }
+  for(let i=s.puffs.length-1;i>=0;i--){ const p=s.puffs[i]; p.t+=dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=1100*dt;
+    if(p.t>=p.life) s.puffs.splice(i,1); }
+
+  checkEnd(s);
+}
+
+/* =====================================================================
+   =====================  BOT + HEADLESS CHECK  ========================
+   Greedy: send the front cob whose colour has the most exposed birds.
+   ===================================================================== */
+function greedyChoice(s){
+  if(poolFull(s)) return -1;
+  const ex=exposedCounts(s);
+  let best=-1,bv=-1;
+  for(let i=0;i<3;i++){
+    const q=s.columns[i]; if(!q.length) continue;
+    const v=ex[q[0].color]; if(v>bv){ bv=v; best=i; }
+  }
+  return best;
+}
+/** Instant rules simulation: no flight time, feed until nothing more can eat. */
+function feedInstant(s){
+  for(;;){
+    let did=false;
+    for(const h of s.heaps){
+      if(h.count<=0) continue;
+      const b=pickExposed(s,h.color);
+      if(!b) continue;
+      s.grid[b.r*N+b.c]=""; h.count--; s.eaten++; did=true; break;
+    }
+    if(!did) break;
+  }
+  s.heaps=s.heaps.filter(h=>h.count>0);
+}
+function runHeadless(){
+  const s=mkState();
+  const sendNow=ci=>{ const q=s.columns[ci]; const cob=q.shift();
+    s.heaps.push({color:cob.color,count:cob.count,spot:freeSpot(s),id:s.hid++,ready:true,reserved:0});
+    s.moves.push("c"+(ci+1)+":"+cob.color+cob.count); };
+  feedInstant(s);
+  for(let step=0;step<500;step++){
+    if(s.eaten>=s.total) return {result:"win",moves:s.moves,eaten:s.eaten};
+    const ci=greedyChoice(s);
+    if(ci<0){
+      const why = poolFull(s) ? "pool full and no heap can feed"
+                : s.columns.every(c=>!c.length) ? "no cobs left, "+(s.total-s.eaten)+" birds unfed"
+                : "no column available";
+      return {result:"fail",moves:s.moves,eaten:s.eaten,why,
+              heaps:s.heaps.map(h=>h.color+h.count)};
+    }
+    sendNow(ci); feedInstant(s);
+  }
+  return {result:"timeout",moves:s.moves,eaten:s.eaten};
+}
+
+/* =====================================================================
+   ============================  RENDER  ===============================
+   ===================================================================== */
+const cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+let VS=1;
+function resize(){
+  VS=Math.min(window.innerWidth/DW, window.innerHeight/DH);
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.style.width=Math.round(DW*VS)+"px"; cv.style.height=Math.round(DH*VS)+"px";
+  cv.width=Math.round(DW*VS*dpr); cv.height=Math.round(DH*VS*dpr);
+  ctx.setTransform(VS*dpr,0,0,VS*dpr,0,0);
+}
+window.addEventListener("resize",resize);
+
+/* deterministic scatter used for heaps and cob kernels */
+function scatter(seed,n){
+  const out=[]; let x=seed>>>0||1;
+  const rnd=()=>{ x^=x<<13;x>>>=0;x^=x>>17;x^=x<<5;x>>>=0; return x/4294967296; };
+  for(let i=0;i<n;i++){
+    const a=rnd()*Math.PI*2, r=Math.sqrt(rnd());
+    out.push({x:Math.cos(a)*r, y:Math.sin(a)*r*0.55, s:0.8+rnd()*0.45, d:rnd()});
+  }
+  out.sort((p,q)=>p.y-q.y);
+  return out;
+}
+const HEAP_PTS={};
+const heapPts=id=>HEAP_PTS[id]||(HEAP_PTS[id]=scatter(id*2654435761+7,64));
+
+function leafTuft(x,y,s,rot,col){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.fillStyle=col;
+  for(const a of [-0.55,0,0.55]){
+    ctx.save(); ctx.rotate(a);
+    ell(ctx,0,-13*s,7*s,15*s); ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawBackground(){
+  ctx.fillStyle="#7CC03C"; ctx.fillRect(0,0,DW,DH);        // grass
+  ctx.fillStyle="#72B436";
+  for(let i=0;i<26;i++){ const x=(i*137)%DW, y=(i*311)%980;
+    ell(ctx,x,y,60,26); ctx.fill(); }
+  ctx.fillStyle="#D9B98A";                                  // sandy yard
+  ctx.beginPath(); ctx.moveTo(0,986);
+  for(let x=0;x<=DW;x+=72) ctx.lineTo(x,986+Math.sin(x*0.012)*14);
+  ctx.lineTo(DW,DH); ctx.lineTo(0,DH); ctx.closePath(); ctx.fill();
+  ctx.fillStyle="#CBA97A";
+  for(let i=0;i<22;i++){ const x=(i*197)%DW, y=1060+((i*263)%760);
+    ell(ctx,x,y,26,9); ctx.fill(); }
+  for(const [x,y,s] of [[30,300,1.3],[834,420,1.3],[26,700,1.1],[838,760,1.1],
+                        [40,1110,1.0],[824,1120,1.0],[24,1560,1.1],[840,1520,1.1],
+                        [120,960,0.9],[740,966,0.9]])
+    leafTuft(x,y,s,(x<DW/2?0.5:-0.5),"#59A22B");
+  ctx.fillStyle="#fff";
+  for(const [x,y] of [[96,250],[792,560],[60,1180],[808,1360],[150,1010],[706,1000]]){
+    for(let k=0;k<5;k++){ const a=k*1.256; ell(ctx,x+Math.cos(a)*9,y+Math.sin(a)*9,6,6); ctx.fill(); }
+    ctx.fillStyle="#FFD34E"; ell(ctx,x,y,5,5); ctx.fill(); ctx.fillStyle="#fff";
+  }
+}
+
+function woodBtn(x,y,r){
+  ctx.fillStyle="#7B4A22"; rr(ctx,x-r,y-r+6,r*2,r*2,16); ctx.fill();
+  ctx.fillStyle="#A9683A"; rr(ctx,x-r,y-r,r*2,r*2,16); ctx.fill();
+  ctx.fillStyle="#C07E48"; rr(ctx,x-r+5,y-r+5,r*2-10,r*2-16,12); ctx.fill();
+}
+function drawTopBar(s){
+  woodBtn(BTN_SET.x,BTN_SET.y,BTN_SET.r);
+  ctx.fillStyle="#fff"; ctx.strokeStyle="#fff"; ctx.lineWidth=6; ctx.lineCap="round";
+  ctx.beginPath(); ctx.arc(BTN_SET.x,BTN_SET.y,9,0,Math.PI*2); ctx.stroke();
+  for(let i=0;i<6;i++){ const a=i*Math.PI/3;
+    ctx.beginPath(); ctx.moveTo(BTN_SET.x+Math.cos(a)*14,BTN_SET.y+Math.sin(a)*14);
+    ctx.lineTo(BTN_SET.x+Math.cos(a)*20,BTN_SET.y+Math.sin(a)*20); ctx.stroke(); }
+
+  woodBtn(BTN_RST.x,BTN_RST.y,BTN_RST.r);
+  ctx.strokeStyle="#fff"; ctx.lineWidth=7;
+  ctx.beginPath(); ctx.arc(BTN_RST.x,BTN_RST.y,15,0.75,Math.PI*1.7); ctx.stroke();
+  ctx.fillStyle="#fff"; ctx.beginPath();
+  ctx.moveTo(BTN_RST.x+5,BTN_RST.y-22); ctx.lineTo(BTN_RST.x+22,BTN_RST.y-14);
+  ctx.lineTo(BTN_RST.x+5,BTN_RST.y-5); ctx.closePath(); ctx.fill();
+
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.font='900 54px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  ctx.lineJoin="round"; ctx.lineWidth=12; ctx.strokeStyle="#6B3F18";
+  ctx.strokeText("Level 1",432,100); ctx.fillStyle="#fff"; ctx.fillText("Level 1",432,100);
+
+  ctx.fillStyle="#7B4A22"; rr(ctx,600,72,172,58,29); ctx.fill();
+  ctx.fillStyle="#A9683A"; rr(ctx,600,66,172,58,29); ctx.fill();
+  ctx.fillStyle="#E0A21C"; ctx.beginPath(); ctx.arc(630,95,22,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#FFD34E"; ctx.beginPath(); ctx.arc(630,95,16,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#fff"; ctx.font='900 30px system-ui,sans-serif'; ctx.textAlign="left";
+  ctx.fillText("1280",656,96);
+  ctx.fillStyle="#2E7D32"; rr(ctx,786,70,56,56,18); ctx.fill();
+  ctx.fillStyle="#4CAF50"; rr(ctx,786,64,56,56,18); ctx.fill();
+  ctx.strokeStyle="#fff"; ctx.lineWidth=7;
+  ctx.beginPath(); ctx.moveTo(800,92); ctx.lineTo(828,92);
+  ctx.moveTo(814,78); ctx.lineTo(814,106); ctx.stroke();
+}
+
+function drawChick(x,y,r,color,o){
+  o=o||{};
+  const a=o.alpha===undefined?1:o.alpha;
+  ctx.save(); ctx.globalAlpha=a; ctx.translate(x,y);
+  if(o.flip) ctx.scale(o.flip,1);
+  if(o.rot) ctx.rotate(o.rot);
+  const dark=shade(color,-0.30), light=shade(color,0.34);
+  ctx.fillStyle="rgba(60,40,20,.18)"; ell(ctx,0,r*0.92,r*0.78,r*0.22); ctx.fill();
+  if(o.wing){                                              // wings out, while flying
+    ctx.fillStyle=light;
+    const w=o.wing*r*1.25;
+    ctx.save(); ctx.rotate(-0.4); ell(ctx,-r*0.75,-r*0.1,w,r*0.42); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.rotate(0.4);  ell(ctx, r*0.75,-r*0.1,w,r*0.42); ctx.fill(); ctx.restore();
+  }
+  ctx.fillStyle=dark;                                      // tail nub, behind the body
+  ctx.save(); ctx.rotate(0.35); ell(ctx,r*0.92,r*0.10,r*0.24,r*0.13); ctx.fill(); ctx.restore();
+  ctx.fillStyle=color; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=dark; ell(ctx,0,r*0.42,r*0.78,r*0.50); ctx.fill();
+  ctx.fillStyle=color; ell(ctx,0,r*0.18,r*0.86,r*0.66); ctx.fill();
+  ctx.fillStyle=light; ell(ctx,-r*0.30,-r*0.38,r*0.40,r*0.28); ctx.fill();
+  ctx.fillStyle="#1A1A1A";
+  ctx.beginPath(); ctx.arc(-r*0.30,-r*0.08,r*0.155,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( r*0.30,-r*0.08,r*0.155,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#fff";
+  ctx.beginPath(); ctx.arc(-r*0.26,-r*0.14,r*0.055,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( r*0.34,-r*0.14,r*0.055,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#F79A12"; ctx.beginPath();
+  ctx.moveTo(-r*0.20,r*0.16); ctx.lineTo(r*0.20,r*0.16); ctx.lineTo(0,r*0.50); ctx.closePath(); ctx.fill();
+  ctx.fillStyle="#D97C06"; ctx.beginPath();
+  ctx.moveTo(-r*0.10,r*0.33); ctx.lineTo(r*0.10,r*0.33); ctx.lineTo(0,r*0.50); ctx.closePath(); ctx.fill();
+  if(o.outline){ ctx.strokeStyle="#111"; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.arc(0,0,r+3,0,Math.PI*2); ctx.stroke(); }
+  ctx.restore();
+}
+
+function drawBoard(s){
+  ctx.fillStyle="rgba(40,70,20,.28)"; rr(ctx,BOARD.x+6,BOARD.y+12,BOARD.w,BOARD.h,BOARD.r); ctx.fill();
+  ctx.fillStyle="#B9803F"; rr(ctx,BOARD.x,BOARD.y,BOARD.w,BOARD.h,BOARD.r); ctx.fill();
+  ctx.fillStyle="#EFCB92"; rr(ctx,BOARD.x+7,BOARD.y+7,BOARD.w-14,BOARD.h-14,BOARD.r-6); ctx.fill();
+  ctx.fillStyle="#CC9F6B"; rr(ctx,BOARD.x+32,BOARD.y+32,BOARD.w-64,BOARD.h-64,18); ctx.fill();
+  ctx.fillStyle="#E8C79B"; rr(ctx,PLAY.x-16,PLAY.y-16,PLAY.w+32,PLAY.h+32,14); ctx.fill();
+  for(let r=0;r<N;r++){                                    // branches
+    const by=gy(r)+CHICK_R*0.80;
+    ctx.fillStyle="#8A5A2E"; rr(ctx,PLAY.x-14,by-5,PLAY.w+28,11,6); ctx.fill();
+    ctx.fillStyle="#A26C38"; rr(ctx,PLAY.x-14,by-5,PLAY.w+28,6,3); ctx.fill();
+    leafTuft(PLAY.x-18,by-4,0.5,-0.9,"#4E9C27");
+    leafTuft(PLAY.x+PLAY.w+18,by-4,0.5,0.9,"#4E9C27");
+  }
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    const col=s.grid[r*N+c]; if(!col) continue;
+    drawChick(gx(c),gy(r),CHICK_R,COLORS[col],
+      {outline: DEBUG && isExposed(s,r,c)});
+  }
+}
+
+function drawGrinder(g,spin,color){
+  ctx.save(); ctx.translate(g.x,g.y); ctx.scale(1.28,1.28);
+  ctx.fillStyle="#8A5A2E"; rr(ctx,-52,-30,104,76,12); ctx.fill();
+  ctx.fillStyle="#C58C4E"; rr(ctx,-52,-36,104,76,12); ctx.fill();
+  ctx.fillStyle="#A9723C"; rr(ctx,-38,-24,76,52,9); ctx.fill();
+  ctx.fillStyle="#E4C48C"; ctx.font='900 30px system-ui,sans-serif';
+  ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("≡",0,2);
+  ctx.fillStyle="#9AA2AC"; ell(ctx,0,-40,46,17); ctx.fill();          // metal bowl
+  ctx.fillStyle="#C6CCD4"; ell(ctx,0,-44,46,17); ctx.fill();
+  ctx.fillStyle="#AEB5BE"; ell(ctx,0,-42,38,12); ctx.fill();
+  if(color){ ctx.fillStyle=COLORS[color];
+    for(let i=0;i<9;i++){ const a=i*0.7;
+      ell(ctx,Math.cos(a)*16*(0.3+(i%3)*0.3),-44+Math.sin(a)*5,6,5); ctx.fill(); } }
+  const sx=g===GRIND_R?1:-1, ang=spin>0?(0.75-spin)*26:0;   // crank
+  ctx.save(); ctx.translate(sx*56,8); ctx.rotate(ang*sx);
+  ctx.fillStyle="#8A5A2E"; rr(ctx,-5,-5,34*1,10,5); ctx.fill();
+  ctx.fillStyle="#C58C4E"; ctx.beginPath(); ctx.arc(30,0,11,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle="#7B4A22"; ctx.beginPath(); ctx.arc(sx*56,8,7,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawHeap(s,h){
+  const sp=SPOTS[h.spot], R=heapRadius(h)*clamp(h.scale,0,1);
+  if(R<2) return;
+  const pts=heapPts(h.id);
+  const n=clamp(Math.round(8+h.count*1.6),8,pts.length);
+  ctx.fillStyle="rgba(90,70,40,.20)"; ell(ctx,sp.x,sp.y+4,R*0.95,R*0.32); ctx.fill();
+  const base=COLORS[h.color], lo=shade(base,-0.22), hi=shade(base,0.30);
+  for(let i=0;i<n;i++){
+    const p=pts[i], kr=R*0.155*p.s;
+    ctx.fillStyle = p.d<0.30?hi : (p.d>0.78?lo:base);
+    ctx.beginPath(); ctx.arc(sp.x+p.x*R*0.92, sp.y-6+p.y*R*0.92-kr*0.3, kr, 0, Math.PI*2); ctx.fill();
+  }
+  const bump=1+Math.sin(clamp(h.tag,0,1)*Math.PI)*0.22;     // tag ticks with a bounce
+  ctx.save(); ctx.translate(sp.x,sp.y+R*0.30+18); ctx.scale(bump,bump);
+  ctx.fillStyle="#8A5A2E"; rr(ctx,-34,-16,68,34,10); ctx.fill();
+  ctx.fillStyle="#E8C79B"; rr(ctx,-34,-20,68,34,10); ctx.fill();
+  ctx.fillStyle="#6B4422"; ctx.font='900 26px system-ui,sans-serif';
+  ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(String(h.count),0,-3);
+  ctx.restore();
+}
+
+function drawPool(s){
+  const last0=s.heaps.length?s.heaps[s.heaps.length-1].color:null;
+  drawGrinder(GRIND_L,s.grindSpin[0],last0);               // behind the basin rim
+  drawGrinder(GRIND_R,s.grindSpin[1],last0);
+  ctx.fillStyle="rgba(80,60,30,.22)"; ell(ctx,POOL.cx,POOL.cy+16,POOL.rx,POOL.ry); ctx.fill();
+  ctx.fillStyle="#9C6A33"; ell(ctx,POOL.cx,POOL.cy+6,POOL.rx,POOL.ry); ctx.fill();
+  ctx.fillStyle="#D9A55F"; ell(ctx,POOL.cx,POOL.cy-4,POOL.rx,POOL.ry); ctx.fill();
+  ctx.fillStyle="#EFC98C"; ell(ctx,POOL.cx,POOL.cy-10,POOL.rx-8,POOL.ry-8); ctx.fill();
+  ctx.fillStyle="#BFA987"; ell(ctx,POOL_IN.cx,POOL_IN.cy-8,POOL_IN.rx,POOL_IN.ry); ctx.fill();
+  ctx.fillStyle="#F3E8D2"; ell(ctx,POOL_IN.cx,POOL_IN.cy,POOL_IN.rx,POOL_IN.ry); ctx.fill();
+  ctx.fillStyle="#E7D8BC"; ell(ctx,POOL_IN.cx,POOL_IN.cy+18,POOL_IN.rx*0.92,POOL_IN.ry*0.72); ctx.fill();
+
+  for(const h of s.heaps.slice().sort((a,b)=>SPOTS[a.spot].y-SPOTS[b.spot].y)) drawHeap(s,h);
+
+  ctx.fillStyle="#8A5A2E"; rr(ctx,PANEL.x,PANEL.y+5,PANEL.w,PANEL.h,14); ctx.fill();
+  ctx.fillStyle="#C58C4E"; rr(ctx,PANEL.x,PANEL.y,PANEL.w,PANEL.h,14); ctx.fill();
+  ctx.fillStyle="#5C3A1B"; rr(ctx,PANEL.x+10,PANEL.y+10,PANEL.w-20,PANEL.h-20,8); ctx.fill();
+  const segW=(PANEL.w-28)/POOL_CAPACITY;
+  for(let i=0;i<POOL_CAPACITY;i++){
+    ctx.fillStyle = i<s.heaps.length ? (s.heaps.length>=POOL_CAPACITY?"#E53935":"#8BC34A") : "#3E2711";
+    rr(ctx,PANEL.x+14+i*segW,PANEL.y+14,segW-4,PANEL.h-28,4); ctx.fill();
+  }
+}
+
+function drawCob(x,y,w,color,count,o){
+  o=o||{};
+  const h=w*1.34, base=COLORS[color];
+  ctx.save(); ctx.translate(x,y);
+  if(o.rot) ctx.rotate(o.rot);
+  if(o.sx||o.sy) ctx.scale(o.sx||1,o.sy||1);
+  const leaf=(dir,lw,lh,yb)=>{                              // long pointed husk leaf
+    ctx.beginPath(); ctx.moveTo(0,yb);
+    ctx.quadraticCurveTo(dir*lw*1.05, yb-lh*0.25, dir*lw*0.72, yb-lh);
+    ctx.quadraticCurveTo(dir*lw*0.34, yb-lh*0.36, 0, yb);
+    ctx.closePath(); ctx.fill();
+  };
+  ctx.fillStyle="#2E6B1F"; leaf(-1,w*0.92,h*0.86,h*0.40); leaf(1,w*0.92,h*0.86,h*0.40);
+  ctx.fillStyle="#3E8A2B"; leaf(-1,w*0.72,h*0.66,h*0.36); leaf(1,w*0.72,h*0.66,h*0.36);
+  ctx.fillStyle=shade(base,-0.26);                          // cob body
+  rr(ctx,-w*0.36,-h*0.46,w*0.72,h*0.92,w*0.36); ctx.fill();
+  ctx.fillStyle=base; rr(ctx,-w*0.34,-h*0.48,w*0.68,h*0.92,w*0.34); ctx.fill();
+  ctx.fillStyle=shade(base,0.22);
+  for(let ry=0;ry<8;ry++) for(let cx2=0;cx2<4;cx2++){
+    const px=(-1.5+cx2)*w*0.155+(ry%2?w*0.077:0), py=-h*0.36+ry*h*0.105;
+    if(Math.abs(px)>w*0.26-Math.abs(py)*0.07) continue;
+    ell(ctx,px,py,w*0.062,h*0.040); ctx.fill();
+  }
+  ctx.fillStyle=shade(base,0.40); ell(ctx,-w*0.16,-h*0.22,w*0.07,h*0.16); ctx.fill();
+  ctx.fillStyle="#8A5A2E"; ctx.beginPath(); ctx.arc(0,h*0.05,w*0.29,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#F6EAD2"; ctx.beginPath(); ctx.arc(0,h*0.02,w*0.28,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#6B4422"; ctx.font='900 '+Math.round(w*0.33)+'px system-ui,sans-serif';
+  ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(String(count),0,h*0.03);
+  ctx.restore();
+}
+
+function drawQueue(s){
+  for(let i=0;i<3;i++){
+    const x=COL_X[i]-STRIP_W/2;
+    ctx.fillStyle="#6B4A2A"; rr(ctx,x-6,STRIP_TOP-8,STRIP_W+12,DH-STRIP_TOP+20,26); ctx.fill();
+    ctx.fillStyle="#3E2A16"; rr(ctx,x,STRIP_TOP,STRIP_W,DH-STRIP_TOP+20,20); ctx.fill();
+    ctx.fillStyle="#4A331C";
+    for(let k=0;k<9;k++) { ell(ctx,x+26+((k*61)%(STRIP_W-52)),STRIP_TOP+40+k*52,16,7); ctx.fill(); }
+  }
+  for(let i=0;i<3;i++){
+    const q=s.columns[i];
+    for(let k=Math.min(2,q.length-1);k>=0;k--){
+      const cob=q[k]; if(!cob) continue;
+      const sh=s.shake[i]>0&&k===0 ? Math.sin(s.shake[i]*70)*12*s.shake[i] : 0;
+      drawCob(COL_X[i]+sh, COB_Y[k], COB_W, cob.color, cob.count, {});
+    }
+  }
+}
+
+function drawFx(s){
+  for(const k of s.kernels){
+    if(k.t<0) continue;
+    const t=clamp(k.t/k.dur,0,1), it=1-t;
+    const x=it*it*k.x+2*it*t*k.ax+t*t*k.tx, y=it*it*k.y+2*it*t*k.ay+t*t*k.ty;
+    ctx.fillStyle=k.c; ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
+  }
+  for(const p of s.puffs){
+    ctx.globalAlpha=clamp(1-p.t/p.life,0,1); ctx.fillStyle=p.c;
+    ctx.beginPath(); ctx.arc(p.x,p.y,7,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  for(const c of s.cobs){                                   // cob arcing to the grinder
+    const t=clamp(c.t/c.dur,0,1), e=easeInOut(t);
+    const x=lerp(c.fx,c.tx,e), y=lerp(c.fy,c.ty,e)-Math.sin(t*Math.PI)*260;
+    drawCob(x,y,COB_W*(1-0.35*t),c.color,c.count,{rot:t*(c.side?2.2:-2.2)});
+  }
+  for(const f of s.flying){
+    if(f.phase==="fly"){
+      const t=clamp(f.t/FLIGHT_TIME,0,1), it=1-t;
+      const hop=t<0.18?-Math.sin(t/0.18*Math.PI)*22:0;
+      const x=it*it*f.fx+2*it*t*f.ax+t*t*f.tx, y=it*it*f.fy+2*it*t*f.ay+t*t*f.ty+hop;
+      drawChick(x,y,CHICK_R*0.96,COLORS[f.color],
+        {wing:clamp(t*4,0,1)*(0.75+Math.sin(f.t*26)*0.25), rot:Math.sin(f.t*6)*0.12, flip:f.flip});
+    } else {
+      const k=Math.sin(f.t/PECK_TIME*Math.PI*2)*0.20;
+      drawChick(f.tx,f.ty+8,CHICK_R*0.96,COLORS[f.color],{rot:k,flip:f.flip});
+    }
+  }
+}
+
+let DEBUG=false, botOn=false, botClock=0, overlayBtn=null;
+
+function drawOverlay(s){
+  ctx.fillStyle="rgba(28,22,10,.58)"; ctx.fillRect(0,0,DW,DH);
+  const w=640,h=400,x=(DW-w)/2,y=680;
+  ctx.fillStyle="#8A5A2E"; rr(ctx,x,y+12,w,h,44); ctx.fill();
+  ctx.fillStyle="#F6EAD2"; rr(ctx,x,y,w,h,44); ctx.fill();
+  ctx.fillStyle="#E8C79B"; rr(ctx,x+16,y+16,w-32,h-32,32); ctx.fill();
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillStyle="#6B4422"; ctx.font='900 56px system-ui,sans-serif';
+  ctx.fillText(s.phase==="win"?"Level Complete":"Out of Space",DW/2,y+120);
+  ctx.fillStyle="#8A6A45"; ctx.font='600 28px system-ui,sans-serif';
+  ctx.fillText(s.phase==="win" ? "All 144 birds fed."
+    : (s.failWhy==="stuck" ? "No cobs left and no heap can feed."
+                           : "The pool is full and no heap can feed."), DW/2, y+186);
+  overlayBtn={x:DW/2,y:y+300,w:340,h:100};
+  ctx.fillStyle="#2E7D32"; rr(ctx,overlayBtn.x-170,overlayBtn.y-42,340,100,48); ctx.fill();
+  ctx.fillStyle="#4CAF50"; rr(ctx,overlayBtn.x-170,overlayBtn.y-50,340,100,48); ctx.fill();
+  ctx.fillStyle="#fff"; ctx.font='900 40px system-ui,sans-serif';
+  ctx.fillText(s.phase==="win"?"Replay":"Retry",overlayBtn.x,overlayBtn.y);
+}
+
+function render(s){
+  drawBackground();
+  drawTopBar(s);
+  drawBoard(s);
+  drawPool(s);
+  drawQueue(s);
+  drawFx(s);
+  if(DEBUG){
+    const ex=exposedCounts(s);
+    ctx.fillStyle="rgba(20,16,6,.62)"; rr(ctx,20,930,824,44,12); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.font='700 21px system-ui,sans-serif'; ctx.textAlign="left";
+    ctx.fillText("DEBUG exposed B"+ex.B+" R"+ex.R+" G"+ex.G+" Y"+ex.Y+
+                 "  |  fed "+s.eaten+"/"+s.total+"  |  heaps "+s.heaps.length+"/"+POOL_CAPACITY+
+                 "  |  air "+s.flying.length+(botOn?"  |  BOT":""),32,953);
+  }
+  if(s.phase!=="play") drawOverlay(s); else overlayBtn=null;
+}
+
+/* ---------------------------- input ---------------------------- */
+let game=null;
+function restart(){ game=mkState(); }
+
+function onTap(x,y){
+  if(game.phase!=="play"){
+    if(overlayBtn && Math.abs(x-overlayBtn.x)<overlayBtn.w/2 &&
+       Math.abs(y-overlayBtn.y+4)<overlayBtn.h/2) restart();
+    return;
+  }
+  if(Math.hypot(x-BTN_RST.x,y-BTN_RST.y)<BTN_RST.r+8){ restart(); return; }
+  for(let i=0;i<3;i++){
+    if(!game.columns[i].length) continue;
+    if(Math.abs(x-COL_X[i])<COB_W*0.62 && Math.abs(y-COB_Y[0])<COB_W*0.80){
+      sendFront(game,i); return;
+    }
+  }
+}
+cv.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  const r=cv.getBoundingClientRect();
+  onTap((e.clientX-r.left)/VS,(e.clientY-r.top)/VS);
+});
+window.addEventListener("keydown",e=>{
+  const k=e.key.toLowerCase();
+  if(k==="d") DEBUG=!DEBUG;
+  if(k==="b"){ botOn=!botOn; console.log("[bot] live auto-play "+(botOn?"ON":"OFF")); }
+  if(k==="r") restart();
+});
+
+/* ---------------------------- main loop ---------------------------- */
+let last=0;
+function frame(ts){
+  const dt=Math.min(((ts-last)/1000)||0,0.05); last=ts;
+  if(botOn && game.phase==="play"){
+    botClock+=dt;
+    if(botClock>=0.35){ botClock=0; const ci=greedyChoice(game); if(ci>=0) sendFront(game,ci); }
+  }
+  update(game,dt);
+  render(game);
+  requestAnimationFrame(frame);
+}
+
+/* ---------------------------- boot ---------------------------- */
+resize();
+game=mkState();
+
+(function verify(){
+  const birds={B:0,R:0,G:0,Y:0}, corn={B:0,R:0,G:0,Y:0};
+  BIRD_ROWS.forEach((row,i)=>{
+    if(row.length!==N) console.error("[data] row "+i+" has "+row.length+" cells, expected "+N);
+    [...row].forEach(ch=>{ if(birds[ch]===undefined) console.error("[data] unknown colour "+ch); else birds[ch]++; });
+  });
+  CORN_QUEUE.forEach(col=>col.forEach(([c,n])=>corn[c]+=n));
+  let ok=true;
+  for(const k of KEYS){ if(birds[k]!==corn[k]) ok=false;
+    console.log("[data] "+k+"  birds "+birds[k]+"   corn "+corn[k]+(birds[k]===corn[k]?"   OK":"   MISMATCH")); }
+  const tb=KEYS.reduce((a,k)=>a+birds[k],0), tc=KEYS.reduce((a,k)=>a+corn[k],0);
+  console.log("[data] totals: birds "+tb+", corn "+tc+"  -> "+(ok&&tb===tc?"corn matches birds exactly":"MISMATCH"));
+
+  const hb=runHeadless();
+  console.log("[bot] headless greedy run: "+hb.result.toUpperCase()+
+              "   fed "+hb.eaten+"/"+(N*N)+"   "+hb.moves.length+" sends");
+  console.log("[bot] moves: "+hb.moves.join("  "));
+  if(hb.result!=="win"){
+    console.warn("[bot] the greedy policy did NOT clear this level: "+hb.why+
+                 (hb.heaps?"   heaps stuck in the pool: "+hb.heaps.join(" "):""));
+    console.warn("[bot] level data left exactly as supplied.");
+  }
+  window.__verify={data:ok, bot:hb.result};
+})();
+
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
