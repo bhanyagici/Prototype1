@@ -5,71 +5,90 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Yarn Bear</title>
 <style>
-  html,body{margin:0;height:100%;overflow:hidden;background:#0b1730;touch-action:none;
+  html,body{margin:0;height:100%;overflow:hidden;background:#0a1631;touch-action:none;
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  /* deep navy, a little lighter behind the bear, darker at the edges */
   #stage{position:relative;width:864px;height:1872px;flex:none;transform-origin:center center;
-    background:radial-gradient(120% 70% at 50% 28%,#21406E 0%,#162C54 45%,#0E1D3B 100%);
+    background:
+      radial-gradient(ellipse 58% 30% at 50% 29%,rgba(70,108,172,.50) 0%,rgba(70,108,172,0) 100%),
+      radial-gradient(ellipse 125% 85% at 50% 36%,#22407A 0%,#1A3466 36%,#12274F 68%,#0A1633 100%);
     overflow:hidden;user-select:none}
-  #gl{position:absolute;left:0;top:150px;width:864px;height:862px;display:block}
-  #yarn{position:absolute;left:0;top:0;width:864px;height:1872px;pointer-events:none}
+  #gl{position:absolute;left:0;top:140px;width:864px;height:890px;display:block}
+  #yarn{position:absolute;left:0;top:0;width:864px;height:1872px;pointer-events:none;z-index:12}
 
   /* ---------------- top bar ---------------- */
-  #topbar{position:absolute;left:0;top:0;width:100%;height:150px;pointer-events:none}
-  .tbtn{position:absolute;top:58px;width:78px;height:78px;border-radius:24px;background:#2C4B80;
-    box-shadow:inset 0 -5px 0 rgba(0,0,0,.28),0 5px 0 rgba(0,0,0,.35);pointer-events:auto;cursor:pointer;
-    display:flex;align-items:center;justify-content:center}
-  .tbtn:active{transform:translateY(3px)}
-  #btnSet{left:30px} #btnRst{left:124px}
-  .tbtn svg{width:44px;height:44px;fill:none;stroke:#DCE8FA;stroke-width:5;
-    stroke-linecap:round;stroke-linejoin:round}
-  #levelPill{position:absolute;left:50%;top:64px;transform:translateX(-50%);
-    min-width:262px;height:66px;border-radius:33px;border:3px solid #3C5E9B;
-    display:flex;align-items:center;justify-content:center;color:#EAF2FF;
-    font-size:38px;font-weight:800;letter-spacing:.5px}
-  #coins{position:absolute;right:104px;top:64px;height:66px;border-radius:33px;
-    background:#233F6E;border:3px solid #3C5E9B;display:flex;align-items:center;gap:10px;
-    padding:0 18px 0 10px;color:#fff;font-size:34px;font-weight:800}
-  #coins i{width:44px;height:44px;border-radius:50%;background:
-    radial-gradient(circle at 36% 32%,#FFE27A,#F0B429 60%,#C98B0D);display:block}
-  #plus{position:absolute;right:26px;top:64px;width:66px;height:66px;border-radius:22px;
-    background:#3FBB4F;box-shadow:inset 0 -5px 0 rgba(0,0,0,.25);display:flex;
-    align-items:center;justify-content:center;color:#fff;font-size:44px;font-weight:800}
+  #topbar{position:absolute;left:0;top:0;width:100%;height:150px;pointer-events:none;z-index:5}
+  .rbtn{position:absolute;border-radius:50%;pointer-events:auto;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 30%,#4F78BC 0%,#365C9E 52%,#284A86 100%);
+    border:3px solid rgba(172,202,248,.40);
+    box-shadow:0 6px 0 #152D5A,0 10px 18px rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.20)}
+  .rbtn:active{transform:translateY(3px);box-shadow:0 3px 0 #152D5A,inset 0 3px 0 rgba(255,255,255,.2)}
+  #btnSet{left:40px;top:54px;width:92px;height:92px}
+  #btnRst{left:150px;top:68px;width:64px;height:64px;opacity:.88}
+  .rbtn svg{fill:none;stroke:#EEF4FF;stroke-linecap:round;stroke-linejoin:round}
+  #btnSet svg{width:54px;height:54px;stroke-width:0}
+  #btnRst svg{width:34px;height:34px;stroke-width:5}
+  #levelPill{position:absolute;left:50%;top:60px;transform:translateX(-50%);
+    width:288px;height:78px;border-radius:39px;box-sizing:border-box;
+    background:linear-gradient(#1B3366,#122650);border:3px solid #4067A8;
+    box-shadow:inset 0 5px 12px rgba(0,0,0,.45),0 3px 0 rgba(0,0,0,.25);
+    display:flex;align-items:center;justify-content:center;color:#F4F8FF;
+    font-size:44px;font-weight:900;letter-spacing:.4px;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+  #coins{position:absolute;left:606px;top:68px;width:184px;height:66px;border-radius:33px;
+    box-sizing:border-box;background:linear-gradient(#1B3366,#122650);border:3px solid #4067A8;
+    box-shadow:inset 0 5px 12px rgba(0,0,0,.45);display:flex;align-items:center;gap:10px;
+    padding-left:5px;color:#fff;font-size:36px;font-weight:900;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+  #coins i{width:54px;height:54px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 36% 30%,#FFF4B0 0%,#FFD640 34%,#F3A917 70%,#C27606 100%);
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 0 0 5px rgba(255,210,70,.55),0 2px 4px rgba(0,0,0,.35)}
+  #plus{position:absolute;left:768px;top:68px;width:64px;height:64px;border-radius:18px;
+    box-sizing:border-box;background:linear-gradient(#6BDD6F,#34B443);border:3px solid #C3F6C6;
+    box-shadow:0 5px 0 #1E7B2B,0 8px 12px rgba(0,0,0,.3);display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:48px;font-weight:900;line-height:1;
+    text-shadow:0 2px 0 rgba(0,0,0,.25)}
 
   /* ---------------- slot row ---------------- */
-  #slots{position:absolute;left:33px;top:1028px;width:798px;height:150px;
-    display:flex;gap:12px}
-  .slot{width:150px;height:150px;border-radius:30px;background:#16294C;
-    box-shadow:inset 0 6px 14px rgba(0,0,0,.55),inset 0 -3px 0 rgba(255,255,255,.05);
-    border:3px solid #2A4472;box-sizing:border-box;position:relative}
+  #slots{position:absolute;left:42px;top:1040px;width:780px;height:150px;display:flex;gap:12px;z-index:6}
+  .slot{width:146px;height:150px;border-radius:28px;box-sizing:border-box;position:relative;
+    background:linear-gradient(#152B58,#10224A);border:2px solid #3B5C97;
+    box-shadow:inset 0 11px 22px rgba(0,0,0,.58),inset 0 -2px 0 rgba(255,255,255,.05),
+      0 2px 0 rgba(255,255,255,.04)}
 
   /* ---------------- queue ---------------- */
-  #queue{position:absolute;left:0;top:1200px;width:864px;height:672px}
-  .col{position:absolute;top:0;width:216px;height:100%}
-  .spool{position:absolute;left:50%;width:158px;height:140px;margin-left:-79px;
-    cursor:pointer;transition:top .18s ease,transform .18s ease}
+  #queue{position:absolute;left:0;top:1200px;width:864px;height:672px;z-index:6}
+  .col{position:absolute;top:0;width:196px;height:100%}
+  .spool{position:absolute;left:50%;width:138px;height:152px;margin-left:-69px;--bw:104px;
+    cursor:pointer;transition:top .2s ease,transform .2s ease}
   .spool.shake{animation:shk .32s}
-  @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-11px)}
-    60%{transform:translateX(9px)}}
-  .sp-wrap{position:absolute;inset:0}
-  .fl{position:absolute;left:0;width:158px;height:46px;border-radius:50%;
-    background:var(--fl);box-shadow:inset 0 -6px 0 rgba(0,0,0,.20)}
-  .fl.top{top:0}
-  .fl.bot{bottom:0;box-shadow:inset 0 -8px 0 rgba(0,0,0,.30)}
-  .hole{position:absolute;left:50%;top:12px;width:44px;height:22px;margin-left:-22px;
-    border-radius:50%;background:rgba(0,0,0,.42)}
-  .body{position:absolute;left:19px;top:30px;width:120px;height:82px;border-radius:14px;
-    background:var(--c);background-image:repeating-linear-gradient(
-      to bottom,rgba(255,255,255,.22) 0 3px,rgba(0,0,0,0) 3px 9px,rgba(0,0,0,.16) 9px 13px);
-    background-size:100% 13px;box-shadow:inset 10px 0 16px rgba(0,0,0,.22),
-      inset -10px 0 16px rgba(0,0,0,.22)}
-  .spool.wind .body{animation:wind .5s linear infinite}
-  @keyframes wind{from{background-position:0 0}to{background-position:0 13px}}
-  .num{position:absolute;left:0;top:44px;width:158px;text-align:center;
-    font-size:46px;font-weight:900;color:#fff;
-    text-shadow:-3px 0 0 #1a1a2e,3px 0 0 #1a1a2e,0 -3px 0 #1a1a2e,0 3px 0 #1a1a2e,
-      -3px -3px 0 #1a1a2e,3px 3px 0 #1a1a2e,-3px 3px 0 #1a1a2e,3px -3px 0 #1a1a2e}
-  .slot .spool{position:absolute;left:50%;top:5px;transform:scale(.88);transform-origin:50% 50%}
+  @keyframes shk{0%,100%{translate:0 0}25%{translate:-11px 0}60%{translate:9px 0}}
+  .sp-bot,.sp-top{position:absolute;left:0;width:138px;height:50px;border-radius:50%}
+  .sp-bot{bottom:8px;
+    background:radial-gradient(ellipse 72% 62% at 50% 30%,var(--hi) 0%,var(--c) 46%,var(--lo) 100%);
+    box-shadow:0 8px 0 var(--dk),0 15px 16px rgba(0,0,0,.42),inset 0 -4px 0 rgba(0,0,0,.14)}
+  .sp-body{position:absolute;left:50%;top:24px;width:var(--bw);height:96px;
+    margin-left:calc(var(--bw) / -2);border-radius:12px;
+    transition:width .25s ease,margin-left .25s ease;
+    background:
+      repeating-linear-gradient(-24deg,rgba(255,255,255,.28) 0 3px,rgba(255,255,255,0) 3px 7px,
+        rgba(0,0,0,.20) 7px 10px,rgba(0,0,0,0) 10px 14px),
+      linear-gradient(90deg,var(--dk) 0%,var(--lo) 12%,var(--c) 30%,var(--hi) 48%,var(--c) 68%,
+        var(--lo) 88%,var(--dk) 100%);
+    background-size:30px 100%,100% 100%}
+  .spool.wind .sp-body{animation:spin .3s linear infinite}
+  @keyframes spin{to{background-position:30px 0,0 0}}
+  .sp-top{top:0;
+    background:radial-gradient(ellipse 72% 64% at 50% 36%,var(--hi) 0%,var(--c) 52%,var(--lo) 100%);
+    box-shadow:0 8px 0 var(--lo),0 10px 8px rgba(0,0,0,.18),inset 0 3px 0 rgba(255,255,255,.38)}
+  .sp-top i{position:absolute;left:50%;top:13px;width:42px;height:21px;margin-left:-21px;border-radius:50%;
+    background:radial-gradient(ellipse at 50% 72%,rgba(0,0,0,.22),rgba(0,0,0,.58));
+    box-shadow:inset 0 3px 3px rgba(0,0,0,.40)}
+  .num{position:absolute;left:0;top:48px;width:138px;text-align:center;pointer-events:none;
+    font-size:52px;font-weight:900;color:#fff;letter-spacing:-.5px;
+    -webkit-text-stroke:7px #1A1536;paint-order:stroke fill;
+    text-shadow:0 4px 0 rgba(0,0,0,.35)}
+  .slot .spool{left:50%;top:50%;margin:-76px 0 0 -69px;transform:scale(.9)}
 
   /* ---------------- overlay ---------------- */
   #ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
@@ -82,7 +101,7 @@
   #card button{font:800 40px system-ui,sans-serif;color:#fff;background:#3FBB4F;
     border:none;border-radius:44px;padding:22px 64px;cursor:pointer;
     box-shadow:0 7px 0 #2A8A38}
-  #hud{position:absolute;left:24px;top:1186px;width:820px;color:#9FB6DB;font:700 17px system-ui,sans-serif;
+  #hud{position:absolute;left:24px;top:1194px;width:820px;color:#9FB6DB;font:700 17px system-ui,sans-serif;
     display:none;z-index:15;text-shadow:0 1px 2px #000}
   #hud.on{display:block}
 </style>
@@ -95,10 +114,8 @@
   <canvas id="gl"></canvas>
   <canvas id="yarn"></canvas>
   <div id="topbar">
-    <div class="tbtn" id="btnSet"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="7"/>
-      <path d="M22 4v6M22 34v6M4 22h6M34 22h6M9 9l4 4M31 31l4 4M35 9l-4 4M13 31l-4 4"/></svg></div>
-    <div class="tbtn" id="btnRst"><svg viewBox="0 0 44 44">
-      <path d="M34 22a12 12 0 1 1-4-9"/><path d="M31 5v9h-9" fill="none"/></svg></div>
+    <div class="rbtn" id="btnSet"><svg viewBox="0 0 54 54"><path fill="#EEF4FF" d="M23.6 4h6.8l1.1 6.1a17 17 0 0 1 4.3 1.8l5.1-3.6 4.8 4.8-3.6 5.1a17 17 0 0 1 1.8 4.3L50 23.6v6.8l-6.1 1.1a17 17 0 0 1-1.8 4.3l3.6 5.1-4.8 4.8-5.1-3.6a17 17 0 0 1-4.3 1.8L30.4 50h-6.8l-1.1-6.1a17 17 0 0 1-4.3-1.8l-5.1 3.6-4.8-4.8 3.6-5.1a17 17 0 0 1-1.8-4.3L4 30.4v-6.8l6.1-1.1a17 17 0 0 1 1.8-4.3L8.3 13.1l4.8-4.8 5.1 3.6a17 17 0 0 1 4.3-1.8zM27 19a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/></svg></div>
+    <div class="rbtn" id="btnRst"><svg viewBox="0 0 34 34"><path d="M27 17a10 10 0 1 1-3.2-7.3"/><path d="M25 3.5v7h-7"/></svg></div>
     <div id="levelPill">Level 12</div>
     <div id="coins"><i></i><span>320</span></div>
     <div id="plus">+</div>
@@ -118,7 +135,7 @@ import * as THREE from "three";
 const AUTO_ROTATE_SPEED  = 0.28;   // radians / second around Y
 const AUTO_RESUME_DELAY  = 1.6;    // seconds after release before it spins again
 const PULL_RATE          = 9;      // stitches pulled per second, per spool
-const VOXEL_RESOLUTION   = 28;     // voxel cells along the bear's height
+const VOXEL_RESOLUTION   = 40;     // voxel cells along the bear's height
 const SLOT_COUNT         = 5;
 const VISIBILITY_MS      = 100;    // how often the visible set is recomputed
 const SPOOL_MIN = 10, SPOOL_MAX = 40, SPOOL_TAIL_MIN = 5;
@@ -139,54 +156,71 @@ function mulberry32(a){ return function(){ a|=0;a=a+0x6D2B79F5|0;
    ==========================  THE BEAR  ===============================
    Simple volumes, voxelized, then coloured by region and depth.
    ===================================================================== */
+/* Amigurumi proportions: a big round head (~42% of the height), round ears with
+   cream fronts, a wide muzzle, a plump sitting body, short arms at the sides and
+   legs pointing forward with big round foot pads. The bear faces +z. */
 const P = {
-  head:{c:[0,0.50,0], r:0.34},
-  earL:{c:[-0.28,0.78,-0.03], r:0.142}, earR:{c:[0.28,0.78,-0.03], r:0.142},
-  innL:{c:[-0.29,0.79,0.055], r:0.078}, innR:{c:[0.29,0.79,0.055], r:0.078},
-  muzzle:{c:[0,0.40,0.26], r:[0.165,0.125,0.125]},
-  body:{c:[0,-0.04,0], r:[0.38,0.40,0.30]},
-  armL:{a:[-0.31,0.12,0.02], b:[-0.47,-0.20,0.08], r:0.125},
-  armR:{a:[ 0.31,0.12,0.02], b:[ 0.47,-0.20,0.08], r:0.125},
-  legL:{a:[-0.17,-0.36,0.04], b:[-0.27,-0.44,0.26], r:0.165},
-  legR:{a:[ 0.17,-0.36,0.04], b:[ 0.27,-0.44,0.26], r:0.165},
+  head:  {c:[0,0.53,0.02], r:[0.392,0.350,0.345]},
+  earL:  {c:[-0.272,0.868,-0.035], r:[0.128,0.124,0.088]},
+  earR:  {c:[ 0.272,0.868,-0.035], r:[0.128,0.124,0.088]},
+  muzzle:{c:[0,0.420,0.305], r:[0.195,0.132,0.135]},
+  body:  {c:[0,-0.10,0], r:[0.440,0.400,0.360]},
+  armL:  {a:[-0.360,0.100,0.040], b:[-0.500,-0.190,0.150], r:0.122, sleeve:0.72},
+  armR:  {a:[ 0.360,0.100,0.040], b:[ 0.500,-0.190,0.150], r:0.122, sleeve:0.72},
+  legL:  {a:[-0.200,-0.360,0.060], b:[-0.300,-0.460,0.330], r:0.166},
+  legR:  {a:[ 0.200,-0.360,0.060], b:[ 0.300,-0.460,0.330], r:0.166},
+  scarf: {c:[0,0.262,0.0], R:0.272, r:0.100, squash:1.25},     // ribbed band round the neck
+  tail:  {a:[0.185,0.215,0.315], b:[0.245,-0.135,0.372], r:0.076}, // the end hanging down the front
 };
-const BBOX={lo:[-0.62,-0.62,-0.40], hi:[0.62,0.92,0.44]};
+const BBOX={lo:[-0.70,-0.67,-0.42], hi:[0.70,1.01,0.56]};
 const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
 const dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 const len3=a=>Math.sqrt(dot3(a,a));
-const inSph=(p,s)=>len3(sub(p,s.c))<=s.r;
 const inEll=(p,e)=>{const d=sub(p,e.c);
   return (d[0]/e.r[0])**2+(d[1]/e.r[1])**2+(d[2]/e.r[2])**2<=1;};
-function inCap(p,k){
+function capT(p,k){
   const ab=sub(k.b,k.a), ap=sub(p,k.a);
-  let t=dot3(ap,ab)/dot3(ab,ab); t=Math.max(0,Math.min(1,t));
+  return Math.max(0,Math.min(1,dot3(ap,ab)/dot3(ab,ab)));
+}
+function inCap(p,k){
+  const ab=sub(k.b,k.a), t=capT(p,k);
   return len3(sub(p,[k.a[0]+ab[0]*t,k.a[1]+ab[1]*t,k.a[2]+ab[2]*t]))<=k.r;
 }
+function inTorus(p,t){
+  const d=sub(p,t.c), q=Math.hypot(d[0],d[2])-t.R;
+  return Math.hypot(q,d[1]*t.squash)<=t.r;
+}
 function regionAt(p){
-  if(inSph(p,P.innL)||inSph(p,P.innR)) return "inner";
+  if(inTorus(p,P.scarf)||inCap(p,P.tail)) return "scarf";
   if(inEll(p,P.muzzle)) return "muzzle";
-  if(inSph(p,P.earL)||inSph(p,P.earR)) return "ear";
-  if(inSph(p,P.head)) return "head";
-  if(inCap(p,P.legL)||inCap(p,P.legR)) return "leg";
+  for(const e of [P.earL,P.earR]) if(inEll(p,e)){
+    const front=p[2]>e.c[2]+0.012, near=Math.hypot(p[0]-e.c[0],p[1]-e.c[1])<0.085;
+    return front&&near ? "inner" : "ear";                     // cream inner ear, facing forward
+  }
+  if(inEll(p,P.head)) return "head";
+  for(const l of [P.legL,P.legR]) if(inCap(p,l)){
+    const pad=p[2]>l.b[2]+0.045 && Math.hypot(p[0]-l.b[0],p[1]-l.b[1])<0.132;
+    return pad ? "pad" : "leg";                               // big round pad facing the camera
+  }
   if(inCap(p,P.armL)||inCap(p,P.armR)) return "arm";
   if(inEll(p,P.body)) return "body";
   return null;
 }
-/* sweater stripes, top to bottom */
+/* sweater stripes, top to bottom, knitted as horizontal rows */
 const STRIPES=["blue","yellow","red","yellow","green","purple"];
+const SW_TOP=0.285, SW_BOT=-0.465;
+function stripeAt(y){
+  const t=Math.max(0,Math.min(0.9999,(SW_TOP-y)/(SW_TOP-SW_BOT)));
+  return STRIPES[Math.floor(t*STRIPES.length)];
+}
 function surfaceColor(reg,p){
-  if(reg==="inner"||reg==="muzzle") return "cream";
-  if(reg==="leg"){                                            // small cream pad on each foot
-    const e=(p[0]<0)?P.legL.b:P.legR.b;
-    return len3(sub(p,e))<0.125 ? "cream" : "brown";
+  if(reg==="inner"||reg==="muzzle"||reg==="pad") return "cream";
+  if(reg==="scarf") return "red";
+  if(reg==="arm"){                                            // striped sleeve, brown paw
+    const arm=p[0]<0?P.armL:P.armR;
+    return capT(p,arm)<arm.sleeve ? stripeAt(p[1]) : "brown";
   }
-  if(reg==="body"){
-    if(p[1]>0.205 && p[1]<0.325) return "red";               // scarf round the neck
-    if(p[1]>-0.34 && p[1]<=0.205){
-      const t=(0.205-p[1])/(0.205+0.34);
-      return STRIPES[Math.min(STRIPES.length-1,Math.floor(t*STRIPES.length))];
-    }
-  }
+  if(reg==="body" && p[1]<=SW_TOP && p[1]>=SW_BOT) return stripeAt(p[1]);
   return "brown";
 }
 /* what each surface colour turns into as you peel inward, in bands of BAND voxels */
@@ -199,7 +233,7 @@ const LAYERS={
   green:["green","blue","red","yellow","cream"],
   purple:["purple","yellow","green","brown","red"],
 };
-const BAND=1;   // one voxel shell per colour: max depth is only ~5, so all layers get used
+const BAND=1;   // one voxel shell per colour, so every layer of the sequence gets used
 const NB6=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
 
 function buildBear(){
@@ -356,34 +390,69 @@ function makeLevel(B){
    ===================================================================== */
 const glCv=document.getElementById("gl"), yarnCv=document.getElementById("yarn");
 const stage=document.getElementById("stage");
-const GL_W=864, GL_H=862, GL_TOP=150, ST_W=864, ST_H=1872;
+const GL_W=864, GL_H=890, GL_TOP=140, ST_W=864, ST_H=1872;
+const GROUND_Y=-0.665;                         // world height of the table the bear sits on
 
 const renderer=new THREE.WebGLRenderer({canvas:glCv,antialias:true,alpha:true});
 renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(30,GL_W/GL_H,0.1,30);
-camera.position.set(0,0.16,3.08); camera.lookAt(0,0.06,0);
+const camera=new THREE.PerspectiveCamera(27,GL_W/GL_H,0.1,30);
+camera.position.set(0,0.62,3.84); camera.lookAt(0,0.08,0);
 const group=new THREE.Group(); scene.add(group);
-scene.add(new THREE.AmbientLight(0xffffff,0.62));
-const key=new THREE.DirectionalLight(0xfff3e0,1.05); key.position.set(2.2,3.4,2.6); scene.add(key);
-const rim=new THREE.DirectionalLight(0x9db9ff,0.42); rim.position.set(-2.4,0.6,-2.2); scene.add(rim);
+group.rotation.set(0.05,-0.38,0);              // seen slightly from the front-left
 
-/** Small canvas texture that gives each cube a soft knitted-V face. */
-function knitTexture(){
-  const s=64, c=document.createElement("canvas"); c.width=c.height=s;
-  const g=c.getContext("2d");
-  g.fillStyle="#ffffff"; g.fillRect(0,0,s,s);
-  g.strokeStyle="rgba(0,0,0,.16)"; g.lineWidth=6; g.lineCap="round";
-  g.beginPath(); g.moveTo(10,14); g.lineTo(s/2,s-16); g.lineTo(s-10,14); g.stroke();
-  g.strokeStyle="rgba(255,255,255,.55)"; g.lineWidth=4;
-  g.beginPath(); g.moveTo(10,8); g.lineTo(s/2,s-22); g.lineTo(s-10,8); g.stroke();
-  g.strokeStyle="rgba(0,0,0,.22)"; g.lineWidth=5;
-  g.beginPath(); g.moveTo(0,s-3); g.lineTo(s,s-3); g.stroke();
-  const t=new THREE.CanvasTexture(c);
-  t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=2;
-  return t;
+/* soft warm key from the upper left, cool rim from behind, sky/ground fill */
+scene.add(new THREE.HemisphereLight(0xdce8ff,0x5a3d28,1.45));
+const key=new THREE.DirectionalLight(0xffe3c2,3.0); key.position.set(-2.3,3.1,2.7); scene.add(key);
+const rim=new THREE.DirectionalLight(0x8fb2ff,2.3);  rim.position.set(1.9,1.8,-3.1); scene.add(rim);
+const fill=new THREE.DirectionalLight(0xfff4ea,0.95); fill.position.set(2.8,0.6,2.4); scene.add(fill);
+
+/* ------------------------- knit stitch textures ------------------------- */
+/** Height field of one V-shaped knit stitch: two plump leaning loops that meet at
+ *  the bottom, with a twisted-ply ripple along each loop and a groove at the seam. */
+function stitchHeight(u,v){                     // u,v in [0,1], v=0 at the top of the tile
+  let h=0;
+  for(const s of [-1,1]){
+    const cx=0.5+s*0.19, cy=0.50, ang=s*0.50;
+    const dx=u-cx, dy=v-cy;
+    const a= dx*Math.cos(ang)+dy*Math.sin(ang);   // across the loop
+    const b=-dx*Math.sin(ang)+dy*Math.cos(ang);   // along the loop
+    const q=(a/0.175)**2+(b/0.47)**2;
+    if(q<1){
+      const dome=Math.sqrt(1-q);
+      const ply=0.10*Math.sin(b*46+a*18);          // the twist of the yarn
+      h=Math.max(h,dome*(0.88+ply));
+    }
+  }
+  const edge=Math.min(u,1-u,v,1-v);
+  return h*Math.min(1,edge*9);
 }
-/** Box with its edges and corners rounded off, so a stitch reads as soft. */
+function knitTextures(){
+  const S=128;
+  const hf=new Float32Array(S*S);
+  for(let y=0;y<S;y++) for(let x=0;x<S;x++) hf[y*S+x]=stitchHeight((x+0.5)/S,(y+0.5)/S);
+  const H=(x,y)=>hf[Math.min(S-1,Math.max(0,y))*S+Math.min(S-1,Math.max(0,x))];
+  const cc=document.createElement("canvas"), nc=document.createElement("canvas");
+  cc.width=cc.height=nc.width=nc.height=S;
+  const cg=cc.getContext("2d"), ng=nc.getContext("2d");
+  const ci=cg.createImageData(S,S), ni=ng.createImageData(S,S);
+  const STR=5.5;
+  for(let y=0;y<S;y++) for(let x=0;x<S;x++){
+    const i=(y*S+x)*4, h=H(x,y);
+    const shade=0.62+0.38*Math.pow(h,0.55);           // grooves between loops sit darker
+    ci.data[i]=ci.data[i+1]=ci.data[i+2]=Math.round(255*Math.min(1,shade)); ci.data[i+3]=255;
+    // canvas y runs down while the texture's v runs up, hence the sign on ny
+    let nx=-(H(x+1,y)-H(x-1,y))*STR, ny=(H(x,y+1)-H(x,y-1))*STR, nz=1;
+    const L=Math.hypot(nx,ny,nz); nx/=L; ny/=L; nz/=L;
+    ni.data[i]=Math.round((nx*0.5+0.5)*255); ni.data[i+1]=Math.round((ny*0.5+0.5)*255);
+    ni.data[i+2]=Math.round((nz*0.5+0.5)*255); ni.data[i+3]=255;
+  }
+  cg.putImageData(ci,0,0); ng.putImageData(ni,0,0);
+  const map=new THREE.CanvasTexture(cc); map.colorSpace=THREE.SRGBColorSpace; map.anisotropy=4;
+  const nrm=new THREE.CanvasTexture(nc); nrm.anisotropy=4;
+  return {map,nrm};
+}
+/** Box with generously rounded edges and corners: a soft, plump stitch. */
 function roundedBox(size,r,seg){
   const g=new THREE.BoxGeometry(size,size,size,seg,seg,seg);
   const p=g.attributes.position, h=size/2-r;
@@ -391,17 +460,39 @@ function roundedBox(size,r,seg){
   for(let i=0;i<p.count;i++){
     const x=p.getX(i), y=p.getY(i), z=p.getZ(i);
     const qx=cl(x,-h,h), qy=cl(y,-h,h), qz=cl(z,-h,h);
-    let dx=x-qx, dy=y-qy, dz=z-qz;
-    const L=Math.hypot(dx,dy,dz);
+    const dx=x-qx, dy=y-qy, dz=z-qz, L=Math.hypot(dx,dy,dz);
     if(L>1e-9){ const k=r/L; p.setXYZ(i,qx+dx*k,qy+dy*k,qz+dz*k); }
   }
   g.computeVertexNormals();
   return g;
 }
+const KNIT=knitTextures();
+const stitchMat=new THREE.MeshStandardMaterial({map:KNIT.map,normalMap:KNIT.nrm,
+  normalScale:new THREE.Vector2(1.15,1.15),roughness:0.93,metalness:0});
+
+/* ---------------------- contact shadow on the table ---------------------- */
+(function contactShadow(){
+  const c=document.createElement("canvas"); c.width=c.height=256;
+  const g=c.getContext("2d"), gr=g.createRadialGradient(128,128,8,128,128,128);
+  gr.addColorStop(0,"rgba(2,6,18,.80)"); gr.addColorStop(0.50,"rgba(2,6,18,.44)");
+  gr.addColorStop(1,"rgba(2,6,18,0)");
+  g.fillStyle=gr; g.fillRect(0,0,256,256);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(1.75,1.75),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  m.rotation.x=-Math.PI/2; m.scale.set(1.08,0.95,1); m.position.set(0,GROUND_Y,0.16);
+  m.renderOrder=-1; scene.add(m);
+})();
 
 let B=null, mesh=null, vlist=null, instOf=null, alive=null;
-let drawn=null, baseCol=null, noise=null;
+let drawn=null, noise=null, occ=null;
+let gpuSlot=null, gpuCell=null, gpuCount=0, gpuDirty=false;
+let debugHi=new Set();
 const M4=new THREE.Matrix4(), V3=new THREE.Vector3(), COL=new THREE.Color();
+/* Render tint for the stitches only: lit knitting reads darker than a flat swatch,
+   so fur and cream are lifted a touch toward the mockup's warm caramel. Spools, level
+   data and every rule keep using HEX unchanged. */
+const RENDER_HEX={...HEX, brown:"#A36A36", cream:"#F6E6CB"};
+const LIN=COLORS.map(c=>new THREE.Color(RENDER_HEX[c]));   // in linear space
 
 function hasCell(x,y,z){
   return x>=0&&y>=0&&z>=0&&x<B.nx&&y<B.ny&&z<B.nz&&alive[B.idx(x,y,z)];
@@ -413,40 +504,98 @@ function isExposed(i){
   return false;
 }
 
+/* --------------- per-stitch shading: noise, rows, ribs, crevices --------------- */
+const OCC_R=2, OCC_N=(2*OCC_R+1)**3-1;
+function computeOcc(){
+  occ=new Uint8Array(B.total);
+  for(let i=0;i<B.total;i++){
+    if(!alive[i]) continue;
+    const [x,y,z]=cellXYZ(i); let n=0;
+    for(let dz=-OCC_R;dz<=OCC_R;dz++) for(let dy=-OCC_R;dy<=OCC_R;dy++) for(let dx=-OCC_R;dx<=OCC_R;dx++){
+      if((dx|dy|dz)===0) continue;
+      if(hasCell(x+dx,y+dy,z+dz)) n++;
+    }
+    occ[i]=n;
+  }
+}
+function stitchColor(k,out){
+  const cell=vlist[k], [x,y,z]=cellXYZ(cell);
+  out.copy(LIN[B.color[cell]]);
+  if(debugHi.has(cell)){ out.lerp(COL.setRGB(1,1,1),0.70); return out; }
+  // gentle ambient-occlusion: stitches crowded by neighbours (crevices) sit darker
+  const f=occ[cell]/OCC_N;
+  let s=Math.min(1.12,Math.max(0.50,1.20-(f-0.30)*1.45));
+  s*=noise[k];
+  s*=(y&1)?1.035:0.965;                         // horizontal knit rows
+  if(B.region[cell]==="scarf"){                 // ribbing on the scarf
+    const cx=B.cx(x), cz=B.cz(z);
+    const onTail=cz>0.2&&cx>0.1&&B.cy(y)<0.2;
+    const rib=onTail ? (x&1) : (Math.floor((Math.atan2(cz,cx)+Math.PI)/(2*Math.PI)*36)&1);
+    s*=rib?0.80:1.04;
+  }
+  return out.multiplyScalar(s);
+}
+
+/* ----------- instancing: only open-faced stitches are uploaded ----------- */
 function buildMesh(){
-  if(mesh){ group.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+  if(mesh){ group.remove(mesh); mesh.geometry.dispose(); }
   vlist=[]; for(let i=0;i<B.total;i++) if(alive[i]) vlist.push(i);
   instOf=new Int32Array(B.total).fill(-1);
   vlist.forEach((c,k)=>instOf[c]=k);
-  const geo=roundedBox(B.vs*0.95,B.vs*0.95*0.27,2);
-  const mat=new THREE.MeshLambertMaterial({map:knitTexture()});
-  mesh=new THREE.InstancedMesh(geo,mat,vlist.length);
+  const size=B.vs*1.10;
+  const geo=roundedBox(size,size*0.36,3);
+  mesh=new THREE.InstancedMesh(geo,stitchMat,vlist.length);
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  mesh.setColorAt(0,COL.setRGB(1,1,1));
+  mesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
   drawn=new Uint8Array(vlist.length);
+  gpuSlot=new Int32Array(vlist.length).fill(-1);
+  gpuCell=new Int32Array(vlist.length);
+  gpuCount=0;
   noise=new Float32Array(vlist.length);
   const rnd=mulberry32(1337);
-  baseCol=new Float32Array(vlist.length*3);
-  for(let k=0;k<vlist.length;k++){
-    noise[k]=0.88+rnd()*0.24;
-    COL.set(HEX[COLORS[B.color[vlist[k]]]]).multiplyScalar(noise[k]);
-    baseCol[k*3]=COL.r; baseCol[k*3+1]=COL.g; baseCol[k*3+2]=COL.b;
-    mesh.setColorAt(k,COL);
-    refreshInstance(k);
-  }
-  mesh.instanceColor.needsUpdate=true;
-  mesh.instanceMatrix.needsUpdate=true;
+  for(let k=0;k<vlist.length;k++) noise[k]=0.90+rnd()*0.20;
+  computeOcc();
+  for(let k=0;k<vlist.length;k++) refreshInstance(k);
+  mesh.count=gpuCount; gpuDirty=true; flushGPU();
   mesh.frustumCulled=false;
   group.add(mesh);
+  buildFx();
 }
-/** Only voxels with an open face are drawn; the rest collapse to zero scale. */
+const SMOOTH=0.95;
+function renderPos(cell,out){
+  const [x,y,z]=cellXYZ(cell);
+  let sx=0,sy=0,sz=0,n=0;
+  for(let dz=-1;dz<=1;dz++) for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++)
+    if(hasCell(x+dx,y+dy,z+dz)){ sx+=dx; sy+=dy; sz+=dz; n++; }
+  const k=SMOOTH*B.vs/Math.max(1,n);
+  return out.set(B.cx(x)+sx*k, B.cy(y)+sy*k, B.cz(z)+sz*k);
+}
+function writeSlot(s,k){
+  renderPos(vlist[k],V3);
+  M4.makeTranslation(V3.x,V3.y,V3.z);
+  mesh.setMatrixAt(s,M4);
+  mesh.setColorAt(s,stitchColor(k,COL));
+}
+function recolor(k){ const s=gpuSlot[k]; if(s>=0){ mesh.setColorAt(s,stitchColor(k,COL)); gpuDirty=true; } }
+function flushGPU(){
+  if(!gpuDirty) return;
+  mesh.count=gpuCount;
+  mesh.instanceMatrix.needsUpdate=true; mesh.instanceColor.needsUpdate=true;
+  gpuDirty=false;
+}
+/** Only voxels with an open face are drawn: compacted into the first gpuCount slots. */
 function refreshInstance(k){
   const cell=vlist[k];
   const show=alive[cell]&&isExposed(cell);
   drawn[k]=show?1:0;
-  if(!show){ M4.makeScale(0,0,0); mesh.setMatrixAt(k,M4); return; }
-  const [x,y,z]=cellXYZ(cell);
-  M4.makeTranslation(B.cx(x),B.cy(y),B.cz(z));
-  mesh.setMatrixAt(k,M4);
+  const s=gpuSlot[k];
+  if(show&&s<0){ const n=gpuCount++; gpuSlot[k]=n; gpuCell[n]=k; writeSlot(n,k); gpuDirty=true; }
+  else if(!show&&s>=0){
+    const last=--gpuCount;
+    if(s!==last){ const k2=gpuCell[last]; gpuCell[s]=k2; gpuSlot[k2]=s; writeSlot(s,k2); }
+    gpuSlot[k]=-1; gpuDirty=true;
+  }
 }
 function killVoxel(cell){
   alive[cell]=0;
@@ -459,7 +608,159 @@ function killVoxel(cell){
     const j=B.idx(X,Y,Z);
     if(alive[j]) refreshInstance(instOf[j]);
   }
-  mesh.instanceMatrix.needsUpdate=true;
+  // crevice shading around the hole brightens a little as it opens up
+  for(let dz=-OCC_R;dz<=OCC_R;dz++) for(let dy=-OCC_R;dy<=OCC_R;dy++) for(let dx=-OCC_R;dx<=OCC_R;dx++){
+    if((dx|dy|dz)===0) continue;
+    const X=x+dx,Y=y+dy,Z=z+dz;
+    if(X<0||Y<0||Z<0||X>=B.nx||Y>=B.ny||Z>=B.nz) continue;
+    const j=B.idx(X,Y,Z);
+    if(!alive[j]) continue;
+    occ[j]--;
+    const kk=instOf[j], sl=gpuSlot[kk];
+    if(sl>=0){ writeSlot(sl,kk); gpuDirty=true; }   // new shading and a re-smoothed position
+  }
+  checkDecos(cell);
+}
+
+/* ------------- pulled stitches lift and unravel into the strand ------------- */
+const FX_MAX=128;
+let fxMesh=null; const fx=[];
+function buildFx(){
+  if(fxMesh){ group.remove(fxMesh); }
+  fxMesh=new THREE.InstancedMesh(mesh.geometry,stitchMat,FX_MAX);
+  fxMesh.setColorAt(0,COL.setRGB(1,1,1)); fxMesh.count=0; fxMesh.frustumCulled=false;
+  group.add(fxMesh); fx.length=0;
+}
+function liftStitch(cell){
+  const [x,y,z]=cellXYZ(cell);
+  let dx=0,dy=0,dz=0;
+  for(const [ox,oy,oz] of NB6) if(!hasCell(x+ox,y+oy,z+oz)){ dx+=ox; dy+=oy; dz+=oz; }
+  let L=Math.hypot(dx,dy,dz);
+  if(L<1e-6){ dx=B.cx(x); dy=B.cy(y)-0.1; dz=B.cz(z); L=Math.hypot(dx,dy,dz)||1; }
+  const k=instOf[cell];
+  const f={ x:B.cx(x), y:B.cy(y), z:B.cz(z), dx:dx/L, dy:dy/L, dz:dz/L, t:0,
+            col:stitchColor(k,new THREE.Color()), pos:new THREE.Vector3(B.cx(x),B.cy(y),B.cz(z)) };
+  if(fx.length>=FX_MAX) fx.shift();
+  fx.push(f);
+  return f;
+}
+const LIFT_TIME=0.30, Q=new THREE.Quaternion(), SC=new THREE.Vector3(), AX=new THREE.Vector3();
+function updateFx(dt){
+  for(let i=fx.length-1;i>=0;i--){ fx[i].t+=dt; if(fx[i].t>=LIFT_TIME) fx.splice(i,1); }
+  for(let i=0;i<fx.length;i++){
+    const f=fx[i], e=f.t/LIFT_TIME, rise=B.vs*(0.25+1.6*(1-(1-e)*(1-e)));
+    f.pos.set(f.x+f.dx*rise, f.y+f.dy*rise, f.z+f.dz*rise);
+    AX.set(f.dx,f.dy,f.dz); Q.setFromAxisAngle(AX,e*3.2);
+    const s=Math.max(0.001,1-e*0.85); SC.set(s*(1-e*0.35),s*(1+e*0.9),s*(1-e*0.35));
+    M4.compose(f.pos,Q,SC); fxMesh.setMatrixAt(i,M4); fxMesh.setColorAt(i,f.col);
+  }
+  fxMesh.count=fx.length;
+  fxMesh.instanceMatrix.needsUpdate=true;
+  if(fxMesh.instanceColor) fxMesh.instanceColor.needsUpdate=true;
+}
+
+/* ------------- eyes, nose, mouth, fringe: decorations, not stitches ------------- */
+const decos=[]; let cellDecos=new Map();
+function ellSurface(e,x,y){                     // point on an ellipsoid's front, plus its normal
+  const u=(x-e.c[0])/e.r[0], v=(y-e.c[1])/e.r[1];
+  const w=Math.sqrt(Math.max(0,1-u*u-v*v));
+  const p=new THREE.Vector3(x,y,e.c[2]+w*e.r[2]);
+  const n=new THREE.Vector3(u/e.r[0],v/e.r[1],w/e.r[2]).normalize();
+  return {p,n};
+}
+function supportCells(points,rad){
+  const out=new Set();
+  for(const p of points){
+    const gx=Math.round((p.x-BBOX.lo[0])/B.vs-0.5), gy=Math.round((p.y-BBOX.lo[1])/B.vs-0.5),
+          gz=Math.round((p.z-BBOX.lo[2])/B.vs-0.5), R=Math.ceil(rad/B.vs)+1;
+    for(let z=gz-R;z<=gz+R;z++) for(let y=gy-R;y<=gy+R;y++) for(let x=gx-R;x<=gx+R;x++){
+      if(!hasCell(x,y,z)) continue;
+      if(Math.hypot(B.cx(x)-p.x,B.cy(y)-p.y,B.cz(z)-p.z)<=rad) out.add(B.idx(x,y,z));
+    }
+  }
+  return [...out];
+}
+function addDeco(obj,anchors,rad,normal){
+  group.add(obj);
+  const d={obj,sup:supportCells(anchors,rad),state:"on",vel:new THREE.Vector3(),
+           spin:new THREE.Vector3(),t:0,normal:normal||new THREE.Vector3(0,0,1),bounces:0};
+  if(!d.sup.length) d.sup=[];
+  for(const c of d.sup){ if(!cellDecos.has(c)) cellDecos.set(c,[]); cellDecos.get(c).push(d); }
+  decos.push(d);
+}
+function buildDecos(){
+  for(const d of decos){ d.obj.removeFromParent(); }
+  decos.length=0; cellDecos=new Map();
+  const lift=B.vs*0.30;
+  const eyeMat=new THREE.MeshStandardMaterial({color:0x0b0b10,roughness:0.10,metalness:0.1});
+  const glint=new THREE.MeshBasicMaterial({color:0xffffff});
+  const brown=new THREE.MeshStandardMaterial({color:0x3a2114,roughness:0.28,metalness:0.05});
+  for(const s of [-1,1]){                                   // glossy black button eyes
+    const {p,n}=ellSurface(P.head,s*0.140,0.572), R=0.052;
+    const eye=new THREE.Group();
+    const ball=new THREE.Mesh(new THREE.SphereGeometry(R,22,16),eyeMat);
+    ball.scale.set(1,1.08,0.78); eye.add(ball);
+    const gl=new THREE.Mesh(new THREE.SphereGeometry(R*0.26,10,8),glint);
+    gl.position.set(-R*0.30,R*0.38,R*0.62); eye.add(gl);
+    eye.position.copy(p).addScaledVector(n,lift+R*0.28);
+    eye.lookAt(eye.position.clone().add(n));
+    addDeco(eye,[p],R+B.vs*0.9,n);
+  }
+  { const {p,n}=ellSurface(P.muzzle,0,0.470), R=0.060;     // nose
+    const nose=new THREE.Mesh(new THREE.SphereGeometry(R,22,16),brown);
+    nose.scale.set(1.25,0.82,0.74);
+    nose.position.copy(p).addScaledVector(n,lift+R*0.18);
+    nose.lookAt(nose.position.clone().add(n));
+    addDeco(nose,[p],R+B.vs*0.9,n); }
+  { const pts=[], anchors=[];                               // smiling mouth line
+    const path=[[0,0.432],[0,0.394],[-0.038,0.378],[-0.076,0.400]];
+    const path2=[[0,0.394],[0.038,0.378],[0.076,0.400]];
+    for(const set of [path,path2]){
+      const arr=set.map(([x,y])=>{ const {p,n}=ellSurface(P.muzzle,x,y);
+        anchors.push(p.clone()); return p.addScaledVector(n,lift+0.004); });
+      pts.push(new THREE.CatmullRomCurve3(arr));
+    }
+    const m=new THREE.Group();
+    for(const c of pts) m.add(new THREE.Mesh(new THREE.TubeGeometry(c,24,0.0085,8,false),brown));
+    addDeco(m,anchors,B.vs*1.2,new THREE.Vector3(0,0,1)); }
+  { const b=P.tail.b, tip=[];                               // fringe at the end of the scarf
+    const red=new THREE.MeshStandardMaterial({color:0xC62E2A,roughness:0.9});
+    const fr=new THREE.Group();
+    for(let i=0;i<6;i++){
+      const x=b[0]-0.055+i*0.022, z=b[2]+0.035+((i*37)%5)*0.004;
+      const len=0.085+((i*53)%4)*0.012;
+      const strand=new THREE.Mesh(new THREE.CylinderGeometry(0.0105,0.0085,len,7),red);
+      strand.position.set(x,b[1]-P.tail.r-len/2+0.02,z);
+      strand.rotation.z=(i-2.5)*0.05;
+      fr.add(strand); tip.push(new THREE.Vector3(x,b[1]-P.tail.r*0.5,b[2]));
+    }
+    addDeco(fr,tip,B.vs*1.8,new THREE.Vector3(0,-0.3,1).normalize()); }
+}
+function checkDecos(cell){
+  const list=cellDecos.get(cell); if(!list) return;
+  for(const d of list){
+    if(d.state!=="on") continue;
+    if(d.sup.some(c=>alive[c])) continue;
+    // everything under it is gone: drop off the bear with a little bounce
+    d.state="fall"; scene.attach(d.obj);
+    const n=d.normal.clone().transformDirection(group.matrixWorld);
+    d.vel.copy(n).multiplyScalar(0.75); d.vel.y+=0.95;
+    d.spin.set((Math.random()-0.5)*7,(Math.random()-0.5)*7,(Math.random()-0.5)*7);
+  }
+}
+function updateDecos(dt){
+  for(let i=decos.length-1;i>=0;i--){
+    const d=decos[i]; if(d.state!=="fall") continue;
+    d.t+=dt; d.vel.y-=5.2*dt;
+    d.obj.position.addScaledVector(d.vel,dt);
+    d.obj.rotation.x+=d.spin.x*dt; d.obj.rotation.y+=d.spin.y*dt; d.obj.rotation.z+=d.spin.z*dt;
+    if(d.obj.position.y<GROUND_Y+0.03 && d.vel.y<0){
+      d.obj.position.y=GROUND_Y+0.03; d.vel.y*=-0.42; d.vel.x*=0.65; d.vel.z*=0.65;
+      d.spin.multiplyScalar(0.5); d.bounces++;
+    }
+    if(d.t>1.5){ const k=Math.max(0,1-(d.t-1.5)/0.35); d.obj.scale.setScalar(k);
+      if(k<=0){ d.obj.removeFromParent(); decos.splice(i,1); } }
+  }
 }
 
 /* ------------------- visibility: face test + grid ray ------------------- */
@@ -509,8 +810,9 @@ function projectCell(cell){
 /* =====================================================================
    ========================  SPOOLS + SLOTS  ===========================
    ===================================================================== */
-const ROW_Y=[70,247,424,601];                    // 3 full spools + half of a 4th
-const SLOT_X0=33, SLOT_W=150, SLOT_GAP=12, SLOT_Y=1028;
+const ROW_Y=[88,256,424,593];                    // 3 full spools + half of a 4th
+const COL_CX=[137,334,530,727];                   // four evenly spaced columns
+const SLOT_X0=42, SLOT_W=146, SLOT_GAP=12, SLOT_Y=1040;
 const slotsEl=document.getElementById("slots"), queueEl=document.getElementById("queue");
 const yctx=yarnCv.getContext("2d");
 
@@ -520,17 +822,24 @@ function shadeHex(hex,amt){
   else { r*=1+amt; g*=1+amt; b*=1+amt; }
   return "#"+((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1);
 }
+/** Chunky spool: bottom flange, a cylinder of wound yarn, top flange with its hole. */
 function makeSpoolEl(ci,n){
   const d=document.createElement("div"); d.className="spool";
   const hex=HEX[COLORS[ci]];
   d.style.setProperty("--c",hex);
-  d.style.setProperty("--fl",shadeHex(hex,0.16));
-  d.innerHTML='<div class="fl bot"></div><div class="body"></div>'+
-              '<div class="fl top"></div><div class="hole"></div>'+
-              '<div class="num">'+n+'</div>';
+  d.style.setProperty("--hi",shadeHex(hex,0.40));
+  d.style.setProperty("--lo",shadeHex(hex,-0.20));
+  d.style.setProperty("--dk",shadeHex(hex,-0.44));
+  d.innerHTML='<div class="sp-bot"></div><div class="sp-body"></div>'+
+              '<div class="sp-top"><i></i></div><div class="num">'+n+'</div>';
   return d;
 }
-const slotCenter=s=>({ x:SLOT_X0+s*(SLOT_W+SLOT_GAP)+SLOT_W/2, y:SLOT_Y+42 });
+/** The wound yarn gets thicker as the spool fills. */
+function setWound(sp){
+  const k=sp.start?1-sp.n/sp.start:0;
+  sp.el.style.setProperty("--bw",Math.round(94+26*k)+"px");
+}
+const slotCenter=s=>({ x:SLOT_X0+s*(SLOT_W+SLOT_GAP)+SLOT_W/2, y:SLOT_Y+34 });
 
 const G={ cols:[[],[],[],[]], slots:new Array(SLOT_COUNT).fill(null),
           phase:"play", remaining:0, pulled:0, bursts:[], wobble:0 };
@@ -543,7 +852,7 @@ function buildDOM(){
   }
   for(let c=0;c<4;c++){
     const col=document.createElement("div"); col.className="col";
-    col.style.left=(c*216)+"px"; queueEl.appendChild(col);
+    col.style.left=(COL_CX[c]-98)+"px"; queueEl.appendChild(col);
   }
   layoutQueue();
 }
@@ -558,7 +867,7 @@ function layoutQueue(){
         sp.el.addEventListener("pointerdown",e=>{ e.stopPropagation(); trySend(c); }); }
       if(sp.el.parentNode!==host) host.appendChild(sp.el);
       sp.el.style.top=ROW_Y[r]+"px";
-      sp.el.style.transform=r===0?"scale(1.12)":"scale(1)";
+      sp.el.style.transform=r===0?"scale(1.08)":"scale(1)";
       sp.el.style.zIndex=String(10-r);
     });
   }
@@ -575,10 +884,11 @@ function trySend(c){
   const sp=q.shift();
   if(sp.el) sp.el.remove();
   sp.el=makeSpoolEl(sp.color,sp.n);
-  sp.acc=0; sp.strand=0; sp.lastGrid=null; sp.anchorPos=null;
+  sp.acc=0; sp.strand=0; sp.lastGrid=null; sp.anchorPos=null; sp.fx=null; sp.start=sp.n;
   G.slots[free]=sp;
   slotsEl.children[free].appendChild(sp.el);
-  sp.el.animate([{transform:"scale(.5)",opacity:0},{transform:"scale(.88)",opacity:1}],
+  setWound(sp);
+  sp.el.animate([{transform:"scale(.5)",opacity:0},{transform:"scale(.9)",opacity:1}],
                 {duration:220,easing:"ease-out"});
   layoutQueue();
   return true;
@@ -610,10 +920,12 @@ function pullStep(dt){
       const [x,y,z]=cellXYZ(cell);
       sp.lastGrid=[x,y,z];
       sp.anchorPos=new THREE.Vector3(B.cx(x),B.cy(y),B.cz(z));
+      sp.fx=liftStitch(cell);                       // visual only: it lifts into the strand
       sp.strand=0.5; spun=true;
       killVoxel(cell); G.remaining--; G.pulled++;
       sp.n--; sp.el.querySelector(".num").textContent=sp.n;
-      sp.el.animate([{transform:"scale(.88)"},{transform:"scale(.98)"},{transform:"scale(.88)"}],
+      setWound(sp);
+      sp.el.animate([{transform:"scale(.9)"},{transform:"scale(.96)"},{transform:"scale(.9)"}],
                     {duration:140});
       G.wobble=0.9;
       if(sp.n<=0){
@@ -629,23 +941,51 @@ function pullStep(dt){
 }
 
 /* ---------------------------- yarn + bursts ---------------------------- */
+/** A thick twisted yarn: dark outline, body, then slanted ply bands along the curve. */
+function drawRope(p,q,hex,alpha){
+  const c1={x:p.x+(q.x-p.x)*0.10, y:p.y+(q.y-p.y)*0.62};
+  const c2={x:q.x, y:q.y-(q.y-p.y)*0.42};
+  const N=56, pts=[];
+  for(let i=0;i<=N;i++){
+    const t=i/N, it=1-t;
+    pts.push({x:it*it*it*p.x+3*it*it*t*c1.x+3*it*t*t*c2.x+t*t*t*q.x,
+              y:it*it*it*p.y+3*it*it*t*c1.y+3*it*t*t*c2.y+t*t*t*q.y});
+  }
+  const hi=shadeHex(hex,0.42), lo=shadeHex(hex,-0.30), dk=shadeHex(hex,-0.58);
+  yctx.globalAlpha=alpha; yctx.lineCap="round"; yctx.lineJoin="round";
+  const path=()=>{ yctx.beginPath(); yctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++) yctx.lineTo(pts[i].x,pts[i].y); };
+  path(); yctx.strokeStyle="rgba(4,10,28,.35)"; yctx.lineWidth=22; yctx.stroke();
+  path(); yctx.strokeStyle=dk; yctx.lineWidth=17; yctx.stroke();
+  path(); yctx.strokeStyle=hex; yctx.lineWidth=13; yctx.stroke();
+  // the twist: short slanted ply bands, light then dark, every few pixels of length
+  let acc=0;
+  yctx.lineWidth=3.2;
+  for(let i=1;i<pts.length;i++){
+    const ax=pts[i].x-pts[i-1].x, ay=pts[i].y-pts[i-1].y, L=Math.hypot(ax,ay)||1;
+    acc+=L; if(acc<8) continue; acc=0;
+    const tx=ax/L, ty=ay/L, nx=-ty, ny=tx, cx=pts[i].x, cy=pts[i].y;
+    yctx.strokeStyle=hi;
+    yctx.beginPath(); yctx.moveTo(cx+nx*5.6-tx*3.4,cy+ny*5.6-ty*3.4);
+    yctx.lineTo(cx-nx*5.6+tx*3.4,cy-ny*5.6+ty*3.4); yctx.stroke();
+    yctx.strokeStyle=lo;
+    yctx.beginPath(); yctx.moveTo(cx+nx*5.6-tx*0.6,cy+ny*5.6-ty*0.6);
+    yctx.lineTo(cx-nx*5.6+tx*6.2,cy-ny*5.6+ty*6.2); yctx.stroke();
+  }
+  path(); yctx.strokeStyle="rgba(255,255,255,.18)"; yctx.lineWidth=3; yctx.stroke();
+  yctx.fillStyle=hex; yctx.beginPath(); yctx.arc(p.x,p.y,8,0,Math.PI*2); yctx.fill();
+  yctx.globalAlpha=1;
+}
 function drawOverlay(){
   yctx.setTransform(DPR,0,0,DPR,0,0);      // backing store is DPR-scaled; draw in stage units
   yctx.clearRect(0,0,ST_W,ST_H);
   for(let s=0;s<SLOT_COUNT;s++){
     const sp=G.slots[s]; if(!sp||!sp.anchorPos||sp.strand<=0) continue;
-    const w=V3.copy(sp.anchorPos); group.localToWorld(w); w.project(camera);
+    // follow the stitch while it lifts off, then hold at the spot it left
+    const src=(sp.fx&&sp.fx.t<LIFT_TIME)?sp.fx.pos:sp.anchorPos;
+    const w=V3.copy(src); group.localToWorld(w); w.project(camera);
     const p={x:(w.x*0.5+0.5)*GL_W, y:(-w.y*0.5+0.5)*GL_H+GL_TOP};
-    const q=slotCenter(s);
-    yctx.globalAlpha=Math.min(1,sp.strand/0.35);
-    yctx.strokeStyle=HEX[COLORS[sp.color]];
-    yctx.lineWidth=8; yctx.lineCap="round";
-    yctx.beginPath(); yctx.moveTo(p.x,p.y);
-    yctx.quadraticCurveTo((p.x+q.x)/2+(s-2)*46,(p.y+q.y)/2-90,q.x,q.y);
-    yctx.stroke();
-    yctx.globalAlpha=1;
-    yctx.fillStyle=HEX[COLORS[sp.color]];
-    yctx.beginPath(); yctx.arc(p.x,p.y,7,0,Math.PI*2); yctx.fill();
+    drawRope(p,slotCenter(s),HEX[COLORS[sp.color]],Math.min(1,sp.strand/0.35));
   }
   for(const b of G.bursts){
     yctx.globalAlpha=Math.max(0,1-b.t/b.life); yctx.fillStyle=b.c;
@@ -711,15 +1051,10 @@ window.addEventListener("pointercancel",()=>{ dragging=false; idleT=0; });
 let DEBUG=false, botOn=false, botT=0;
 const hud=document.getElementById("hud");
 function applyColors(){
-  const hi=new Set();
-  if(DEBUG) for(const s of G.slots) if(s) for(const cell of visibleByColor[s.color]) hi.add(cell);
-  for(let k=0;k<vlist.length;k++){
-    const cell=vlist[k];
-    if(hi.has(cell)) COL.setRGB(1,1,1).lerp(new THREE.Color(HEX[COLORS[B.color[cell]]]),0.30);
-    else COL.setRGB(baseCol[k*3],baseCol[k*3+1],baseCol[k*3+2]);
-    mesh.setColorAt(k,COL);
-  }
-  mesh.instanceColor.needsUpdate=true;
+  debugHi=new Set();
+  if(DEBUG) for(const sl of G.slots) if(sl) for(const cell of visibleByColor[sl.color]) debugHi.add(cell);
+  for(let n=0;n<gpuCount;n++) mesh.setColorAt(n,stitchColor(gpuCell[n],COL));
+  gpuDirty=true;
 }
 window.addEventListener("keydown",e=>{
   const k=e.key.toLowerCase();
@@ -764,7 +1099,7 @@ function resetState(){
   G.cols=LEVEL.cols.map(col=>col.map(s=>({color:s.color,n:s.n,el:null})));
   G.phase="play"; G.pulled=0; G.bursts.length=0; G.wobble=0;
   ovl.classList.remove("on");
-  buildMesh(); buildDOM(); computeVisible(); recountExposed();
+  buildMesh(); buildDecos(); buildDOM(); computeVisible(); recountExposed();
 }
 function restart(){ resetState(); }
 document.getElementById("ovlBtn").addEventListener("click",restart);
@@ -775,11 +1110,11 @@ function recountExposed(){
   for(let k=0;k<vlist.length;k++) if(drawn[k]) expCount[B.color[vlist[k]]]++;
 }
 
-let last=0, visT=0;
+let last=0, visT=0, holdPose=false;   // holdPose: screenshot/test hook only
 function frame(ts){
   const dt=Math.min(((ts-last)/1000)||0,0.05); last=ts;
   if(!dragging){ idleT+=dt;
-    if(idleT>AUTO_RESUME_DELAY) group.rotateOnWorldAxis(YAXIS,AUTO_ROTATE_SPEED*dt); }
+    if(idleT>AUTO_RESUME_DELAY && !holdPose) group.rotateOnWorldAxis(YAXIS,AUTO_ROTATE_SPEED*dt); }
   visT+=dt;
   if(visT>=VISIBILITY_MS/1000){ visT=0; computeVisible(); recountExposed(); if(DEBUG) applyColors(); }
   if(G.phase==="play"){ if(botOn) botTick(dt); pullStep(dt); }
@@ -789,6 +1124,7 @@ function frame(ts){
   for(let i=G.bursts.length-1;i>=0;i--){ const b=G.bursts[i];
     b.t+=dt; b.x+=b.vx*dt; b.y+=b.vy*dt; b.vy+=1200*dt;
     if(b.t>=b.life) G.bursts.splice(i,1); }
+  updateFx(dt); updateDecos(dt); flushGPU();
   renderer.render(scene,camera);
   drawOverlay();
   if(DEBUG) hud.textContent="left "+G.remaining+" | slot-visible "+
@@ -833,7 +1169,8 @@ function frame(ts){
     get alive(){return alive}, get B(){return B}, get expCount(){return expCount},
     get drawn(){return drawn}, get vlist(){return vlist},
     get DEBUG(){return DEBUG}, get botOn(){return botOn}, get idleT(){return idleT},
-    setBot(v){ botOn=v; }, setDebug(v){ DEBUG=v; } };
+    setBot(v){ botOn=v; }, setDebug(v){ DEBUG=v; }, freeze(v){ holdPose=!!v; },
+    get decos(){return decos}, get fx(){return fx}, get gpuCount(){return gpuCount} };
 
   resize(); resetState();
   requestAnimationFrame(frame);
