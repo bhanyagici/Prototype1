@@ -1216,7 +1216,10 @@ requestAnimationFrame(frame);
 // an open editor answers a hello with its current level (only to this game instance)
 helloId = 'g' + Math.random().toString(36).slice(2);
 if (parent !== window) parent.postMessage({type:'hello', hello:helloId}, '*');
-else if (chan) chan.postMessage({type:'hello', hello:helloId});
+else {
+  if (chan) chan.postMessage({type:'hello', hello:helloId});
+  try { if (opener && !opener.closed) opener.postMessage({type:'hello', hello:helloId}, '*'); } catch (e) {}   // the editor that opened this tab
+}
 
 /* test hooks */
 window.__me = {

@@ -160,22 +160,35 @@ function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add(
 /* ======================= PREVIEW / RUN / SYNC ======================= */
 const chan = S.channel();
 const preview = $('preview');
-/* target: undefined = preview + every game tab; 'preview' = only the iframe; {to} = one game tab */
+/* game tabs this editor opened (window.opener) also get every message by postMessage, which
+   works where BroadcastChannel can't (e.g. a blob: tab from the single-file editor) */
+const tabs = new Set(), answered = new Set();
+/* target: undefined = preview + every game tab; 'preview' = only the iframe; {to, win?} = one game tab */
 function send(type, target){
   const msg = {type, id:'ed' + Date.now() + '-' + (++msgSeq), level:lvl};
   S.saveCurrent(lvl);                                  // the game falls back to this when opened later
   if (!target || target === 'preview'){ try { preview.contentWindow.postMessage(msg, '*'); } catch (e) {} }
-  if (chan && target !== 'preview'){ if (target && target.to) msg.to = target.to; chan.postMessage(msg); }
+  if (target === 'preview') return msg.id;
+  if (target && target.to) msg.to = target.to;
+  if (chan) chan.postMessage(msg);
+  for (const w of tabs){ if (w.closed){ tabs.delete(w); continue; } if (!target || target.win === w) try { w.postMessage(msg, '*'); } catch (e) {} }
   return msg.id;
+}
+/* a game tab boots and says hello (on the channel and to its opener): answer each hello once */
+function answerHello(d, win){
+  if (win) tabs.add(win);
+  if (answered.has(d.hello)) return; answered.add(d.hello);
+  send('run', {to:d.hello, win});
 }
 function run(){ clearTimeout(autoTimer); autoTimer = null; send('run'); $('status').textContent = 'preview: running "' + (lvl.name || 'level') + '"…'; }
 function scheduleAuto(){ clearTimeout(autoTimer); autoTimer = setTimeout(run, 500); }
 addEventListener('message', e => {
   const d = e.data; if (!d || typeof d !== 'object') return;
   if (d.type === 'hello' && e.source === preview.contentWindow) send('run', 'preview');   // the preview booted: give it our level
+  else if (d.type === 'hello' && d.hello && e.source) answerHello(d, e.source);          // a game tab we opened
   if (d.type === 'game-status'){ previewInfo = d; $('status').textContent = `preview: "${d.name}" · ${d.men} stickmen · ${d.buses} buses (${d.source})`; }
 });
-if (chan) chan.onmessage = e => { if (e.data && e.data.type === 'hello') send('run', {to:e.data.hello}); };   // a new game tab asks for the level
+if (chan) chan.onmessage = e => { if (e.data && e.data.type === 'hello' && e.data.hello) answerHello(e.data); };   // a new game tab asks for the level
 $('runBtn').onclick = run;
 $('watchBtn').onclick = () => { send('watch'); $('status').textContent = 'preview: greedy bot playing…'; };
 $('tabBtn').onclick = () => { S.saveCurrent(lvl); window.open('index.html', '_blank'); };

@@ -119,6 +119,24 @@ Level format 2:
 In `columns`, each list is one column, front cell first. `"?colour"` is a hidden
 stickman and `null` is an empty cell. Each lane lists its front bus first.
 
+## Single-file versions (double-click, no server)
+
+```
+node tools/build-standalone.js
+```
+
+This writes two files to `dist/`. Each one works when you open it straight from disk:
+- **`match-express-game.html`** is the game with `shared/core.js` and
+  `shared/sync.js` inlined.
+- **`match-express-editor.html`** is the editor with everything inlined. The game
+  preview is embedded through `iframe srcdoc`, so it needs no second file. RUN and
+  Auto-run work as usual. *Open in new tab* opens the same embedded game in a new
+  tab. That tab gets every later RUN through `window.opener`.
+
+Both still load three.js from the pinned CDN, so they need an internet connection.
+Opened from disk, a separately opened game file may not sync with the editor, because
+browsers isolate `file://` pages.
+
 ## Speed, sound, animation
 
 - **1x / 2x** (top right, next to settings) sets one global time scale for the
@@ -238,6 +256,7 @@ node tests/rules.test.js      # 28 rule checks (unchanged)
 node tests/layout.test.js     # yard clearance sweep (unchanged)
 node tests/shared.test.js     # 45 checks: level format, layout builder, warnings, difficulty, links
 node tests/browser.test.js    # 46 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/standalone.test.js # 10 checks: builds dist/ and opens both single files from file://
 ```
 
 The first three need only Node and no dependencies; they load `shared/core.js`.
