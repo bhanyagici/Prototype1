@@ -43,7 +43,8 @@ Screenshots (390 × 844):
   and [close up](screenshots/game-cheering-close.png);
 - [a full bus driving off the road edge](screenshots/game-exit.png), and
   [close up](screenshots/game-exit-close.png);
-- [the parachute](screenshots/game-parachute.png).
+- [the parachute](screenshots/game-parachute.png);
+- [a bus fading into the exit tunnel](screenshots/game-tunnel-close.png), close up.
 
 ## Opening the editor next to the game
 
@@ -209,8 +210,10 @@ browsers isolate `file://` pages.
   - a dark interior that fades to black, with the road running into it;
   - a grassy roof mound behind the arch.
 
-  The arch is aligned with the road direction at the mouth. Buses fade into the dark
-  and come out of it.
+  The arch is aligned with the road direction at the mouth. A bus fades into the dark
+  front first and comes out rear last. The darkening is per pixel, behind the
+  mouth: a shader patch on the road, bus, wheel and stickman materials. A bus is
+  fully dark by the time the core hides it, so it never pops.
 - **Animation:** nothing snaps.
   - Buses ease in and out, and sit on spring suspension.
   - They lean in curves, their wheels turn, and they pitch forward on hard brakes.
