@@ -1145,7 +1145,7 @@ function updateBus(v, t, vdt){
   v.brakeAmt += ((braking ? 1 : 0) - v.brakeAmt)*(vdt > 0 ? 1 - Math.exp(-vdt/0.06) : 0);
   if (v.aLong < -5.5 && t - v.squeakT > 1.2 && (b.state === 'road' || b.state === 'toRoad')){
     v.squeakT = t; if (t - lastSqueak > 0.3){ lastSqueak = t; sfx.squeak(); }
-    if (t - v.dustT > 0.8 && dark < 0.2){ v.dustT = t;                // hard stop: a little dust kicked up at the front wheels
+    if (v.aLong < -10 && t - v.dustT > 2.5 && dark < 0.2){ v.dustT = t;   // a really hard stop: a little dust kicked up at the front wheels
       _v.set(0, 0.08, b.len/2 - 0.3).applyMatrix4(v.root.matrixWorld); puff(_v.clone(), 7, [Math.sin(v.h), Math.cos(v.h)], 0.55, 0.7); }
   }
   let px = 0, py = v.bob*0.08, pz = 0, extraPitch = 0;
