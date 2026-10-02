@@ -65,8 +65,8 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
       await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       const m = await p.evaluate(() => { __me.freeze(true); __me.render(); return __me.measure(); });
-      chk(m.men.n === 192 && m.men.min >= 22, 'on 390 x 844 every standing stickman is at least 22 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
-      chk(m.bay8 >= 70, 'an 8-seat bus in a bay is at least 70 px long', m.bay8.toFixed(1) + ' px');
+      chk(m.men.n === 192 && m.men.min >= 16, 'on 390 x 844 (fixed camera) every standing stickman is at least 16 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
+      chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long (bays at 0.8)', m.bay8.toFixed(1) + ' px');
       // cheering: everyone the stopped bus will take at this stop (whole chain), checked against who really boards
       const ch = await p.evaluate(() => { __me.setBot(true);
         for (let i = 0; i < 3000; i++){ __me.advance(1/30); const g = __me.game;
@@ -152,10 +152,10 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     const afterRedo = await ed.evaluate(() => __ed.level.name);
     chk(afterUndo === nm && afterRedo === 'Undo me', 'Ctrl+Z / Ctrl+Shift+Z undo and redo an edit', `${afterUndo} / ${afterRedo}`);
     // road editing with the mouse: click on the road adds a point, right-click deletes, drag moves
-    await ed.evaluate(lv => { __ed.setLevel(lv); __ed.setTab('road'); }, CLASSIC);
+    await ed.evaluate(() => { __ed.setLevel(JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA))); __ed.setTab('road'); });
     const box = await ed.locator('#view').boundingBox();
     const toScreen = async (x, z) => { const [sx, sy] = await ed.evaluate(([x, z]) => __ed.W2S(x, z), [x, z]); return [box.x + sx, box.y + sy]; };
-    const roadPt = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, (R.pointS[11] + R.pointS[12])/2, o, 0); return [o.x, o.z]; });
+    const roadPt = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, (R.pointS[9] + R.pointS[10])/2, o, 0); return [o.x, o.z]; });
     const before0 = await ed.evaluate(() => __ed.level.road.points.map(p => p.x + ',' + p.z)), n0 = before0.length;
     let [mx, my] = await toScreen(...roadPt); await ed.mouse.click(mx, my);
     const after0 = await ed.evaluate(() => __ed.level.road.points.map(p => p.x + ',' + p.z)), n1 = after0.length;
@@ -176,6 +176,16 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(await ed.evaluate(() => __ed.level.road.points.length) === n0 - 1, 'a touch long-press on a control point deletes it');
       await ed.keyboard.press('Control+z'); }
     chk(await ed.evaluate(() => __ed.check.warnings.length === 0 && __ed.level.ramps.every(r => r.at != null)), 'ramps stay attached (re-snapped) after road edits and the level stays warning-free');
+    // the target zone: the wide classic road leaves it -> warnings in the list; a point added out there lands inside the frame
+    await ed.evaluate(lv => { __ed.setLevel(lv); __ed.setTab('road'); }, CLASSIC);
+    chk(await ed.evaluate(() => __ed.check.warnings.some(w => w.kind === 'zone-road') && /target zone/.test(document.body.textContent)), 'a road outside the target zone is listed in the checks');
+    { const far = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; const n = R.pointS.length; window.MECore.pathAt(R, (R.pointS[n-2] + R.pointS[n-1])/2, o, 0); return [o.x, o.z]; });
+      const n2 = await ed.evaluate(() => __ed.level.road.points.length);
+      await ed.evaluate(([x, z]) => { const cv = document.getElementById('view'), r = cv.getBoundingClientRect(), [sx, sy] = __ed.W2S(x, z);   // may be off the visible canvas
+        const o = {clientX:r.left + sx, clientY:r.top + sy, pointerId:78, pointerType:'mouse', bubbles:true, button:0};
+        cv.dispatchEvent(new PointerEvent('pointerdown', o)); cv.dispatchEvent(new PointerEvent('pointerup', o)); }, far);
+      const np = await ed.evaluate(n => { const pts = __ed.level.road.points; if (pts.length !== n + 1) return null; const p = pts[__ed.sel.point]; return [p.x, p.z, window.MECore.inTarget(p.x, 0.9, p.z)]; }, n2);
+      chk(np && np[2], 'a road point added outside the frame is created inside it', JSON.stringify({clicked:far.map(v => +v.toFixed(2)), placed:np})); }
     // spiral toggle from the panel
     await ed.evaluate(() => { __ed.sel.point = 13; __ed.setTab('road'); });
     await ed.locator('button', {hasText:'Spiral off'}).click();

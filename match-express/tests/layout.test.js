@@ -41,4 +41,37 @@ console.log('  min separation',worst[0][0].toFixed(3));
 allMin=Math.min(allMin,worst[0][0]); worst=[];
 }
 console.log('min separation',allMin.toFixed(3));
-process.exitCode = allMin > 0 ? 0 : 1;
+
+// the drawn queue on the fixed 390 x 844 screen: lanes start in the queue zone; with every lane full of
+// 8-seat buses at least 3 per lane are fully visible; for any mix of sizes the drawn buses never overlap
+let qFail=0;
+const H=C.SCREEN.h, SW=C.SCREEN.w, cam=C.SCREEN_CAM, BUS_H=1.05;
+function drawnQueue(caps){                    // sim queue (as createGame stacks it) -> drawn boxes
+  const out=[]; let z=C.Z_LANE_TOP+0.12;
+  for(const cap of caps){ const len=C.busLen(cap), zc=z+len/2, s=C.dispScale(zc), dz=C.dispZ(zc);
+    out.push({cap, s, top:dz-s*len/2, bot:dz+s*len/2}); z+=len+C.LANE_GAP; }
+  return out;
+}
+function visible(x, b){                       // the whole drawn bus (wheels to roof) is on screen
+  const sx=C.dispSx(C.Z_LANE_TOP), hw=b.s*C.BUS_W/2;
+  for(const dx of [-hw,hw]) for(const z of [b.top,b.bot]) for(const y of [0,BUS_H*b.s]){
+    const [u,v]=C.project(x*sx+dx,y,z,cam); if(u<0||u>SW||v<0||v>H) return false; }
+  return true;
+}
+for(const l of [0,1,2]){
+  const q=drawnQueue(new Array(8).fill(8)), x=C.LANE_X[l];
+  const n=q.filter(b=>visible(x,b)).length;
+  const topV=C.project(x*C.dispSx(C.Z_LANE_TOP),0,q[0].top,cam)[1]/H;
+  const ok=n>=3 && q[0].s===1 && q.slice(1).every(b=>Math.abs(b.s-C.DISP.QS)<1e-9) && topV>=C.SCREEN.STATIC_BOT-0.01;
+  if(!ok) qFail++;
+  console.log(`  lane ${l}: ${n} eight-seat buses fully visible, front at ${(q[0].s*100).toFixed(0)}%, the rest at ${(q[1].s*100).toFixed(0)}%, queue starts at ${(topV*100).toFixed(1)}% ${ok?'OK':'FAIL'}`);
+}
+{ const caps=[4,6,8,12]; let minGap=9;
+  for(const a of caps) for(const b of caps) for(const c of caps){ const q=drawnQueue([a,b,c]); for(let i=1;i<q.length;i++) minGap=Math.min(minGap,q[i].top-q[i-1].bot); }
+  const lanesGap=(C.LANE_X[1]-C.LANE_X[0])*C.dispSx(C.Z_LANE_TOP)-C.BUS_W;
+  console.log(`  drawn queue: smallest gap between buses ${minGap.toFixed(3)}, between lanes ${lanesGap.toFixed(3)} ${minGap>0.05&&lanesGap>0.05?'OK':'FAIL'}`);
+  if(!(minGap>0.05&&lanesGap>0.05)) qFail++;
+  const n4=drawnQueue(new Array(10).fill(4)).filter(b=>visible(0,b)).length, n12=drawnQueue(new Array(10).fill(12)).filter(b=>visible(0,b)).length;
+  console.log(`  fully visible per lane: ${n4} four-seat, ${n12} twelve-seat buses`);
+}
+process.exitCode = allMin > 0 && !qFail ? 0 : 1;

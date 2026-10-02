@@ -99,12 +99,13 @@ console.log('editor checks and warnings');
   const cross = clone(CL); delete cross.road.points[8].spiral; delete cross.road.tail;
   cross.road.points.splice(9, 0, {x:1.6, z:-10.6}, {x:1.8, z:-8.2}, {x:-1.6, z:-8.4});
   chk(kinds(cross).includes('road-cross'), 'a road crossing itself outside a spiral is reported', kinds(cross).join(','));
-  const wideR = clone(C.LEVEL_DATA); wideR.road.points[10].x = 5.8;
-  const Lw = C.buildLayout(wideR);
-  chk(Lw.CAM.zoom > 1 && !kinds(wideR).includes('road-offscreen'), 'a road that is a bit too wide makes the camera pull back to fit it (no warning)', 'zoom ' + Lw.CAM.zoom);
-  const off = clone(CL); delete off.road.tail; off.road.points[14].x = 30;
-  const ko = C.checkLevel(off).warnings.filter(w => w.kind === 'road-offscreen');
-  chk(ko.length > 0 && ko.every(w => typeof w.x === 'number'), 'a road beyond what the camera can show (even pulled back) is reported with a position');
+  const wideR = clone(C.LEVEL_DATA); wideR.road.points[10].x = 7.5;
+  const kw = C.checkLevel(wideR).warnings.filter(w => w.kind === 'zone-road');
+  chk(C.buildLayout(wideR).CAM === C.SCREEN_CAM && kw.length > 0 && kw.every(w => typeof w.x === 'number'), 'a road leaving the target zone is reported with a position (the camera never moves)');
+  const off = clone(C.LEVEL_DATA); off.road.points[off.road.points.length - 1].z = -30; delete off.road.tail;
+  chk(kinds(off).includes('zone-exit'), 'an exit tunnel beyond the top of the target zone is reported');
+  const wr = clone(C.PRESETS['crowded-rush']); wr.ramps[0].tilt = 0;           // the same ramp, laid flat: its far end leaves the screen
+  chk(kinds(wr).includes('zone-ramp'), 'a ramp reaching out of the target zone is reported');
   const tight = clone(CL); delete tight.road.tail; tight.road.points.splice(5, 0, {x:1.6, z:-6.0}, {x:-1.4, z:-6.3});
   chk(kinds(tight).includes('road-tight'), 'a curve too tight for a 12-seat bus is reported');
   chk(!kinds(C.LEVEL_DATA).some(k => k.startsWith('road')), 'the built-in road has no road warnings (its loop is a spiral)');
@@ -140,8 +141,13 @@ console.log('compact layout (built-in level)');
   let roadOk = true; for (let i = 0; i < L.ROAD.n; i += 4) if (L.ROAD.cum[i] <= L.ROAD.portalS){ const [u, v] = pr(L.ROAD.P[i*3], L.ROAD.P[i*3+1], L.ROAD.P[i*3+2]); if (!inX(u) || v < 120) roadOk = false; }
   let rampOk = true; L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => { const [u, v] = pr(q.x, q.y + 0.8, q.z); if (u < 10 || u > 890 || v < 120) rampOk = false; })));
   chk(yardOk && laneOk && roadOk && rampOk, 'camera framing: side lanes, front queue buses, road and every ramp stickman are on screen');
-  const bay = L.Y.BAY_X.map(x => (pr(x, 0, C.parkZ(C.busLen(8)) + C.busLen(8)/2)[1] - pr(x, 0, C.parkZ(C.busLen(8)) - C.busLen(8)/2)[1])*k);
-  chk(Math.min(...bay) >= 70, 'an 8-seat bus in any bay is at least 70 px long on a 390 x 844 screen', Math.min(...bay).toFixed(1) + ' px');
+  // the drawn yard: bays inside the static row, an 8-seat bus there at 0.8 of its front-of-queue size
+  const H = 1950, len8 = C.busLen(8), shown = (x, z, len) => { const s = C.dispScale(z), [a, b] = [C.dispPoint(x, z - s*len/2), C.dispPoint(x, z + s*len/2)];
+    return (pr(b[0], 0, b[1])[1] - pr(a[0], 0, a[1])[1])*k; };
+  const bayTop = pr(0, 0, C.dispZ(C.Z_BAY_TOP))[1]/H, bayBot = pr(0, 0, C.dispZ(C.Z_BAY_BOT))[1]/H;
+  chk(bayTop > C.SCREEN.TARGET_BOT && bayBot < C.SCREEN.STATIC_BOT, 'bays are drawn inside the static row', (bayTop*100).toFixed(1) + '% - ' + (bayBot*100).toFixed(1) + '%');
+  const inBay = Math.min(...L.Y.BAY_X.map(x => shown(x, C.parkZ(len8), len8))), front = shown(0, C.laneSlotZ(len8), len8);
+  chk(Math.abs(C.dispScale(C.parkZ(len8)) - 0.8) < 1e-9 && C.dispScale(C.laneSlotZ(len8)) === 1 && inBay > 30, 'parked buses are drawn at 0.8 (front of the queue at full size)', inBay.toFixed(1) + ' px vs ' + front.toFixed(1) + ' px');
 }
 
 console.log('linked buses');
@@ -163,10 +169,19 @@ console.log('linked buses');
   chk(['win', 'fail'].includes(gr.result), 'a level with links still plays to an end with the bots', gr.result);
 }
 
-console.log('\nbundled levels (Crowded Rush)');
+console.log('\nbundled levels');
 {
-  const CR = require('../levels/crowded-rush.json'), src = C.PRESETS['crowded-rush'];
-  chk(JSON.stringify(src) === JSON.stringify(CR), 'the bundled Crowded Rush in core matches levels/crowded-rush.json');
+  const fs = require('fs'), files = fs.readdirSync(__dirname + '/../levels').filter(f => f.endsWith('.json')).map(f => f.replace('.json', ''));
+  chk(files.length >= 2 && files.every(id => JSON.stringify(C.PRESETS[id]) === JSON.stringify(require('../levels/' + id + '.json'))) && Object.keys(C.PRESETS).length === files.length,
+      'every levels/<id>.json is bundled in core unchanged (tools/sync-presets.js)', files.join(', '));
+  // every bundled level (and Level 2) fits the target zone of the one fixed camera
+  const hr = 0.156, hy = 0.78 - hr, body = [[0.07,0,0.07], [-0.07,0,-0.07], [0,hy+hr,0], [0,hy,hr], [0,hy,-hr], [0,hy+hr*0.7,-hr*0.7]];
+  const manPx = q => { const ys = body.map(b => C.project(q.x + b[0], q.y + b[1], q.z + b[2], C.SCREEN_CAM)[1]); return (Math.max(...ys) - Math.min(...ys))*390/900; };
+  for (const [id, lv] of [['Level 2', C.LEVEL_DATA]].concat(Object.entries(C.PRESETS))){
+    const ck = C.checkLevel(lv), Lx = C.buildLayout(lv); let mn = 1e9; Lx.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => { mn = Math.min(mn, manPx(q)); })));
+    chk(!ck.warnings.length && ck.balanced && Lx.CAM === C.SCREEN_CAM && mn >= 16, id + ': inside the target zone, no warnings, stickmen >= 16 px', (ck.warnings.map(w => w.kind).join(',') || 'clean') + ', smallest stickman ' + mn.toFixed(1) + ' px');
+  }
+  const CR = require('../levels/crowded-rush.json');
   const ck = C.checkLevel(CR), L = C.buildLayout(CR);
   chk(!ck.warnings.length && ck.balanced, 'Crowded Rush: no layout warnings, seats match stickmen', ck.warnings.map(w => w.kind).join(',') || 'clean');
   chk(CR.ramps.length === 4 && CR.ramps.every(r => r.columns.length === 6 && r.rows === 15 && r.tilt >= 30 && r.tilt <= 35), 'Crowded Rush: 4 ramps of 6 x 15, tilted 30-35 degrees');
@@ -176,12 +191,11 @@ console.log('\nbundled levels (Crowded Rush)');
   chk(outward, 'Crowded Rush: each ramp runs diagonally outward and up at its tilt');
   // the whole layout is on screen, stickmen stay readable
   const cam = L.CAM, k = 390/cam.w; let off = 0, minPx = 1e9;
-  const hr = 0.156, hy = 0.78 - hr, body = [[0.07,0,0.07], [-0.07,0,-0.07], [0,hy+hr,0], [0,hy,hr], [0,hy,-hr], [0,hy+hr*0.7,-hr*0.7]];
   L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => {      // on-screen height of a stickman (feet to the top of the head)
     const ys = body.map(b => C.project(q.x + b[0], q.y + b[1], q.z + b[2], cam)), f = ys[0];
     if (f[0] < 0 || f[0] > cam.w || Math.min(...ys.map(v => v[1])) < 0) off++;
     minPx = Math.min(minPx, (Math.max(...ys.map(v => v[1])) - Math.min(...ys.map(v => v[1])))*k); })));
-  chk(off === 0 && cam.zoom <= 1.4 && minPx >= 16, 'Crowded Rush: camera fits every stickman on a 390 x 844 screen, stickmen >= 16 px tall on screen', 'zoom ' + cam.zoom + ', smallest stickman ' + minPx.toFixed(1) + ' px');
+  chk(off === 0 && cam === C.SCREEN_CAM && minPx >= 16, 'Crowded Rush: the fixed camera shows every stickman on a 390 x 844 screen, stickmen >= 16 px tall', 'smallest stickman ' + minPx.toFixed(1) + ' px');
   const g = sim(CR);
   chk(g.result === 'win', 'Crowded Rush: the greedy bot wins', g.sends + ' sends, ' + g.t.toFixed(1) + ' s');
   // editor default ramp: a tilted platform with no shape gets its length from rows and columns

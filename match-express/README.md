@@ -11,31 +11,77 @@
 
 ![390x844 screenshot](screenshot-390.png)
 
-## Look and proportions
+## Look and proportions: one fixed screen layout
 
-The camera is much closer than in the first prototype. Measured on a 390 × 844 screen
-(`__me.measure()`, checked by `tests/browser.test.js`):
-- every standing stickman is at least **22.7 px** tall (24.0 px on average; it was
-  about 7 px);
-- an 8-seat bus in a bay is **71.9 px** long (it was 43.5 px).
+Every level uses the **same screen layout, zones and camera** (`SCREEN` and `SCREEN_CAM`
+in `shared/core.js`). The camera never moves per level. On a 390 × 844 screen (fractions
+of the height):
 
-The top bar, the road with all five ramps, the static row and the front bus of every
-queue lane all fit on screen. To get there:
-- **The layout is compact.**
-  - The road runs straight up the middle, and the ramps sit edge to edge on
-    alternating sides.
-  - A tighter spiral (radius 1.0, was 1.4) sits at the top, beside the last ramp. The
-    road then turns into the exit tunnel.
-  - The road is 21.7 units long, against 40.5 before.
-- **The yard is narrower.** The side lanes are at x = ±3.8 (was ±4.32) and the queue
-  lanes at ±1.64 (was ±1.72). The bays keep their spacing, which the 12-seat buses
-  need to turn in and out. The layout test still finds no overlap.
-- **The camera is steeper:** about 56° instead of 46°.
+| zone | from – to | what is in it |
+|---|---|---|
+| top bar | 0 – 7% | level name, restart, speed, settings |
+| **target zone** | 7 – 61% | road, spiral, ramps and exit tunnel of every level |
+| static row | 61 – 77% | entry road, the five bays and the collector road |
+| queue | 77 – 100% | the three queue lanes |
 
-The yard geometry and the camera are a **yard preset** in `shared/core.js` (`YARDS`).
-A level with `"yard": "classic"` gets the original wide yard and camera.
-`tests/fixtures/level2-classic.json` is the built-in level with its original layout.
-It still replays bit for bit against the pre-editor baseline (see Verification).
+You asked for 62% and 72%. The static row and queue boundary moved to 77% so the
+queue shows three 8-seat buses per lane; the zones are the same for every level.
+- **Camera:** pitched at 52° and chosen so the largest bundled level, Crowded Rush
+  Curve, fills the target zone. Stickmen are about 17.4 px tall.
+- **Drawn yard:** the yard and queue are *drawn* smaller than the simulation lays them
+  out. `C.dispPoint` / `C.dispScale` map a simulated position to where it is drawn;
+  the simulation itself is unchanged. In detail:
+  - the bays, the yard roads and the parked buses are drawn at 0.8 (bays 20% smaller);
+  - the margin between the collector road and the queue is squeezed, and the
+    collector has no curb strip on the queue side;
+  - in each lane only the front bus is full size; the buses behind it are drawn at 0.85
+    with tighter gaps, and they grow smoothly as they reach the front;
+  - buses shrink smoothly as they enter the yard and grow as they leave it;
+  - the return tunnel still picks its side by itself, inside the drawn yard.
+- **Queue:** with every lane full of 8-seat buses, 3 per lane are fully visible
+  (4 four-seat buses, 2 twelve-seat ones), checked by `tests/layout.test.js`.
+- **Bus sizes:** an 8-seat bus is about 55 px long at the front of the queue and about
+  41 px in a bay.
+
+The level checker reports anything outside the target zone (`zone-road`, `zone-ramp`,
+`zone-exit`, with positions). The editor draws the zone as a yellow frame.
+
+The yard and queue are not part of the level: the editor has no setting for them.
+`"yard": "classic"` is kept only so `tests/fixtures/level2-classic.json` (the original
+wide layout) still replays bit for bit against the pre-editor baseline (see
+Verification). It is drawn through the same fixed layout and does not fit the
+target zone.
+
+### Bundled levels
+
+| id | name | file |
+|---|---|---|
+| (built in) | Level 2 | `LEVEL_DATA` in `shared/core.js` |
+| `crowded-rush` | Crowded Rush | `levels/crowded-rush.json` |
+| `crowded-rush-curve` | Crowded Rush Curve | `levels/crowded-rush-curve.json` |
+
+- **Opening one:** use the game's settings menu (*Play Level 2 / Play Crowded Rush /
+  Play Crowded Rush Curve*) or `index.html?level=<id>`. The editor seeds a slot for
+  each.
+- **Changing one:** after editing a file in `levels/`, run `node tools/sync-presets.js`
+  to copy it into the core. The game and editor run from `file://` and cannot fetch
+  JSON.
+- **Fit:** all three fit the target zone without any change to their road or ramps.
+- **Bots** (unchanged before and after this layout work; the simulation did not
+  change):
+
+| level | greedy bot | random bots | difficulty |
+|---|---|---|---|
+| Level 2 | win, 51 sends, 188 s | 35/200 | Medium |
+| Crowded Rush | win, 74 sends, 263 s | 9/200 | Very Hard |
+| Crowded Rush Curve | win, 74 sends, 263 s | 6/200 | Very Hard |
+
+Screenshots (390 × 844):
+- [Level 2](screenshots/level-2-390.png);
+- [Crowded Rush](screenshots/crowded-rush-390.png);
+- [Crowded Rush Curve](screenshots/crowded-rush-curve-390.png), and
+  [while playing](screenshots/crowded-rush-curve-playing-390.png);
+- [all of them with the zone lines](screenshots/fixed-layout-zones.png).
 
 ### Crowded Rush (bundled level)
 
@@ -49,10 +95,7 @@ unchanged from the original file; only the road and ramps moved.
 - **Opening it:**
   - the editor seeds it as the slot "Crowded Rush";
   - the game opens it with `index.html?level=crowded-rush`.
-- **Camera:** the camera pulls back by itself until the whole layout fits, at most 1.5×.
-  - Crowded Rush needs 1.34×, so stickmen are about 17 px tall and an 8-seat bus is
-    about 56 px on 390 × 844. Level 2 still fits at 1×.
-  - [Side by side with the mockup](screenshots/crowded-rush-vs-mockup.png).
+- [Side by side with the mockup](screenshots/crowded-rush-vs-mockup.png) (taken before the fixed layout).
 - **Bots:** the greedy bot wins in 74 sends (263 s). Random bots win 9/200, which is
   *Very Hard*.
 
@@ -182,13 +225,18 @@ stickman and `null` is an empty cell. Each lane lists its front bus first.
 node tools/build-standalone.js
 ```
 
-This writes two files to `dist/`. Each one works when you open it straight from disk:
+This writes four files to `dist/`. Each one works when you open it straight from disk:
 - **`match-express-game.html`** is the game with `shared/core.js` and
   `shared/sync.js` inlined.
 - **`match-express-editor.html`** is the editor with everything inlined. The game
   preview is embedded through `iframe srcdoc`, so it needs no second file. RUN and
   Auto-run work as usual. *Open in new tab* opens the same embedded game in a new
   tab. That tab gets every later RUN through `window.opener`.
+- **`match-express-play.html`** and **`match-express-crowded-rush-curve.html`** are
+  share files. They open with Level 2 and with Crowded Rush Curve.
+  - Neither loads a saved (or sent) editor level, and neither runs the background bot
+    test.
+  - Their settings menu plays each bundled level.
 
 Both still load three.js from the pinned CDN, so they need an internet connection.
 Opened from disk, a separately opened game file may not sync with the editor, because
@@ -363,10 +411,10 @@ height.
 
 ```
 node tests/rules.test.js      # 28 rule checks (unchanged)
-node tests/layout.test.js     # yard clearance sweep, for both yard presets
-node tests/shared.test.js     # 59 checks: level format, layout builder, warnings, difficulty, links, compact layout, Crowded Rush
-node tests/browser.test.js    # 57 checks: game + editor in Chromium (needs `npm i playwright`)
-node tests/standalone.test.js # 10 checks: builds dist/ and opens both single files from file://
+node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
+node tests/shared.test.js     # 64 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
+node tests/browser.test.js    # 59 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/standalone.test.js # 16 checks: builds dist/ and opens the single files and both share files from file://
 ```
 
 The first three need only Node and no dependencies; they load `shared/core.js`.
@@ -406,8 +454,10 @@ random bot's 31/200. Only geometry differs for the compact built-in level, and o
   - queue add, link and reorder;
   - export/import and slots;
   - Test and Watch greedy;
-  - proportions: every stickman at least 22 px and the 8-seat bus in a bay at least
-    70 px, at 390 × 844;
+  - proportions with the fixed camera: every stickman at least 16 px and the 8-seat
+    bus in a bay at least 35 px, at 390 × 844;
+  - the target zone: an out-of-zone road is listed, and a point added outside the
+    frame lands inside it;
   - cheering: the cheering set equals exactly the stickmen who then board the bus,
     and is larger than the front row;
   - the full-bus exit: it moves perpendicular to the road (drift along it 0.000), on
@@ -453,13 +503,14 @@ The 60 fps target is unverified on real hardware.
   side-on, the arch was invisible from this camera angle.
 - **Level length.** The compact road makes the level shorter for the greedy bot:
   about 3 minutes, against 4. The random bot's 17.5% is inside the Medium band.
-- **Compact layout versus a side exit.** 22 px stickmen and 70 px buses on a 390 px
-  wide screen only fit if the ramps sit edge to edge along the road. That leaves no
+- **Compact layout versus a side exit.** Under the earlier closer camera (22 px
+  stickmen and 70 px buses on a 390 px wide screen), the layout only fit if the ramps sit edge to edge along the road. That leaves no
   gap at the road side, so a full bus could not drive off without cutting through a
   neighbouring ramp. So the ramps hang 0.85 below the road deck: the bus drives off
   the edge above the neighbouring crowds, then hops. It always leaves on the side
   away from the ramp it boarded at.
-- **What "at least 22 px" measures.** It is the on-screen silhouette of a standing
+- **How stickman height is measured** (formerly "at least 22 px", now about 17 px
+  with the fixed camera). It is the on-screen silhouette of a standing
   stickman, from the feet to the top of the head. The figures are 0.78 tall on a
   0.36 grid, so crowds are packed head to head, as in the reference image.
 - **Cheering** covers exactly the stickmen the stopped bus will take at this stop.

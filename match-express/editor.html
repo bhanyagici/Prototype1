@@ -209,26 +209,41 @@ const cv = $('view'), ctx = cv.getContext('2d');
 const VIEW = {s:20, ox:0, oy:0, fitted:false};
 function fitView(){
   let zMin = -26; if (L){ zMin = 0; for (let i = 0; i < L.ROAD.n; i++) zMin = Math.min(zMin, L.ROAD.P[i*3+2]); }
-  const w = cv.clientWidth, h = cv.clientHeight, X0 = -8.5, X1 = 8.5, Z0 = Math.min(-12, zMin - 2.5), Z1 = 11;
+  const zf = zoneFrame(), fx = Math.max(...zf.map(p => Math.abs(p[0]))) + 0.6, fz = Math.min(...zf.map(p => p[1])) - 1.2;   // the whole target zone
+  const w = cv.clientWidth, h = cv.clientHeight, X0 = -Math.max(8.5, fx), X1 = -X0, Z0 = Math.min(-12, zMin - 2.5, fz), Z1 = 11;
   VIEW.s = Math.min(w/(X1 - X0), h/(Z1 - Z0)); VIEW.ox = w/2 - (X0 + X1)/2*VIEW.s; VIEW.oy = h/2 - (Z0 + Z1)/2*VIEW.s; VIEW.fitted = true;
 }
 function resize(){ const r = devicePixelRatio || 1; cv.width = cv.clientWidth*r; cv.height = cv.clientHeight*r; if (!VIEW.fitted) fitView(); draw(); }
 new ResizeObserver(resize).observe(cv);
 const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
 const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];
-/* the part of the ground the game camera shows (ray cast from the screen edges onto y = 0) */
-function screenFootprint(CAM){
+/* the part of the ground (at height y) the game camera shows inside a screen rectangle [u0, v0, u1, v1] */
+function screenFootprint(CAM, y = 0, rect = [0, 150, CAM.w, CAM.h]){
   const P = CAM.pos, f = n3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]), r = n3([-f[2], 0, f[0]]);
   const u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]], t = Math.tan(CAM.fov*Math.PI/360), asp = CAM.w/CAM.h;
   const ray = (sx, sy) => { const xs = sx/CAM.w*2 - 1, ys = 1 - sy/CAM.h*2;
-    const d = [f[0] + r[0]*xs*t*asp + u[0]*ys*t, f[1] + r[1]*xs*t*asp + u[1]*ys*t, f[2] + r[2]*xs*t*asp + u[2]*ys*t], k = -P[1]/d[1];
+    const d = [f[0] + r[0]*xs*t*asp + u[0]*ys*t, f[1] + r[1]*xs*t*asp + u[1]*ys*t, f[2] + r[2]*xs*t*asp + u[2]*ys*t], k = (y - P[1])/d[1];
     return [P[0] + d[0]*k, P[2] + d[2]*k]; };
-  const pts = []; for (let i=0;i<=10;i++) pts.push(ray(i*90, 150)); for (let i=0;i<=10;i++) pts.push(ray(900, 150 + i*180)); for (let i=10;i>=0;i--) pts.push(ray(i*90, 1950)); for (let i=10;i>=0;i--) pts.push(ray(0, 150 + i*180));
+  const [u0, v0, u1, v1] = rect, U = i => u0 + (u1 - u0)*i/10, V = i => v0 + (v1 - v0)*i/10, pts = [];
+  for (let i=0;i<=10;i++) pts.push(ray(U(i), v0)); for (let i=0;i<=10;i++) pts.push(ray(u1, V(i)));
+  for (let i=10;i>=0;i--) pts.push(ray(U(i), v1)); for (let i=10;i>=0;i--) pts.push(ray(u0, V(i)));
   return pts;
+}
+/* the target zone of the fixed screen: road, spiral, ramps and exit tunnel must stay inside it.
+   Drawn at stickman mid-height (0.4 above the ground); the checker tests feet and heads exactly. */
+const SC = C.SCREEN, ZONE_RECT = [SC.MARGIN, SC.TARGET_TOP*SC.h, SC.w - SC.MARGIN, SC.TARGET_BOT*SC.h];
+let ZONE = null; const zoneFrame = () => ZONE || (ZONE = screenFootprint(C.SCREEN_CAM, 0.4, ZONE_RECT));
+const inZone = (x, y, z) => C.inTarget(x, y, z);
+/* a new point / ramp that would start outside the frame is pulled in toward its middle */
+function clampToZone(x, z){
+  if (inZone(x, 0.9, z) && inZone(x, 0, z)) return [x, z];
+  const cx = 0, cz = -7; let lo = 0, hi = 1;            // fraction of the way to the middle of the frame
+  for (let k = 0; k < 30; k++){ const m = (lo + hi)/2, px = x + (cx - x)*m, pz = z + (cz - z)*m; if (inZone(px, 0.9, pz) && inZone(px, 0, pz)) hi = m; else lo = m; }
+  const m = Math.min(1, hi + 0.04); return [x + (cx - x)*m, z + (cz - z)*m];
 }
 function n3(v){ const l = Math.hypot(...v) || 1; return v.map(c => c/l); }
 const FOOTS = {};
-const footprint = () => { const k = JSON.stringify(L.CAM); return FOOTS[k] || (FOOTS[k] = screenFootprint(L.CAM)); };   // the level's (fitted) camera
+const footprint = () => { const k = JSON.stringify(L.CAM); return FOOTS[k] || (FOOTS[k] = screenFootprint(L.CAM)); };   // the fixed game camera
 function rampOutline(r){
   const pts = [], o = {}, hw = r.halfW, sides = [[], []];
   for (let s = 0; s <= r.length + 1e-6; s += 0.15){ C.pathAt(r.spline, Math.min(s, r.length), o, 0); sides[0].push([o.x - o.dz*hw, o.z + o.dx*hw]); sides[1].push([o.x + o.dz*hw, o.z - o.dx*hw]); }
@@ -239,9 +254,11 @@ function draw(){
   const dpr = devicePixelRatio || 1; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const w = cv.clientWidth, h = cv.clientHeight, s = VIEW.s;
   ctx.fillStyle = '#8eab64'; ctx.fillRect(0, 0, w, h);
-  // game screen area
-  ctx.beginPath(); footprint().forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
-  ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fill(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]);
+  // game screen area (faint) and the target zone (the frame everything of the level must stay in)
+  const path = pts => { ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); };
+  path(footprint()); ctx.fillStyle = 'rgba(255,255,255,.05)'; ctx.fill(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+  const zf = zoneFrame(); path(zf); ctx.fillStyle = 'rgba(255,214,64,.08)'; ctx.fill(); ctx.strokeStyle = '#ffd640'; ctx.lineWidth = 3; ctx.stroke();
+  { const top = zf.slice(0, 11), mid = top[5], [lx, ly] = W2S(mid[0], mid[1]); ctx.fillStyle = '#ffd640'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('TARGET ZONE', lx, ly - 4); }
   // yard
   const T = L.TUNNEL;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
@@ -266,7 +283,10 @@ function draw(){
   order.filter(o => !o[0]).forEach(o => drawRoad(o[1]));
   order.filter(o => o[0]).forEach(o => { ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 8; drawRoad(o[1]); ctx.restore(); });
   ctx.setLineDash([0.3*s, 0.3*s]); poly(seg, 0.06, '#f3c63f'); ctx.setLineDash([]);
-  tunnelIcon(L.exit.x, L.exit.z, Math.atan2(-L.exit.dx, -L.exit.dz), 'exit');
+  // stretches of road outside the target zone in red
+  { let run = []; const flush = () => { if (run.length > 1) poly(run, RAD*2 + 0.1, 'rgba(255,59,59,.75)'); run = []; };
+    seg.forEach(p => { if (!inZone(p[0], p[2] + 0.9, p[1]) || !inZone(p[0], p[2], p[1])) run.push(p); else flush(); }); flush(); }
+  tunnelIcon(L.exit.x, L.exit.z, Math.atan2(-L.exit.dx, -L.exit.dz), 'exit', check.warnings.some(w => w.kind === 'zone-exit'));
   // ramps
   L.RAMPS.forEach(r => {
     const selR = r.src === sel.ramp, warnR = check.warnings.some(w => w.ramp === r.src);
@@ -292,7 +312,8 @@ function draw(){
   lvl.road.points.forEach((p, i) => {
     const [x, y] = W2S(p.x, p.z), isSel = i === sel.point && tab === 'road';
     ctx.beginPath(); ctx.arc(x, y, isSel ? 8 : 6, 0, 7);
-    ctx.fillStyle = i === 0 ? '#9aa1ad' : p.spiral ? '#a77bff' : '#ffffff'; ctx.fill();
+    const out = !inZone(p.x, (p.y || 0) + 0.9, p.z);
+    ctx.fillStyle = out ? '#ff3b3b' : i === 0 ? '#9aa1ad' : p.spiral ? '#a77bff' : '#ffffff'; ctx.fill();
     ctx.lineWidth = 2; ctx.strokeStyle = isSel ? '#ff2d6f' : '#1d2333'; ctx.stroke();
     if (p.spiral){ ctx.strokeStyle = '#a77bff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.stroke(); }
   });
@@ -301,10 +322,10 @@ function draw(){
     ctx.beginPath(); ctx.arc(x, y, (hl ? 1.3 : 0.9)*s, 0, 7); ctx.lineWidth = hl ? 4 : 2.5; ctx.strokeStyle = '#ff3b3b'; ctx.stroke();
     ctx.fillStyle = 'rgba(255,59,59,.18)'; ctx.fill(); });
 }
-function tunnelIcon(x, z, ang, kind){
+function tunnelIcon(x, z, ang, kind, bad){
   const [sx, sy] = W2S(x, z), s = VIEW.s;
   ctx.save(); ctx.translate(sx, sy); ctx.rotate(-ang);
-  ctx.fillStyle = '#9b958c'; ctx.fillRect(-1.25*s, -0.2*s, 2.5*s, 0.6*s); ctx.fillStyle = '#14110e'; ctx.fillRect(-0.8*s, -0.15*s, 1.6*s, 0.45*s);
+  ctx.fillStyle = bad ? '#ff3b3b' : '#9b958c'; ctx.fillRect(-1.25*s, -0.2*s, 2.5*s, 0.6*s); ctx.fillStyle = '#14110e'; ctx.fillRect(-0.8*s, -0.15*s, 1.6*s, 0.45*s);
   ctx.restore();
   ctx.fillStyle = '#fff'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(kind === 'exit' ? 'exit tunnel' : 'return tunnel', sx, sy - 1.0*s);
 }
@@ -404,7 +425,8 @@ cv.addEventListener('pointerup', e => {
     const near = nearestRoadS(x, z);
     if (near.d < RAD + 0.15 && hitPoint(x, z, 12/VIEW.s) < 0){             // click on the road: insert a control point
       const sArr = L.ROAD.pointS; let i = 0; while (i < sArr.length - 1 && sArr[i+1] < near.s) i++;
-      roadEdit(n => { n.road.points.splice(i + 1, 0, {x:round(x), z:round(z)}); }); sel.point = i + 1; renderAll(); }
+      const [px, pz] = clampToZone(x, z);
+      roadEdit(n => { n.road.points.splice(i + 1, 0, {x:round(px), z:round(pz)}); }); sel.point = i + 1; renderAll(); }
     else if (hitPoint(x, z, 12/VIEW.s) < 0){ sel.point = -1; renderAll(); }
   }
   if (wasClick && tab === 'ramps' && drag && drag.kind === 'pan'){ sel.ramp = -1; renderAll(); }
@@ -511,11 +533,22 @@ function rampAction(a){
   });
 }
 function addRamp(){
-  const ss = L.RAMPS.map(r => r.s).concat([0.8, L.ROAD.portalS - 0.8]).sort((a, b) => a - b);
-  let best = 0, at = L.ROAD.portalS/2;
-  for (let i=0;i<ss.length-1;i++) if (ss[i+1] - ss[i] > best){ best = ss[i+1] - ss[i]; at = (ss[i] + ss[i+1])/2; }
-  const near = L.RAMPS.reduce((a, r) => !a || Math.abs(r.s - at) < Math.abs(a.s - at) ? r : a, null);
-  edit(n => { n.ramps.push({at:round(at, 3), side: near ? -near.side : 1, tilt: C.RAMP_TILT, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))}); });
+  // try the free stretches of road (largest first), both sides: the first spot where the default ramp
+  // stays inside the target zone and clear of the road and the other ramps wins
+  const ss = L.RAMPS.map(r => r.s).concat([0.8, L.ROAD.portalS - 0.8]).sort((a, b) => a - b), gaps = [];
+  for (let i=0;i<ss.length-1;i++) gaps.push([ss[i+1] - ss[i], (ss[i] + ss[i+1])/2]);
+  gaps.sort((a, b) => b[0] - a[0]);
+  const make = (at, side) => ({at:round(at, 3), side, tilt:C.RAMP_TILT, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))});
+  const near = at => L.RAMPS.reduce((a, r) => !a || Math.abs(r.s - at) < Math.abs(a.s - at) ? r : a, null);
+  const BAD = ['zone-ramp', 'ramp-road', 'ramp-ramp', 'ramp-spiral'];
+  let pick = null;
+  for (const [, mid] of gaps){ if (pick) break;
+    for (const f of [0, -0.25, 0.25, -0.5, 0.5]){ if (pick) break; const at = mid + f;
+      const nr = near(at), pref = nr ? -nr.side : 1;
+      for (const side of [pref, -pref]){ const t = clone(lvl); t.ramps.push(make(at, side)); const k = t.ramps.length - 1;
+        if (!C.checkLevel(t).warnings.some(w => w.ramp === k && BAD.includes(w.kind))){ pick = make(at, side); break; } } } }
+  if (!pick){ const at = gaps.length ? gaps[0][1] : L.ROAD.portalS/2, nr = near(at); pick = make(at, nr ? -nr.side : 1); toast('No free spot inside the target zone: check the warnings'); }
+  edit(n => { n.ramps.push(pick); });
   sel.ramp = lvl.ramps.length - 1; renderAll();
 }
 function fillRandom(){

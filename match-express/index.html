@@ -84,7 +84,8 @@
   <div class="ui rbtn spring" id="btnSettings" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div>
   <div class="ui" id="settings">
     <button id="btnMute" class="spring">Sound: On</button>
-    <button id="btnBuiltin" class="spring">Play built-in level</button>
+    <button id="btnBuiltin" class="spring">Play Level 2</button>
+    <div id="presetBtns"></div>
     <small id="levelSrc"></small>
   </div>
   <div class="ui" id="counter"><svg viewBox="0 0 64 50"><rect x="5" y="3" width="54" height="36" rx="9" fill="#fff"/><rect x="11" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="35" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="5" y="28" width="54" height="4" fill="#cfd8ee"/><circle cx="17" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/><circle cx="47" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/></svg><span id="cnt">0/5</span></div>
@@ -105,6 +106,9 @@ const DW = 900, DH = 1950;
 const app = document.getElementById('app'), canvas = document.getElementById('gl');
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
+/* a share build (tools/build-standalone.js) sets window.ME_SHARE = {level, nosim, noSaved}: it opens
+   with that bundled level, runs no background bot test and never loads a saved or sent editor level */
+const SHARE = window.ME_SHARE || null;
 
 /* ================================ RENDERER ================================ */
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
@@ -298,12 +302,19 @@ function disposeTree(root){
     ms.forEach(m => { if (m.userData.shared) return; if (m.map && !m.map.userData.keep) m.map.dispose(); m.dispose(); });
   });
 }
+/* the yard and queue are drawn smaller than the simulation lays them out (see C.dispPoint) */
+function drawnTunnel(T){ const [x, z] = C.dispPoint(T.x, T.z); return Object.assign({}, T, {x, z, k:C.dispScale(T.z)}); }
+function warpGeo(g){                                // sim-space geometry -> where it is drawn
+  const P = g.attributes.position;
+  for (let i = 0; i < P.count; i++){ const z = P.getZ(i); if (z > C.DISP.zA){ const [x, zz] = C.dispPoint(P.getX(i), z); P.setX(i, x); P.setZ(i, zz); } }
+  P.needsUpdate = true; return g;
+}
 function groundShape(L){
   const R = L.ROAD, E = L.exit; let zMin = 0;
   for (let i=0;i<R.n;i++){ if (R.cum[i] > R.portalS) break; zMin = Math.min(zMin, R.P[i*3+2]); }
   L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => { zMin = Math.min(zMin, q.z); })));
   const l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l;
-  const T = L.TUNNEL;
+  const T = GT;
   return {zTop: zMin - 0.9, ex:{x:E.x, y:E.y, z:E.z, dx, dz}, deep: L.Y.RAMP_DROP > 0 ? 2.9 : 1.75,
           tunnels:[{x:E.x, y:E.y, z:E.z, dx, dz}, {x:T.x, y:0, z:T.z, dx:-T.nx, dz:-T.nz}]};
 }
@@ -320,7 +331,7 @@ function groundH(x, z){
   const hill = (1 - smooth(2.6, 3.8, across))*smooth(-0.75, -0.3, along)*(1 - smooth(6, 8, along));
   if (hill > 0) h = Math.max(h, lerp(h, E.y + 1.45 + 0.6*smooth(1.2, 3.6, along) + 0.25*fbm(x*0.9, z*0.9) - 0.3*smooth(1.9, 3.5, across), hill));
   // mound behind the return tunnel
-  h += 1.5*Math.exp(-((x - GT.side*(Math.abs(GT.x) + 1.7))**2/2.2 + (z - GT.z + 0.7)**2/3.0))*smooth(5.0, 6.0, ax);
+  h += 1.5*Math.exp(-((x - GT.side*(Math.abs(GT.x) + 1.7))**2/2.2 + (z - GT.z + 0.7)**2/3.0))*smooth(yardExtent(L.Y)*C.DISP.K - 0.4, yardExtent(L.Y)*C.DISP.K + 0.6, ax);
   // each tunnel runs in a trench (its roof shell covers it), so nothing blocks the view into the mouth
   for (const t of G.tunnels){ const px = x - t.x, pz = z - t.z, al = px*t.dx + pz*t.dz, ac = Math.abs(-px*t.dz + pz*t.dx);
     if (al > -0.45 && al < TUN.D + 0.25 && ac < TUN.Rout + 0.06) h = Math.min(h, t.y - 0.3); }
@@ -352,7 +363,8 @@ function buildGround(add, L){
   const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95}));
   mesh.receiveShadow = true; add(mesh);
 }
-/* painted asphalt: entry road, side lanes, collector (toward the return tunnel), static row, queue lanes */
+/* painted asphalt: entry road, side lanes, collector (toward the return tunnel), static row, queue lanes.
+   Painted where the yard is DRAWN (C.dispPoint): 0.8 scale, a squeezed margin above the queue. */
 const YZ0 = -0.8, YZ1 = 15.0, PPU = 96;
 const yardTexCache = {};
 function yardExtent(Y){ return Y.X_SIDE + 1.7; }
@@ -360,7 +372,7 @@ function yardTexture(Y, T){
   const key = Y.name + ':' + T.side; if (yardTexCache[key]) return yardTexCache[key];
   const XE = yardExtent(Y), YX0 = -XE, W = Math.round(2*XE*PPU), H = Math.round((YZ1-YZ0)*PPU);
   const tex = canvasTex(W, H, (x) => {
-    const X = v => (v - YX0)*PPU, Z = v => (v - YZ0)*PPU, U = v => v*PPU, sd = T.side;
+    const K = C.DISP.K, X = v => (v*K - YX0)*PPU, Z = v => (C.dispZ(v) - YZ0)*PPU, U = v => v*K*PPU, sd = T.side;
     const RW = Y.name === 'classic' ? 1.22 : 1.1, CURB = 0.09, ASPH = '#575c64', CURBC = '#e1e3e7', LINE = '#f5f6f8', YEL = '#f3c63f';
     const XS = Y.X_SIDE, BX = Y.BAY_X, LX = Y.LANE_X;
     const ring = () => { const r = U(0.7), x0 = X(-XS), x1 = X(XS), z0 = Z(C.Z_ENTRY), z1 = Z(C.Z_COLL);
@@ -368,10 +380,13 @@ function yardTexture(Y, T){
       x.arcTo(x0, z1, x0, z0, r); x.arcTo(x0, z0, x1, z0, r); x.closePath(); };
     const ext = () => { x.beginPath(); x.moveTo(X(sd*XS), Z(C.Z_COLL)); x.lineTo(X(T.x), Z(C.Z_COLL)); x.lineTo(X(T.x - T.nx*1.2), Z(C.Z_COLL - T.nz*1.2));
       x.moveTo(X(0), Z(C.Z_ENTRY)); x.lineTo(X(0), Z(YZ0 - 0.2)); };
-    const lanes = (grow) => { x.beginPath(); x.rect(X(LX[0] - 0.84 - grow), Z(C.Z_COLL), U(LX[2]-LX[0] + 1.68 + 2*grow), Z(YZ1 + 1) - Z(C.Z_COLL)); };
+    const QEND = 60;                                  // queue lanes run off the bottom of the screen
+    const lanes = (grow) => { x.beginPath(); x.rect(X(LX[0] - 0.84 - grow), Z(C.Z_COLL), U(LX[2]-LX[0] + 1.68 + 2*grow), Z(QEND) - Z(C.Z_COLL)); };
     x.lineCap = 'butt'; x.lineJoin = 'round';
     for (const [w, c] of [[RW + 2*CURB, CURBC], [RW, ASPH]]){
-      x.strokeStyle = c; x.lineWidth = U(w); ring(); x.stroke(); ext(); x.stroke();
+      x.save();
+      if (w > RW){ x.beginPath(); x.rect(0, 0, W, Z(C.Z_COLL)); x.clip(); }   // no curb strip on the queue side of the collector
+      x.strokeStyle = c; x.lineWidth = U(w); ring(); x.stroke(); ext(); x.stroke(); x.restore();
       x.fillStyle = c; lanes(w > RW ? CURB : 0); x.fill();
     }
     const rr = (x0, z0, x1, z1, r) => { x.beginPath(); x.moveTo(x0 + r, z0); x.arcTo(x1, z0, x1, z1, r); x.arcTo(x1, z1, x0, z1, r); x.arcTo(x0, z1, x0, z0, r); x.arcTo(x0, z0, x1, z0, r); x.closePath(); };
@@ -384,8 +399,8 @@ function yardTexture(Y, T){
     BX.forEach(bx => { rr(X(bx - 0.56), Z(C.Z_BAY_TOP), X(bx + 0.56), Z(C.Z_BAY_BOT), U(0.18)); x.stroke(); });
     x.lineCap = 'butt'; x.lineWidth = U(0.07);
     const mid = [(LX[0] + LX[1])/2, (LX[1] + LX[2])/2];
-    mid.forEach(sx => { x.beginPath(); x.moveTo(X(sx), Z(C.Z_LANE_TOP - 0.05)); x.lineTo(X(sx), Z(YZ1)); x.stroke(); });
-    [LX[0]-0.84, LX[2]+0.84].forEach(sx => { x.beginPath(); x.moveTo(X(sx), Z(C.Z_COLL + 0.6)); x.lineTo(X(sx), Z(YZ1)); x.stroke(); });
+    mid.forEach(sx => { x.beginPath(); x.moveTo(X(sx), Z(C.Z_LANE_TOP - 0.05)); x.lineTo(X(sx), Z(QEND)); x.stroke(); });
+    [LX[0]-0.84, LX[2]+0.84].forEach(sx => { x.beginPath(); x.moveTo(X(sx), Z(C.Z_COLL + 0.6)); x.lineTo(X(sx), Z(QEND)); x.stroke(); });
     x.setLineDash([U(0.34), U(0.3)]); x.strokeStyle = YEL; x.lineWidth = U(0.06);
     ring(); x.stroke(); x.beginPath(); x.moveTo(X(sd*XS), Z(C.Z_COLL)); x.lineTo(X(T.x - sd*0.3), Z(C.Z_COLL)); x.stroke();
     x.setLineDash([]);
@@ -456,26 +471,27 @@ function buildWorld(L){
   if (world){ disposeTree(world); scene.remove(world); }
   world = new THREE.Group(); scene.add(world);
   const add = o => world.add(o), Y = L.Y;
-  GT = L.TUNNEL; GL = groundShape(L); rng = C.mulberry32(4242);
+  GT = drawnTunnel(L.TUNNEL); GL = groundShape(L); rng = C.mulberry32(4242);
   const R = L.ROAD;
   buildGround(add, L);
   { const XE = yardExtent(Y), g = new THREE.PlaneGeometry(2*XE, YZ1-YZ0); g.rotateX(-Math.PI/2); g.translate(0, 0.012, (YZ0+YZ1)/2);
-    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({map:yardTexture(Y, GT), transparent:true, roughness:0.9, depthWrite:false}));
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({map:yardTexture(Y, L.TUNNEL), transparent:true, roughness:0.9, depthWrite:false}));
     m.receiveShadow = true; m.renderOrder = -1; add(m); }
   // the plateau's front edge: a rock lip where the yard drops into the canyon
   { const g = new THREE.BoxGeometry(2*yardExtent(Y) + 2, 0.5, 0.3).translate(0, -0.25, YZ0 + 0.04);
     const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:'#a8977f', roughness:0.95})); m.receiveShadow = true; add(m); }
   const bayGlow = Y.BAY_X.map(bx => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.08, C.Z_BAY_BOT - C.Z_BAY_TOP - 0.1).rotateX(-Math.PI/2),
+    const zc = (C.Z_BAY_TOP + C.Z_BAY_BOT)/2, [gx, gz] = C.dispPoint(bx, zc), k = C.dispScale(zc);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.08*k, (C.Z_BAY_BOT - C.Z_BAY_TOP - 0.1)*k).rotateX(-Math.PI/2),
       new THREE.MeshBasicMaterial({color:'#ffffff', transparent:true, opacity:0, depthWrite:false}));
-    m.position.set(bx, 0.02, (C.Z_BAY_TOP + C.Z_BAY_BOT)/2); add(m); return m; });
+    m.position.set(gx, 0.02, gz); add(m); return m; });
   // main road deck: from the yard edge, along the road, on into the exit tunnel (fading to black)
   const roadSamples = [], o0 = {}; C.pathAt(R, 0, o0, 0);
   for (let z = YZ0 + 0.02; z > o0.z + 0.05; z -= 0.1) roadSamples.push([o0.x, 0, z, -1, 1]);
   for (let i=0;i<R.n;i+=2) roadSamples.push([R.P[i*3], R.P[i*3+1], R.P[i*3+2], R.cum[i], 1]);
   { const prof = [[-0.74,-0.24,CONC],[-0.74,0.07,CURBC3],[-0.62,0.07,'#f2f3f5'],[-0.6,0.0,ASPH3],[0.6,0.0,CURBC3],
                   [0.62,0.07,'#f2f3f5'],[0.74,0.07,CONC],[0.74,-0.24,'#c3c7cc']];
-    const mesh = new THREE.Mesh(extrude(roadSamples, prof), tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.85})));
+    const mesh = new THREE.Mesh(warpGeo(extrude(roadSamples, prof)), tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.85})));
     mesh.castShadow = mesh.receiveShadow = true; add(mesh);
     const pos = [], o = {}, o2 = {};
     for (let s = 0.5; s < R.portalS + 0.4; s += 0.56){
@@ -483,7 +499,7 @@ function buildWorld(L){
       const w = 0.035, ax = -o.dz*w, az = o.dx*w, bx = -o2.dz*w, bz = o2.dx*w, y1 = o.y + 0.008, y2 = o2.y + 0.008;
       pos.push(o.x-ax,y1,o.z-az, o.x+ax,y1,o.z+az, o2.x+bx,y2,o2.z+bz, o.x-ax,y1,o.z-az, o2.x+bx,y2,o2.z+bz, o2.x-bx,y2,o2.z-bz);
     }
-    const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); dg.computeVertexNormals();
+    const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); warpGeo(dg); dg.computeVertexNormals();
     const dm = new THREE.Mesh(dg, new THREE.MeshStandardMaterial({color:'#f3c63f', roughness:0.6, side:THREE.DoubleSide}));
     dm.receiveShadow = true; add(dm); }
   // pillars: evenly spaced spots from the layout, kept where the road is high enough above the ground
@@ -535,18 +551,18 @@ function buildWorld(L){
     [[-1.8, 0.2], [1.85, 0.25], [-2.4, 1.3], [2.5, 1.4], [-2.0, 2.4], [2.1, 2.6]].forEach(([a, f], i) => { const p = local(a, f); bushSpots.push([p[0], groundH(p[0], p[1]), p[1], 0.32 + 0.12*(i % 3)]); });
     [[-2.2, 2.6, 1.0], [2.0, 2.9, 1.1], [0.2, 3.4, 1.15], [-3.4, 2.2, 0.9], [3.5, 2.4, 0.95], [-1.0, 4.4, 1.05], [1.6, 4.6, 1.0]]
       .forEach(([a, f, sc], i) => { const p = local(a, f); hillTrees.push([p[0], groundH(p[0], p[1]), p[1], sc, (i*0.37) % 1, i % 2]); });
-    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.95); add(ret); lamps.ret = ret.userData.lamp;
+    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.95*T.k); add(ret); lamps.ret = ret.userData.lamp;
     // asphalt continuing into the return tunnel (fading to black)
-    { const n = [T.nx, T.nz], pts = []; for (let k=0;k<=12;k++){ const d = k/12*2.6; pts.push([T.x - n[0]*(d - 0.2), 0.008, T.z - n[1]*(d - 0.2), 0, 1 - 0.97*smooth(0.0, 0.65, d - 0.2)]); }
-      add(new THREE.Mesh(extrude(pts, [[-0.62,0,ASPH3],[0.62,0,ASPH3]]), new THREE.MeshBasicMaterial({vertexColors:true}))); }
+    { const n = [T.nx, T.nz], pts = []; for (let k=0;k<=12;k++){ const d = k/12*2.6*T.k; pts.push([T.x - n[0]*(d - 0.2*T.k), 0.008, T.z - n[1]*(d - 0.2*T.k), 0, 1 - 0.97*smooth(0.0, 0.65*T.k, d - 0.2*T.k)]); }
+      add(new THREE.Mesh(extrude(pts, [[-0.62*T.k,0,ASPH3],[0.62*T.k,0,ASPH3]]), new THREE.MeshBasicMaterial({vertexColors:true}))); }
     // a few bushes on the mound beside / behind the return tunnel (frame: into = -n, lateral = (nz, -nx)), clear of the yard roads
     [[-1.75, 0.3], [-1.95, 1.35], [1.65, 1.9]].forEach(([a, f], i) => { const x = T.x - T.nx*f + T.nz*a, z = T.z - T.nz*f - T.nx*a;
-      if (Math.abs(x) > L.Y.X_SIDE + 0.75) bushSpots.push([x, groundH(x, z), z, 0.3 + 0.06*i]); }); }
+      if (Math.abs(x) > (L.Y.X_SIDE + 0.75)*C.DISP.K) bushSpots.push([x, groundH(x, z), z, 0.3 + 0.06*i]); }); }
   // forest, kept clear of everything the level places
   { const rs = L.RAMPS.map(r => { const pts = []; for (let i=0;i<r.spline.n;i+=4) if (r.spline.cum[i] <= r.length + 0.3) pts.push([r.spline.P[i*3], r.y, r.spline.P[i*3+2], r.halfW]); return pts; });
     const XE = yardExtent(Y), roadSamples2 = roadSamples.filter(q => q[3] <= R.portalS + 0.5);
     const clear = (x, z, rad) => {
-      if (Math.abs(x) < XE + 0.3 + rad && z > YZ0 - 0.3 - rad && z < 16) return false;
+      if (Math.abs(x) < XE*C.DISP.K + 0.3 + rad && z > YZ0 - 0.3 - rad && z < 16) return false;
       if (Math.hypot(x - (GT.x - GT.nx*1.8), z - (GT.z - GT.nz*1.8)) < 2.2 + rad) return false;
       const ex = x - E.x, ez = z - E.z; if (ex*GL.ex.dx + ez*GL.ex.dz > -1.6 && Math.abs(-ex*GL.ex.dz + ez*GL.ex.dx) < 1.5 + rad && ex*GL.ex.dx + ez*GL.ex.dz < 3.6) return false;
       const gy = groundH(x, z);
@@ -957,8 +973,8 @@ function resetGame(){
 }
 /* level priority: a level sent by the editor > ?level=<bundled id> > the last saved level (localStorage) > built-in LEVEL_DATA */
 function initialLevel(){
-  const pid = params.get('level'); if (pid && C.PRESETS[pid]) return [C.PRESETS[pid], 'preset'];
-  if (!params.has('builtin')){ const saved = S.loadCurrent();
+  const pid = params.get('level') || (SHARE && SHARE.level); if (pid && C.PRESETS[pid]) return [C.PRESETS[pid], 'preset'];
+  if (!params.has('builtin') && !(SHARE && SHARE.noSaved)){ const saved = S.loadCurrent();
     if (saved){ try { C.buildLayout(saved); return [saved, 'saved']; } catch (e) { console.warn('[level] saved level ignored:', e.message); } } }
   return [C.LEVEL_DATA, 'builtin'];
 }
@@ -968,7 +984,7 @@ function loadLevel(level, source, opts){
   LEVEL = C.normalizeLevel(level); L = C.buildLayout(LEVEL); levelSource = source; levelSerial++;
   applyCamera(L.CAM); buildWorld(L); resetGame(); placeCounter();
   setBot(!!opts.bot);
-  $('levelPill').textContent = LEVEL.name || 'Level';
+  $('levelPill').textContent = LEVEL.name || 'Level'; fitPill();
   $('levelSrc').textContent = {editor:'Level from the editor', saved:'Last saved editor level', builtin:'Built-in level', preset:'Bundled level'}[source] || source;
   logLevel(LEVEL, source);
   if (parent !== window) parent.postMessage({type:'game-status', source, name:LEVEL.name, men:game.men.length, buses:game.buses.length, serial:levelSerial}, '*');
@@ -980,7 +996,7 @@ function logLevel(N, source){
   console.log('[level] seats vs stickmen per colour: ' + ck.perColor.map(p => `${p.color} ${p.seats}/${p.men}`).join('  ') +
               `  ->  ${ck.balanced ? 'ALL MATCH' : 'MISMATCH'}`);
   if (ck.warnings.length) console.warn('[level] warnings: ' + ck.warnings.map(w => w.msg).join('; '));
-  if (params.has('nosim')) return;
+  if (params.has('nosim') || (SHARE && SHARE.nosim)) return;
   const serial = levelSerial;
   S.testInBackground(N, 200).then(r => {
     if (serial !== levelSerial) return;
@@ -995,6 +1011,7 @@ function onMessage(d){
   if (!d || typeof d !== 'object') return;
   if (d.to && d.to !== helloId) return;                // a reply meant for another game tab
   if (d.id){ if (d.id === lastMsg) return; lastMsg = d.id; }
+  if (SHARE) return;                                 // a share file only plays its bundled levels
   if ((d.type === 'run' || d.type === 'watch') && d.level) loadLevel(d.level, 'editor', {bot: d.type === 'watch'});
   else if (d.type === 'restart') resetGame();
 }
@@ -1047,10 +1064,11 @@ function updateCrash(t){
   const T = L.TUNNEL, first = c.chain[0], tx = (first ? first.b.x : sd*L.Y.BAY_X[4]) + sd*(C.BUS_W + 0.05), tz = first ? first.b.z : 2.4;
   const h0 = Math.atan2(T.nx, T.nz), hN = -Math.PI, xs = sd*(L.Y.X_SIDE + 0.25);
   v.root.visible = true; v.slope.rotation.x = 0; v.mat.color.setScalar(1);
-  if (u < 0.42){ const k = u/0.42, e = easeOut(k); v.root.position.set(lerp(T.x, xs, e), 0, lerp(T.z, tz + 0.15, e)); v.root.rotation.y = h0 + angDiff(hN, h0)*e; v.body.rotation.z = sd*0.12*Math.sin(k*Math.PI); }
-  else if (u < 0.66){ const k = (u - 0.42)/0.24; v.root.position.set(lerp(xs, tx, k*k), 0, lerp(tz + 0.15, tz, k)); v.root.rotation.y = hN + 0.06*Math.sin(k*Math.PI); v.body.rotation.z = -sd*0.2*k; }
-  else { const k = Math.min(1, (u - 0.66)/0.35); v.root.position.set(tx + sd*0.22*Math.sin(k*Math.PI)*(1 - k), 0, tz); v.root.rotation.y = hN; v.body.rotation.z = -sd*0.2*(1 - k); }
-  if (u >= 0.66 && !c.hit){ c.hit = true; sfx.crash(); puff(new THREE.Vector3(tx - sd*0.5, 0.4, tz)); ejectMen(v, 0.5, sd); }
+  const at = (w, x, y, z) => { const [dx, dz] = C.dispPoint(x, z); w.root.position.set(dx, y, dz); w.root.scale.setScalar(C.dispScale(z)); };
+  if (u < 0.42){ const k = u/0.42, e = easeOut(k); at(v, lerp(T.x, xs, e), 0, lerp(T.z, tz + 0.15, e)); v.root.rotation.y = h0 + angDiff(hN, h0)*e; v.body.rotation.z = sd*0.12*Math.sin(k*Math.PI); }
+  else if (u < 0.66){ const k = (u - 0.42)/0.24; at(v, lerp(xs, tx, k*k), 0, lerp(tz + 0.15, tz, k)); v.root.rotation.y = hN + 0.06*Math.sin(k*Math.PI); v.body.rotation.z = -sd*0.2*k; }
+  else { const k = Math.min(1, (u - 0.66)/0.35); at(v, tx + sd*0.22*Math.sin(k*Math.PI)*(1 - k), 0, tz); v.root.rotation.y = hN; v.body.rotation.z = -sd*0.2*(1 - k); }
+  if (u >= 0.66 && !c.hit){ c.hit = true; sfx.crash(); { const [px, pz] = C.dispPoint(tx - sd*0.5, tz); puff(new THREE.Vector3(px, 0.4, pz)); } ejectMen(v, 0.5, sd); }
   c.chain.forEach((w, i) => {
     const t0 = 1.0 + i*0.24, k = clamp((u - t0)/0.34, 0, 1);                    // dominoes start after the slow-motion beat
     if (k > 0 && !w.tipped){ w.tipped = true; ejectMen(w, 1, sd); sfx.thud(); }
@@ -1058,7 +1076,7 @@ function updateCrash(t){
     w.body.rotation.set(0, 0, -sd*ang); w.body.position.set(sd*(W2 - W2*Math.cos(ang)), W2*Math.sin(ang), 0);
   });
   c.knocked.forEach(w => { const k = clamp((u - 0.62)/0.3, 0, 1);
-    w.root.position.set(w.b.x + sd*0.9*easeOut(k), 0, w.b.z + 0.2*k); w.body.rotation.set(0, 0, sd*0.45*k*(1 - 0.4*k)); });
+    at(w, w.b.x + sd*0.9*easeOut(k), 0, w.b.z + 0.2*k); w.body.rotation.set(0, 0, sd*0.45*k*(1 - 0.4*k)); });
   shake = u > 0.66 && u < 1.25 ? 0.07*(1 - (u - 0.66)/0.59) : 0;
 }
 function ejectMen(v, power, sd){
@@ -1088,10 +1106,11 @@ function manWorld(i){
 }
 
 /* ------------------------------ buses ------------------------------ */
-function busTarget(b){                              // core position + velocity the render springs chase
-  if (b.state === 'lane') return [b.x, 0, b.z, 0, -b.v];
-  if (b.state === 'bay') return [b.x, 0, b.z, 0, 0];
-  return [b.x, b.y, b.z, b.dx*b.v, b.dz*b.v];
+function busTarget(b){                              // where the bus is drawn + velocity, which the render springs chase
+  const [x, z] = C.dispPoint(b.x, b.z), sx = C.dispSx(b.z), sz = C.dispSlope(b.z);
+  if (b.state === 'lane') return [x, 0, z, 0, -b.v*sz];
+  if (b.state === 'bay') return [x, 0, z, 0, 0];
+  return [x, b.y, z, b.dx*b.v*sx, b.dz*b.v*sz];
 }
 function updateBus(v, t, vdt){
   const b = v.b;
@@ -1108,7 +1127,7 @@ function updateBus(v, t, vdt){
   if (b.state === 'road') dark = smooth(L.ROAD.end - 0.55, L.ROAD.end - 0.02, b.rs);
   if (b.state === 'return' && b.trip) dark = 1 - smooth(0.0, 0.4, b.trip.s);
   v.dark = dark; v.mat.color.setScalar(1 - dark);
-  const [tx, ty, tz, tvx, tvz] = busTarget(b), hT = Math.atan2(b.dx, b.dz);
+  const [tx, ty, tz, tvx, tvz] = busTarget(b), dd = C.dispDir(b.dx, b.dz, b.z), hT = Math.atan2(dd[0], dd[1]);
   // position: critically damped spring with velocity feed-forward -> eased starts and stops, nothing snaps
   if (!v.init || Math.hypot(tx - v.p.x, tz - v.p.z) > 1.6){
     v.p.set(tx, ty, tz); v.pv.set(tvx, 0, tvz); v.h = hT; v.init = true; v.spd = Math.hypot(tvx, tvz); v.hPrev = hT;
@@ -1123,6 +1142,7 @@ function updateBus(v, t, vdt){
   }
   v.root.visible = true;
   v.root.position.copy(v.p); v.root.rotation.y = v.h;
+  v.root.scale.setScalar(C.dispScale(b.z));         // parked and queued buses are drawn smaller
   v.slope.rotation.x += (-Math.atan(b.slope) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
   if (vdt > 0){
     const fwd = v.pv.x*Math.sin(v.h) + v.pv.z*Math.cos(v.h), spd = Math.max(0, fwd);
@@ -1388,10 +1408,12 @@ function updateDebug(){
 
 /* -------------------------------- input -------------------------------- */
 function screenOf(x, y, z){ camera.updateMatrixWorld(); _v.set(x, y, z).project(camera); return [(_v.x + 1)/2*DW, (1 - _v.y)/2*DH]; }
-function busScreenBox(b){
+function busScreenBox(b){                          // the bus as drawn (position, heading and scale of its view)
+  const v = views[b.id], k = v.init ? v.root.scale.x : C.dispScale(b.z);
+  const [cx, cz] = v.init ? [v.p.x, v.p.z] : C.dispPoint(b.x, b.z), dx = v.init ? Math.sin(v.h) : b.dx, dz = v.init ? Math.cos(v.h) : b.dz;
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-  for (const sx of [-0.5, 0.5]) for (const sz of [-0.5, 0.5]) for (const yy of [0, 0.8]){
-    const px = b.x + sx*C.BUS_W*(-b.dz) + sz*b.len*b.dx, pz = b.z + sx*C.BUS_W*b.dx + sz*b.len*b.dz;
+  for (const sx of [-0.5, 0.5]) for (const sz of [-0.5, 0.5]) for (const yy of [0, 0.8*k]){
+    const px = cx + sx*C.BUS_W*k*(-dz) + sz*b.len*k*dx, pz = cz + sx*C.BUS_W*k*dx + sz*b.len*k*dz;
     const [u, w] = screenOf(px, yy, pz); x0 = Math.min(x0, u); x1 = Math.max(x1, u); y0 = Math.min(y0, w); y1 = Math.max(y1, w); }
   return [x0, y0, x1, y1];
 }
@@ -1421,6 +1443,12 @@ $('btnSpeed').addEventListener('click', () => { audio(); setSpeed(timeScale > 1 
 $('btnSettings').addEventListener('click', () => { audio(); $('settings').classList.toggle('open'); });
 $('btnMute').addEventListener('click', () => { audio(); setMuted(!muted); });
 $('btnBuiltin').addEventListener('click', () => { loadLevel(C.LEVEL_DATA, 'builtin'); $('settings').classList.remove('open'); });
+Object.entries(C.PRESETS).forEach(([id, lv]) => {    // one button per bundled level
+  const b = document.createElement('button'); b.className = 'spring'; b.dataset.level = id; b.textContent = 'Play ' + lv.name;
+  b.addEventListener('click', () => { loadLevel(C.PRESETS[id], 'preset'); $('settings').classList.remove('open'); });
+  $('presetBtns').append(b); });
+/* long level names shrink to fit the title pill */
+function fitPill(){ const el = $('levelPill'); el.style.fontSize = ''; for (let f = 46; f > 26 && el.scrollWidth > el.clientWidth; f -= 2) el.style.fontSize = f + 'px'; }
 addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if (k === 'd'){ DEBUG = !DEBUG; WD.dbgGroup.visible = DEBUG; $('dbg').style.display = DEBUG ? 'block' : 'none'; }
@@ -1428,7 +1456,7 @@ addEventListener('keydown', e => {
   if (k === 'r') resetGame();
 });
 function placeCounter(){
-  const [, y] = screenOf((L ? L.Y.X_SIDE : C.X_SIDE) + 1.5, 0.9, 2.5);
+  const [cx, cz] = C.dispPoint((L ? L.Y.X_SIDE : C.X_SIDE) + 1.5, 2.5), [, y] = screenOf(cx, 0.9, cz);
   Object.assign($('counter').style, {left: (L && L.TUNNEL.side < 0 ? 66 : DW - 66) + 'px', top: y + 'px'});
 }
 
@@ -1493,7 +1521,8 @@ window.__me = {
       men.push((y1 - y0)*k); });
     const bus = {}; views.forEach(v => { if (!v.root.visible) return; const L2 = v.b.len/2; v.root.updateMatrixWorld(true);
       const len = span([[0,0.4,L2],[0,0.4,-L2]], v.body.matrixWorld); (bus[v.b.cap] = bus[v.b.cap] || []).push(+len.toFixed(1)); });
-    const bay8 = L.Y.BAY_X.map(x => { const z = C.parkZ(C.busLen(8)), a = screenOf(x, 0.4, z - C.busLen(8)/2), b = screenOf(x, 0.4, z + C.busLen(8)/2); return (b[1] - a[1])*k; });
+    const bay8 = L.Y.BAY_X.map(x => { const z = C.parkZ(C.busLen(8)), h = C.dispScale(z)*C.busLen(8)/2, [gx, gz] = C.dispPoint(x, z);   // as drawn
+      const a = screenOf(gx, 0.4, gz - h), b = screenOf(gx, 0.4, gz + h); return (b[1] - a[1])*k; });
     return {men:{n:men.length, min:Math.min(...men), avg:men.reduce((a, b) => a + b, 0)/Math.max(1, men.length)}, bus, bay8:Math.min(...bay8)};
   }
 };

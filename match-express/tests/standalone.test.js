@@ -1,5 +1,6 @@
 // Builds the single-file versions (tools/build-standalone.js) and opens them from file:// in Chromium:
-// the game plays, the editor's RUN / Auto-run update the srcdoc preview, "Open in new tab" works.
+// the game plays, the editor's RUN / Auto-run update the srcdoc preview, "Open in new tab" works,
+// and the two share files open with their level and ignore saved editor levels.
 //   node tests/standalone.test.js   (needs playwright; same CHROMIUM / THREE_MODULE env as browser.test.js)
 const fs = require('fs'), path = require('path'), { pathToFileURL } = require('url');
 let chromium;
@@ -56,6 +57,18 @@ let pass = 0, fail = 0; const chk = (ok, n, i='') => { ok ? pass++ : fail++; con
     const [tab] = await Promise.all([c.waitForEvent('page'), p.click('#tabBtn')]); watch(tab);
     const ok = await tab.waitForFunction(() => window.__me && __me.game && __me.LEVEL.name === 'Auto edited', null, {timeout:90000}).then(()=>true, ()=>false);
     chk(ok && (await tab.evaluate(() => __me.LEVEL.name)) === 'Auto edited', 'Open in new tab opens the embedded game with the current level', tab.url().slice(0, 30));
+    await c.close(); }
+  // ---- share files: a saved editor level is ignored, no background bot test, a menu of the bundled levels
+  for (const [file, name] of [['match-express-play.html', 'Level 2'], ['match-express-crowded-rush-curve.html', 'Crowded Rush Curve']]){
+    const c = await mk({width:390,height:844}), p = await c.newPage(); watch(p); const logs = []; p.on('console', m => logs.push(m.text()));
+    await p.goto(D + file); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+    await p.evaluate(() => { const lv = JSON.parse(JSON.stringify(MECore.LEVEL_DATA)); lv.name = 'Old editor level'; localStorage.setItem('match-express:current-level', JSON.stringify(lv)); });
+    await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000}); await p.waitForTimeout(1500);
+    const st = await p.evaluate(() => ({name: __me.LEVEL.name, menu: [...document.querySelectorAll('#settings button')].map(b => b.textContent).filter(t => /^Play /.test(t))}));
+    chk(st.name === name && !logs.some(l => /^\[sim\]/.test(l)), file + ' opens with ' + name + ' (not the saved editor level) and runs no bot test', st.name);
+    chk(JSON.stringify(st.menu) === JSON.stringify(['Play Level 2', 'Play Crowded Rush', 'Play Crowded Rush Curve']), file + ': the settings menu plays each bundled level', st.menu.join(', '));
+    await p.click('#btnSettings'); await p.click('#settings button[data-level="crowded-rush"]');
+    chk(await p.evaluate(() => __me.LEVEL.name === 'Crowded Rush' && __me.layout.CAM === MECore.SCREEN_CAM), file + ': switching level keeps the one fixed camera');
     await c.close(); }
   chk(errs.length === 0, 'no page errors or failed loads', errs.join(' | '));
   console.log(fail ? `\n${fail} FAILED` : `\nALL ${pass} CHECKS PASS`); await b.close(); process.exit(fail ? 1 : 0);

@@ -106,10 +106,11 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
     ]
   ]
 }/*LEVEL_END*/;
-/* bundled levels (the editor seeds a slot for each; the game loads one with ?level=<id>).
-   Each is a copy of levels/<id>.json — tests/shared.test.js checks they match. */
-const PRESETS = {
-  "crowded-rush": /*PRESET_BEGIN crowded-rush*/{
+/* bundled levels (the editor seeds a slot for each; the game loads one with ?level=<id> or from its
+   settings menu).  Each is a copy of levels/<id>.json written by tools/sync-presets.js;
+   tests/shared.test.js checks they match. */
+const PRESETS = /*PRESETS_BEGIN*/{
+  "crowded-rush": {
     "format": 2,
     "name": "Crowded Rush",
     "road": {
@@ -246,8 +247,150 @@ const PRESETS = {
         {"color": "cyan", "cap": 4}
       ]
     ]
-  }/*PRESET_END*/
-};
+  },
+  "crowded-rush-curve": {
+    "format": 2,
+    "name": "Crowded Rush Curve",
+    "road": {
+      "points": [
+        {"x": 0, "z": -1.3, "y": 0},
+        {"x": 0, "z": -2, "y": 0},
+        {"x": -0.18, "z": -3.1, "y": 0.04},
+        {"x": -0.12, "z": -4.2, "y": 0.08},
+        {"x": -0.03, "z": -5.2, "y": 0.12},
+        {"x": 0.08, "z": -6.1, "y": 0.16},
+        {"x": 0.8, "z": -7.04, "y": 0.25, "spiral": {"r": 0.92, "side": 1, "yCross": 1.55}},
+        {"x": -0.94, "z": -7.7, "y": 1.58},
+        {"x": -1.4, "z": -8.54, "y": 1.62},
+        {"x": -1.2, "z": -9.5, "y": 1.66},
+        {"x": -0.03, "z": -11.03, "y": 1.7},
+        {"x": 0.49, "z": -11.83, "y": 1.74},
+        {"x": 0.48, "z": -12.74, "y": 1.78},
+        {"x": 0.2, "z": -14.2, "y": 1.82},
+        {"x": 0, "z": -15, "y": 1.85}
+      ],
+      "tail": [0, 1.85, -17.1]
+    },
+    "ramps": [
+      {
+        "at": 1.856,
+        "side": 1,
+        "tilt": 35,
+        "shape": [[4.55, -4.81], [5.84, -7.11]],
+        "rows": 15,
+        "columns": [
+          ["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"],
+          ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"],
+          ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"],
+          ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"],
+          ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"],
+          ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]
+        ]
+      },
+      {
+        "at": 3.9248845776089056,
+        "side": -1,
+        "tilt": 35,
+        "shape": [[-3.7, -6.72], [-5.71, -9.51]],
+        "rows": 15,
+        "columns": [
+          ["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"],
+          ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"],
+          ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"],
+          ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"],
+          ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"],
+          ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]
+        ]
+      },
+      {
+        "at": 19.332386640671782,
+        "side": 1,
+        "tilt": 35,
+        "shape": [[4.67, -11.11], [6.26, -13.81]],
+        "rows": 15,
+        "columns": [
+          ["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"],
+          ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"],
+          ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"],
+          ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"],
+          ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"],
+          ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]
+        ]
+      },
+      {
+        "at": 21.210127635680642,
+        "side": -1,
+        "tilt": 35,
+        "shape": [[-3.77, -13.6], [-6.24, -16.16]],
+        "rows": 15,
+        "columns": [
+          ["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"],
+          ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"],
+          ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"],
+          ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"],
+          ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"],
+          ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]
+        ]
+      }
+    ],
+    "lanes": [
+      [
+        {"color": "purple", "cap": 6},
+        {"color": "red", "cap": 6},
+        {"color": "pink", "cap": 8},
+        {"color": "red", "cap": 12},
+        {"color": "orange", "cap": 4, "hidden": true},
+        {"color": "green", "cap": 8},
+        {"color": "green", "cap": 6},
+        {"color": "cyan", "cap": 6},
+        {"color": "yellow", "cap": 8},
+        {"color": "cyan", "cap": 8},
+        {"color": "orange", "cap": 12},
+        {"color": "cyan", "cap": 8},
+        {"color": "blue", "cap": 6},
+        {"color": "green", "cap": 6},
+        {"color": "orange", "cap": 8},
+        {"color": "pink", "cap": 6}
+      ],
+      [
+        {"color": "cyan", "cap": 12},
+        {"color": "pink", "cap": 8},
+        {"color": "yellow", "cap": 4},
+        {"color": "purple", "cap": 4},
+        {"color": "purple", "cap": 12},
+        {"color": "blue", "cap": 12},
+        {"color": "blue", "cap": 6},
+        {"color": "red", "cap": 12, "hidden": true},
+        {"color": "blue", "cap": 12},
+        {"color": "green", "cap": 4},
+        {"color": "pink", "cap": 8},
+        {"color": "purple", "cap": 12},
+        {"color": "red", "cap": 4},
+        {"color": "pink", "cap": 6},
+        {"color": "cyan", "cap": 6},
+        {"color": "blue", "cap": 6}
+      ],
+      [
+        {"color": "purple", "cap": 4},
+        {"color": "yellow", "cap": 6},
+        {"color": "yellow", "cap": 12},
+        {"color": "green", "cap": 6},
+        {"color": "orange", "cap": 12},
+        {"color": "red", "cap": 4},
+        {"color": "pink", "cap": 8},
+        {"color": "blue", "cap": 4},
+        {"color": "green", "cap": 8},
+        {"color": "orange", "cap": 8},
+        {"color": "green", "cap": 8, "hidden": true},
+        {"color": "yellow", "cap": 8},
+        {"color": "yellow", "cap": 8},
+        {"color": "red", "cap": 8},
+        {"color": "purple", "cap": 6},
+        {"color": "cyan", "cap": 4}
+      ]
+    ]
+  }
+}/*PRESETS_END*/;
 const RAMP_TILT = 35;                               // default ramp: a straight platform at this angle (degrees) outward and up
 
 /* ====================== RULE / LAYOUT CONSTANTS ===================== */
@@ -275,10 +418,8 @@ const Z_BAY_TOP = 1.18, Z_BAY_BOT = 4.0, Z_COLL = 5.2, Z_LANE_TOP = 6.28;
    drives sideways off the road above the neighbouring crowds).  "compact" is the default.  "classic" is the original, wider layout; a
    level with "yard": "classic" plays exactly as before the compaction (the regression baseline). */
 const YARDS = {
-  compact: {name:'compact', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.64,0,1.64], X_SIDE:3.8, TUNNEL_X:4.85, RAMP_DROP:0.85,
-            CAM:{fov:30, pos:[0, 31.669, 20.041], look:[0, 0, -1.32], w:900, h:1950}},
-  classic: {name:'classic', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.72,0,1.72], X_SIDE:4.32, TUNNEL_X:5.45, RAMP_DROP:0,
-            CAM:{fov:30, pos:[0, 44.96, 35.22], look:[0, 0, -8.2], w:900, h:1950}}
+  compact: {name:'compact', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.64,0,1.64], X_SIDE:3.8, TUNNEL_X:4.85, RAMP_DROP:0.85},
+  classic: {name:'classic', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.72,0,1.72], X_SIDE:4.32, TUNNEL_X:5.45, RAMP_DROP:0}
 };
 Object.values(YARDS).forEach(Y => {
   Y.TUNNEL_R = {x:Y.TUNNEL_X, z:Z_COLL, nx:-0.8, nz:0.6, depth:1.6, side:1};    // return tunnel on the right, mouth to the bays
@@ -288,6 +429,48 @@ const YARD = YARDS.compact;
 const {BAY_X, LANE_X, X_SIDE, TUNNEL_X, TUNNEL_R, TUNNEL_L} = YARD;   // defaults (compact yard)
 const parkZ = len => Z_BAY_TOP + 0.08 + len/2;
 const laneSlotZ = len => Z_LANE_TOP + 0.12 + len/2;
+
+/* ========================= FIXED SCREEN LAYOUT ========================= */
+/* Every level uses the same screen (900 x 1950 design space = 390 x 844 at 2.3x), split into zones
+   (fractions of the height): top bar, TARGET zone (road, spiral, ramps, exit tunnel), STATIC row
+   (bays) and QUEUE.  One camera for every level: the largest bundled level (Crowded Rush Curve)
+   fills the target zone with stickmen about 17 px tall. */
+const SCREEN = {w:900, h:1950, BAR:0.07, TARGET_TOP:0.07, TARGET_BOT:0.61, STATIC_BOT:0.77, MARGIN:12*900/390};
+const SCREEN_CAM = {fov:30, pos:[0, 41.769, 28.354], look:[0, 0, -4.28], w:SCREEN.w, h:SCREEN.h};
+/* The yard and queue are DRAWN smaller than the simulation lays them out (the simulation is untouched):
+   a sim point (x, z) is shown at (x*dispSx(z), dispZ(z)) and a bus there at dispScale(z).
+   - main road above the yard: unchanged; it eases into the yard scale over its last stretch;
+   - yard (entry road, bays, collector road): uniformly K = 0.8;
+   - collector road -> queue: the margin is squeezed (no curb strip);
+   - queue: the front slot at full size, the buses behind at QS = 0.85 with tighter gaps. */
+const DISP = {K:0.8, QS:0.85, QZ:0.8, MARGIN:0.3, zA:Z_ROAD0, zB:-0.7, zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.4, qB:2.0, pA:2.4, pB:3.0};
+const smooth01 = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
+function dispSlope(z){                              // d(shown z)/d(sim z)
+  const D = DISP;
+  if (z <= D.zA) return 1;
+  if (z < D.zB) return 1 + (D.K - 1)*smooth01(D.zA, D.zB, z);
+  if (z <= D.zC) return D.K;
+  if (z < D.zL) return D.MARGIN;
+  return 1 + (D.QZ - 1)*smooth01(D.pA, D.pB, z - D.zL);
+}
+const DISP_STEP = 0.005, DISP_TAB = (() => { const t = [DISP.zA], n = Math.ceil((60 - DISP.zA)/DISP_STEP);
+  for (let i = 0; i < n; i++) t.push(t[i] + dispSlope(DISP.zA + (i + 0.5)*DISP_STEP)*DISP_STEP); return t; })();
+function dispZ(z){
+  if (z <= DISP.zA) return z;
+  const f = (z - DISP.zA)/DISP_STEP, i = Math.floor(f);
+  if (i >= DISP_TAB.length - 1) return DISP_TAB[DISP_TAB.length - 1] + (z - DISP.zA - (DISP_TAB.length - 1)*DISP_STEP)*DISP.QZ;
+  return DISP_TAB[i] + (DISP_TAB[i+1] - DISP_TAB[i])*(f - i);
+}
+function dispSx(z){ return z <= DISP.zA ? 1 : 1 + (DISP.K - 1)*smooth01(DISP.zA, DISP.zB, z); }
+function dispScale(z){                              // size a bus (or anything) is drawn at
+  const D = DISP;
+  if (z <= D.zB) return dispSx(z);
+  if (z <= D.zC) return D.K;
+  if (z < D.zL) return D.K + (1 - D.K)*smooth01(D.zC, D.zL, z);
+  return 1 + (D.QS - 1)*smooth01(D.qA, D.qB, z - D.zL);
+}
+function dispPoint(x, z){ return [x*dispSx(z), dispZ(z)]; }
+function dispDir(dx, dz, z){ const a = dx*dispSx(z), b = dz*dispSlope(z), l = Math.hypot(a, b) || 1; return [a/l, b/l]; }
 
 const RAMP_SP = 0.36;                               // stickman spacing along and across a ramp
 
@@ -500,25 +683,6 @@ function pillarSpots(ROAD){
 }
 /* the camera: the yard preset's camera if the whole level fits under it (top bar excluded); otherwise the
    same view direction pulled back just enough, with the queue's front buses kept at the bottom edge */
-const CAM_MAX_ZOOM = 1.5;
-function fitCamera(Lx){
-  const base = Lx.Y.CAM, R = Lx.ROAD, pts = [], wide = [];
-  for (let i = 0; i < R.n; i += 3) if (R.cum[i] <= R.portalS) pts.push([R.P[i*3], R.P[i*3+1] + 0.9, R.P[i*3+2]]);
-  pts.push([Lx.exit.x, Lx.exit.y + 1.9, Lx.exit.z]);
-  Lx.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => wide.push([q.x, q.y + 0.8, q.z]))));
-  const fits = cam => pts.concat(wide).every(q => { const [u, v] = project(q[0], q[1], q[2], cam); return u >= 12 && u <= cam.w - 12 && v >= 130; });
-  if (fits(base)) return base;
-  const anchor = [0, 0, laneSlotZ(busLen(12)) + busLen(12)/2], vBottom = project(...anchor, base)[1];
-  for (let f = 1.02; f <= CAM_MAX_ZOOM + 1e-9; f += 0.02){
-    const pos = base.pos.map((v, i) => base.look[i] + (v - base.look[i])*f);
-    let lo = -12, hi = 12;                          // slide along z so the front queue buses stay at the bottom edge
-    for (let k = 0; k < 40; k++){ const m = (lo + hi)/2, c = {fov:base.fov, w:base.w, h:base.h, pos:[pos[0], pos[1], pos[2] + m], look:[base.look[0], base.look[1], base.look[2] + m]};
-      if (project(...anchor, c)[1] > vBottom) lo = m; else hi = m; }
-    const cam = {fov:base.fov, w:base.w, h:base.h, pos:[pos[0], pos[1], pos[2] + lo], look:[base.look[0], base.look[1], base.look[2] + lo], zoom:+f.toFixed(2)};
-    if (fits(cam)) return cam;
-  }
-  const f = CAM_MAX_ZOOM; return {fov:base.fov, w:base.w, h:base.h, pos:base.pos.map((v, i) => base.look[i] + (v - base.look[i])*f), look:base.look.slice(), zoom:f};
-}
 const layoutCache = new WeakMap();
 function buildLayout(level){
   const N = normalizeLevel(level);
@@ -530,7 +694,7 @@ function buildLayout(level){
   const dR = Math.hypot(ex.x - Y.TUNNEL_R.x, ex.z - Y.TUNNEL_R.z), dL = Math.hypot(ex.x - Y.TUNNEL_L.x, ex.z - Y.TUNNEL_L.z);
   const L = {ROAD, RAMPS, Y, TUNNEL: dL < dR - 1e-9 ? Y.TUNNEL_L : Y.TUNNEL_R, exit:{x:ex.x, y:ex.y, z:ex.z, dx:ex.dx, dz:ex.dz},
              pillars: pillarSpots(ROAD), level:N};
-  L.CAM = fitCamera(L);
+  L.CAM = SCREEN_CAM;                               // one camera for every level
   layoutCache.set(N, L); layoutCache.set(level, L);
   return L;
 }
@@ -957,9 +1121,9 @@ function validateLevel(level){
 /* ========================== EDITOR CHECKS ===========================
    checkLevel() feeds the editor's checks panel: colour balance, totals and geometry warnings.
    Every warning carries a world position (x,z) so the editor can highlight it in red. */
-const CAM = YARD.CAM;
+const CAM = SCREEN_CAM;
 function project(x, y, z, cam){                    // world -> game screen pixels (900 x 1950 design space)
-  const CAM = cam || YARD.CAM, P = CAM.pos, f = norm3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]);
+  const CAM = cam || SCREEN_CAM, P = CAM.pos, f = norm3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]);
   const r = norm3([-f[2], 0, f[0]]), u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]];
   const d = [x-P[0], y-P[1], z-P[2]], zc = d[0]*f[0]+d[1]*f[1]+d[2]*f[2];
   const t = Math.tan(CAM.fov*Math.PI/360), xs = (d[0]*r[0]+d[1]*r[1]+d[2]*r[2])/(zc*t*CAM.w/CAM.h), ys = (d[0]*u[0]+d[1]*u[1]+d[2]*u[2])/(zc*t);
@@ -967,6 +1131,10 @@ function project(x, y, z, cam){                    // world -> game screen pixel
 }
 function norm3(v){ const l = Math.hypot(v[0],v[1],v[2]) || 1; return [v[0]/l, v[1]/l, v[2]/l]; }
 const MIN_TURN_R = 1.0;                            // tightest curve a 12-seat bus can take
+function inTarget(x, y, z){                        // inside the target zone of the fixed screen
+  const [u, v] = project(x, y, z, SCREEN_CAM);
+  return u >= SCREEN.MARGIN && u <= SCREEN.w - SCREEN.MARGIN && v >= SCREEN.TARGET_TOP*SCREEN.h && v <= SCREEN.TARGET_BOT*SCREEN.h;
+}
 function inSpiral(ROAD, s, pad){ return ROAD.spirals.some(sp => s > sp.s0 - pad && s < sp.s1 + pad); }
 function roadWarnings(L){
   const W = [], R = L.ROAD, P = R.P, n = R.n, pts = [];
@@ -984,12 +1152,11 @@ function roadWarnings(L){
     hits.push({x:(a.x+b.x)/2, z:(a.z+b.z)/2});
   }
   hits.forEach(h => W.push({kind:'road-cross', msg:'Road crosses itself outside a spiral', x:h.x, z:h.z}));
-  // leaving the screen
+  // the road and the exit tunnel stay inside the target zone
   const off = [];
-  const CAM = L.CAM || L.Y.CAM;
-  for (const p of pts){ const [sx, sy] = project(p.x, p.y + 0.9, p.z, CAM);      // same margins the camera fit uses
-    if ((sx < 12 || sx > CAM.w - 12 || sy < 130 || sy > CAM.h) && !near(off, p.x, p.z)) off.push(p); }
-  off.forEach(p => W.push({kind:'road-offscreen', msg:'Road leaves the screen area', x:p.x, z:p.z}));
+  for (const p of pts) if (!inTarget(p.x, p.y + 0.9, p.z) || !inTarget(p.x, p.y, p.z)){ if (!near(off, p.x, p.z)) off.push(p); }
+  off.forEach(p => W.push({kind:'zone-road', msg:'Road leaves the target zone', x:p.x, z:p.z}));
+  const E = L.exit; if (!inTarget(E.x, E.y + 1.9, E.z)) W.push({kind:'zone-exit', msg:'Exit tunnel is outside the target zone', x:E.x, z:E.z});
   // curves too tight for a 12-seat bus (heading change over a 0.6-unit window)
   const tight = [], o1 = {}, o2 = {};
   for (let s = 0.6; s < R.portalS - 0.6; s += 0.15){
@@ -1017,6 +1184,9 @@ function rampWarnings(L){
       for (const q of rs[k]){ for (const p of rs[j]) if (Math.hypot(q.x-p.x, q.z-p.z) < r.halfW + o.halfW - 0.05){ h2 = q; break; } if (h2) break; }
       if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2.x, z:h2.z, ramp:r.src});
     }
+    let out = null;
+    for (const cs of r.slots){ for (const q of cs) if (!inTarget(q.x, q.y + 0.8, q.z) || !inTarget(q.x, q.y, q.z)){ out = q; break; } if (out) break; }
+    if (out) W.push({kind:'zone-ramp', msg: label + ' leaves the target zone', x:out.x, z:out.z, ramp:r.src});
     if (inSpiral(R, r.s, 0.8)) W.push({kind:'ramp-spiral', msg: label + ': boarding point is on a spiral overpass', x:r.x, z:r.z, ramp:r.src});
   });
   return W;
@@ -1120,7 +1290,7 @@ const DEFAULT_LAYOUT = buildLayout(LEVEL_DATA);
 const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT_LAYOUT.TUNNEL;   // built-in level, for tests
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, CAM, MIN_TURN_R,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
