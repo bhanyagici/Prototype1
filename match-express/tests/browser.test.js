@@ -87,7 +87,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         const J = v.jump, L = __me.layout, r = L.RAMPS[v.boardRamp], samples = [];
         for (let i = 0; i < 40; i++){ __me.advance(1/30); samples.push({u:g.t - J.t0, x:v.root.position.x, y:v.root.position.y, z:v.root.position.z}); }
         const hx = Math.sin(J.h), hz = Math.cos(J.h), out = s => (s.x - J.x)*J.ex + (s.z - J.z)*J.ez, along = s => (s.x - J.x)*hx + (s.z - J.z)*hz;
-        const side = samples.filter(s => s.u <= __me.EXIT.side), atEdge = side[side.length - 1], firstUp = samples.find(s => s.y > J.y + 0.02);
+        const side = samples.filter(s => s.u <= J.t1), atEdge = side[side.length - 1], firstUp = samples.find(s => s.y > J.y + 0.02);
         const rampSide = (r.x - J.x)*J.ex + (r.z - J.z)*J.ez;                  // the ramp's boarding point relative to the exit direction
         const awayFromRamp = (() => { const o = {}; window.MECore.pathAt(L.ROAD, r.s, o, 0); const nx = -o.dz*r.side, nz = o.dx*r.side; return nx*J.ex + nz*J.ez; })();
         return {maxAlong:Math.max(...side.map(s => Math.abs(along(s)))), flat:Math.max(...side.map(s => Math.abs(s.y - J.y))), outAtEdge:out(atEdge),
@@ -96,6 +96,18 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(ex && ex.awayFromRamp < -0.99, 'it leaves on the side away from the ramp it boarded at');
       chk(ex && ex.outAtEdge >= ex.need && ex.outAtHop !== null && ex.outAtHop >= ex.need, 'the hop and parachute start only after the bus is completely off the road',
           ex && `clear at ${ex.need.toFixed(2)}, hop starts at ${ex.outAtHop && ex.outAtHop.toFixed(2)}`);
+      // a bus that fills under an overpass (ramp 5, below the U-turn after the spiral) slides further before it hops:
+      // during the hop and the first second under the parachute no raised road is overhead
+      const ov = await p.evaluate(() => { const g = __me.game, L = __me.layout, R = L.ROAD; let v = null;
+        for (let i = 0; i < 30*120 && !v; i++){ __me.advance(1/30); v = __me.views.find(w => w.b.state === 'jump' && w.jump && w.jump.out > 1.5 && g.t - w.jump.t0 < 0.05); }
+        if (!v) return null;
+        const J = v.jump; let worst = Infinity;
+        while (g.t - J.t0 < J.t3 + 1.0){ __me.advance(1/30); if (g.t - J.t0 < J.t2) continue;
+          const c = v.root.position; for (let i = 0; i < R.n; i += 2){ const py = R.P[i*3+1]; if (py < J.y + 0.35 || py - 0.24 > c.y + 3.2) continue;
+            worst = Math.min(worst, Math.hypot(R.P[i*3] - c.x, R.P[i*3+2] - c.z)); } }
+        return {ramp:v.boardRamp + 1, out:J.out, clear:worst}; });
+      chk(ov && ov.clear > 1.5, 'a bus filled under an overpass slides out from under it before hopping (no road above the hop or the parachute)',
+          ov && `ramp ${ov.ramp}: slides ${ov.out.toFixed(2)}, nearest raised road ${ov.clear.toFixed(2)} away`);
       await ctx.close(); }
 
     /* ---------------- editor + preview + second tab ---------------- */

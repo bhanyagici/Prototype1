@@ -224,7 +224,8 @@ browsers isolate `file://` pages.
     around, each a little differently.
   - **A full bus first drives straight sideways**, perpendicular to the road, off
     the edge on the side away from its ramp, with a dust puff. Only when it is
-    completely off the road does it crouch and hop. The parachute in its colour
+    completely off the road does it crouch and hop. Under the elevated U-turn
+    (ramp 5) it slides further, until no road is overhead. The parachute in its colour
     unfolds with an overshoot, and the bus swings like a pendulum while drifting
     down and away, its passengers waving with both arms.
   - The ramp check badge pops with an overshoot and a sparkle.
@@ -339,7 +340,7 @@ height.
 node tests/rules.test.js      # 28 rule checks (unchanged)
 node tests/layout.test.js     # yard clearance sweep, for both yard presets
 node tests/shared.test.js     # 51 checks: level format, layout builder, warnings, difficulty, links, compact layout
-node tests/browser.test.js    # 53 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/browser.test.js    # 54 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 10 checks: builds dist/ and opens both single files from file://
 ```
 
@@ -386,7 +387,8 @@ random bot's 31/200. Only geometry differs for the compact built-in level, and o
     and is larger than the front row;
   - the full-bus exit: it moves perpendicular to the road (drift along it 0.000), on
     the side away from its ramp, without lifting. The hop starts only after the bus
-    is clear of the road (clear at 1.23, hop at 1.41).
+    is clear of the road (clear at 1.23, hop at 1.41). A bus filled under the
+    overpass hops with no road above it.
 
 - Headless rule suite (28 checks), all passing:
   - sending destinations and refusal;

@@ -1021,7 +1021,8 @@ function handleEvents(){
       case 'land': { MV[e.man].landT = e.t; v.bobV -= 0.42; sfx.pop(e.chain); break; }
       case 'boardStart': v.boardRamp = e.ramp; break;
       case 'jump': startExit(v, e); sfx.horn(); break;
-      case 'win': winAt = e.t + EXIT.chute + 0.42 + C.WIN_PANEL_DELAY; winSoundAt = e.t + EXIT.chute + 0.45; break;
+      case 'win': { const J = views[e.bus] && views[e.bus].jump, tc = J ? J.tc : EXIT.side + EXIT.chute;    // after the last parachute opens
+        winAt = e.t + tc + 0.42 + C.WIN_PANEL_DELAY; winSoundAt = e.t + tc + 0.45; break; }
       case 'tunnelIn': sfx.echo(); WD.lamps.top.pulseT = e.t; break;
       case 'tunnelOut': WD.lamps.ret.pulseT = e.t; break;
       case 'rampEmpty': { const b = WD.badges[e.ramp]; b.visible = true; b.userData.t0 = e.t; b.userData.sparkled = false; break; }
@@ -1165,50 +1166,62 @@ function updateBus(v, t, vdt){
   if (v.link){ v.link.visible = b.state === 'lane'; v.link.position.y = 1.1 + Math.sin(t*3.4 + b.id)*0.04; }
 }
 /* A full bus first drives straight sideways (perpendicular to the road) off the edge on the side
-   away from its ramp, above the neighbouring crowds; only once it is clear of the road does it
-   crouch, hop and open a parachute in its colour, then swing like a pendulum while drifting down
-   and away.  Its passengers raise their arms and wave. */
-const EXIT = {side:0.5, crouch:0.62, hop:0.86, chute:0.74};
+   away from its ramp, above the neighbouring crowds; only once it is clear of the road - and out
+   from under any road overhead - does it crouch, hop and open a parachute in its colour, then swing
+   like a pendulum while drifting down and away.  Its passengers raise their arms and wave. */
+const EXIT = {side:0.5, crouch:0.12, hop:0.24, chute:0.24};       // nominal phase lengths (s); the slide stretches with its distance
+const EXIT_OUT = C.ROAD_HALF + C.BUS_W/2 + 0.12;                  // centre this far out = clear of the road edge
+function exitDistance(x, y, z, ex, ez, len){
+  // nearest distance (>= EXIT_OUT) where the hop and the opening parachute have open sky: no raised road overhead
+  const R = L.ROAD, reach = Math.max(len/2, 1.0) + C.ROAD_HALF + 0.15;
+  const blocked = (cx, cz) => { for (let i = 0; i < R.n; i += 2){ const py = R.P[i*3+1]; if (py < y + 0.35 || py - 0.24 > y + 3.2) continue;
+    if (Math.hypot(R.P[i*3] - cx, R.P[i*3+2] - cz) < reach) return true; } return false; };
+  for (let d = EXIT_OUT; d < EXIT_OUT + 3.5; d += 0.1){
+    let ok = true; for (let k = 0; k <= 1.2 && ok; k += 0.2) if (blocked(x + ex*(d + k), z + ez*(d + k))) ok = false;
+    if (ok) return d; }
+  return EXIT_OUT + 3.5;
+}
 function startExit(v, e){
   const b = v.b, r = v.boardRamp >= 0 ? L.RAMPS[v.boardRamp] : null;
   const hx = Math.sin(v.h), hz = Math.cos(v.h);                       // heading of the bus as drawn
   let ex, ez;
   if (r){ ex = hz*r.side; ez = -hx*r.side; }                          // away from the ramp it boarded at
   else { ex = e.side; ez = 0; }
-  v.jump = {t0:e.t, x:v.p.x, y:v.p.y, z:v.p.z, h:v.h, ex, ez, dust:false, side:Math.sign(ex*hz - ez*hx) || 1};
+  const out = exitDistance(v.p.x, v.p.y, v.p.z, ex, ez, b.len), t1 = EXIT.side*Math.sqrt(out/EXIT_OUT);
+  v.jump = {t0:e.t, x:v.p.x, y:v.p.y, z:v.p.z, h:v.h, ex, ez, dust:false, side:Math.sign(ex*hz - ez*hx) || 1,
+            out, t1, t2:t1 + EXIT.crouch, t3:t1 + EXIT.crouch + EXIT.hop, tc:t1 + EXIT.chute};
   v.chute = makeChute(b.color); v.chute.visible = false; v.whooshed = false;
 }
 function updateJump(v, t, vdt){
   const J = v.jump, b = v.b;
   if (!J){ v.root.visible = false; return; }
   const u = t - J.t0;
-  if (u > C.PARACHUTE_DURATION + 1.0){ v.root.visible = false; removeChute(v); return; }
+  if (u > J.t3 + C.PARACHUTE_DURATION){ v.root.visible = false; removeChute(v); return; }
   v.root.visible = true; v.slope.rotation.x *= 0.85; v.mat.color.setScalar(1); v.dark = 0;
-  const OUT = C.ROAD_HALF + C.BUS_W/2 + 0.12;                          // centre this far out = clear of the road
-  let x = J.x, y = J.y, z = J.z, sq = 1, swing = 0, lean = 0, yaw = 0;
+  let x = J.x, y = J.y, z = J.z, sq = 1, swing = 0, lean = 0, yaw = 0, slid = J.out;
   const off = (d) => { x += J.ex*d; z += J.ez*d; };
-  if (u < EXIT.side){                                                  // 1) straight sideways off the road
-    const k = u/EXIT.side; off(OUT*easeInOut(k)); lean = -0.1*Math.sin(Math.PI*k); yaw = 0.06*Math.sin(Math.PI*k);
-    if (k > 0.55 && !J.dust){ J.dust = true; const p = new THREE.Vector3(J.x + J.ex*(C.ROAD_HALF), J.y + 0.05, J.z + J.ez*(C.ROAD_HALF)); puff(p, 12, [J.ex, J.ez], 0.8, 0.9); sfx.thud(); }
-  } else if (u < EXIT.crouch){ off(OUT); const k = (u - EXIT.side)/(EXIT.crouch - EXIT.side); sq = 1 - 0.2*Math.sin(Math.PI*k); }   // 2) crouch
-  else if (u < EXIT.hop){ const k = (u - EXIT.crouch)/(EXIT.hop - EXIT.crouch);                       // 3) hop up, stretched
-    off(OUT + 0.5*k); y += 0.55*Math.sin(Math.PI*0.5*k); sq = 1 + 0.16*Math.sin(Math.PI*k); }
-  else { const k = u - EXIT.hop;                                                                       // 4) swing down and away
+  if (u < J.t1){                                                       // 1) straight sideways off the road (and out from under any overpass)
+    const k = u/J.t1; slid = J.out*easeInOut(k); off(slid); lean = -0.1*Math.sin(Math.PI*k); yaw = 0.06*Math.sin(Math.PI*k);
+    if (slid > C.ROAD_HALF + 0.25 && !J.dust){ J.dust = true; const p = new THREE.Vector3(J.x + J.ex*(C.ROAD_HALF), J.y + 0.05, J.z + J.ez*(C.ROAD_HALF)); puff(p, 12, [J.ex, J.ez], 0.8, 0.9); sfx.thud(); }
+  } else if (u < J.t2){ off(J.out); const k = (u - J.t1)/(J.t2 - J.t1); sq = 1 - 0.2*Math.sin(Math.PI*k); }   // 2) crouch
+  else if (u < J.t3){ const k = (u - J.t2)/(J.t3 - J.t2);                                              // 3) hop up, stretched
+    off(J.out + 0.5*k); y += 0.55*Math.sin(Math.PI*0.5*k); sq = 1 + 0.16*Math.sin(Math.PI*k); }
+  else { const k = u - J.t3;                                                                           // 4) swing down and away
     swing = 0.34*Math.sin(k*3.1)*Math.exp(-k*0.35);
-    off(OUT + 0.5 + 1.6*k + 0.5*k*k); z += 0.45*k; y += 0.55 - 0.42*k - (1 - Math.cos(swing))*1.1; }
-  if (u > EXIT.chute && !v.whooshed){ v.whooshed = true; sfx.whoosh(); }
+    off(J.out + 0.5 + 1.6*k + 0.5*k*k); z += 0.45*k; y += 0.55 - 0.42*k - (1 - Math.cos(swing))*1.1; }
+  if (u > J.tc && !v.whooshed){ v.whooshed = true; sfx.whoosh(); }
   v.root.position.set(x, y, z);
   v.root.rotation.y = J.h + yaw;
   v.body.position.set(0, 0, 0); v.body.scale.set(1/Math.sqrt(sq), sq, 1/Math.sqrt(sq));
   // swing about the bus's own long axis toward the drift side
   v.body.rotation.set(0, 0, (swing + lean)*J.side);
-  v.shadow.visible = u < EXIT.side; v.shadow.material.opacity = 0.42*(1 - smooth(0.25, 0.5, u/EXIT.side));
-  const open = clamp((u - EXIT.chute)/0.42, 0, 1), s = open > 0 ? easeOutBack(open, 2.6) : 0.01;
+  v.shadow.visible = u < J.t1; v.shadow.material.opacity = 0.42*(1 - smooth(C.ROAD_HALF - 0.2, EXIT_OUT, slid));   // only while over the road
+  const open = clamp((u - J.tc)/0.42, 0, 1), s = open > 0 ? easeOutBack(open, 2.6) : 0.01;
   if (v.chute){
     const ch = v.chute, cs = Math.max(0.01, s)*1.08;
     ch.position.set(x - J.ex*0.05 - Math.sin(swing)*0.3*J.ex, y + 0.85 + 0.95*cs, z - 0.25*cs);
-    ch.scale.set(cs, Math.max(0.01, clamp((u - EXIT.chute)/0.25, 0.25, 1))*cs, cs);             // unfolds: widens, then fills out
-    ch.rotation.set(-0.25, 0, -swing*0.5*J.side); ch.visible = u > EXIT.chute;
+    ch.scale.set(cs, Math.max(0.01, clamp((u - J.tc)/0.25, 0.25, 1))*cs, cs);                   // unfolds: widens, then fills out
+    ch.rotation.set(-0.25, 0, -swing*0.5*J.side); ch.visible = u > J.tc;
     v.root.updateMatrixWorld(true); ch.updateMatrixWorld(true);
     const Ls = ch.userData.lines, pa = Ls.geometry.attributes.position, W2 = 0.4, Lz = b.len*0.38;
     const corners = [[W2, Lz], [-W2, Lz], [W2, -Lz], [-W2, -Lz]];
@@ -1219,7 +1232,7 @@ function updateJump(v, t, vdt){
     }
     pa.needsUpdate = true; Ls.visible = ch.visible;
   }
-  if (vdt > 0 && u < EXIT.side) v.wheelAng += 0.6*vdt/WHEEL_R;
+  if (vdt > 0 && u < J.t1) v.wheelAng += 0.6*vdt/WHEEL_R;
   v.spd = 0; v.brakeMat.emissiveIntensity = 0.15; v.bGlow.forEach(s => s.material.opacity = 0);
 }
 function updateWheels(){
@@ -1325,7 +1338,7 @@ function updateMen(t, vdt){
     _e.set(v.pitch*1.8 + Math.sin(t*1.9 + mv.ph)*0.02, 0, v.roll*1.6 + Math.sin(t*mv.swayF + mv.ph)*0.04, 'XYZ'); _q.setFromEuler(_e);
     _v.set(0, bounce*0.2, 0); _s.set(1 + bounce*0.25, 1 - bounce*0.5, 1 + bounce*0.25);
     _a.compose(_v, _q, _s); seatMat.multiply(_a);
-    if (b.state === 'jump' && t - b.tJump > EXIT.crouch - 0.1){ const w = Math.sin(t*13 + mv.ph)*0.35;
+    if (b.state === 'jump' && v.jump && t - b.tJump > v.jump.t1 - 0.1){ const w = Math.sin(t*13 + mv.ph)*0.35;
       setManMatrix(i, seatMat, pose(-2.0 + w, -2.0 - w, 1.05, 1.05, -1.5, -1.5)); }
     else setManMatrix(i, seatMat, pose(-0.6, -0.6, 0.1, 0.1, -1.5, -1.5));
     const dk = v.dark; if (Math.abs((mv.tint || 0) - dk) > 0.02){ manColor(i, dk); mv.tint = dk; }
