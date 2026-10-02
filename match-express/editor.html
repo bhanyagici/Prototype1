@@ -228,7 +228,7 @@ function screenFootprint(CAM){
 }
 function n3(v){ const l = Math.hypot(...v) || 1; return v.map(c => c/l); }
 const FOOTS = {};
-const footprint = () => FOOTS[L.Y.name] || (FOOTS[L.Y.name] = screenFootprint(L.Y.CAM));   // per yard preset (each has its camera)
+const footprint = () => { const k = JSON.stringify(L.CAM); return FOOTS[k] || (FOOTS[k] = screenFootprint(L.CAM)); };   // the level's (fitted) camera
 function rampOutline(r){
   const pts = [], o = {}, hw = r.halfW, sides = [[], []];
   for (let s = 0; s <= r.length + 1e-6; s += 0.15){ C.pathAt(r.spline, Math.min(s, r.length), o, 0); sides[0].push([o.x - o.dz*hw, o.z + o.dx*hw]); sides[1].push([o.x + o.dz*hw, o.z - o.dx*hw]); }
@@ -507,7 +507,7 @@ function rampAction(a){
     if (a === 'c-' && r.columns.length > 1) r.columns.pop();
     if (a === 'r+' && r.rows < 14){ r.rows++; r.columns.forEach(c => c.push(null)); }
     if (a === 'r-' && r.rows > 1){ r.rows--; r.columns.forEach(c => c.pop()); }
-    if (a === 'flip'){ const lr = rampOf(i); r.at = lr.s; delete r.cp; r.side = -lr.side; delete r.shape; }
+    if (a === 'flip'){ const lr = rampOf(i); r.at = lr.s; delete r.cp; r.side = -lr.side; delete r.shape; r.tilt = C.RAMP_TILT; }
   });
 }
 function addRamp(){
@@ -515,7 +515,7 @@ function addRamp(){
   let best = 0, at = L.ROAD.portalS/2;
   for (let i=0;i<ss.length-1;i++) if (ss[i+1] - ss[i] > best){ best = ss[i+1] - ss[i]; at = (ss[i] + ss[i+1])/2; }
   const near = L.RAMPS.reduce((a, r) => !a || Math.abs(r.s - at) < Math.abs(a.s - at) ? r : a, null);
-  edit(n => { n.ramps.push({at:round(at, 3), side: near ? -near.side : 1, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))}); });
+  edit(n => { n.ramps.push({at:round(at, 3), side: near ? -near.side : 1, tilt: C.RAMP_TILT, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))}); });
   sel.ramp = lvl.ramps.length - 1; renderAll();
 }
 function fillRandom(){
@@ -671,6 +671,11 @@ function runTest(){
 
 /* ============================== START ============================== */
 (function start(){
+  // bundled levels get a slot once (a deleted one stays deleted)
+  const seeded = S.loadPrefs().seededPresets || [], slots = S.loadSlots();
+  Object.keys(C.PRESETS).filter(id => !seeded.includes(id)).forEach(id => {
+    const lv = clone(C.PRESETS[id]); slots['preset-' + id] = {name: lv.name, level: lv, updated: Date.now()}; seeded.push(id); });
+  S.saveSlots(slots); S.savePrefs({seededPresets: seeded});
   const initial = draftLoad() || S.loadCurrent() || C.LEVEL_DATA;
   try { setLevel(initial); } catch (e) { setLevel(C.LEVEL_DATA); }
   resize();
@@ -682,7 +687,7 @@ addEventListener('resize', fitPhone); fitPhone();
 
 window.__ed = {get level(){ return lvl; }, get layout(){ return L; }, get check(){ return check; }, get undoDepth(){ return undoStack.length; }, get redoDepth(){ return redoStack.length; },
   get lastTest(){ return lastTest; }, get autoRun(){ return autoRun; }, setLevel:(o) => { pushUndo(); setLevel(o, true); }, edit, undo, redo, run, send, levelJSON, importText,
-  exportLevel, saveSlot, slotAction, fillRandom, linkSelected, busSel, sel, brush, W2S, S2W, roadEdit, setTab:(t) => document.querySelector(`#tabs button[data-tab="${t}"]`).click()};
+  exportLevel, saveSlot, slotAction, addRamp, rampAction, fillRandom, linkSelected, busSel, sel, brush, W2S, S2W, roadEdit, setTab:(t) => document.querySelector(`#tabs button[data-tab="${t}"]`).click()};
 </script>
 </body>
 </html>

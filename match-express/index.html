@@ -955,8 +955,9 @@ function resetGame(){
   $('winPanel').classList.remove('show'); $('failPanel').classList.remove('show');
   updateScene(0);
 }
-/* level priority: a level sent by the editor > the last saved level (localStorage) > built-in LEVEL_DATA */
+/* level priority: a level sent by the editor > ?level=<bundled id> > the last saved level (localStorage) > built-in LEVEL_DATA */
 function initialLevel(){
+  const pid = params.get('level'); if (pid && C.PRESETS[pid]) return [C.PRESETS[pid], 'preset'];
   if (!params.has('builtin')){ const saved = S.loadCurrent();
     if (saved){ try { C.buildLayout(saved); return [saved, 'saved']; } catch (e) { console.warn('[level] saved level ignored:', e.message); } } }
   return [C.LEVEL_DATA, 'builtin'];
@@ -965,10 +966,10 @@ function loadLevel(level, source, opts){
   opts = opts || {};
   try { C.buildLayout(level); } catch (e) { console.warn('[level] rejected:', e.message); return false; }
   LEVEL = C.normalizeLevel(level); L = C.buildLayout(LEVEL); levelSource = source; levelSerial++;
-  applyCamera(L.Y.CAM); buildWorld(L); resetGame(); placeCounter();
+  applyCamera(L.CAM); buildWorld(L); resetGame(); placeCounter();
   setBot(!!opts.bot);
   $('levelPill').textContent = LEVEL.name || 'Level';
-  $('levelSrc').textContent = {editor:'Level from the editor', saved:'Last saved editor level', builtin:'Built-in level'}[source] || source;
+  $('levelSrc').textContent = {editor:'Level from the editor', saved:'Last saved editor level', builtin:'Built-in level', preset:'Bundled level'}[source] || source;
   logLevel(LEVEL, source);
   if (parent !== window) parent.postMessage({type:'game-status', source, name:LEVEL.name, men:game.men.length, buses:game.buses.length, serial:levelSerial}, '*');
   return true;

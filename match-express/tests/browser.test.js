@@ -57,6 +57,8 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(await p.evaluate(() => __me.levelSource === 'saved' && __me.LEVEL.name === 'Saved Test'), 'with a saved level the game loads it instead of the built-in one');
       await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       chk(await p.evaluate(() => __me.levelSource === 'builtin'), '?builtin forces the built-in level');
+      await p.goto(base + '/index.html?level=crowded-rush&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      chk(await p.evaluate(() => __me.levelSource === 'preset' && __me.LEVEL.name === 'Crowded Rush' && __me.layout.RAMPS.length === 4), '?level=crowded-rush loads the bundled Crowded Rush level');
       await ctx.close(); }
     /* ---------------- proportions, cheering, full-bus exit ---------------- */
     console.log('game visuals');
@@ -228,16 +230,24 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     chk(ok, 'Import accepts pasted JSON');
     chk(await ed.evaluate(() => !__ed.importText('{not json')), 'Import rejects broken JSON without touching the level');
     ed.on('dialog', d => d.accept(d.type() === 'prompt' ? 'Renamed level' : undefined));
+    const slots0 = await ed.evaluate(() => JSON.parse(localStorage.getItem('match-express:level-slots')));
+    chk(slots0['preset-crowded-rush'] && slots0['preset-crowded-rush'].name === 'Crowded Rush' && slots0['preset-crowded-rush'].level.ramps.every(r => r.tilt), 'the bundled Crowded Rush level is seeded as a level slot');
     await ed.evaluate(() => __ed.saveSlot(null));
     const slots1 = await ed.evaluate(() => JSON.parse(localStorage.getItem('match-express:level-slots')));
-    const id = Object.keys(slots1)[0];
+    const id = Object.keys(slots1).find(k => !slots0[k]);
     await ed.evaluate(id => { __ed.slotAction('dup', id); __ed.slotAction('ren', id); }, id);
     const slots2 = await ed.evaluate(() => JSON.parse(localStorage.getItem('match-express:level-slots')));
-    chk(Object.keys(slots2).length === 2 && slots2[id].name === 'Renamed level', 'level slots: save, duplicate and rename');
+    chk(Object.keys(slots2).length === Object.keys(slots0).length + 2 && slots2[id].name === 'Renamed level', 'level slots: save, duplicate and rename');
     await ed.evaluate(id => { __ed.edit(n => { n.name = 'Changed'; }); __ed.slotAction('load', id); }, id);
     chk(await ed.evaluate(() => __ed.level.name === 'Renamed level'), 'level slots: load');
     await ed.evaluate(id => __ed.slotAction('del', id), id);
-    chk(await ed.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('match-express:level-slots'))).length === 1), 'level slots: delete');
+    const nSlots = Object.keys(slots0).length;
+    chk(await ed.evaluate(nSlots => Object.keys(JSON.parse(localStorage.getItem('match-express:level-slots'))).length === nSlots + 1, nSlots), 'level slots: delete');
+    // new and flipped ramps get the default tilted platform
+    const rt = await ed.evaluate(() => { __ed.setLevel(JSON.parse(JSON.stringify(__ed.level))); __ed.edit(n => { n.ramps[0].shape = [[3, -3], [5, -6]]; delete n.ramps[0].tilt; });
+      __ed.addRamp(); const a = __ed.level.ramps[__ed.level.ramps.length-1]; __ed.sel.ramp = 0; __ed.rampAction('flip'); const f = __ed.level.ramps[0];
+      return {added: a.tilt, addedShape: !!a.shape, flipped: f.tilt, flippedShape: !!f.shape}; });
+    chk(rt.added >= 30 && rt.added <= 35 && !rt.addedShape && rt.flipped === rt.added && !rt.flippedShape, 'added and flipped ramps get the tilted platform shape', JSON.stringify(rt));
     // Test + Watch greedy
     await ed.evaluate(lv => __ed.setLevel(lv), CLASSIC);
     await ed.click('#testBtn');

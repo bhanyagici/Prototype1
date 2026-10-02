@@ -37,6 +37,25 @@ A level with `"yard": "classic"` gets the original wide yard and camera.
 `tests/fixtures/level2-classic.json` is the built-in level with its original layout.
 It still replays bit for bit against the pre-editor baseline (see Verification).
 
+### Crowded Rush (bundled level)
+
+`levels/crowded-rush.json` is laid out after the mockup. Its stickmen and buses are
+unchanged from the original file; only the road and ramps moved.
+- **Road:** it leaves the yard straight up and loops once in the middle of the screen.
+  Then it makes an S-curve up to the exit tunnel at the top centre.
+- **Ramps:** four 6 × 15 platforms run diagonally outward and up at 35°. In order:
+  lower right, middle left (below the loop), upper right (above it) and top left.
+  The level has no layout warnings.
+- **Opening it:**
+  - the editor seeds it as the slot "Crowded Rush";
+  - the game opens it with `index.html?level=crowded-rush`.
+- **Camera:** the camera pulls back by itself until the whole layout fits, at most 1.5×.
+  - Crowded Rush needs 1.34×, so stickmen are about 17 px tall and an 8-seat bus is
+    about 56 px on 390 × 844. Level 2 still fits at 1×.
+  - [Side by side with the mockup](screenshots/crowded-rush-vs-mockup.png).
+- **Bots:** the greedy bot wins in 74 sends (263 s). Random bots win 9/200, which is
+  *Very Hard*.
+
 Screenshots (390 × 844):
 - [the full game at the start](screenshot-390.png);
 - [a bus stopped at a ramp with its stickmen cheering](screenshots/game-cheering.png),
@@ -95,8 +114,9 @@ for one load.
   - a curve is too tight for a 12-seat bus.
 
 ### Ramps
-- Add or delete ramps. Each ramp is a spline platform with draggable shape points
-  and railings.
+- Add or delete ramps. A new or flipped ramp is a straight platform with railings.
+  It runs diagonally outward and up at 35° (`"tilt"`) and is sized to its columns
+  and rows. Drag its shape points to bend it into a spline.
 - The boarding point (diamond) snaps to the road and can be dragged along it. The
   front row always faces the road.
 - Columns and rows have +/− buttons.
@@ -147,10 +167,12 @@ Level format 2:
 ```js
 { format: 2, name, seed,
   road:  { points: [{x, z, spiral?: {r, side}}], tail? },
-  ramps: [{ cp | at, side, shape?: [[x, z], ...], rows, columns: [["red", "?blue", null, ...], ...] }],
+  ramps: [{ cp | at, side, tilt?, shape?: [[x, z], ...], rows, columns: [["red", "?blue", null, ...], ...] }],
   lanes: [[{ color, cap, hidden?, link? }, ...], [...], [...]] }
 ```
 
+`tilt` (degrees) makes a straight platform leaving the road at that screen angle,
+outward and up. Without `tilt` or `shape` a ramp gets the original curved default.
 In `columns`, each list is one column, front cell first. `"?colour"` is a hidden
 stickman and `null` is an empty cell. Each lane lists its front bus first.
 
@@ -342,8 +364,8 @@ height.
 ```
 node tests/rules.test.js      # 28 rule checks (unchanged)
 node tests/layout.test.js     # yard clearance sweep, for both yard presets
-node tests/shared.test.js     # 51 checks: level format, layout builder, warnings, difficulty, links, compact layout
-node tests/browser.test.js    # 54 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/shared.test.js     # 59 checks: level format, layout builder, warnings, difficulty, links, compact layout, Crowded Rush
+node tests/browser.test.js    # 57 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 10 checks: builds dist/ and opens both single files from file://
 ```
 

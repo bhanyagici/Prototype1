@@ -99,9 +99,12 @@ console.log('editor checks and warnings');
   const cross = clone(CL); delete cross.road.points[8].spiral; delete cross.road.tail;
   cross.road.points.splice(9, 0, {x:1.6, z:-10.6}, {x:1.8, z:-8.2}, {x:-1.6, z:-8.4});
   chk(kinds(cross).includes('road-cross'), 'a road crossing itself outside a spiral is reported', kinds(cross).join(','));
-  const off = clone(CL); delete off.road.tail; off.road.points[14].x = 11;
+  const wideR = clone(C.LEVEL_DATA); wideR.road.points[10].x = 5.8;
+  const Lw = C.buildLayout(wideR);
+  chk(Lw.CAM.zoom > 1 && !kinds(wideR).includes('road-offscreen'), 'a road that is a bit too wide makes the camera pull back to fit it (no warning)', 'zoom ' + Lw.CAM.zoom);
+  const off = clone(CL); delete off.road.tail; off.road.points[14].x = 30;
   const ko = C.checkLevel(off).warnings.filter(w => w.kind === 'road-offscreen');
-  chk(ko.length > 0 && ko.every(w => typeof w.x === 'number'), 'a road leaving the screen area is reported with a position');
+  chk(ko.length > 0 && ko.every(w => typeof w.x === 'number'), 'a road beyond what the camera can show (even pulled back) is reported with a position');
   const tight = clone(CL); delete tight.road.tail; tight.road.points.splice(5, 0, {x:1.6, z:-6.0}, {x:-1.4, z:-6.3});
   chk(kinds(tight).includes('road-tight'), 'a curve too tight for a 12-seat bus is reported');
   chk(!kinds(C.LEVEL_DATA).some(k => k.startsWith('road')), 'the built-in road has no road warnings (its loop is a spiral)');
@@ -131,7 +134,7 @@ console.log('compact layout (built-in level)');
   const g = sim(C.LEVEL_DATA), g60 = sim(C.LEVEL_DATA, 1/60), t = C.testLevel(C.LEVEL_DATA, 200);
   chk(g.result === 'win' && g60.result === 'win' && t.label === 'Medium', 'greedy wins at 30 and 60 Hz; random bot stays Medium', `${g.sends} sends, ${g.t.toFixed(1)} s; random ${t.wins}/200`);
   // framing: everything fits the 900x1950 design screen (390x844 phone), below the top bar
-  const cam = L.Y.CAM, pr = (x, y, z) => C.project(x, y, z, cam), k = 390/900, inX = u => u >= 0 && u <= 900;
+  const cam = L.CAM, pr = (x, y, z) => C.project(x, y, z, cam), k = 390/900, inX = u => u >= 0 && u <= 900;
   const yardOk = [0, 1.18, 2.6, 4, 4.6].every(z => inX(pr(-(L.Y.X_SIDE + 0.49), 0, z)[0]) && inX(pr(L.Y.X_SIDE + 0.49, 0, z)[0]));
   const laneOk = L.Y.LANE_X.every(x => { const [u, v] = pr(x + 0.49, 0, C.laneSlotZ(C.busLen(12)) + C.busLen(12)/2); return inX(u) && v <= 1950; });
   let roadOk = true; for (let i = 0; i < L.ROAD.n; i += 4) if (L.ROAD.cum[i] <= L.ROAD.portalS){ const [u, v] = pr(L.ROAD.P[i*3], L.ROAD.P[i*3+1], L.ROAD.P[i*3+2]); if (!inX(u) || v < 120) roadOk = false; }
@@ -158,6 +161,33 @@ console.log('linked buses');
   chk(!acts.some(x => x.kind === 'lane' && x.idx === 0), 'bots do not consider a linked bus until its partners are at the front');
   const gr = sim(lv);
   chk(['win', 'fail'].includes(gr.result), 'a level with links still plays to an end with the bots', gr.result);
+}
+
+console.log('\nbundled levels (Crowded Rush)');
+{
+  const CR = require('../levels/crowded-rush.json'), src = C.PRESETS['crowded-rush'];
+  chk(JSON.stringify(src) === JSON.stringify(CR), 'the bundled Crowded Rush in core matches levels/crowded-rush.json');
+  const ck = C.checkLevel(CR), L = C.buildLayout(CR);
+  chk(!ck.warnings.length && ck.balanced, 'Crowded Rush: no layout warnings, seats match stickmen', ck.warnings.map(w => w.kind).join(',') || 'clean');
+  chk(CR.ramps.length === 4 && CR.ramps.every(r => r.columns.length === 6 && r.rows === 15 && r.tilt >= 30 && r.tilt <= 35), 'Crowded Rush: 4 ramps of 6 x 15, tilted 30-35 degrees');
+  // every ramp points outward and up; left ramps sit left of the road, right ramps right
+  const outward = L.RAMPS.every(r => { const a = r.ctrl[0], b = r.ctrl[r.ctrl.length-1], dx = b[0]-a[0], dz = b[1]-a[1];
+    return dz < 0 && Math.sign(dx) === Math.sign(a[0] - L.ROAD.P[0]) && Math.abs(Math.atan2(-dz, Math.abs(dx))*180/Math.PI - CR.ramps[r.src].tilt) < 0.5; });
+  chk(outward, 'Crowded Rush: each ramp runs diagonally outward and up at its tilt');
+  // the whole layout is on screen, stickmen stay readable
+  const cam = L.CAM, k = 390/cam.w; let off = 0, minPx = 1e9;
+  const hr = 0.156, hy = 0.78 - hr, body = [[0.07,0,0.07], [-0.07,0,-0.07], [0,hy+hr,0], [0,hy,hr], [0,hy,-hr], [0,hy+hr*0.7,-hr*0.7]];
+  L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => {      // on-screen height of a stickman (feet to the top of the head)
+    const ys = body.map(b => C.project(q.x + b[0], q.y + b[1], q.z + b[2], cam)), f = ys[0];
+    if (f[0] < 0 || f[0] > cam.w || Math.min(...ys.map(v => v[1])) < 0) off++;
+    minPx = Math.min(minPx, (Math.max(...ys.map(v => v[1])) - Math.min(...ys.map(v => v[1])))*k); })));
+  chk(off === 0 && cam.zoom <= 1.4 && minPx >= 16, 'Crowded Rush: camera fits every stickman on a 390 x 844 screen, stickmen >= 16 px tall on screen', 'zoom ' + cam.zoom + ', smallest stickman ' + minPx.toFixed(1) + ' px');
+  const g = sim(CR);
+  chk(g.result === 'win', 'Crowded Rush: the greedy bot wins', g.sends + ' sends, ' + g.t.toFixed(1) + ' s');
+  // editor default ramp: a tilted platform with no shape gets its length from rows and columns
+  const lv = clone(CR); delete lv.ramps[0].cp; lv.ramps[0].at = 3; lv.ramps[0].rows = 8; lv.ramps[0].columns = lv.ramps[0].columns.map(c => c.slice(0, 8)).slice(0, 4);
+  const r0 = C.buildLayout(lv).RAMPS[0];
+  chk(r0.length < L.RAMPS[0].length && r0.halfW < L.RAMPS[0].halfW && r0.slots.length === 4 && r0.slots[0].length === 8, 'a tilted ramp resizes itself to its columns and rows');
 }
 
 console.log(fail ? `\n${fail} FAILED, ${pass} passed` : `\nALL ${pass} CHECKS PASS`);
