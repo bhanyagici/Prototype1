@@ -17,7 +17,7 @@ const WIN_PANEL_DELAY    = 1.0;   // seconds after the last parachute opens
 /* ============================ LEVEL DATA ============================
    The built-in level (format 2).  Its stickmen and buses were produced once by
    generateLevel(11) + searchSeed() and frozen; the road and ramp placement are the
-   hand-made layout.  Ramps: "cp" = road control point the boarding point sits at
+   hand-made compact layout (tests/fixtures/level2-classic.json keeps the original, wider one).  Ramps: "cp" = road control point the boarding point sits at
    (or "at" = arc length along the road), "side" +1 right / -1 left, optional
    "shape" = spline points [x,z] after the attach point, "columns" listed FRONT
    (road end) to BACK; a cell is "red", "?red" (hidden stickman) or null (empty).
@@ -32,44 +32,39 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
     // "spiral" turns the next stretch into a loop that crosses over itself; "tail" is the point
     // inside the tunnel (optional, otherwise 2.1 units along the last tangent).
     "points": [
-      {"x": 0, "z": -1.3, "y": 0}, {"x": 0, "z": -2.2, "y": 0.03}, {"x": 0.55, "z": -3.2, "y": 0.2},
-      {"x": 0.78, "z": -4.3, "y": 0.4}, {"x": 0.3, "z": -5.5, "y": 0.6}, {"x": -0.7, "z": -6.5, "y": 0.85},
-      {"x": -0.98, "z": -7.5, "y": 1}, {"x": -0.5, "z": -8.6, "y": 1.14},
-      {"x": -0.2, "z": -9.1, "y": 1.25, "spiral": {"r": 1.4, "side": 1, "dir": [0, -1]}},
-      {"x": -1.3, "z": -9.15, "y": 2.7}, {"x": -1.95, "z": -10.049999999999999, "y": 2.78},
-      {"x": -1.88, "z": -11.25, "y": 2.86}, {"x": -1.15, "z": -12.6, "y": 2.95}, {"x": 0.55, "z": -14.05, "y": 3.05},
-      {"x": 0.78, "z": -15.2, "y": 3.14}, {"x": 0, "z": -16.3, "y": 3.24}, {"x": -0.8, "z": -17.35, "y": 3.34},
-      {"x": -0.72, "z": -18.5, "y": 3.44}, {"x": 0.2, "z": -19.5, "y": 3.54}, {"x": 0.8, "z": -20.55, "y": 3.64},
-      {"x": 0.62, "z": -21.6, "y": 3.72}, {"x": 0.05, "z": -22.6, "y": 3.78}, {"x": 0, "z": -23.6, "y": 3.8}
-    ],
-    "tail": [0, 3.8, -25.7]
+      {"x": 0, "z": -1.3, "y": 0}, {"x": 0, "z": -2, "y": 0}, {"x": 0, "z": -3.05, "y": 0.05},
+      {"x": 0, "z": -4.1, "y": 0.1}, {"x": 0, "z": -5.15, "y": 0.15}, {"x": 0, "z": -6.2, "y": 0.2},
+      {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
+      {"x": 0.6, "z": -7.44, "y": 1.58}, {"x": 1.41, "z": -7.39, "y": 1.61}, {"x": 2.07, "z": -7.88, "y": 1.64},
+      {"x": 2.27, "z": -9.14, "y": 1.65}, {"x": 1.8, "z": -10.04, "y": 1.67}
+    ]
   },
   "ramps": [
-    {"cp": 3, "side": 1, "columns": [   // ramp 1 (lower right), front -> back
+    {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "columns": [   // ramp 1 (bottom left), front -> back
       ["red", "red", "orange", "orange", "pink", "pink", "green", "green", "yellow", "purple"],
       ["purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "purple", "blue", "blue"],
       ["red", "red", "pink", "pink", "pink", "orange", "orange", "red", "red", "red"],
       ["orange", "orange", "orange", "orange", "green", "green", "green", "orange", "orange", "yellow"]
     ]},
-    {"cp": 6, "side": -1, "columns": [   // ramp 2 (lower left), front -> back
+    {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "columns": [   // ramp 2 (lower right), front -> back
       ["pink", "pink", "pink", "pink", "red", "red", "purple", "red", "red"],
       ["red", "red", "green", "green", "yellow", "yellow", "purple", "purple", "purple"],
       ["orange", "blue", "blue", "blue", "cyan", "cyan", "yellow", "yellow", "green"],
       ["green", "orange", "orange", "pink", "pink", "pink", "green", "red", "red"]
     ]},
-    {"cp": 13, "side": 1, "shape": [[2.47, -13.34], [3.91, -13.81], [5.21, -15.32]], "columns": [   // ramp 3 (middle right), front -> back
-      ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"],
+    {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "columns": [   // ramp 3 (middle left), front -> back
       ["green", "green", "yellow", "yellow", "purple", "purple", "yellow", "green", "green", "blue"],
       ["orange", "orange", "orange", "orange", "purple", "purple", "yellow", "green", "green", "orange"],
-      ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"]
+      ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"],
+      ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"]
     ]},
-    {"cp": 16, "side": -1, "columns": [   // ramp 4 (upper left), front -> back
+    {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "columns": [   // ramp 4 (upper right), front -> back
       ["yellow", "pink", "pink", "pink", "pink", "yellow", "yellow", "yellow", "cyan"],
       ["pink", "pink", "pink", "pink", "yellow", "yellow", "red", "red", "cyan"],
       ["cyan", "cyan", "cyan", "blue", "green", "yellow", "yellow", "yellow", "yellow"],
       ["green", "red", "red", "red", "red", "purple", "purple", "orange", "orange"]
     ]},
-    {"cp": 19, "side": 1, "columns": [   // ramp 5 (top right), front -> back
+    {"cp": 5, "side": -1, "shape": [[-2.74, -6.47], [-5.11, -6.81]], "columns": [   // ramp 5 (top left), front -> back
       ["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"],
       ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"],
       ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"],
@@ -131,11 +126,23 @@ const SIM_DT = 1/30;           // headless simulation step
 const BUS_W = 0.98, ROW_PITCH = 0.34, ROAD_HALF = 0.74;
 const busLen = cap => cap/2*ROW_PITCH + 0.52;
 const Z_ENTRY = 0, Z_ROAD0 = -1.3;
-const BAY_X = [-2.72,-1.36,0,1.36,2.72], Z_BAY_TOP = 1.18, Z_BAY_BOT = 4.0;
-const Z_COLL = 5.2, Z_LANE_TOP = 6.28, LANE_X = [-1.72,0,1.72];
-const X_SIDE = 4.32, TUNNEL_X = 5.45;
-const TUNNEL_R = {x:TUNNEL_X, z:Z_COLL, nx:-0.8, nz:0.6, depth:1.6, side:1};    // return tunnel on the right, mouth to the bays
-const TUNNEL_L = {x:-TUNNEL_X, z:Z_COLL, nx:0.8, nz:0.6, depth:1.6, side:-1};   // mirrored on the left
+const Z_BAY_TOP = 1.18, Z_BAY_BOT = 4.0, Z_COLL = 5.2, Z_LANE_TOP = 6.28;
+/* Yard presets: the horizontal yard geometry (bays, queue lanes, side lanes, return tunnel) and the
+   game camera that frames it, and how far the ramp platforms sit below the road deck (a full bus
+   drives sideways off the road above the neighbouring crowds).  "compact" is the default.  "classic" is the original, wider layout; a
+   level with "yard": "classic" plays exactly as before the compaction (the regression baseline). */
+const YARDS = {
+  compact: {name:'compact', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.64,0,1.64], X_SIDE:3.8, TUNNEL_X:4.85, RAMP_DROP:0.85,
+            CAM:{fov:30, pos:[0, 31.669, 20.041], look:[0, 0, -1.32], w:900, h:1950}},
+  classic: {name:'classic', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.72,0,1.72], X_SIDE:4.32, TUNNEL_X:5.45, RAMP_DROP:0,
+            CAM:{fov:30, pos:[0, 44.96, 35.22], look:[0, 0, -8.2], w:900, h:1950}}
+};
+Object.values(YARDS).forEach(Y => {
+  Y.TUNNEL_R = {x:Y.TUNNEL_X, z:Z_COLL, nx:-0.8, nz:0.6, depth:1.6, side:1};    // return tunnel on the right, mouth to the bays
+  Y.TUNNEL_L = {x:-Y.TUNNEL_X, z:Z_COLL, nx:0.8, nz:0.6, depth:1.6, side:-1};   // mirrored on the left
+});
+const YARD = YARDS.compact;
+const {BAY_X, LANE_X, X_SIDE, TUNNEL_X, TUNNEL_R, TUNNEL_L} = YARD;   // defaults (compact yard)
 const parkZ = len => Z_BAY_TOP + 0.08 + len/2;
 const laneSlotZ = len => Z_LANE_TOP + 0.12 + len/2;
 
@@ -208,7 +215,7 @@ function filletPath(raw, r){
 }
 
 /* ============================ LEVEL FORMAT ============================ */
-const DEFAULT_RAMP_PLACE = [{cp:3, side:1},{cp:6, side:-1},{cp:13, side:1},{cp:16, side:-1},{cp:19, side:1}];
+const DEFAULT_RAMP_PLACE = LEVEL_DATA.ramps.map(r => r.shape ? {cp:r.cp, side:r.side, shape:r.shape} : {cp:r.cp, side:r.side});
 const clone = o => JSON.parse(JSON.stringify(o));
 /* "red" | "?red" (hidden) | null (empty)  ->  {color, hidden} | null */
 function parseCell(c){
@@ -227,6 +234,7 @@ function normalizeLevel(lv){
   const road = lv.road && Array.isArray(lv.road.points) && lv.road.points.length >= 3 ? clone(lv.road) : clone(LEVEL_DATA.road);
   road.points.forEach(p => { p.x = +p.x; p.z = +p.z; });
   const out = {format:2, name: lv.name || 'Untitled level', seed: lv.seed, road, ramps:[], lanes:[]};
+  if (lv.yard === 'classic') out.yard = 'classic';     // omitted = the default compact yard
   lv.ramps.forEach((r, k) => {
     const cols = (r.columns || []).map(col => (col || []).map(c => cellStr(parseCell(c))));
     if (!cols.length) return;
@@ -235,7 +243,8 @@ function normalizeLevel(lv){
     const place = (r.at != null || r.cp != null) ? {} : (DEFAULT_RAMP_PLACE[k] || {at: null});
     const nr = {side: r.side || place.side || (k % 2 ? -1 : 1), rows, columns: cols};
     if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else nr.at = null;
-    if (Array.isArray(r.shape) && r.shape.length) nr.shape = r.shape.map(p => [+p[0], +p[1]]);
+    const shp = Array.isArray(r.shape) && r.shape.length ? r.shape : place.shape;
+    if (shp) nr.shape = shp.map(p => [+p[0], +p[1]]);
     out.ramps.push(nr);
   });
   for (let l=0;l<3;l++) out.lanes.push(((lv.lanes[l]) || []).filter(b => b && COLORS.includes(b.color) && [4,6,8,12].includes(+b.cap))
@@ -294,12 +303,12 @@ function buildRoad(road){
   path.cps = cps;
   return path;
 }
-function buildRamp(ROAD, rd, src){
+function buildRamp(ROAD, rd, src, Y){
   let s = rd.at != null ? rd.at : rd.cp != null ? ROAD.pointS[clamp(rd.cp, 0, ROAD.pointS.length-1)] : ROAD.portalS*(0.2 + 0.15*src);
   s = clamp(s, 0.6, ROAD.portalS - 0.6);
   const p = {}; pathAt(ROAD, s, p, 0); const side = rd.side || 1;
   const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
-  const ax = p.x + nx*(ROAD_HALF+0.06), az = p.z + nz*(ROAD_HALF+0.06), y = p.y;
+  const ax = p.x + nx*(ROAD_HALF+0.06), az = p.z + nz*(ROAD_HALF+0.06), y = p.y - ((Y || YARD).RAMP_DROP || 0);
   const c = [[ax,y,az]];
   if (rd.shape && rd.shape.length) rd.shape.forEach(q => c.push([q[0], y, q[1]]));
   else {                                            // default shape: leave the road square-on, bend toward "up"
@@ -326,7 +335,7 @@ function buildRamp(ROAD, rd, src){
   const colOrder = slots.map((_, i) => i).sort((a,b) =>
     Math.hypot(slots[a][0].x-p.x, slots[a][0].z-p.z) - Math.hypot(slots[b][0].x-p.x, slots[b][0].z-p.z));
   return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW: cols*RAMP_SP/2 + 0.2, slots, colOrder};
+          rows, cols, halfW: cols*RAMP_SP/2 + 0.16, slots, colOrder};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -342,25 +351,26 @@ const layoutCache = new WeakMap();
 function buildLayout(level){
   const N = normalizeLevel(level);
   if (layoutCache.has(N)) return layoutCache.get(N);
-  const ROAD = buildRoad(N.road);
-  const RAMPS = N.ramps.map((r, i) => buildRamp(ROAD, r, i)).sort((a, b) => a.s - b.s || a.src - b.src);
+  const ROAD = buildRoad(N.road), Y = YARDS[N.yard] || YARD;
+  const RAMPS = N.ramps.map((r, i) => buildRamp(ROAD, r, i, Y)).sort((a, b) => a.s - b.s || a.src - b.src);
   RAMPS.forEach((r, k) => r.k = k);
   const ex = {}; pathAt(ROAD, ROAD.portalS, ex, 0);
-  const dR = Math.hypot(ex.x - TUNNEL_R.x, ex.z - TUNNEL_R.z), dL = Math.hypot(ex.x - TUNNEL_L.x, ex.z - TUNNEL_L.z);
-  const L = {ROAD, RAMPS, TUNNEL: dL < dR - 1e-9 ? TUNNEL_L : TUNNEL_R, exit:{x:ex.x, y:ex.y, z:ex.z, dx:ex.dx, dz:ex.dz},
+  const dR = Math.hypot(ex.x - Y.TUNNEL_R.x, ex.z - Y.TUNNEL_R.z), dL = Math.hypot(ex.x - Y.TUNNEL_L.x, ex.z - Y.TUNNEL_L.z);
+  const L = {ROAD, RAMPS, Y, TUNNEL: dL < dR - 1e-9 ? Y.TUNNEL_L : Y.TUNNEL_R, exit:{x:ex.x, y:ex.y, z:ex.z, dx:ex.dx, dz:ex.dz},
              pillars: pillarSpots(ROAD), level:N};
   layoutCache.set(N, L); layoutCache.set(level, L);
   return L;
 }
 
-function routeToRoad(x, z, side){                 // from a lane, via the nearer side lane
-  const sx = side*X_SIDE;
+function routeToRoad(x, z, side, Y){              // from a lane, via the nearer side lane
+  const sx = side*(Y || YARD).X_SIDE;
   return filletPath([[x,z],[x,Z_COLL],[sx,Z_COLL],[sx,Z_ENTRY],[0,Z_ENTRY],[0,Z_ROAD0]], 0.6);
 }
 function routeBayToRoad(x, z){ return filletPath([[x,z],[x,Z_ENTRY],[0,Z_ENTRY],[0,Z_ROAD0]], 0.6); }
-function routeLaneToBay(x, z, k, len){ return filletPath([[x,z],[x,Z_COLL],[BAY_X[k],Z_COLL],[BAY_X[k],parkZ(len)]], 0.6); }
-function routeReturn(k, len, T){ T = T || TUNNEL_R;
-  return filletPath([[T.x - T.nx*T.depth, T.z - T.nz*T.depth],[T.x, T.z],[BAY_X[k],Z_COLL],[BAY_X[k],parkZ(len)]], 0.8); }
+function routeLaneToBay(x, z, k, len, Y){ const bx = (Y || YARD).BAY_X[k];
+  return filletPath([[x,z],[x,Z_COLL],[bx,Z_COLL],[bx,parkZ(len)]], 0.6); }
+function routeReturn(k, len, T, Y){ Y = Y || YARD; T = T || Y.TUNNEL_R; const bx = Y.BAY_X[k];
+  return filletPath([[T.x - T.nx*T.depth, T.z - T.nz*T.depth],[T.x, T.z],[bx,Z_COLL],[bx,parkZ(len)]], 0.8); }
 function seatLocal(i, len){                        // seat i (front row first) in bus space, +z forward
   const row = Math.floor(i/2);
   return {x: (i%2 ? 0.21 : -0.21), y: 0.52, z: len/2 - 0.31 - row*ROW_PITCH};
@@ -391,7 +401,7 @@ function createGame(level, opts){
     lane.forEach((d, i) => {
       const len = busLen(d.cap);
       const b = {id:g.buses.length, color:d.color, cap:d.cap, hidden:!!d.hidden, revealed:!d.hidden || i===0, link:d.link,
-        len, state:'lane', lane:l, bay:-1, x:LANE_X[l], y:0, z:z+len/2, dx:0, dz:-1, slope:0, v:0,
+        len, state:'lane', lane:l, bay:-1, x:L.Y.LANE_X[l], y:0, z:z+len/2, dx:0, dz:-1, slope:0, v:0,
         rs:0, seg:0, nextRamp:0, seated:0, transit:0, trip:null, board:null, side:1, tJump:0, tExit:0};
       z += len + LANE_GAP;
       g.buses.push(b); g.lanes[l].push(b.id);
@@ -451,7 +461,7 @@ function sendToRoad(g, b, from, idx){
   if (from === 'lane'){
     const side = idx === 0 ? -1 : idx === 2 ? 1 : (g.sideUse[1] < g.sideUse[0] ? 1 : -1);
     b.side = side; g.sideUse[side > 0 ? 1 : 0]++;
-    path = routeToRoad(b.x, b.z, side);
+    path = routeToRoad(b.x, b.z, side, g.L.Y);
   } else path = routeBayToRoad(b.x, b.z);
   b.state = 'toRoad'; g.toRoad++; g.sends++;
   startTrip(g, b, 'toRoad', path);
@@ -496,7 +506,7 @@ function tapSingle(g, l){
   const k = freeBay(g);
   if (k >= 0){
     lane.shift(); g.bayRes[k] = b.id; b.bay = k; b.state = 'toBay'; g.sends++;
-    startTrip(g, b, 'toBay', routeLaneToBay(b.x, b.z, k, b.len));
+    startTrip(g, b, 'toBay', routeLaneToBay(b.x, b.z, k, b.len, g.L.Y));
     g.moves.push('L' + l + ':' + b.color + b.cap + '>bay' + k);
     emit(g, 'send', {bus:b.id, from:'lane', idx:l, dest:'bay', bay:k});
     afterLaneShift(g, l, b.id); return 'bay';
@@ -537,7 +547,7 @@ function stepLanes(g, dt){
     const dep = g.laneLeft[l] >= 0 ? g.buses[g.laneLeft[l]] : null;
     if (dep && dep.trip){
       const rx = dep.x - dep.dx*dep.len/2, rz = dep.z - dep.dz*dep.len/2;
-      if (Math.abs(rx - LANE_X[l]) < 0.8 && rz > Z_LANE_TOP - 0.7) limit = rz + LANE_GAP;
+      if (Math.abs(rx - g.L.Y.LANE_X[l]) < 0.8 && rz > Z_LANE_TOP - 0.7) limit = rz + LANE_GAP;
     }
     let slot = Z_LANE_TOP + 0.12;
     for (const id of g.lanes[l]){
@@ -679,7 +689,7 @@ function stepTunnel(g){
       emit(g, 'crash', {bus:b.id}); return;
     }
     g.bayRes[k] = b.id; b.bay = k; b.state = 'return';
-    startTrip(g, b, 'return', routeReturn(k, b.len, g.L.TUNNEL)); b.v = YARD_SPEED*0.8; placeOnPath(b); g.lastReturn = b;
+    startTrip(g, b, 'return', routeReturn(k, b.len, g.L.TUNNEL, g.L.Y)); b.v = YARD_SPEED*0.8; placeOnPath(b); g.lastReturn = b;
     emit(g, 'tunnelOut', {bus:b.id, bay:k});
   }
 }
@@ -774,9 +784,9 @@ function validateLevel(level){
 /* ========================== EDITOR CHECKS ===========================
    checkLevel() feeds the editor's checks panel: colour balance, totals and geometry warnings.
    Every warning carries a world position (x,z) so the editor can highlight it in red. */
-const CAM = {fov:30, pos:[0, 44.96, 35.22], look:[0, 0, -8.2], w:900, h:1950};
-function project(x, y, z){                         // world -> game screen pixels (900 x 1950 design space)
-  const P = CAM.pos, f = norm3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]);
+const CAM = YARD.CAM;
+function project(x, y, z, cam){                    // world -> game screen pixels (900 x 1950 design space)
+  const CAM = cam || YARD.CAM, P = CAM.pos, f = norm3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]);
   const r = norm3([-f[2], 0, f[0]]), u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]];
   const d = [x-P[0], y-P[1], z-P[2]], zc = d[0]*f[0]+d[1]*f[1]+d[2]*f[2];
   const t = Math.tan(CAM.fov*Math.PI/360), xs = (d[0]*r[0]+d[1]*r[1]+d[2]*r[2])/(zc*t*CAM.w/CAM.h), ys = (d[0]*u[0]+d[1]*u[1]+d[2]*u[2])/(zc*t);
@@ -803,7 +813,8 @@ function roadWarnings(L){
   hits.forEach(h => W.push({kind:'road-cross', msg:'Road crosses itself outside a spiral', x:h.x, z:h.z}));
   // leaving the screen
   const off = [];
-  for (const p of pts){ const [sx, sy] = project(p.x, p.y, p.z);
+  const CAM = L.Y.CAM;
+  for (const p of pts){ const [sx, sy] = project(p.x, p.y, p.z, CAM);
     if ((sx < 20 || sx > CAM.w - 20 || sy < 150 || sy > CAM.h) && !near(off, p.x, p.z)) off.push(p); }
   off.forEach(p => W.push({kind:'road-offscreen', msg:'Road leaves the screen area', x:p.x, z:p.z}));
   // curves too tight for a 12-seat bus (heading change over a 0.6-unit window)
@@ -938,7 +949,7 @@ root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, CAM, MIN_TURN_R,
   LEVEL_DATA, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
-  Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R,
+  Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
   routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn,
   normalizeLevel, buildLayout, parseCell, cellStr, checkLevel, difficulty, testLevel,

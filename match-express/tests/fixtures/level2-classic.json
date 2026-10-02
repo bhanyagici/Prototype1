@@ -1,0 +1,530 @@
+{
+ "format": 2,
+ "name": "Level 2 (classic layout)",
+ "seed": 11,
+ "road": {
+  "points": [
+   {
+    "x": 0,
+    "z": -1.3,
+    "y": 0
+   },
+   {
+    "x": 0,
+    "z": -2.2,
+    "y": 0.03
+   },
+   {
+    "x": 0.55,
+    "z": -3.2,
+    "y": 0.2
+   },
+   {
+    "x": 0.78,
+    "z": -4.3,
+    "y": 0.4
+   },
+   {
+    "x": 0.3,
+    "z": -5.5,
+    "y": 0.6
+   },
+   {
+    "x": -0.7,
+    "z": -6.5,
+    "y": 0.85
+   },
+   {
+    "x": -0.98,
+    "z": -7.5,
+    "y": 1
+   },
+   {
+    "x": -0.5,
+    "z": -8.6,
+    "y": 1.14
+   },
+   {
+    "x": -0.2,
+    "z": -9.1,
+    "y": 1.25,
+    "spiral": {
+     "r": 1.4,
+     "side": 1,
+     "dir": [
+      0,
+      -1
+     ]
+    }
+   },
+   {
+    "x": -1.3,
+    "z": -9.15,
+    "y": 2.7
+   },
+   {
+    "x": -1.95,
+    "z": -10.049999999999999,
+    "y": 2.78
+   },
+   {
+    "x": -1.88,
+    "z": -11.25,
+    "y": 2.86
+   },
+   {
+    "x": -1.15,
+    "z": -12.6,
+    "y": 2.95
+   },
+   {
+    "x": 0.55,
+    "z": -14.05,
+    "y": 3.05
+   },
+   {
+    "x": 0.78,
+    "z": -15.2,
+    "y": 3.14
+   },
+   {
+    "x": 0,
+    "z": -16.3,
+    "y": 3.24
+   },
+   {
+    "x": -0.8,
+    "z": -17.35,
+    "y": 3.34
+   },
+   {
+    "x": -0.72,
+    "z": -18.5,
+    "y": 3.44
+   },
+   {
+    "x": 0.2,
+    "z": -19.5,
+    "y": 3.54
+   },
+   {
+    "x": 0.8,
+    "z": -20.55,
+    "y": 3.64
+   },
+   {
+    "x": 0.62,
+    "z": -21.6,
+    "y": 3.72
+   },
+   {
+    "x": 0.05,
+    "z": -22.6,
+    "y": 3.78
+   },
+   {
+    "x": 0,
+    "z": -23.6,
+    "y": 3.8
+   }
+  ],
+  "tail": [
+   0,
+   3.8,
+   -25.7
+  ]
+ },
+ "ramps": [
+  {
+   "cp": 3,
+   "side": 1,
+   "columns": [
+    [
+     "red",
+     "red",
+     "orange",
+     "orange",
+     "pink",
+     "pink",
+     "green",
+     "green",
+     "yellow",
+     "purple"
+    ],
+    [
+     "purple",
+     "purple",
+     "cyan",
+     "cyan",
+     "cyan",
+     "blue",
+     "blue",
+     "purple",
+     "blue",
+     "blue"
+    ],
+    [
+     "red",
+     "red",
+     "pink",
+     "pink",
+     "pink",
+     "orange",
+     "orange",
+     "red",
+     "red",
+     "red"
+    ],
+    [
+     "orange",
+     "orange",
+     "orange",
+     "orange",
+     "green",
+     "green",
+     "green",
+     "orange",
+     "orange",
+     "yellow"
+    ]
+   ]
+  },
+  {
+   "cp": 6,
+   "side": -1,
+   "columns": [
+    [
+     "pink",
+     "pink",
+     "pink",
+     "pink",
+     "red",
+     "red",
+     "purple",
+     "red",
+     "red"
+    ],
+    [
+     "red",
+     "red",
+     "green",
+     "green",
+     "yellow",
+     "yellow",
+     "purple",
+     "purple",
+     "purple"
+    ],
+    [
+     "orange",
+     "blue",
+     "blue",
+     "blue",
+     "cyan",
+     "cyan",
+     "yellow",
+     "yellow",
+     "green"
+    ],
+    [
+     "green",
+     "orange",
+     "orange",
+     "pink",
+     "pink",
+     "pink",
+     "green",
+     "red",
+     "red"
+    ]
+   ]
+  },
+  {
+   "cp": 13,
+   "side": 1,
+   "shape": [
+    [
+     2.47,
+     -13.34
+    ],
+    [
+     3.91,
+     -13.81
+    ],
+    [
+     5.21,
+     -15.32
+    ]
+   ],
+   "columns": [
+    [
+     "purple",
+     "purple",
+     "pink",
+     "pink",
+     "pink",
+     "cyan",
+     "cyan",
+     "cyan",
+     "purple",
+     "yellow"
+    ],
+    [
+     "green",
+     "green",
+     "yellow",
+     "yellow",
+     "purple",
+     "purple",
+     "yellow",
+     "green",
+     "green",
+     "blue"
+    ],
+    [
+     "orange",
+     "orange",
+     "orange",
+     "orange",
+     "purple",
+     "purple",
+     "yellow",
+     "green",
+     "green",
+     "orange"
+    ],
+    [
+     "yellow",
+     "yellow",
+     "cyan",
+     "red",
+     "red",
+     "purple",
+     "orange",
+     "orange",
+     "orange",
+     "cyan"
+    ]
+   ]
+  },
+  {
+   "cp": 16,
+   "side": -1,
+   "columns": [
+    [
+     "yellow",
+     "pink",
+     "pink",
+     "pink",
+     "pink",
+     "yellow",
+     "yellow",
+     "yellow",
+     "cyan"
+    ],
+    [
+     "pink",
+     "pink",
+     "pink",
+     "pink",
+     "yellow",
+     "yellow",
+     "red",
+     "red",
+     "cyan"
+    ],
+    [
+     "cyan",
+     "cyan",
+     "cyan",
+     "blue",
+     "green",
+     "yellow",
+     "yellow",
+     "yellow",
+     "yellow"
+    ],
+    [
+     "green",
+     "red",
+     "red",
+     "red",
+     "red",
+     "purple",
+     "purple",
+     "orange",
+     "orange"
+    ]
+   ]
+  },
+  {
+   "cp": 19,
+   "side": 1,
+   "columns": [
+    [
+     "purple",
+     "purple",
+     "blue",
+     "cyan",
+     "cyan",
+     "cyan",
+     "cyan",
+     "blue",
+     "yellow",
+     "green"
+    ],
+    [
+     "green",
+     "green",
+     "green",
+     "blue",
+     "red",
+     "orange",
+     "purple",
+     "purple",
+     "blue",
+     "blue"
+    ],
+    [
+     "blue",
+     "green",
+     "cyan",
+     "cyan",
+     "purple",
+     "purple",
+     "blue",
+     "cyan",
+     "cyan",
+     "blue"
+    ],
+    [
+     "pink",
+     "blue",
+     "blue",
+     "blue",
+     "green",
+     "blue",
+     "cyan",
+     "blue",
+     "blue",
+     "blue"
+    ]
+   ]
+  }
+ ],
+ "lanes": [
+  [
+   {
+    "color": "red",
+    "cap": 4
+   },
+   {
+    "color": "pink",
+    "cap": 12
+   },
+   {
+    "color": "orange",
+    "cap": 6
+   },
+   {
+    "color": "green",
+    "cap": 12,
+    "hidden": true
+   },
+   {
+    "color": "purple",
+    "cap": 8
+   },
+   {
+    "color": "pink",
+    "cap": 6
+   },
+   {
+    "color": "yellow",
+    "cap": 6
+   },
+   {
+    "color": "blue",
+    "cap": 4
+   },
+   {
+    "color": "cyan",
+    "cap": 8
+   }
+  ],
+  [
+   {
+    "color": "blue",
+    "cap": 4
+   },
+   {
+    "color": "cyan",
+    "cap": 8
+   },
+   {
+    "color": "purple",
+    "cap": 6
+   },
+   {
+    "color": "yellow",
+    "cap": 6
+   },
+   {
+    "color": "pink",
+    "cap": 6
+   },
+   {
+    "color": "blue",
+    "cap": 8
+   },
+   {
+    "color": "orange",
+    "cap": 8
+   },
+   {
+    "color": "orange",
+    "cap": 6
+   },
+   {
+    "color": "green",
+    "cap": 12
+   }
+  ],
+  [
+   {
+    "color": "purple",
+    "cap": 4
+   },
+   {
+    "color": "yellow",
+    "cap": 12
+   },
+   {
+    "color": "red",
+    "cap": 8
+   },
+   {
+    "color": "cyan",
+    "cap": 8
+   },
+   {
+    "color": "blue",
+    "cap": 8
+   },
+   {
+    "color": "red",
+    "cap": 12
+   },
+   {
+    "color": "orange",
+    "cap": 4
+   },
+   {
+    "color": "purple",
+    "cap": 6,
+    "hidden": true
+   }
+  ]
+ ],
+ "yard": "classic"
+}

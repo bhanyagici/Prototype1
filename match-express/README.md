@@ -11,6 +11,40 @@
 
 ![390x844 screenshot](screenshot-390.png)
 
+## Look and proportions
+
+The camera is much closer than in the first prototype. Measured on a 390 × 844 screen
+(`__me.measure()`, checked by `tests/browser.test.js`):
+- every standing stickman is at least **22.7 px** tall (24.0 px on average; it was
+  about 7 px);
+- an 8-seat bus in a bay is **71.9 px** long (it was 43.5 px).
+
+The top bar, the road with all five ramps, the static row and the front bus of every
+queue lane all fit on screen. To get there:
+- **The layout is compact.**
+  - The road runs straight up the middle, and the ramps sit edge to edge on
+    alternating sides.
+  - A tighter spiral (radius 1.0, was 1.4) sits at the top, beside the last ramp. The
+    road then turns into the exit tunnel.
+  - The road is 21.7 units long, against 40.5 before.
+- **The yard is narrower.** The side lanes are at x = ±3.8 (was ±4.32) and the queue
+  lanes at ±1.64 (was ±1.72). The bays keep their spacing, which the 12-seat buses
+  need to turn in and out. The layout test still finds no overlap.
+- **The camera is steeper:** about 56° instead of 46°.
+
+The yard geometry and the camera are a **yard preset** in `shared/core.js` (`YARDS`).
+A level with `"yard": "classic"` gets the original wide yard and camera.
+`tests/fixtures/level2-classic.json` is the built-in level with its original layout.
+It still replays bit for bit against the pre-editor baseline (see Verification).
+
+Screenshots (390 × 844):
+- [the full game at the start](screenshot-390.png);
+- [a bus stopped at a ramp with its stickmen cheering](screenshots/game-cheering.png),
+  and [close up](screenshots/game-cheering-close.png);
+- [a full bus driving off the road edge](screenshots/game-exit.png), and
+  [close up](screenshots/game-exit-close.png);
+- [the parachute](screenshots/game-parachute.png).
+
 ## Opening the editor next to the game
 
 Serve the folder and open the editor (a plain `file://` open works too, but browsers
@@ -152,19 +186,55 @@ browsers isolate `file://` pages.
   - every sound is layered and its pitch varies a little.
 
   Settings → *Sound* mutes it, and the choice is remembered.
+- **Buses** are chunky toy buses, one colour each, with lighter and darker trims of
+  that colour:
+  - a rounded boxy body with a darker lower band and a thick rounded rim around the
+    open top;
+  - small round headlights and a rounded bumper at the front, red tail lights at the
+    back;
+  - fat dark wheels that peek out at the sides;
+  - inside, the floor, seats and inner walls are in a darker shade.
+
+  The body is one profile swept around a rounded rectangle. The front and back caps
+  stay the same size, and only the middle stretches with capacity.
+- **Stickmen** are chunky toy figures with no face:
+  - a big round head (40% of their 0.78 height) and a short rounded body;
+  - thick rounded arms and legs, as three instanced meshes (bodies, arms, legs).
+
+  They swing their arms and legs when they run. Seated in a bus, only the head and
+  shoulders show above the seat back.
+- **Tunnels** (top exit and return) are built the same way:
+  - a stone arch of chunky blocks on a thick base, with two warm lamps that pulse
+    when a bus passes;
+  - a dark interior that fades to black, with the road running into it;
+  - a grassy roof mound behind the arch.
+
+  The arch is aligned with the road direction at the mouth. Buses fade into the dark
+  and come out of it.
 - **Animation:** nothing snaps.
   - Buses ease in and out, and sit on spring suspension.
   - They lean in curves, their wheels turn, and they pitch forward on hard brakes.
+    A hard stop kicks up a little dust.
   - The queue rolls forward smoothly.
-  - Stickmen hop on an arc with squash and stretch, and sway once seated. Columns
-    step forward in a staggered wave. Idle stickmen move a little differently from
-    each other.
-  - The parachute pops with a squash, unfolds with an overshoot and swings like a
-    pendulum.
-  - Tunnels fade the bus into darkness, and the tunnel lamps pulse.
+  - When a bus stops at a ramp, every stickman it will take at that stop starts
+    cheering at once: the whole chain, not just the front row. They hop with their
+    arms up in a V, slightly out of step. They keep cheering until their turn, then
+    run and jump in. Other colours stay calm.
+  - Columns step forward in a staggered wave. Idle stickmen breathe, sway and look
+    around, each a little differently.
+  - **A full bus first drives straight sideways**, perpendicular to the road, off
+    the edge on the side away from its ramp, with a dust puff. Only when it is
+    completely off the road does it crouch and hop. The parachute in its colour
+    unfolds with an overshoot, and the bus swings like a pendulum while drifting
+    down and away, its passengers waving with both arms.
   - The ramp check badge pops with an overshoot and a sparkle.
   - A crash plays in slow motion, then the dominoes fall and the stickmen tumble.
   - Buttons and panels spring.
+- **Shading:**
+  - soft contact shadows under every bus and every standing stickman;
+  - ambient-occlusion darkening baked into the ground under the road and the ramps.
+- **The UI** uses chunky, glossy candy controls (level pill, buttons, counter sign),
+  each with a thick gold rim, a deep bottom edge and a gloss highlight.
 
 ## Playing
 
@@ -177,8 +247,9 @@ the main road, or it does a handbrake lurch when the road check fails.
 On the main road a bus stops at a ramp only if a front-row stickman matches its
 colour. Matching front-row stickmen board nearest-the-road first, the columns step
 forward, and the new front row is checked again until the bus is full or nothing
-matches. A full bus hops, honks and parachutes off the road. An unfilled bus goes
-through the top tunnel, comes out of the return tunnel `RETURN_TUNNEL_TIME` later
+matches. A full bus honks, drives sideways off the road edge, then hops and
+parachutes away. An unfilled bus goes through the top tunnel, comes out of the
+return tunnel `RETURN_TUNNEL_TIME` later
 and parks in the leftmost free bay with its passengers. If every bay is taken when
 it comes out, it crashes into the parked row (dominoes) and the level is lost.
 
@@ -195,7 +266,11 @@ At the top of `shared/core.js`: `BUS_SPEED`, `BOARD_RATE`, `COLUMN_SHIFT_TIME`,
 
 `LEVEL_DATA` in `shared/core.js` is the built-in level, in format 2 (see above):
 5 ramps of 4 columns and 3 lanes. The game never runs the generator. The editor is
-now the usual way to make a level. The generator still works: run this in the
+now the usual way to make a level.
+
+The built-in level has the stickmen and buses `generateLevel(11)` produced. Only its
+road and ramp placement are the hand-made compact layout. Ramp 3's columns are back
+in the generator's order, which the compact road boards in the original priority. The generator still works: run this in the
 console and import the result into the editor, or paste it over `LEVEL_DATA`:
 
 ```js
@@ -214,10 +289,10 @@ colour. A Web Worker then replays both bots on the frozen level:
 
 ```
 [level] seed 11 — the game loads the frozen LEVEL_DATA
-[level] seats vs stickmen per colour: red 24/24 ... pink 24/24 -> ALL MATCH (24 each, 192 total)
-[sim] greedy bot: WIN — 52 sends, 192/192 boarded, 251.8 s of game time
+[level] seats vs stickmen per colour: red 24/24 ... pink 24/24 -> ALL MATCH
+[sim] greedy bot: WIN — 51 sends, 192/192 boarded, 188.4 s of game time
 [sim] greedy moves: L0:red4>road L0:pink12>road L0:orange6>road ...
-[sim] random bot: 31/200 wins (15.5%) — target 15-45%: OK
+[sim] random bot: 35/200 wins (17.5%) — difficulty Medium
 ```
 
 **Bots.** Both bots tap only when the bus would go to the main road; neither ever
@@ -239,23 +314,32 @@ send order the buses also join the main road in the order they were sent. Each
 check is O(1) per pair of trips per step.
 
 **Main road.** Catmull-Rom (the same centripetal formulation as
-`THREE.CatmullRomCurve3`) through control points with S-curves and one loop. The
-loop crosses its own entry 1.35 units higher, on white pillars. Buses keep a fixed
-bumper gap, so a stop for boarding cascades into hard brakes behind it, with brake
-lights.
+`THREE.CatmullRomCurve3`) through the control points, with one loop. The loop
+crosses its own entry 1.25 units higher, on white pillars. Buses keep a fixed bumper
+gap, so a stop for boarding cascades into hard brakes behind it, with brake lights.
 
-**Rendering.** All stickmen are two instanced meshes (body, arms). Their shadows come
-from a 40-triangle proxy that shares the same instance matrices. Each bus is one
-merged vertex-coloured mesh plus its two light meshes. The yard paint is one canvas
-texture.
+**Ramps** hang 0.85 below the road deck (`RAMP_DROP` in the yard preset). Passengers
+hop up into the bus. A full bus driving sideways off the road passes above the
+neighbouring crowds, so it never cuts through anyone. The simulation never reads ramp
+height.
+
+**Rendering.**
+- **Stickmen** are three instanced meshes: bodies (torso and head), arms (2 each) and
+  legs (2 each). Their shadow map comes from a low-poly proxy that shares the body
+  matrices, and a soft blob under each one is a fourth instanced mesh.
+- **Buses:** each is one merged vertex-coloured mesh plus its light meshes and a
+  contact-shadow quad. Wheels are one instanced mesh, tinted per bus in tunnels.
+- **Tunnels** sit in a trench carved into the terrain heightfield, under a roof
+  shell, so nothing blocks the view into the mouth.
+- **The yard paint** is one canvas texture per yard preset.
 
 ## Verification
 
 ```
 node tests/rules.test.js      # 28 rule checks (unchanged)
-node tests/layout.test.js     # yard clearance sweep (unchanged)
-node tests/shared.test.js     # 45 checks: level format, layout builder, warnings, difficulty, links
-node tests/browser.test.js    # 46 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/layout.test.js     # yard clearance sweep, for both yard presets
+node tests/shared.test.js     # 51 checks: level format, layout builder, warnings, difficulty, links, compact layout
+node tests/browser.test.js    # 53 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 10 checks: builds dist/ and opens both single files from file://
 ```
 
@@ -267,12 +351,15 @@ The first three need only Node and no dependencies; they load `shared/core.js`.
 
 It ends by saving the editor screenshot.
 
-**The rules did not change.** Moving the core into `shared/core.js` was checked
-against `tests/baseline.json`, which was recorded before the move. The road length,
-the greedy bot's move list and times (at 30 Hz and 60 Hz) and the random bot's
-31/200 are identical. The default level's ramp 3 has a new outline, because the new
-check found it overlapping the spiral. Its columns were reordered so that play is
-unchanged.
+**The rules did not change.** `tests/baseline.json` was recorded before the editor
+work. The classic layout (`tests/fixtures/level2-classic.json` with
+`"yard": "classic"`) still matches it bit for bit, through today's core: road length,
+boarding points, the greedy bot's move list and times at 30 Hz and 60 Hz, and the
+random bot's 31/200. Only geometry differs for the compact built-in level, and on it:
+- the same stickmen and buses board in the same ramp order and the same column
+  priority;
+- the greedy bot wins at 30 Hz and 60 Hz (51 sends, 188.4 s);
+- the random bot wins 35/200 (17.5%, Medium).
 
 - The shared suite covers:
   - format 1 → 2 compatibility;
@@ -292,7 +379,14 @@ unchanged.
   - ramp resize and boarding drag;
   - queue add, link and reorder;
   - export/import and slots;
-  - Test and Watch greedy.
+  - Test and Watch greedy;
+  - proportions: every stickman at least 22 px and the 8-seat bus in a bay at least
+    70 px, at 390 × 844;
+  - cheering: the cheering set equals exactly the stickmen who then board the bus,
+    and is larger than the front row;
+  - the full-bus exit: it moves perpendicular to the road (drift along it 0.000), on
+    the side away from its ramp, without lifting. The hop starts only after the bus
+    is clear of the road (clear at 1.23, hop at 1.41).
 
 - Headless rule suite (28 checks), all passing:
   - sending destinations and refusal;
@@ -303,19 +397,20 @@ unchanged.
   - fail on tunnel exit, hidden reveal, and the greedy win at 60 Hz;
   - no yard overlap (separating-axis test) and no deadlock across 120 bot games.
 - The layout check sweeps every yard route at the maximum bus length against parked
-  and queued buses. The minimum clearance is +0.03.
+  and queued buses, for both presets. The minimum clearance is +0.027 for the
+  compact yard and +0.030 for the classic one.
 - In the browser, a live bot game:
-  - wins at 238–252 s of game time;
-  - shows the Level Complete panel ≈1.55 s after the last fill (parachute opens,
-    then `WIN_PANEL_DELAY`);
+  - wins in about 190 s of game time;
+  - shows the Level Complete panel after the last parachute opens, plus
+    `WIN_PANEL_DELAY`;
   - shows all 5 ramp check badges;
   - resets cleanly on Replay.
 - A forced fail plays the crash, the dominoes and the Out of Space panel.
 
 **Frame rate could not be measured here.** The sandbox has no GPU. What I could
-measure (the draw-call and triangle counts are from before the animation and sound
-pass, which adds per-bus wheels and some small meshes):
-- **164 draw calls, ~330k triangles per frame**, shadow pass included.
+measure:
+- **132 draw calls, ~390k triangles per frame** at a busy moment, shadow pass
+  included.
 - 0.38 ms of CPU per 60 Hz logic tick, including the scene update.
 - The canvas renders at native device resolution, capped at 2× DPR.
 
@@ -329,6 +424,20 @@ The 60 fps target is unverified on real hardware.
   angle, UI and mood.
 - **Return tunnel.** Its mouth faces left but is turned ~37° toward the camera. Fully
   side-on, the arch was invisible from this camera angle.
-- **Level length.** The chosen level takes the greedy bot about 4 minutes. The random
-  bot's 15.5% is inside the band but near its bottom edge. A later seed with a more
-  central rate is one `searchSeed` call away.
+- **Level length.** The compact road makes the level shorter for the greedy bot:
+  about 3 minutes, against 4. The random bot's 17.5% is inside the Medium band.
+- **Compact layout versus a side exit.** 22 px stickmen and 70 px buses on a 390 px
+  wide screen only fit if the ramps sit edge to edge along the road. That leaves no
+  gap at the road side, so a full bus could not drive off without cutting through a
+  neighbouring ramp. So the ramps hang 0.85 below the road deck: the bus drives off
+  the edge above the neighbouring crowds, then hops. It always leaves on the side
+  away from the ramp it boarded at.
+- **What "at least 22 px" measures.** It is the on-screen silhouette of a standing
+  stickman, from the feet to the top of the head. The figures are 0.78 tall on a
+  0.36 grid, so crowds are packed head to head, as in the reference image.
+- **Cheering** covers exactly the stickmen the stopped bus will take at this stop.
+  Hidden stickmen join in only once they are revealed, so cheering never gives a
+  colour away. Boarding is fast (8 per second), so a cheer lasts well under a second.
+- **The classic preset** keeps the original layout playable and is the regression
+  baseline for the rules. It uses the new bus and stickman models with its original
+  camera.

@@ -7,6 +7,8 @@ const fs = require('fs'), http = require('http'), path = require('path');
 let chromium;
 try { ({chromium} = require('playwright')); } catch (e) { console.log('SKIP: playwright is not installed (npm i playwright)'); process.exit(0); }
 const ROOT = path.join(__dirname, '..');
+// the original wide layout of the built-in level: the road-editing checks below address its control points by index
+const CLASSIC = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'level2-classic.json'), 'utf8'));
 const TYPES = {'.html':'text/html', '.js':'text/javascript', '.json':'application/json'};
 let pass = 0, fail = 0;
 const chk = (ok, name, info = '') => { ok ? pass++ : fail++; console.log((ok ? '  PASS  ' : '  FAIL  ') + name + (info !== '' ? '  -> ' + info : '')); };
@@ -56,6 +58,45 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       chk(await p.evaluate(() => __me.levelSource === 'builtin'), '?builtin forces the built-in level');
       await ctx.close(); }
+    /* ---------------- proportions, cheering, full-bus exit ---------------- */
+    console.log('game visuals');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const m = await p.evaluate(() => { __me.freeze(true); __me.render(); return __me.measure(); });
+      chk(m.men.n === 192 && m.men.min >= 22, 'on 390 x 844 every standing stickman is at least 22 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
+      chk(m.bay8 >= 70, 'an 8-seat bus in a bay is at least 70 px long', m.bay8.toFixed(1) + ' px');
+      // cheering: everyone the stopped bus will take at this stop (whole chain), checked against who really boards
+      const ch = await p.evaluate(() => { __me.setBot(true);
+        for (let i = 0; i < 3000; i++){ __me.advance(1/30); const g = __me.game;
+          const b = g.road.find(x => x.board && x.board.queue.length && x.seated + x.transit === 0);
+          if (!b) continue;
+          const k = b.board.k, front = g.ramps[k].cols.filter(c => c.length && g.men[c[0]].color === b.color).length, set = __me.cheerSet();
+          if (set.length <= front) continue;
+          const id = b.id; let guard = 0; while (g.buses[id].board && guard++ < 3000) __me.advance(1/30);
+          const boarded = g.men.filter(mm => mm.bus === id && mm.ramp === k).map(mm => mm.id).sort((a, b) => a - b);
+          const others = set.filter(x => g.men[x].color !== g.buses[id].color);
+          return {front, set:set.sort((a, b) => a - b), boarded, others:others.length}; }
+        return null; });
+      chk(ch && ch.set.length > ch.front && JSON.stringify(ch.set) === JSON.stringify(ch.boarded) && ch.others === 0,
+          'a stopped bus makes its whole boarding chain cheer, beyond the front row - exactly the stickmen that then board, no other colours',
+          ch && `${ch.set.length} cheering (front row ${ch.front}), ${ch.boarded.length} boarded`);
+      // full bus: straight sideways off the road, away from its ramp; the hop starts only once it is clear of the road
+      const ex = await p.evaluate(() => { const g = __me.game; let v = null;
+        for (let i = 0; i < 6000 && !v; i++){ __me.advance(1/30); v = __me.views.find(w => w.b.state === 'jump' && w.jump && g.t - w.jump.t0 < 0.05); }
+        if (!v) return null;
+        const J = v.jump, L = __me.layout, r = L.RAMPS[v.boardRamp], samples = [];
+        for (let i = 0; i < 40; i++){ __me.advance(1/30); samples.push({u:g.t - J.t0, x:v.root.position.x, y:v.root.position.y, z:v.root.position.z}); }
+        const hx = Math.sin(J.h), hz = Math.cos(J.h), out = s => (s.x - J.x)*J.ex + (s.z - J.z)*J.ez, along = s => (s.x - J.x)*hx + (s.z - J.z)*hz;
+        const side = samples.filter(s => s.u <= __me.EXIT.side), atEdge = side[side.length - 1], firstUp = samples.find(s => s.y > J.y + 0.02);
+        const rampSide = (r.x - J.x)*J.ex + (r.z - J.z)*J.ez;                  // the ramp's boarding point relative to the exit direction
+        const awayFromRamp = (() => { const o = {}; window.MECore.pathAt(L.ROAD, r.s, o, 0); const nx = -o.dz*r.side, nz = o.dx*r.side; return nx*J.ex + nz*J.ez; })();
+        return {maxAlong:Math.max(...side.map(s => Math.abs(along(s)))), flat:Math.max(...side.map(s => Math.abs(s.y - J.y))), outAtEdge:out(atEdge),
+                outAtHop:firstUp ? out(firstUp) : null, awayFromRamp, need:__me.ROAD_HALF + window.MECore.BUS_W/2}; });
+      chk(ex && ex.maxAlong < 0.02 && ex.flat < 0.01, 'a full bus first drives straight sideways (perpendicular to the road) without lifting', ex && `drift along road ${ex.maxAlong.toFixed(3)}`);
+      chk(ex && ex.awayFromRamp < -0.99, 'it leaves on the side away from the ramp it boarded at');
+      chk(ex && ex.outAtEdge >= ex.need && ex.outAtHop !== null && ex.outAtHop >= ex.need, 'the hop and parachute start only after the bus is completely off the road',
+          ex && `clear at ${ex.need.toFixed(2)}, hop starts at ${ex.outAtHop && ex.outAtHop.toFixed(2)}`);
+      await ctx.close(); }
 
     /* ---------------- editor + preview + second tab ---------------- */
     console.log('editor');
@@ -97,7 +138,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     const afterRedo = await ed.evaluate(() => __ed.level.name);
     chk(afterUndo === nm && afterRedo === 'Undo me', 'Ctrl+Z / Ctrl+Shift+Z undo and redo an edit', `${afterUndo} / ${afterRedo}`);
     // road editing with the mouse: click on the road adds a point, right-click deletes, drag moves
-    await ed.evaluate(() => { __ed.setLevel(__me_builtin()); function __me_builtin(){ return JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA)); } __ed.setTab('road'); });
+    await ed.evaluate(lv => { __ed.setLevel(lv); __ed.setTab('road'); }, CLASSIC);
     const box = await ed.locator('#view').boundingBox();
     const toScreen = async (x, z) => { const [sx, sy] = await ed.evaluate(([x, z]) => __ed.W2S(x, z), [x, z]); return [box.x + sx, box.y + sy]; };
     const roadPt = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, (R.pointS[11] + R.pointS[12])/2, o, 0); return [o.x, o.z]; });
@@ -116,7 +157,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const p5 = await ed.evaluate(() => { const p = __ed.level.road.points[5]; return [p.x, p.z]; }); const [lx, ly] = await toScreen(...p5);
       await ed.evaluate(([x, y]) => { const cv = document.getElementById('view'); const o = {clientX:x, clientY:y, pointerId:77, pointerType:'touch', bubbles:true, button:0};
         cv.dispatchEvent(new PointerEvent('pointerdown', o)); }, [lx, ly]);
-      await sleep(800);
+      await until(() => ed.evaluate(n => __ed.level.road.points.length === n, n0 - 1), 4000, 100);   // hold until it goes
       await ed.evaluate(([x, y]) => document.getElementById('view').dispatchEvent(new PointerEvent('pointerup', {clientX:x, clientY:y, pointerId:77, pointerType:'touch', bubbles:true})), [lx, ly]);
       chk(await ed.evaluate(() => __ed.level.road.points.length) === n0 - 1, 'a touch long-press on a control point deletes it');
       await ed.keyboard.press('Control+z'); }
@@ -186,13 +227,20 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     await ed.evaluate(id => __ed.slotAction('del', id), id);
     chk(await ed.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('match-express:level-slots'))).length === 1), 'level slots: delete');
     // Test + Watch greedy
-    await ed.evaluate(() => __ed.setLevel(JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA))));
+    await ed.evaluate(lv => __ed.setLevel(lv), CLASSIC);
     await ed.click('#testBtn');
     const t = await until(() => ed.evaluate(() => __ed.lastTest && !__ed.lastTest.pending && __ed.lastTest), 120000, 300);
-    chk(t && t.greedy.result === 'win' && t.greedy.sends === 52 && t.wins === 31 && t.label === 'Medium', 'Test runs greedy + 200 random bots in the background worker', t && `${t.greedy.result} ${t.greedy.sends} sends, ${t.wins}/200 ${t.label}`);
+    chk(t && t.greedy.result === 'win' && t.greedy.sends === 52 && t.wins === 31 && t.label === 'Medium', 'Test runs greedy + 200 random bots in the background worker (classic layout: the baseline numbers)', t && `${t.greedy.result} ${t.greedy.sends} sends, ${t.wins}/200 ${t.label}`);
     chk(await ed.evaluate(() => /Medium/.test(document.getElementById('testOut').textContent)), 'the difficulty label is shown in the checks panel');
     await ed.click('#watchBtn');
     chk(await until(() => frame.evaluate(() => document.getElementById('botTag').style.display === 'block' && __me.game.sends > 0), 30000), '"Watch greedy" plays the greedy bot in the preview');
+    // the built-in (compact) level: Test reports a win and Medium; leave it playing in the preview for the screenshot
+    await ed.evaluate(() => { __ed.setLevel(JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA))); __ed.setTab('ramps'); });
+    await ed.click('#testBtn');
+    const t2 = await until(() => ed.evaluate(() => __ed.lastTest && !__ed.lastTest.pending && __ed.lastTest.greedy.sends !== 52 && __ed.lastTest), 120000, 300);
+    chk(t2 && t2.greedy.result === 'win' && t2.label === 'Medium', 'Test on the built-in compact level: greedy WIN, random bot Medium', t2 && `${t2.greedy.sends} sends, ${t2.greedy.t.toFixed(1)} s, ${t2.wins}/200`);
+    await ed.click('#watchBtn');
+    await until(() => frame.evaluate(() => __me.LEVEL.name === 'Level 2' && __me.game.t > 9), 30000);
     await ed.screenshot({path: path.join(ROOT, 'screenshot-editor.png')});
     await ctx.close();
   } catch (e) { fail++; console.log('  FAIL  exception: ' + (e.stack || e)); }

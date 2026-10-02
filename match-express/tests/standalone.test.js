@@ -54,7 +54,7 @@ let pass = 0, fail = 0; const chk = (ok, n, i='') => { ok ? pass++ : fail++; con
     chk(await p.evaluate(() => { const g = document.getElementById('preview').contentWindow.__me.game; return g.trips.length + g.road.length > 0; }), 'the embedded game responds to play');
     // open in new tab (blob url)
     const [tab] = await Promise.all([c.waitForEvent('page'), p.click('#tabBtn')]); watch(tab);
-    const ok = await tab.waitForFunction(() => window.__me && __me.game, null, {timeout:90000}).then(()=>true, ()=>false);
+    const ok = await tab.waitForFunction(() => window.__me && __me.game && __me.LEVEL.name === 'Auto edited', null, {timeout:90000}).then(()=>true, ()=>false);
     chk(ok && (await tab.evaluate(() => __me.LEVEL.name)) === 'Auto edited', 'Open in new tab opens the embedded game with the current level', tab.url().slice(0, 30));
     await c.close(); }
   chk(errs.length === 0, 'no page errors or failed loads', errs.join(' | '));

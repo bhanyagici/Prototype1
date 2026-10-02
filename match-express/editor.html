@@ -142,6 +142,7 @@ function setLevel(raw, keepHistory){
   if (!keepHistory){ undoStack = []; redoStack = []; }
   sel.point = Math.min(sel.point, lvl.road.points.length - 1); if (sel.ramp >= lvl.ramps.length) sel.ramp = -1;
   $('levelName').value = lvl.name || '';
+  if (!keepHistory){ try { if (cv.clientWidth) fitView(); } catch (e) {} }   // a different level: frame it
   draftSave(); renderAll();
 }
 /* every edit: snapshot for undo, mutate a fresh copy, rebuild layout + checks, schedule auto-run */
@@ -207,7 +208,8 @@ addEventListener('keydown', e => {
 const cv = $('view'), ctx = cv.getContext('2d');
 const VIEW = {s:20, ox:0, oy:0, fitted:false};
 function fitView(){
-  const w = cv.clientWidth, h = cv.clientHeight, X0 = -8.5, X1 = 8.5, Z0 = -28.5, Z1 = 11;
+  let zMin = -26; if (L){ zMin = 0; for (let i = 0; i < L.ROAD.n; i++) zMin = Math.min(zMin, L.ROAD.P[i*3+2]); }
+  const w = cv.clientWidth, h = cv.clientHeight, X0 = -8.5, X1 = 8.5, Z0 = Math.min(-12, zMin - 2.5), Z1 = 11;
   VIEW.s = Math.min(w/(X1 - X0), h/(Z1 - Z0)); VIEW.ox = w/2 - (X0 + X1)/2*VIEW.s; VIEW.oy = h/2 - (Z0 + Z1)/2*VIEW.s; VIEW.fitted = true;
 }
 function resize(){ const r = devicePixelRatio || 1; cv.width = cv.clientWidth*r; cv.height = cv.clientHeight*r; if (!VIEW.fitted) fitView(); draw(); }
@@ -215,17 +217,18 @@ new ResizeObserver(resize).observe(cv);
 const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
 const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];
 /* the part of the ground the game camera shows (ray cast from the screen edges onto y = 0) */
-function screenFootprint(){
-  const P = C.CAM.pos, f = n3([C.CAM.look[0]-P[0], C.CAM.look[1]-P[1], C.CAM.look[2]-P[2]]), r = n3([-f[2], 0, f[0]]);
-  const u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]], t = Math.tan(C.CAM.fov*Math.PI/360), asp = C.CAM.w/C.CAM.h;
-  const ray = (sx, sy) => { const xs = sx/C.CAM.w*2 - 1, ys = 1 - sy/C.CAM.h*2;
+function screenFootprint(CAM){
+  const P = CAM.pos, f = n3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]), r = n3([-f[2], 0, f[0]]);
+  const u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]], t = Math.tan(CAM.fov*Math.PI/360), asp = CAM.w/CAM.h;
+  const ray = (sx, sy) => { const xs = sx/CAM.w*2 - 1, ys = 1 - sy/CAM.h*2;
     const d = [f[0] + r[0]*xs*t*asp + u[0]*ys*t, f[1] + r[1]*xs*t*asp + u[1]*ys*t, f[2] + r[2]*xs*t*asp + u[2]*ys*t], k = -P[1]/d[1];
     return [P[0] + d[0]*k, P[2] + d[2]*k]; };
   const pts = []; for (let i=0;i<=10;i++) pts.push(ray(i*90, 150)); for (let i=0;i<=10;i++) pts.push(ray(900, 150 + i*180)); for (let i=10;i>=0;i--) pts.push(ray(i*90, 1950)); for (let i=10;i>=0;i--) pts.push(ray(0, 150 + i*180));
   return pts;
 }
 function n3(v){ const l = Math.hypot(...v) || 1; return v.map(c => c/l); }
-const FOOT = screenFootprint();
+const FOOTS = {};
+const footprint = () => FOOTS[L.Y.name] || (FOOTS[L.Y.name] = screenFootprint(L.Y.CAM));   // per yard preset (each has its camera)
 function rampOutline(r){
   const pts = [], o = {}, hw = r.halfW, sides = [[], []];
   for (let s = 0; s <= r.length + 1e-6; s += 0.15){ C.pathAt(r.spline, Math.min(s, r.length), o, 0); sides[0].push([o.x - o.dz*hw, o.z + o.dx*hw]); sides[1].push([o.x + o.dz*hw, o.z - o.dx*hw]); }
@@ -237,17 +240,17 @@ function draw(){
   const w = cv.clientWidth, h = cv.clientHeight, s = VIEW.s;
   ctx.fillStyle = '#8eab64'; ctx.fillRect(0, 0, w, h);
   // game screen area
-  ctx.beginPath(); FOOT.forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
+  ctx.beginPath(); footprint().forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
   ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fill(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]);
   // yard
   const T = L.TUNNEL;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   const poly = (pts, width, color) => { ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.lineWidth = width*s; ctx.strokeStyle = color; ctx.stroke(); };
-  const ring = [[0, C.Z_ENTRY], [C.X_SIDE, C.Z_ENTRY], [C.X_SIDE, C.Z_COLL], [-C.X_SIDE, C.Z_COLL], [-C.X_SIDE, C.Z_ENTRY], [0, C.Z_ENTRY]];
-  poly(ring, 1.22, '#5c6169'); poly([[T.side*C.X_SIDE, C.Z_COLL], [T.x, C.Z_COLL], [T.x - T.nx*1.2, T.z - T.nz*1.2]], 1.22, '#5c6169'); poly([[0, C.Z_ENTRY], [0, C.Z_ROAD0]], 1.22, '#5c6169');
-  ctx.fillStyle = '#5c6169'; { const [x0, y0] = W2S(C.LANE_X[0] - 0.86, C.Z_COLL), [x1, y1] = W2S(C.LANE_X[2] + 0.86, 12); ctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
+  const Y = L.Y, ring = [[0, C.Z_ENTRY], [Y.X_SIDE, C.Z_ENTRY], [Y.X_SIDE, C.Z_COLL], [-Y.X_SIDE, C.Z_COLL], [-Y.X_SIDE, C.Z_ENTRY], [0, C.Z_ENTRY]];
+  poly(ring, 1.1, '#5c6169'); poly([[T.side*Y.X_SIDE, C.Z_COLL], [T.x, C.Z_COLL], [T.x - T.nx*1.2, T.z - T.nz*1.2]], 1.1, '#5c6169'); poly([[0, C.Z_ENTRY], [0, C.Z_ROAD0]], 1.22, '#5c6169');
+  ctx.fillStyle = '#5c6169'; { const [x0, y0] = W2S(Y.LANE_X[0] - 0.86, C.Z_COLL), [x1, y1] = W2S(Y.LANE_X[2] + 0.86, 12); ctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2;
-  C.BAY_X.forEach(bx => { const [x0, y0] = W2S(bx - 0.58, C.Z_BAY_TOP), [x1, y1] = W2S(bx + 0.58, C.Z_BAY_BOT); ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); });
+  Y.BAY_X.forEach(bx => { const [x0, y0] = W2S(bx - 0.58, C.Z_BAY_TOP), [x1, y1] = W2S(bx + 0.58, C.Z_BAY_BOT); ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); });
   // return tunnel (auto: the collector end nearer the exit tunnel, mouth to the bays)
   tunnelIcon(T.x, T.z, Math.atan2(T.nx, T.nz), 'return');
   // pillars
