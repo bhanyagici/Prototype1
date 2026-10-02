@@ -260,6 +260,31 @@ const checkTex = canvasTex(128, 160, (x) => { x.fillStyle = '#2f9e3a'; x.beginPa
   x.strokeStyle = '#fff'; x.lineWidth = 15; x.lineCap = 'round'; x.lineJoin = 'round';
   x.beginPath(); x.moveTo(38,66); x.lineTo(57,85); x.lineTo(92,44); x.stroke(); }, true);
 
+/* Tunnel darkness: anything inside a tunnel's footprint and behind its mouth plane darkens per
+   fragment, so a bus (with its wheels and passengers) and the road sink into the dark front first
+   and come out of it rear last.  Applied to the road, bus, wheel and stickman materials. */
+const TUN_U = {uTun:{value:[new THREE.Vector4(0, 0, 0, 1), new THREE.Vector4(0, 0, 0, 1)]}, uTunY:{value:[new THREE.Vector2(-99, 0), new THREE.Vector2(-99, 0)]}};
+function tunnelFade(mat){
+  mat.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, TUN_U);
+    sh.vertexShader = 'varying vec3 vTW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+      { vec4 tw = vec4(transformed, 1.0);
+      #ifdef USE_INSTANCING
+        tw = instanceMatrix * tw;
+      #endif
+        vTW = (modelMatrix * tw).xyz; }`);
+    sh.fragmentShader = 'varying vec3 vTW;\nuniform vec4 uTun[2];\nuniform vec2 uTunY[2];\n' + sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
+      { float k = 0.0;
+        for (int i = 0; i < 2; i++){
+          vec2 d = vTW.xz - uTun[i].xy; float al = dot(d, uTun[i].zw), ac = abs(d.x*uTun[i].w - d.y*uTun[i].z);
+          float band = (1.0 - smoothstep(0.95, 1.15, ac))*step(uTunY[i].x - 0.6, vTW.y)*step(vTW.y, uTunY[i].x + 1.6)*uTunY[i].y;
+          k = max(k, band*smoothstep(-0.2, 0.45, al)); }
+        gl_FragColor.rgb *= 1.0 - 0.97*k; }`);
+  };
+  mat.customProgramCacheKey = () => 'tunnel-fade';
+  return mat;
+}
+
 /* ============================== LEVEL WORLD =============================
    Everything level-dependent (ground, yard paint, road, ramps, tunnels, forest) lives in
    `world` and is rebuilt whenever a new level arrives from the editor.  The yard sits on a flat
@@ -403,7 +428,7 @@ function stoneTunnel(){
   const wall = new THREE.PlaneGeometry(D, LEG + 0.32, 8, 1);   // straight side walls below the vault (no ceiling)
   const walls = mergeParts([{geo:wall, m:M(-(Rin - 0.02), (LEG - 0.32)/2, -D/2, 0, Math.PI/2, 0)}, {geo:wall, m:M(Rin - 0.02, (LEG - 0.32)/2, -D/2, 0, -Math.PI/2, 0)}], false);
   const fade = g => { const P = g.attributes.position, cl = new Float32Array(P.count*3);
-    for (let i=0;i<P.count;i++){ const k = Math.pow(1 - smooth(0.05, 1.7, -P.getZ(i)), 1.6)*0.28; cl[i*3] = k*1.05; cl[i*3+1] = k; cl[i*3+2] = k*0.92; }
+    for (let i=0;i<P.count;i++){ const k = Math.pow(1 - smooth(0.0, 1.2, -P.getZ(i)), 1.8)*0.045; cl[i*3] = k*1.08; cl[i*3+1] = k; cl[i*3+2] = k*0.88; }   // linear: ~25% grey at the mouth to black
     g.setAttribute('color', new THREE.BufferAttribute(cl, 3)); return g; };
   const inMat = new THREE.MeshBasicMaterial({vertexColors:true, side:THREE.BackSide});
   grp.add(new THREE.Mesh(fade(tube), inMat), new THREE.Mesh(fade(walls), new THREE.MeshBasicMaterial({vertexColors:true, side:THREE.DoubleSide})));
@@ -447,10 +472,10 @@ function buildWorld(L){
   // main road deck: from the yard edge, along the road, on into the exit tunnel (fading to black)
   const roadSamples = [], o0 = {}; C.pathAt(R, 0, o0, 0);
   for (let z = YZ0 + 0.02; z > o0.z + 0.05; z -= 0.1) roadSamples.push([o0.x, 0, z, -1, 1]);
-  for (let i=0;i<R.n;i+=2) roadSamples.push([R.P[i*3], R.P[i*3+1], R.P[i*3+2], R.cum[i], 1 - 0.97*smooth(R.portalS - 0.1, R.portalS + 1.7, R.cum[i])]);
+  for (let i=0;i<R.n;i+=2) roadSamples.push([R.P[i*3], R.P[i*3+1], R.P[i*3+2], R.cum[i], 1]);
   { const prof = [[-0.74,-0.24,CONC],[-0.74,0.07,CURBC3],[-0.62,0.07,'#f2f3f5'],[-0.6,0.0,ASPH3],[0.6,0.0,CURBC3],
                   [0.62,0.07,'#f2f3f5'],[0.74,0.07,CONC],[0.74,-0.24,'#c3c7cc']];
-    const mesh = new THREE.Mesh(extrude(roadSamples, prof), new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.85}));
+    const mesh = new THREE.Mesh(extrude(roadSamples, prof), tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.85})));
     mesh.castShadow = mesh.receiveShadow = true; add(mesh);
     const pos = [], o = {}, o2 = {};
     for (let s = 0.5; s < R.portalS + 0.4; s += 0.56){
@@ -506,14 +531,17 @@ function buildWorld(L){
   const E = L.exit, hillTrees = [], bushSpots = [], lamps = {};
   { const top = stoneTunnel(); top.position.set(E.x, E.y, E.z); top.rotation.y = Math.atan2(-E.dx, -E.dz); add(top); lamps.top = top.userData.lamp;
     const fx_ = GL.ex.dx, fz_ = GL.ex.dz, local = (a, f) => [E.x + (-fz_)*a + fx_*f, E.z + fx_*a + fz_*f];
-    [[-1.7, 0.3], [1.8, 0.4], [-2.4, 1.6], [2.5, 1.5], [-1.0, 1.0], [1.1, 1.2]].forEach(([a, f], i) => { const p = local(a, f); bushSpots.push([p[0], groundH(p[0], p[1]), p[1], 0.32 + 0.12*(i % 3)]); });
+    // bushes beside the arch on the mound, never inside the tunnel's trench (|lateral| > TUN.Rout + 0.35)
+    [[-1.8, 0.2], [1.85, 0.25], [-2.4, 1.3], [2.5, 1.4], [-2.0, 2.4], [2.1, 2.6]].forEach(([a, f], i) => { const p = local(a, f); bushSpots.push([p[0], groundH(p[0], p[1]), p[1], 0.32 + 0.12*(i % 3)]); });
     [[-2.2, 2.6, 1.0], [2.0, 2.9, 1.1], [0.2, 3.4, 1.15], [-3.4, 2.2, 0.9], [3.5, 2.4, 0.95], [-1.0, 4.4, 1.05], [1.6, 4.6, 1.0]]
       .forEach(([a, f, sc], i) => { const p = local(a, f); hillTrees.push([p[0], groundH(p[0], p[1]), p[1], sc, (i*0.37) % 1, i % 2]); });
     const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.95); add(ret); lamps.ret = ret.userData.lamp;
     // asphalt continuing into the return tunnel (fading to black)
-    { const n = [T.nx, T.nz], pts = []; for (let k=0;k<=12;k++){ const d = k/12*2.6; pts.push([T.x - n[0]*(d - 0.2), 0.008, T.z - n[1]*(d - 0.2), 0, 1 - 0.97*smooth(0.1, 1.9, d)]); }
+    { const n = [T.nx, T.nz], pts = []; for (let k=0;k<=12;k++){ const d = k/12*2.6; pts.push([T.x - n[0]*(d - 0.2), 0.008, T.z - n[1]*(d - 0.2), 0, 1 - 0.97*smooth(0.0, 0.65, d - 0.2)]); }
       add(new THREE.Mesh(extrude(pts, [[-0.62,0,ASPH3],[0.62,0,ASPH3]]), new THREE.MeshBasicMaterial({vertexColors:true}))); }
-    [[0.95, 0.25], [-0.6, -1.4], [1.6, -1.1]].forEach(([a, f]) => { const x = T.x - T.nx*f + T.nz*a*1.2*T.side, z = T.z - T.nz*f - T.nx*a*1.2*T.side; bushSpots.push([x, groundH(x, z), z, 0.3]); }); }
+    // a few bushes on the mound beside / behind the return tunnel (frame: into = -n, lateral = (nz, -nx)), clear of the yard roads
+    [[-1.75, 0.3], [-1.95, 1.35], [1.65, 1.9]].forEach(([a, f], i) => { const x = T.x - T.nx*f + T.nz*a, z = T.z - T.nz*f - T.nx*a;
+      if (Math.abs(x) > L.Y.X_SIDE + 0.75) bushSpots.push([x, groundH(x, z), z, 0.3 + 0.06*i]); }); }
   // forest, kept clear of everything the level places
   { const rs = L.RAMPS.map(r => { const pts = []; for (let i=0;i<r.spline.n;i+=4) if (r.spline.cum[i] <= r.length + 0.3) pts.push([r.spline.P[i*3], r.y, r.spline.P[i*3+2], r.halfW]); return pts; });
     const XE = yardExtent(Y), roadSamples2 = roadSamples.filter(q => q[3] <= R.portalS + 0.5);
@@ -573,6 +601,8 @@ function buildWorld(L){
   // the sun's shadow frustum hugs the visible part of the level
   const zc = (GL.zTop + 10)/2; sun.target.position.set(0, 0, zc); sun.position.set(-9, 16, zc - 10);
   Object.assign(sun.shadow.camera, {left:-14, right:14, top:16, bottom:-16, near:2, far:50}); sun.shadow.camera.updateProjectionMatrix();
+  TUN_U.uTun.value[0].set(E.x, E.z, GL.ex.dx, GL.ex.dz); TUN_U.uTunY.value[0].set(E.y, 1);
+  TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.nx, -GT.nz); TUN_U.uTunY.value[1].set(0, 1);
   WD = {L, bayGlow, rampTops, badges, dbgGroup, ringIM, lamps};
 }
 
@@ -658,10 +688,10 @@ class BusView {
   constructor(b){
     this.b = b; this.root = new THREE.Group(); this.slope = new THREE.Group(); this.body = new THREE.Group();
     this.root.add(this.slope); this.slope.add(this.body); scene.add(this.root);
-    this.mat = new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0});
+    this.mat = tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0}));
     this.mesh = new THREE.Mesh(busGeo(b.cap, b.revealed ? b.color : null), this.mat); this.mesh.castShadow = true; this.mesh.receiveShadow = true;
-    this.headMat = new THREE.MeshStandardMaterial({color:'#fff7dc', emissive:'#ffe9a8', emissiveIntensity:0.35, roughness:0.25});
-    this.brakeMat = new THREE.MeshStandardMaterial({color:'#c4161c', emissive:'#ff2020', emissiveIntensity:0.15, roughness:0.35});
+    this.headMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#fff7dc', emissive:'#ffe9a8', emissiveIntensity:0.35, roughness:0.25}));
+    this.brakeMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#c4161c', emissive:'#ff2020', emissiveIntensity:0.15, roughness:0.35}));
     this.head = new THREE.Mesh(headGeo, this.headMat); this.head.position.z = b.len/2 + 0.022;
     this.brake = new THREE.Mesh(tailGeo, this.brakeMat); this.brake.position.z = -b.len/2 - 0.022;
     this.body.add(this.mesh, this.head, this.brake);
@@ -699,7 +729,7 @@ const bodyGeoM = mergeParts([
 const armGeoM = new THREE.CapsuleGeometry(0.052, 0.15, 2, 7).translate(0, -0.11, 0);
 const legGeoM = new THREE.CapsuleGeometry(0.063, 0.13, 2, 7).translate(0, -0.125, 0);
 const proxyGeo = mergeParts([{geo:new THREE.BoxGeometry(0.26, 0.46, 0.2), m:M(0, 0.25, 0)}, {geo:new THREE.IcosahedronGeometry(HEAD_R, 0), m:M(0, MH - HEAD_R, 0)}], false);
-const manMat = new THREE.MeshStandardMaterial({color:'#ffffff', roughness:0.55}), shadowMat = new THREE.MeshBasicMaterial({colorWrite:false, depthWrite:false});
+const manMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#ffffff', roughness:0.55})), shadowMat = new THREE.MeshBasicMaterial({colorWrite:false, depthWrite:false});
 const manBlobMat = new THREE.MeshBasicMaterial({map:blobTex, color:'#000', transparent:true, opacity:0.4, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2});
 let menIM = null, armIM = null, legIM = null, menShadow = null, menBlob = null, menCap = 0;
 function ensureMen(n){                              // instanced stickmen sized to the level (the editor can make any number)
@@ -718,7 +748,7 @@ function ensureMen(n){                              // instanced stickmen sized 
 function ensureWheels(n){
   if (wheelIM && wheelIM.userData.cap >= n) return;
   if (wheelIM){ scene.remove(wheelIM); wheelIM.dispose(); }
-  wheelIM = new THREE.InstancedMesh(wheelGeo, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.62}), Math.max(16, n));
+  wheelIM = new THREE.InstancedMesh(wheelGeo, tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.62})), Math.max(16, n));
   wheelIM.userData.cap = Math.max(16, n); wheelIM.castShadow = true; wheelIM.frustumCulled = false; wheelIM.setColorAt(0, col('#fff')); scene.add(wheelIM);
 }
 const _m = new THREE.Matrix4(), _a = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(0,0,0,'YXZ'),
@@ -1073,9 +1103,9 @@ function updateBus(v, t, vdt){
   if (!vis){ v.root.visible = false; v.init = false; return; }
   // ease into / out of the tunnel darkness
   let dark = 0;
-  if (b.state === 'road') dark = smooth(L.ROAD.portalS - b.len/2 - 0.2, L.ROAD.portalS + b.len*0.5 + 0.7, b.rs);
-  if (b.state === 'return' && b.trip) dark = 1 - smooth(L.TUNNEL.depth - b.len/2 - 0.5, L.TUNNEL.depth + b.len/2 + 0.3, b.trip.s);
-  v.dark = dark; v.mat.color.setScalar(1 - 0.92*dark);
+  if (b.state === 'road') dark = smooth(L.ROAD.end - 0.55, L.ROAD.end - 0.02, b.rs);
+  if (b.state === 'return' && b.trip) dark = 1 - smooth(0.0, 0.4, b.trip.s);
+  v.dark = dark; v.mat.color.setScalar(1 - dark);
   const [tx, ty, tz, tvx, tvz] = busTarget(b), hT = Math.atan2(b.dx, b.dz);
   // position: critically damped spring with velocity feed-forward -> eased starts and stops, nothing snaps
   if (!v.init || Math.hypot(tx - v.p.x, tz - v.p.z) > 1.6){
@@ -1196,7 +1226,7 @@ function updateWheels(){
   let n = 0;
   for (const v of views){
     if (!v.root.visible) continue;
-    const dk = 1 - 0.92*v.dark;
+    const dk = 1 - v.dark;
     for (const w of v.wheels){
       _e.set(v.wheelAng, 0, 0, 'XYZ'); _q.setFromEuler(_e); _v.set(w[0], w[1], w[2]);
       _a.compose(_v, _q, _one).premultiply(v.body.matrixWorld); wheelIM.setMatrixAt(n, _a); wheelIM.setColorAt(n, _c.setScalar(dk)); n++;
@@ -1316,7 +1346,7 @@ function updateScene(vdt){
     b.scale.set(0.95*s, 1.19*s, 1); b.position.y = WD.rampTops[k].y + 1.15 + Math.sin(t*2.4)*0.06; });
   for (const lp of [WD.lamps.top, WD.lamps.ret]){ const u = t - lp.pulseT, p = u >= 0 && u < 1.4 ? Math.sin(Math.min(1, u/0.15)*Math.PI/2)*Math.exp(-u*2.4) : 0;
     lp.lamps.forEach((l, j) => { const fl = 0.06*Math.sin(t*3 + j*1.7);
-      l.glow.scale.setScalar(0.7 + 1.3*p + fl); l.glow.material.opacity = 0.72 + 0.28*p + fl; l.lampMat.color.setRGB(1, 0.86 + 0.14*p, 0.5 + 0.45*p); }); }
+      l.glow.scale.setScalar(0.62 + 0.6*p + fl); l.glow.material.opacity = 0.62 + 0.3*p + fl; l.lampMat.color.setRGB(1, 0.84 + 0.12*p, 0.48 + 0.3*p); }); }
   const free = []; for (let k=0;k<C.STATIC_SLOTS;k++) if (game.bays[k] < 0 && game.bayRes[k] < 0) free.push(k);
   WD.bayGlow.forEach((g, k) => { g.material.opacity = free.length === 1 && free[0] === k && !game.result ? 0.1 + 0.12*(0.5 + 0.5*Math.sin(t*5)) : 0; });
   const txt = `${game.counter}/${C.ROAD_CAPACITY}`, cnt = $('cnt');
