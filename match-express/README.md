@@ -329,6 +329,14 @@ with no internet connection (three.js is inlined from `vendor/`):
     test.
   - Their settings menu plays each bundled level.
 
+These files, and the blocker demo pack below, are committed (the rest of `dist/` stays
+ignored), so they can be downloaded straight from GitHub. On a file page, use *Download
+raw file*, or save one of these links:
+- [match-express-editor.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/dist/match-express-editor.html)
+- [match-express-play.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/dist/match-express-play.html)
+
+After changing the game or the editor, run `node tools/build-standalone.js` again and
+commit `dist/`.
 
 ## Blockers
 
@@ -403,8 +411,8 @@ the seven demo ids into the Level Order panel
 ([screenshot](screenshots/editor-level-order.png)), then clicks *Export order JSON* and
 *Playable HTML*:
 - `levels/demo-level-order.json` is the order;
-- `dist/match-express-blocker-demos.html` is the pack (`dist/` is build output and is not
-  committed).
+- `dist/match-express-blocker-demos.html` is the pack (committed, like the other single
+  files).
 
 The tool then opens the pack from `file://` at 390×844 and lets the greedy bot play it.
 It wins all seven levels in order and ends on the *All levels complete* screen, with no
