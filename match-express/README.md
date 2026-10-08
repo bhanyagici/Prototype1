@@ -208,11 +208,18 @@ The editor also keeps an autosaved draft, so a reload doesn't lose work.
 Level format 2:
 
 ```js
-{ format: 2, name, seed,
+{ format: 2, id?, name, seed,
   road:  { points: [{x, z, spiral?: {r, side}}], tail? },
-  ramps: [{ cp | at, side, tilt?, shape?: [[x, z], ...], rows, columns: [["red", "?blue", null, ...], ...] }],
-  lanes: [[{ color, cap, hidden?, link? }, ...], [...], [...]] }
+  ramps: [{ cp | at | front: [x, z], side, tilt?, shape?: [[x, z], ...], rows,
+            columns: [["red", "?blue", null, ...], ...],
+            tunnels?: [{ col, row, w, h, color, count }],
+            boxes?:   [{ col, row, w, h, lock: "K1" } | { col, row, w, h, count: 3 }] }],
+  lanes: [[{ color, cap, hidden?, link?, key? }, ...], [...], [...]] }
 ```
+
+`front` (instead of `cp` / `at`) is a ramp whose front node is not on the road; no bus
+can reach it, and the checker says so. Blocker cells are counted from the front of the
+ramp: `col` / `row` is the cell nearest the road, `w` columns wide and `h` rows deep.
 
 `tilt` (degrees) makes a straight platform leaving the road at that screen angle,
 outward and up. Without `tilt` or `shape` a ramp gets the original curved default.
@@ -241,6 +248,52 @@ This writes four files to `dist/`. Each one works when you open it straight from
 Both still load three.js from the pinned CDN, so they need an internet connection.
 Opened from disk, a separately opened game file may not sync with the editor, because
 browsers isolate `file://` pages.
+
+## Blockers
+
+Seven demo levels (`levels/demo_*.json`, made by `node tools/make-demos.js`) show the
+blockers one at a time and then together. They are under *Blocker demos* in the game's
+settings and in the editor's level list.
+
+| blocker | where | rule |
+|---|---|---|
+| **Hidden bus** | queue, `hidden: true` | Grey with a "?", but its length shows its capacity. It reveals its colour when it becomes the front of its lane. A hidden member of a connected group, sent from behind, reveals when it joins the main road. |
+| **Connected buses** | queue, the same `link` on 2–3 buses | See *Connected buses* below. |
+| **Colourful tunnel** | ramp, `tunnels` | Covers `w × h` empty cells. Whenever a cell directly in front of it empties, it releases one of its `count` stickmen (its colour) into it, in every column it spans. Stickmen behind it wait; at 0 it disappears and they flow forward. Its stickmen count toward the colour totals. |
+| **Hidden stickmen** | ramp, `"?colour"` cells | Grey with a "?" until they reach the front row. |
+| **Lock box** | ramp, `boxes` with `lock`, and one bus with the same `key` | A crate over a block of cells. Its stickmen cannot board and block those behind. The key bus shows a key, also in the queue. When it passes the ramp's boarding point, the key flies to the lock and the crate lifts away. If the key bus fills and jumps off first, the key flies over when its parachute opens (`KEY_FALLBACK_DELAY`). The bot test warns when that can happen. |
+| **Count box** | ramp, `boxes` with `count` | A crate showing how many more buses must be completed (filled and gone) since the start. At 0 it opens. |
+
+**Connected buses** are drawn as one articulated bus, with accordion bellows between the
+rear of each bus and the front of the next. In the queue and the bays the bellows stretches
+across lanes or bays.
+- **Shape:** links can be vertical (one after another in a lane), horizontal (neighbouring
+  lanes) or diagonal (neighbouring lanes, one row apart).
+- **Sending:** a group can go only when, in every lane it uses, its topmost member is the
+  front bus. A member at the front waiting for its partners blocks its lane. Tapping any
+  sendable member sends the whole group. The road must have room for all of them, and each
+  member counts on the road counter.
+- **On the road:** the leftmost lane's bus leads, then left to right, front to back within
+  a lane. The members keep one fixed gap and the whole group stops while any member boards.
+  Each member boards its own colour; a full member stops boarding but stays in the group.
+- **Jumping and returning:** when all members are full, they jump off together. Otherwise
+  the whole group goes round, full members included, and parks in the leftmost free bays,
+  not necessarily next to each other. With fewer free bays than members, the level is lost.
+  Tapping a parked member sends the whole group back (room permitting).
+
+**Checker rules:**
+- colour totals include tunnels;
+- every lock has exactly one key bus, and every key a lock;
+- count boxes between 1 and the number of buses;
+- groups of 2–3 that touch, and no two groups waiting for each other (`link-deadlock`);
+- one blocker per column, inside the ramp, a tunnel on empty cells with a cell in front;
+- ramps whose front node is off the road (`ramp-unsnapped`).
+
+**Cheering with blockers.** At send time the prediction replays tunnels feeding their
+stickmen, and the locks a key bus is sure to open on its way. A box that opens any other
+way (a key bus that filled first, or a count box) is a new event. Then every bus on its
+lap is planned again, so buses ahead may now reach stickmen that were locked away. Stickmen
+who stay with the same bus keep cheering.
 
 ## Speed, sound, animation
 
@@ -431,8 +484,9 @@ height.
 
 ```
 node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
+node tests/blockers.test.js   # 43 checks: every blocker, the checker rules for them, the demo levels (bots + cheering)
 node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
-node tests/shared.test.js     # 64 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
+node tests/shared.test.js     # 71 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
 node tests/browser.test.js    # 61 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 16 checks: builds dist/ and opens the single files and both share files from file://
 ```

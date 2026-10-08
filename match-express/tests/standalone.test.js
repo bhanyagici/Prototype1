@@ -64,9 +64,10 @@ let pass = 0, fail = 0; const chk = (ok, n, i='') => { ok ? pass++ : fail++; con
     await p.goto(D + file); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
     await p.evaluate(() => { const lv = JSON.parse(JSON.stringify(MECore.LEVEL_DATA)); lv.name = 'Old editor level'; localStorage.setItem('match-express:current-level', JSON.stringify(lv)); });
     await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000}); await p.waitForTimeout(1500);
-    const st = await p.evaluate(() => ({name: __me.LEVEL.name, menu: [...document.querySelectorAll('#settings button')].map(b => b.textContent).filter(t => /^Play /.test(t))}));
+    const st = await p.evaluate(() => ({name: __me.LEVEL.name, menu: [...document.querySelectorAll('#settings > button, #presetBtns button')].map(b => b.textContent).filter(t => /^Play /.test(t)),
+      demos: document.querySelectorAll('#demoBtns button').length}));
     chk(st.name === name && !logs.some(l => /^\[sim\]/.test(l)), file + ' opens with ' + name + ' (not the saved editor level) and runs no bot test', st.name);
-    chk(JSON.stringify(st.menu) === JSON.stringify(['Play Level 2', 'Play Crowded Rush', 'Play Crowded Rush Curve']), file + ': the settings menu plays each bundled level', st.menu.join(', '));
+    chk(JSON.stringify(st.menu) === JSON.stringify(['Play Level 2', 'Play Crowded Rush', 'Play Crowded Rush Curve']) && st.demos >= 7, file + ': the settings menu plays each bundled level (blocker demos folded away)', st.menu.join(', ') + ' + ' + st.demos + ' demos');
     await p.click('#btnSettings'); await p.click('#settings button[data-level="crowded-rush"]');
     chk(await p.evaluate(() => __me.LEVEL.name === 'Crowded Rush' && __me.layout.CAM === MECore.SCREEN_CAM), file + ': switching level keeps the one fixed camera');
     await c.close(); }

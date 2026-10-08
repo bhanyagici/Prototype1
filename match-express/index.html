@@ -43,6 +43,9 @@
     font-weight:900;color:#fff;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 5px 0 #0f4c9e;cursor:pointer}
   #settings button.off{background:linear-gradient(#9aa3b3,#69728a);box-shadow:0 5px 0 #454c5e}
   #settings small{display:block;margin-top:10px;font-size:20px;opacity:.75;text-align:center}
+  #settings{max-height:calc(100% - 180px);overflow-y:auto}
+  #demoBtns summary{cursor:pointer;margin:12px 4px 4px;font-size:24px;font-weight:800;color:#ffc531}
+  #demoBtns button{font-size:24px;padding:10px}
   /* ---- counter sign ---- */
   #counter{width:112px;height:124px;border-radius:28px;background:linear-gradient(#3d5592,#27376a 60%,#1d2a54);
     border:7px solid #ffcf3a;box-shadow:0 8px 0 #c48410,0 14px 22px rgba(0,0,0,.32),inset 0 -6px 0 rgba(0,0,0,.25),inset 0 0 0 3px #17224a;
@@ -254,10 +257,6 @@ const starTex = canvasTex(64, 64, (x) => { x.translate(32,32); x.fillStyle = '#f
 const qTex = canvasTex(128, 128, (x) => { x.fillStyle = '#5b6170'; x.beginPath(); x.arc(64,64,56,0,7); x.fill();
   x.lineWidth = 8; x.strokeStyle = '#fff'; x.stroke(); x.fillStyle = '#fff'; x.font = '900 84px Arial'; x.textAlign = 'center';
   x.textBaseline = 'middle'; x.fillText('?', 64, 70); }, true);
-const linkTex = canvasTex(128, 128, (x) => { x.fillStyle = '#ffffff'; x.beginPath(); x.arc(64,64,56,0,7); x.fill();
-  x.lineWidth = 6; x.strokeStyle = '#2d3d6b'; x.stroke(); x.lineWidth = 13; x.lineCap = 'round';
-  x.strokeStyle = '#2d3d6b'; x.beginPath(); x.ellipse(48, 64, 22, 14, -0.6, 0, 7); x.stroke();
-  x.strokeStyle = '#ff8f1f'; x.beginPath(); x.ellipse(80, 64, 22, 14, -0.6, 0, 7); x.stroke(); }, true);
 const checkTex = canvasTex(128, 160, (x) => { x.fillStyle = '#2f9e3a'; x.beginPath(); x.moveTo(64,156); x.lineTo(40,110); x.lineTo(88,110); x.fill();
   const g = x.createLinearGradient(0,8,0,120); g.addColorStop(0,'#7be35b'); g.addColorStop(1,'#2fae35');
   x.fillStyle = g; x.beginPath(); x.arc(64,64,56,0,7); x.fill(); x.lineWidth = 7; x.strokeStyle = '#fff'; x.stroke();
@@ -718,8 +717,8 @@ class BusView {
     this.shadow.position.y = 0.014; this.shadow.renderOrder = 1; this.slope.add(this.shadow);
     this.q = null;
     if (!b.revealed){ this.q = new THREE.Sprite(new THREE.SpriteMaterial({map:qTex, depthWrite:false})); this.q.position.set(0, 1.25, 0); this.q.scale.set(0.62, 0.62, 1); this.root.add(this.q); }
-    this.link = null;
-    if (b.link != null){ this.link = new THREE.Sprite(new THREE.SpriteMaterial({map:linkTex, depthWrite:false})); this.link.position.set(0.32, 1.1, 0); this.link.scale.set(0.5, 0.5, 1); this.root.add(this.link); }
+    this.keyS = null;                               // a bus carrying a key shows it until the key flies to its lock
+    if (b.key){ this.keyS = new THREE.Sprite(new THREE.SpriteMaterial({map:keyTex, depthWrite:false})); this.keyS.position.set(0, 1.18, 0); this.keyS.scale.set(0.62, 0.62, 1); this.root.add(this.keyS); }
     const wz = b.cap >= 12 ? [b.len/2 - 0.36, 0, -b.len/2 + 0.36] : [b.len/2 - 0.33, -b.len/2 + 0.33];
     this.wheels = []; for (const z of wz) for (const sx of [-1, 1]) this.wheels.push([sx*(C.BUS_W/2 - 0.045), WHEEL_R, z]);
     // render state: position/heading chase the core through critically damped springs (no snaps)
@@ -954,6 +953,144 @@ function setMuted(m){
 let LEVEL = null, levelSource = 'builtin', L = null;
 let game = null, views = [], MV = [], winAt = Infinity, failAt = Infinity, crash = null, DEBUG = false, botOn = false, botT = 0;
 let timeScale = 1, shake = 0, lastSqueak = -9, winSoundAt = Infinity, levelSerial = 0;
+/* ================================ BLOCKERS ===============================
+   Ramp tunnels (a coloured block with the number of stickmen left, feeding the cells in front of it),
+   lock / count boxes (a crate over its cells, with a padlock or the number of buses still to complete),
+   "?" markers over hidden stickmen, the key a key bus carries, and the bellows joints of connected buses. */
+const keyTex = canvasTex(128, 128, (x) => { x.translate(64, 64); x.rotate(-0.7); x.lineWidth = 10; x.strokeStyle = '#8a5a00';
+  const gold = x.createLinearGradient(-50, -20, 50, 20); gold.addColorStop(0, '#ffe27a'); gold.addColorStop(1, '#f2a516'); x.fillStyle = gold;
+  x.beginPath(); x.arc(-26, 0, 24, 0, 7); x.fill(); x.stroke(); x.beginPath(); x.arc(-26, 0, 9, 0, 7); x.fillStyle = '#8a5a00'; x.fill();
+  x.fillStyle = gold; x.beginPath(); x.roundRect(-4, -8, 58, 16, 6); x.fill(); x.stroke();
+  x.beginPath(); x.roundRect(30, 6, 10, 18, 3); x.roundRect(44, 6, 10, 14, 3); x.fill(); x.stroke(); }, true);
+const lockTex = canvasTex(128, 128, (x) => { x.lineWidth = 9; x.strokeStyle = '#5e6470'; x.lineCap = 'round';
+  x.beginPath(); x.arc(64, 54, 26, Math.PI, 0); x.lineTo(90, 66); x.moveTo(38, 54); x.lineTo(38, 66); x.stroke();
+  const gold = x.createLinearGradient(0, 60, 0, 120); gold.addColorStop(0, '#ffe27a'); gold.addColorStop(1, '#f0a012');
+  x.fillStyle = gold; x.strokeStyle = '#8a5a00'; x.lineWidth = 6; x.beginPath(); x.roundRect(22, 60, 84, 60, 14); x.fill(); x.stroke();
+  x.fillStyle = '#6b4200'; x.beginPath(); x.arc(64, 84, 9, 0, 7); x.fill(); x.fillRect(60, 86, 8, 20); }, true);
+const crateTex = canvasTex(256, 256, (x) => { x.fillStyle = '#c98a4b'; x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 5; i++){ x.fillStyle = i % 2 ? '#bd7e41' : '#d29455'; x.fillRect(0, i*51, 256, 50); x.fillStyle = '#9a6331'; x.fillRect(0, i*51 + 49, 256, 3); }
+  x.strokeStyle = '#7a4a22'; x.lineWidth = 22; x.strokeRect(11, 11, 234, 234);
+  x.lineWidth = 18; x.beginPath(); x.moveTo(20, 20); x.lineTo(236, 236); x.stroke(); }, true);
+const hiddenQTex = canvasTex(64, 64, (x) => { x.fillStyle = '#ffffff'; x.font = '900 52px Arial'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.lineWidth = 8; x.strokeStyle = '#4b5160'; x.strokeText('?', 32, 35); x.fillText('?', 32, 35); }, true);
+function makeLabel(bg){                             // a number on a rounded tag, redrawn when it changes
+  const c = document.createElement('canvas'); c.width = 128; c.height = 96;
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, depthWrite:false})); sp.renderOrder = 6; let cur = null;
+  sp.userData.set = v => { if (v === cur) return; cur = v; const x = c.getContext('2d'); x.clearRect(0, 0, 128, 96);
+    x.fillStyle = bg; x.strokeStyle = '#ffffff'; x.lineWidth = 7; x.beginPath(); x.roundRect(8, 8, 112, 80, 24); x.fill(); x.stroke();
+    x.fillStyle = '#fff'; x.font = '900 58px Arial'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineWidth = 6; x.strokeStyle = 'rgba(0,0,0,.35)';
+    x.strokeText(String(v), 64, 52); x.fillText(String(v), 64, 52); tex.needsUpdate = true; };
+  return sp;
+}
+/* where a block of cells sits on its ramp: centre, heading (+z toward the road), size */
+function cellBlock(k, col, row, w, h){
+  const r = L.RAMPS[k], a = r.slots[col][row], b = r.slots[col + w - 1][row + h - 1], c = r.slots[col][row + h - 1], d = r.slots[col + w - 1][row];
+  const x = (a.x + b.x + c.x + d.x)/4, z = (a.z + b.z + c.z + d.z)/4, fx = (a.fx + b.fx)/2, fz = (a.fz + b.fz)/2;
+  return {x, y:r.y, z, yaw:Math.atan2(fx, fz), W:w*C.RAMP_SP, D:h*C.RAMP_SP};
+}
+const bellowsGeo = (() => { const parts = [{geo:new THREE.BoxGeometry(0.66, 0.4, 1), m:M(), color:col('#8b919c')}];
+  for (let i = 0; i < 7; i++) parts.push({geo:rbox(0.78, 0.5, 0.07, 0.03, 1), m:M(0, 0, -0.42 + i*0.14), color:col(i % 2 ? '#a7adb7' : '#bfc4cc')});
+  const g = mergeParts(parts); g.userData.shared = true; return g; })();
+const bellowsMat = new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.75}); bellowsMat.userData.shared = true;
+let BLK = {group:null, tunnels:[], boxes:[], bellows:[], under:new Set(), keys:[], qIM:null, nq:0};
+function buildBlockers(){
+  if (BLK.group){ disposeTree(BLK.group); scene.remove(BLK.group); }
+  BLK.keys.forEach(k => { scene.remove(k.s); k.s.material.dispose(); });
+  const grp = new THREE.Group(); scene.add(grp);
+  BLK = {group:grp, tunnels:[], boxes:[], bellows:[], under:new Set(), keys:[], qIM:null, nq:0};
+  game.ramps.forEach((R, k) => {
+    R.tunnels.forEach(T => { if (T.gone) return;
+      const f = cellBlock(k, T.col, T.row, T.w, T.h), col = col_(C.HEX[T.color]), node = new THREE.Group();
+      const body = new THREE.Mesh(rbox(f.W - 0.05, 0.5, f.D - 0.05, 0.1, 2), new THREE.MeshStandardMaterial({color:col, roughness:0.35, emissive:col, emissiveIntensity:0.08}));
+      body.position.y = 0.25; body.castShadow = body.receiveShadow = true;
+      const mouth = new THREE.Mesh(new THREE.PlaneGeometry(Math.max(0.18, f.W - 0.2), 0.3), new THREE.MeshBasicMaterial({color:'#1b1d24'}));
+      mouth.position.set(0, 0.2, (f.D - 0.05)/2 + 0.004);
+      const top = new THREE.Mesh(rbox(Math.max(0.16, f.W - 0.24), 0.06, Math.max(0.16, f.D - 0.24), 0.03, 1), new THREE.MeshStandardMaterial({color:col.clone().multiplyScalar(0.72), roughness:0.4}));
+      top.position.y = 0.5;
+      node.add(body, mouth, top); node.position.set(f.x, f.y, f.z); node.rotation.y = f.yaw; grp.add(node);
+      const lbl = makeLabel(C.HEX[T.color]); lbl.position.set(f.x, f.y + 0.95, f.z); lbl.scale.set(0.62, 0.465, 1); grp.add(lbl);
+      BLK.tunnels.push({k, T, node, lbl, goneT:null});
+    });
+    R.boxes.forEach(B => { if (B.open) return;
+      const f = cellBlock(k, B.col, B.row, B.w, B.h), node = new THREE.Group();
+      const crate = new THREE.Mesh(rbox(f.W + 0.02, 0.62, f.D + 0.02, 0.04, 1), new THREE.MeshStandardMaterial({map:crateTex, roughness:0.85, transparent:true}));
+      crate.position.y = 0.31; crate.castShadow = crate.receiveShadow = true; node.add(crate);
+      node.position.set(f.x, f.y, f.z); node.rotation.y = f.yaw; grp.add(node);
+      let icon = null, lbl = null;
+      if (B.kind === 'lock'){ icon = new THREE.Sprite(new THREE.SpriteMaterial({map:lockTex, depthWrite:false})); icon.scale.set(0.62, 0.62, 1); icon.renderOrder = 6; icon.position.set(f.x, f.y + 1.0, f.z); grp.add(icon); }
+      else { lbl = makeLabel('#7a4a22'); lbl.scale.set(0.62, 0.465, 1); lbl.position.set(f.x, f.y + 0.98, f.z); grp.add(lbl); }
+      Object.values(B.men).forEach(ids => ids.forEach(id => BLK.under.add(id)));
+      BLK.boxes.push({k, B, node, crate, icon, lbl, f, openT:null});
+    });
+  });
+  game.groups.forEach(G => { for (let i = 0; i + 1 < G.members.length; i++){
+    const m = new THREE.Mesh(bellowsGeo, bellowsMat); m.castShadow = true; m.visible = false; grp.add(m);
+    BLK.bellows.push({a:G.members[i], b:G.members[i + 1], m}); } });
+  BLK.qIM = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.26, 0.26), new THREE.MeshBasicMaterial({map:hiddenQTex, transparent:true, depthWrite:false}), Math.max(1, game.men.length));
+  BLK.qIM.count = 0; BLK.qIM.frustumCulled = false; BLK.qIM.renderOrder = 5; grp.add(BLK.qIM);
+}
+function col_(hex){ return new THREE.Color(hex); }
+const _q4 = new THREE.Matrix4(), _camQ = new THREE.Quaternion(), _qs = new THREE.Vector3(1, 1, 1), _qp = new THREE.Vector3(), _pa = new THREE.Vector3(), _pb = new THREE.Vector3();
+function markHidden(x, y, z){
+  if (!BLK.qIM) return;
+  _qp.set(x, y, z); _q4.compose(_qp, _camQ, _qs); BLK.qIM.setMatrixAt(BLK.nq++, _q4);
+}
+function reindexCols(k, cols, t0){
+  const R = game.ramps[k];
+  cols.forEach(c => R.cols[c].forEach((id, i) => { const mv = MV[id]; if (mv.to === i && Math.abs(mv.disp - i) < 1e-3) return;
+    mv.from = mv.disp; mv.to = i; mv.t0 = t0 + i*0.045; }));
+}
+function blockerGone(e){
+  const b = BLK.tunnels.find(x => x.k === e.ramp && x.T.i === e.tunnel); if (!b) return;
+  b.goneT = e.t; sparkle(new THREE.Vector3(b.node.position.x, b.node.position.y + 0.4, b.node.position.z), C.HEX[b.T.color], 14, 0.36);
+  const cols = []; for (let c = b.T.col; c < b.T.col + b.T.w; c++) cols.push(c); reindexCols(e.ramp, cols, e.t + 0.15);
+}
+function blockerUnlock(e){
+  const b = BLK.boxes.find(x => x.k === e.ramp && x.B.i === e.box); if (!b) return;
+  const fly = e.how === 'key' || e.how === 'fallback', v = e.bus != null ? views[e.bus] : null;
+  b.openT = e.t + (fly ? 0.32 : 0.05);
+  if (fly && v){                                     // the key flies from its bus (or its parachute) to the lock
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({map:keyTex, depthWrite:false})); s.scale.set(0.62, 0.62, 1); s.renderOrder = 7; scene.add(s);
+    const from = (v.keyS ? v.keyS.getWorldPosition(new THREE.Vector3()) : v.root.position.clone().add(new THREE.Vector3(0, 1.2, 0)));
+    BLK.keys.push({s, from, to:new THREE.Vector3(b.f.x, b.f.y + 1.0, b.f.z), t0:e.t, t1:b.openT}); v.keyGone = true;
+  }
+  const cols = []; for (let c = b.B.col; c < b.B.col + b.B.w; c++) cols.push(c);
+  fx.push(t => { if (!BLK.boxes.includes(b)) return false; if (t < b.openT) return true;   // the crate lifts: show the stickmen and let them step forward
+    cols.forEach(c => (b.B.men[c] || []).forEach(id => BLK.under.delete(id)));
+    reindexCols(e.ramp, cols, b.openT + 0.12); sparkle(new THREE.Vector3(b.f.x, b.f.y + 0.5, b.f.z), '#ffe27a', 18, 0.4); sfx.sparkle(); return false; });
+}
+function updateBlockers(t){
+  if (!BLK.group) return;
+  BLK.tunnels.forEach(b => { b.lbl.userData.set(b.T.left);
+    if (b.goneT != null){ const u = clamp((t - b.goneT)/0.3, 0, 1), s = 1 - easeOut(u); b.node.scale.setScalar(Math.max(0.001, s)); b.lbl.visible = u < 0.5; b.node.visible = u < 1; }
+    else { const p = 1 + 0.03*Math.sin(t*4 + b.k); b.node.scale.set(1, p, 1); } });
+  BLK.boxes.forEach(b => {
+    if (b.lbl) b.lbl.userData.set(Math.max(0, b.B.n - game.completed));
+    if (b.openT == null || t < b.openT) return;
+    const u = clamp((t - b.openT)/0.45, 0, 1);
+    b.node.position.y = b.f.y + 1.4*easeOut(u); b.crate.material.opacity = 1 - u; b.node.visible = u < 1;
+    if (b.icon){ b.icon.visible = u < 0.3; } if (b.lbl) b.lbl.visible = u < 0.3; });
+  for (let i = BLK.keys.length - 1; i >= 0; i--){ const K = BLK.keys[i], u = clamp((t - K.t0)/Math.max(0.05, K.t1 - K.t0), 0, 1);
+    K.s.position.lerpVectors(K.from, K.to, easeOut(u)); K.s.position.y += Math.sin(u*Math.PI)*0.8;
+    if (u >= 1){ scene.remove(K.s); K.s.material.dispose(); BLK.keys.splice(i, 1); } }
+  BLK.bellows.forEach(B => { const va = views[B.a], vb = views[B.b];
+    const ok = va && vb && va.root.visible && vb.root.visible && va.b.state !== 'tunnel' && vb.b.state !== 'tunnel' && va.dark < 0.9 && vb.dark < 0.9;
+    B.m.visible = !!ok; if (!ok) return;
+    va.body.updateMatrixWorld(true); vb.body.updateMatrixWorld(true);
+    // on the road: rear of one to the front of the next; parked or queued side by side: the facing sides
+    const st = va.b.state, side = (st === 'lane' || st === 'bay') && (vb.b.state === 'lane' || vb.b.state === 'bay');
+    _pa.set(0, 0.36, 0).applyMatrix4(va.body.matrixWorld); _pb.set(0, 0.36, 0).applyMatrix4(vb.body.matrixWorld);
+    const hx = Math.sin(va.h), hz = Math.cos(va.h), dx = _pb.x - _pa.x, dz = _pb.z - _pa.z, lon = dx*hx + dz*hz, lat = dx*hz - dz*hx;
+    if (side && Math.abs(lat) > Math.abs(lon)*0.6){
+      const sg = Math.sign(lat) || 1, along = clamp(lon/2, -va.b.len/4, va.b.len/4);
+      _pa.set(-sg*C.BUS_W/2, 0.36, along).applyMatrix4(va.body.matrixWorld); _pb.set(sg*C.BUS_W/2, 0.36, clamp(-lon/2, -vb.b.len/4, vb.b.len/4)).applyMatrix4(vb.body.matrixWorld);
+    } else { _pa.set(0, 0.36, -va.b.len/2 + 0.04).applyMatrix4(va.body.matrixWorld); _pb.set(0, 0.36, vb.b.len/2 - 0.04).applyMatrix4(vb.body.matrixWorld); }
+    const d = _pa.distanceTo(_pb), s = Math.min(va.root.scale.x, vb.root.scale.x);
+    B.m.position.lerpVectors(_pa, _pb, 0.5); B.m.lookAt(_pb); B.m.scale.set(s, s, Math.max(0.02, d)); });
+  camera.getWorldQuaternion(_camQ);
+  BLK.qIM.count = BLK.nq; BLK.qIM.instanceMatrix.needsUpdate = true;
+}
 function resetGame(){
   views.forEach(v => { removeChute(v); v.dispose(); });
   stopHum();
@@ -961,13 +1098,14 @@ function resetGame(){
   views = game.buses.map(b => new BusView(b));
   ensureMen(game.men.length); ensureWheels(views.reduce((a, v) => a + v.wheels.length, 0));
   menIM.count = menShadow.count = menBlob.count = game.men.length; armIM.count = legIM.count = game.men.length*2; cheer.clear();
-  MV = game.men.map((m, i) => { const d = game.ramps[m.ramp].cols[m.col].indexOf(i);
+  MV = game.men.map((m, i) => { const d = m.state !== 'ramp' ? 0 : (game.ramps[m.ramp].cols[m.col].indexOf(i) >= 0 ? game.ramps[m.ramp].cols[m.col].indexOf(i) : m.row);
     return {disp:d, from:d, to:d, t0:-1, ph:hash(i, 7)*6.28, swayA:0.03 + hash(i, 11)*0.045, swayF:1.2 + hash(i, 13)*1.1,
             bobF:1.6 + hash(i, 17)*1.4, lookT:hash(i, 3)*6, look:0, lookTo:0, runFrom:null, runT:-9, landT:-9, fly:null, tint:0}; });
   game.men.forEach((m, i) => paintMan(i));
   winAt = failAt = Infinity; winSoundAt = Infinity; crash = null; botT = 0; shake = 0;
   WD.badges.forEach(b => { b.visible = false; b.scale.set(0, 0, 1); });
   fx.forEach(f => f(Infinity)); fx.length = 0;
+  buildBlockers();
   $('winPanel').classList.remove('show'); $('failPanel').classList.remove('show');
   updateScene(0);
 }
@@ -1045,6 +1183,10 @@ function handleEvents(){
       case 'tunnelOut': WD.lamps.ret.pulseT = e.t; break;
       case 'rampEmpty': { const b = WD.badges[e.ramp]; b.visible = true; b.userData.t0 = e.t; b.userData.sparkled = false; break; }
       case 'crash': startCrash(e); break;
+      case 'release': { const mv = MV[e.man], T = game.ramps[e.ramp].tunnels[e.tunnel], i = game.ramps[e.ramp].cols[e.col].indexOf(e.man);
+        mv.disp = mv.from = T.row; mv.to = Math.max(0, i); mv.t0 = e.t + 0.04; mv.popT = e.t; break; }
+      case 'tunnelGone': blockerGone(e); break;
+      case 'unlock': blockerUnlock(e); break;
       case 'cheerMiss': console.warn(`[cheer] prediction for bus ${e.bus} disagreed (${e.why}): stickmen ${e.men.join(', ')}`); break;
     }
   }
@@ -1185,7 +1327,7 @@ function updateBus(v, t, vdt){
   v.headMat.emissiveIntensity = flashing ? 3.2 : 0.35*(1 - dark);
   v.hGlow.forEach(s => { s.material.opacity = flashing ? 1 : 0; });
   if (v.q) v.q.position.y = 1.25 + Math.sin(t*3 + b.id)*0.05;
-  if (v.link){ v.link.visible = b.state === 'lane'; v.link.position.y = 1.1 + Math.sin(t*3.4 + b.id)*0.04; }
+  if (v.keyS){ v.keyS.visible = !!b.key && !v.keyGone; v.keyS.position.y = (v.q ? 1.85 : 1.18) + Math.sin(t*3.4 + b.id)*0.05; }
 }
 /* A full bus first drives straight sideways (perpendicular to the road) off the edge on the side
    away from its ramp, above the neighbouring crowds; only once it is clear of the road - and out
@@ -1293,6 +1435,7 @@ function updateMen(t, vdt){
       const fl = Math.sin(t*9 + mv.ph);
       setMan(i, f.p.x, f.p.y, f.p.z, f.r.y, f.r.x, f.r.z, pose(-0.5 + fl*0.6, 0.6, 1.2, 1.2, fl*0.7, -fl*0.7)); continue;
     }
+    if (m.state === 'tunnel' || (m.state === 'ramp' && BLK.under.has(i))){ hideMan(i); continue; }
     if (m.state === 'ramp'){
       let stepHop = 0, sy = 1, step = 0;
       if (mv.t0 >= 0){                                  // staggered column shift: a little stepping hop with an overshoot
@@ -1317,7 +1460,9 @@ function updateMen(t, vdt){
         P = pose(0.08 + 0.05*br + step*0.5, 0.08 - 0.05*br - step*0.5, 0.12, 0.12, step, -step);
       }
       const sway = Math.sin(t*mv.swayF + mv.ph)*mv.swayA;
+      if (mv.popT != null && t - mv.popT < 0.25) y -= 0.25*(1 - (t - mv.popT)/0.25);   // stepping out of a tunnel
       setMan(i, p.x, y, p.z, yaw, 0, sway, P, sy, p.y);
+      if (m.hidden && !m.revealed) markHidden(p.x, y + MH + 0.16, p.z);
       if (mv.tint){ manColor(i, 0); mv.tint = 0; }
       continue;
     }
@@ -1355,7 +1500,7 @@ function updateScene(vdt){
   for (const v of views) updateBus(v, t, vdt);
   if (crash) updateCrash(t);
   for (const v of views) if (v.chute && v.b.state !== 'jump') removeChute(v);
-  updateMen(t, vdt); updateWheels();
+  BLK.nq = 0; camera.getWorldQuaternion(_camQ); updateMen(t, vdt); updateWheels(); updateBlockers(t);
   for (let i = fx.length - 1; i >= 0; i--) if (!fx[i](t)) fx.splice(i, 1);
   WD.badges.forEach((b, k) => { if (!b.visible) return; const u = t - b.userData.t0;
     const s = u < 0.55 ? Math.max(0, easeOutBack(clamp(u/0.55, 0, 1), 3)) : 1 + 0.06*Math.sin(t*3);
@@ -1426,10 +1571,12 @@ $('btnSpeed').addEventListener('click', () => { audio(); setSpeed(timeScale > 1 
 $('btnSettings').addEventListener('click', () => { audio(); $('settings').classList.toggle('open'); });
 $('btnMute').addEventListener('click', () => { audio(); setMuted(!muted); });
 $('btnBuiltin').addEventListener('click', () => { loadLevel(C.LEVEL_DATA, 'builtin'); $('settings').classList.remove('open'); });
-Object.entries(C.PRESETS).forEach(([id, lv]) => {    // one button per bundled level
-  const b = document.createElement('button'); b.className = 'spring'; b.dataset.level = id; b.textContent = 'Play ' + lv.name;
-  b.addEventListener('click', () => { loadLevel(C.PRESETS[id], 'preset'); $('settings').classList.remove('open'); });
-  $('presetBtns').append(b); });
+{ const demoBox = document.createElement('details'); demoBox.id = 'demoBtns'; demoBox.innerHTML = '<summary>Blocker demos</summary>';
+  Object.entries(C.PRESETS).forEach(([id, lv]) => {   // one button per bundled level (the blocker demos folded away)
+    const b = document.createElement('button'); b.className = 'spring'; b.dataset.level = id; b.textContent = 'Play ' + lv.name.replace(/^Demo: /, '');
+    b.addEventListener('click', () => { loadLevel(C.PRESETS[id], 'preset'); $('settings').classList.remove('open'); });
+    (id.startsWith('demo_') ? demoBox : $('presetBtns')).append(b); });
+  if (demoBox.querySelector('button')) $('presetBtns').after(demoBox); }
 /* long level names shrink to fit the title pill */
 function fitPill(){ const el = $('levelPill'); el.style.fontSize = ''; for (let f = 46; f > 26 && el.scrollWidth > el.clientWidth; f -= 2) el.style.fontSize = f + 'px'; }
 addEventListener('keydown', e => {

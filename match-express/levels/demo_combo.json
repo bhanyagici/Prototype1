@@ -1,0 +1,101 @@
+{
+  "format": 2,
+  "id": "demo_combo",
+  "name": "Demo: All Together",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2, "y": 0},
+      {"x": 0, "z": -3.05, "y": 0.05},
+      {"x": 0, "z": -4.1, "y": 0.1},
+      {"x": 0, "z": -5.15, "y": 0.15},
+      {"x": 0, "z": -6.2, "y": 0.2},
+      {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
+      {"x": 0.6, "z": -7.44, "y": 1.58},
+      {"x": 1.41, "z": -7.39, "y": 1.61},
+      {"x": 2.07, "z": -7.88, "y": 1.64},
+      {"x": 2.27, "z": -9.14, "y": 1.65},
+      {"x": 1.8, "z": -10.04, "y": 1.67}
+    ]
+  },
+  "ramps": [
+    {
+      "cp": 1,
+      "side": -1,
+      "shape": [[-2.74, -2.27], [-5.11, -2.61]],
+      "rows": 6,
+      "columns": [
+        ["green", "green", "green", "red", "red", "green"],
+        ["yellow", "yellow", "red", "red", "red", "purple"],
+        ["green", "green", "purple", "purple", "red", "red"],
+        ["blue", "purple", "red", "purple", "green", "red"]
+      ]
+    },
+    {
+      "cp": 2,
+      "side": 1,
+      "shape": [[2.58, -3.3], [4.76, -3.61]],
+      "rows": 6,
+      "columns": [
+        ["green", "red", "red", "red", "blue", "blue"],
+        ["yellow", "yellow", "yellow", "purple", "purple", "purple"],
+        ["blue", "blue", "yellow", "yellow", "blue", "blue"],
+        ["red", "red", "red", "yellow", "green", "green"]
+      ],
+      "boxes": [
+        {"col": 0, "row": 1, "w": 2, "h": 2, "lock": "K"}
+      ]
+    },
+    {
+      "cp": 3,
+      "side": -1,
+      "shape": [[-2.74, -4.37], [-5.11, -4.71]],
+      "rows": 6,
+      "columns": [
+        ["blue", "?red", "red", "red", "?green", "green"],
+        ["yellow", "?yellow", "red", "blue", "?blue", "green"],
+        ["purple", "?purple", "red", "yellow", "?blue", "?blue"],
+        ["green", "?purple", "blue", "?blue", "?blue", "yellow"]
+      ]
+    },
+    {
+      "cp": 4,
+      "side": 1,
+      "shape": [[2.58, -5.4], [4.76, -5.71]],
+      "rows": 6,
+      "columns": [
+        ["purple", "purple", "purple", "yellow", "yellow", "yellow"],
+        ["purple", "purple", "blue", "blue", "blue", "yellow"],
+        ["purple", "purple", null, null, "purple", "purple"],
+        ["yellow", "blue", "yellow", "yellow", "blue", "yellow"]
+      ],
+      "tunnels": [
+        {"col": 2, "row": 2, "w": 1, "h": 2, "color": "green", "count": 6}
+      ]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "red", "cap": 4},
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 4, "link": "G", "key": "K"},
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 8}
+    ],
+    [
+      {"color": "red", "cap": 4},
+      {"color": "red", "cap": 12},
+      {"color": "blue", "cap": 8, "hidden": true},
+      {"color": "yellow", "cap": 6, "link": "G"},
+      {"color": "purple", "cap": 12}
+    ],
+    [
+      {"color": "green", "cap": 4},
+      {"color": "green", "cap": 4},
+      {"color": "blue", "cap": 12},
+      {"color": "yellow", "cap": 6, "hidden": true},
+      {"color": "green", "cap": 4}
+    ]
+  ]
+}
