@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Match Express</title>
+<link rel="icon" href="data:,">
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#2b3a22;touch-action:none;
     -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
@@ -1659,6 +1660,7 @@ window.__me = {
   get serial(){ return levelSerial; }, get cheering(){ return cheer.size; }, cheerSet(){ return [...cheer.keys()]; }, EXIT, ROAD_HALF:C.ROAD_HALF, camera, scene, renderer, get CAM(){ return CAM; }, applyCamera, pump, setSpeed, setMuted, loadLevel,
   advance(sec){ const n = Math.round(sec/FIXED); for (let i=0;i<n;i++){ tick(); if (i % 4 === 0) updateScene(FIXED*4); } updateScene(FIXED); },
   tapLane(l){ return C.tapLane(game, l); }, tapBay(k){ return C.tapBay(game, k); }, pick, screenOf, busScreenBox,
+  get playIdx(){ return playIdx; }, get playlist(){ return PLAYLIST; }, get embed(){ return EMBED; }, nextLevel,
   setBot, setDebug(v){ DEBUG = v; WD.dbgGroup.visible = v; $('dbg').style.display = v ? 'block' : 'none'; },
   freeze(v){ frozen = v; }, restart: () => resetGame(), render(){ updateScene(0); renderer.render(scene, camera); },
   /* on-screen sizes in CSS px at the current viewport: standing stickmen (feet to top of head) and buses by capacity */

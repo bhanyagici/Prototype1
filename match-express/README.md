@@ -2,12 +2,17 @@
 
 - **`index.html`** — the game. three.js 0.160.0 from a pinned CDN through an import map;
   no other libraries, no build step. Portrait 9:19.5, scales to fit, mouse and touch.
-- **`editor.html`** — the level editor, with the real game running live beside it.
+- **`editor.html`** — the level editor, with its own copy of the game running beside it.
 - **`shared/core.js`** — the rules, the level format, validation, the layout builder
   (road, ramps, tunnels, pillars), the bots and the difficulty test. Plain script, no
   three.js; the game, the editor, the Web Worker and the Node tests all load this file.
-- **`shared/sync.js`** — level storage (`localStorage`) and the `BroadcastChannel`
-  `"match-express-levels"` that keeps the editor and every open game tab in step.
+- **`shared/sync.js`** — the editor's storage (saved levels by id, the level order,
+  prefs) and the background bot worker. The game never reads the editor's storage.
+- **`shared/bundle.js`** — packs the game into one self-contained HTML file (core,
+  sync and three.js inlined). The editor's *Export playable HTML* and
+  `tools/build-standalone.js` both use it.
+- **`vendor/three.module.min.js`** — three.js r160 (MIT), the same version as the
+  CDN pin, for the single-file exports that must run offline.
 
 ![390x844 screenshot](screenshot-390.png)
 
@@ -109,10 +114,11 @@ Screenshots (390 × 844):
 - [the parachute](screenshots/game-parachute.png);
 - [a bus fading into the exit tunnel](screenshots/game-tunnel-close.png), close up.
 
-## Opening the editor next to the game
+## The editor
 
-Serve the folder and open the editor (a plain `file://` open works too, but browsers
-limit `BroadcastChannel` and `localStorage` between `file://` pages):
+Serve the folder and open the editor. A plain `file://` open of `editor.html` works
+for editing, but its preview and exports need the game files, so for that use a server
+or the single-file `dist/match-express-editor.html`:
 
 ```
 cd match-express
@@ -122,30 +128,62 @@ python3 -m http.server 8000
 
 ![editor at 1440x900](screenshot-editor.png)
 
-- **Left:** tool tabs (Road, Ramps, Queue, File) and the **Checks** panel, which is
-  always visible.
-- **Centre:** a top-down view you edit with mouse or touch. The dashed trapezoid is
-  what the game camera sees. Wheel zooms, dragging empty space pans.
-- **Right:** the real `index.html` in a 390×844 phone frame. **Open in new tab**
-  opens the game full size. That tab follows the editor through the channel, so you
-  can keep it on a second screen or a phone-sized window.
+- **Top toolbar:**
+  - *File* (new, Levels & level order, save, save as, import);
+  - undo / redo;
+  - the level's **id** and name, and whether it is saved;
+  - *Run*, *Auto*, *Watch*, *Test*;
+  - *Export*;
+  - show / hide the preview;
+  - help.
+- **Left tool panel:**
+  - select / move, road points, add ramp;
+  - paint, eraser, hidden-stickmen brush, with the 8 colours;
+  - the ramp blockers: colourful tunnel, lock box, count box;
+  - connect buses, plus the size for new buses.
+- **Centre:** a top-down view you edit with the mouse or touch. The yellow frame is the
+  target zone. Wheel zooms; dragging empty space (or Space-drag) pans; *F* fits.
+  Whatever is under the pointer is highlighted, and the selection is outlined in yellow.
+- **Queue pane:** the three lanes, front at the top, drawn as buses whose length shows
+  their size.
+- **Right:** the **inspector** for the selection (level, road point, ramp, tunnel, box,
+  one bus or several) and the **Checks**.
+- **Far right:** the preview, the real game in a 390×844 phone frame.
 
-**RUN** saves the level and restarts it fresh, in the preview and in every open game
-tab. **Auto-run** does the same thing by itself 500 ms after each edit (the timer
-restarts on every change, so a drag only restarts once you let go). When the game
-starts, it loads the first level it finds from this list:
-1. a level the editor sends;
-2. the last level saved in `localStorage`;
-3. the built-in `LEVEL_DATA`.
+Every icon has a tooltip. **?** opens the list of keyboard shortcuts.
 
-Settings → *Built-in level* clears the saved level. `index.html?builtin` ignores it
-for one load.
+| key | action | key | action |
+|---|---|---|---|
+| V | select / move | Ctrl Z | undo |
+| P | road points | Ctrl Shift Z, Ctrl Y | redo |
+| R | add ramp | Ctrl S | save |
+| B | paint stickmen | O | levels & level order |
+| E | eraser | Enter | run the preview |
+| H | hidden-stickmen brush | F | fit the view |
+| T | colourful tunnel | Del / Backspace | delete the selection |
+| K | lock box | Esc | deselect / close |
+| N | count box | 1 – 8 | pick a colour |
+| L | connect the selected buses | ? | help |
+
+### The game, the preview and exports are independent
+- The editor's changes never reach the game page or an exported file. `index.html`
+  opens its built-in level (or `?level=<id>`, a bundled level). It never loads a level
+  saved in the editor, and there is no channel between the editor and game tabs.
+- The **preview** is the editor's own copy of the game (`index.html?embed=1` in an
+  iframe, or an embedded copy in the single-file editor). It only plays levels the
+  editor sends it.
+- **RUN** restarts the preview fresh with the level being edited. **Auto** does the same
+  500 ms after each edit; the timer restarts on every change, so a drag only restarts
+  once you let go. Opening a level runs it at once.
+- An **export** is a frozen snapshot. Editing or deleting the level later changes nothing
+  in a file you already exported.
 
 ### Road
-- Drag a control point to move it. Click the road to insert a point there.
+- With the road tool, click the road to insert a point; with either tool, drag a point
+  to move it.
 - Right-click (or long-press on touch) deletes a point.
-- **Spiral** (selected point) turns the point into a loop that crosses over itself,
-  with an overpass and pillars. You can set its radius and side.
+- **Spiral** (point inspector) turns the point into a loop that crosses over itself,
+  with an overpass and pillars. You can set its side.
 - These parts are placed automatically:
   - the road start, at the entry road;
   - the exit tunnel, at the road end along the last tangent;
@@ -157,53 +195,99 @@ for one load.
   - a point is off screen;
   - a curve is too tight for a 12-seat bus.
 
-### Ramps
-- Add or delete ramps. A new or flipped ramp is a straight platform with railings.
-  It runs diagonally outward and up at 35° (`"tilt"`) and is sized to its columns
-  and rows. Drag its shape points to bend it into a spline.
-- The boarding point (diamond) snaps to the road and can be dragged along it. The
-  front row always faces the road.
-- Columns and rows have +/− buttons.
-- To place stickmen:
-  - paint with the 8-colour palette;
-  - use the **eraser** to empty a cell;
-  - **Fill random** fills runs of 1–4 per column from the colours you picked;
-  - the **hidden** brush shows a stickman as "?" until it reaches the front row.
-- Warnings: a ramp overlaps another ramp or the road; a boarding point sits on a
-  spiral overpass.
+### Ramps and their nodes
+- **Add ramp** (R), then click next to the road. A ramp appears there, on that side, as
+  a straight platform at 35° (`"tilt"`).
+- A ramp is shaped by its **nodes**:
+  - The **front node** (diamond) is its boarding point. Drag it along the road. Within
+    reach of the road it snaps to it: a green ring shows where. Dropped away from the
+    road, it turns red and the ramp is **unsnapped**. Checks then warns that no bus can
+    reach it, and the ramp inspector offers *Snap to road*.
+  - The other nodes (squares) bend the ramp into a spline. *+* / *−* in the inspector
+    add or remove one.
+- The front row always faces the road.
+- The ramp inspector also sets columns and rows, flips the side, and has *Fill random*
+  (runs of 1–3 per column from the colours already in the level), *Clear* and *Delete*.
+- Stickmen:
+  - paint them with the 8-colour palette;
+  - empty a cell with the eraser;
+  - the **hidden** brush turns stickmen into grey "?" ones and back.
+
+### Blockers in the editor
+- **Colourful tunnel** (T): pick a colour, then drag across ramp cells. The cells must not
+  be in the front row. The tunnel takes them (they are emptied).
+  - The inspector sets its colour, stickman count, position and size.
+  - Its stickmen count toward that colour's total in Checks.
+- **Lock box** (K) and **count box** (N): drag across ramp cells.
+  - A lock box gets the next free lock id (`K1`, `K2`…). Pick its **key bus** in the
+    inspector; the queue then shows the key on that bus. Checks warns until exactly one
+    bus carries the key.
+  - A count box has a number of completed buses. The inspector switches between the two
+    variants.
+- **One blocker per column** of a ramp. The tools refuse an overlap.
+- Click a blocker to select it. *Delete* removes it, and removing a lock box also takes
+  its key off the bus.
 
 ### Queue
-- The queue has three lane lists. Add a bus with a colour and a capacity (4/6/8/12).
-- Toggle **hidden**, drag to reorder within a lane or between lanes, or delete.
-- Select two or more buses and **Link** them. Tapping one linked bus sends the whole
-  group. That works only when every bus in the group is at the front of its lane and
-  the road has room for all of them. Otherwise the tap is refused.
+- *+ Lane 1/2/3* adds a bus with the palette colour and the chosen size.
+- Click to select. Shift-click (or Ctrl-click) adds to the selection.
+- Drag within a lane or to another lane to reorder.
+- Right-click deletes.
+- Double-click toggles **hidden**: a grey bus with a "?", its colour on the rim.
+- **Connect:** select 2 or 3 buses and press **L** (or the link button). The buses must
+  touch: one after another in a lane, or neighbouring lanes at most one place apart. A
+  shape the game can't send, or a group that would deadlock the queue, is refused.
+- Connected buses are drawn joined by grey **bellows**, as in the game.
+- The bus inspector sets colour, size, hidden, the key it carries, and disconnects it.
 
 ### Checks
 Checks shows:
-- stickmen against seats for each colour, green when they match and red when they
-  don't;
-- totals and the number of buses of each size;
-- every layout warning.
+- stickmen against seats for each colour (tunnels included), green when they match and
+  red when they don't;
+- totals, the number of buses of each size, the number of hidden stickmen;
+- every layout and blocker warning (click one to show it).
 
 **Test** runs the greedy bot plus 200 random games in a background worker. It
 reports:
 - whether the greedy bot wins or fails;
 - how many sends it took and the game time;
 - the random bot's win rate;
-- a difficulty label: Easy >45%, Medium 15–45%, Hard 5–15%, Very Hard <5%.
+- a difficulty label: Easy >45%, Medium 15–45%, Hard 5–15%, Very Hard <5%;
+- a warning when a key bus filled up before its lock's ramp in any game.
 
-**Watch greedy** plays the greedy bot in the preview.
+**Watch** plays the greedy bot in the preview.
 
-### File: slots, export, import, undo
-- **Slots:** save, load, rename, duplicate and delete named levels, all stored in
-  `localStorage`.
-- **Export** copies the level JSON to the clipboard and downloads it as `.json`.
-- **Import** reads pasted JSON or a file. It accepts format 2 levels and old format 1
-  levels (format 1 gets the default layout).
-- **Undo / redo:** Ctrl+Z / Ctrl+Shift+Z (or Ctrl+Y) work for every edit.
+### Levels, ids and the level order
+- Every level has a unique **id**, shown and edited in the toolbar. Ids use letters,
+  digits, `_` and `-` (e.g. `lvl_001`).
+  - Renaming a saved level renames it in the level order too.
+  - An id that is already used, or has other characters, is refused.
+  - *New level* takes the next free `lvl_###`.
+- **Levels & level order** (O) has two parts:
+  - **Saved levels**, listed by id: open, add to the order, duplicate, delete, plus new,
+    save and import. The bundled levels and the seven blocker demos are seeded here once.
+  - **Level order:**
+    - add an id (typed, or with the button in the list);
+    - drag rows to reorder, or remove them;
+    - unknown and duplicate ids are marked red with a warning;
+    - export and import the order as JSON.
+- The editor also keeps an autosaved draft, so a reload doesn't lose work.
 
-The editor also keeps an autosaved draft, so a reload doesn't lose work.
+```js
+{ "type": "match-express-level-order", "version": 1, "levels": ["demo_hidden_bus", "lvl_001", ...] }
+```
+
+### Export
+- **Level JSON:** the level with its id, as `<id>.json`. *Import* reads it back. Old
+  format 1 levels get the default layout. A clashing id is renamed to the next free one.
+- **Playable HTML: this level** or **the level order.** One self-contained file: the
+  game, three.js and a frozen copy of the levels. It opens with a double-click, offline.
+  - It starts at level 1 and shows *Level 1 / N*.
+  - Winning offers **Next level**. After the last level, an **All levels complete**
+    screen offers *Play again*.
+  - The settings menu jumps to any level of the pack.
+  - An order with warnings is not exported.
+- **Play this level in a new tab:** the same packed file, opened from memory.
 
 Level format 2:
 
@@ -232,22 +316,19 @@ stickman and `null` is an empty cell. Each lane lists its front bus first.
 node tools/build-standalone.js
 ```
 
-This writes four files to `dist/`. Each one works when you open it straight from disk:
-- **`match-express-game.html`** is the game with `shared/core.js` and
-  `shared/sync.js` inlined.
-- **`match-express-editor.html`** is the editor with everything inlined. The game
-  preview is embedded through `iframe srcdoc`, so it needs no second file. RUN and
-  Auto-run work as usual. *Open in new tab* opens the same embedded game in a new
-  tab. That tab gets every later RUN through `window.opener`.
+This writes four files to `dist/`. Each one works when you open it straight from disk,
+with no internet connection (three.js is inlined from `vendor/`):
+- **`match-express-game.html`** is the game with `shared/core.js`, `shared/sync.js`
+  and three.js inlined.
+- **`match-express-editor.html`** is the editor with everything inlined. It carries the
+  packed game, which serves as its preview (`iframe srcdoc`) and as the template for its
+  exports. RUN, Auto, Watch and every export work as usual.
 - **`match-express-play.html`** and **`match-express-crowded-rush-curve.html`** are
   share files. They open with Level 2 and with Crowded Rush Curve.
   - Neither loads a saved (or sent) editor level, and neither runs the background bot
     test.
   - Their settings menu plays each bundled level.
 
-Both still load three.js from the pinned CDN, so they need an internet connection.
-Opened from disk, a separately opened game file may not sync with the editor, because
-browsers isolate `file://` pages.
 
 ## Blockers
 
@@ -487,8 +568,8 @@ node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, 
 node tests/blockers.test.js   # 43 checks: every blocker, the checker rules for them, the demo levels (bots + cheering)
 node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
 node tests/shared.test.js     # 71 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
-node tests/browser.test.js    # 61 checks: game + editor in Chromium (needs `npm i playwright`)
-node tests/standalone.test.js # 16 checks: builds dist/ and opens the single files and both share files from file://
+node tests/browser.test.js    # 90 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
 ```
 
 The first three need only Node and no dependencies; they load `shared/core.js`.

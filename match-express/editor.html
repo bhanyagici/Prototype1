@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Match Express — Level Editor</title>
+<link rel="icon" href="data:,">
 <style>
   :root{--bg:#171c29;--panel:#1f2636;--panel2:#283149;--line:#36405a;--text:#e8ecf6;--mute:#97a1ba;--accent:#4aa8ff;--accent2:#ffc531;
     --ok:#3fbf62;--bad:#ff5a5f;--warn:#ffb020;--hover:#9fd0ff}
@@ -22,7 +23,7 @@
   input[type=text],input[type=number],select,textarea{background:#141927;border:1px solid var(--line);border-radius:7px;padding:5px 7px}
   input[type=number]{width:70px}
   input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
-  #app{display:grid;grid-template-columns:200px minmax(300px,1fr) 236px 300px auto;grid-template-rows:50px minmax(0,1fr);height:100%}
+  #app{display:grid;grid-template-columns:190px minmax(320px,1fr) 224px 280px auto;grid-template-rows:50px minmax(0,1fr);height:100%}
   /* ---- top toolbar ---- */
   #bar{grid-column:1/-1;display:flex;align-items:center;gap:6px;padding:0 10px;background:#11151f;border-bottom:1px solid var(--line)}
   #bar .logo{font-weight:800;font-size:15px;margin-right:6px;white-space:nowrap} #bar .logo b{color:var(--accent2)}
@@ -68,6 +69,7 @@
   #queueScroll{flex:1;overflow:auto;padding:0 6px 8px}
   #queueSvg{display:block}
   #queueSvg .bus{cursor:grab} #queueSvg .bus.drag{cursor:grabbing;opacity:.55}
+  #queueSvg .bus:not(.sel):hover > rect:first-of-type{stroke:var(--hover);stroke-width:3}
   #queueFoot{display:flex;gap:4px;padding:6px;border-top:1px solid var(--line)} #queueFoot button{flex:1;justify-content:center;padding:5px 2px;font-size:12px}
   /* ---- inspector ---- */
   #inspector{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-left:1px solid var(--line)}
@@ -132,6 +134,8 @@
     padding:8px 16px;border-radius:12px;z-index:70;transition:transform .3s cubic-bezier(.34,1.7,.5,1),opacity .2s;pointer-events:none}
   .toast.show{transform:translateX(-50%);opacity:1}
   [data-tip]{position:relative}
+  @media (max-width:1560px){ #status{display:none} }
+  @media (max-width:1300px){ #bar .logo b{display:none} #levelName{width:130px} }
 </style>
 </head>
 <body>
@@ -254,7 +258,7 @@ const TOOLS = [
   {g:'Edit', id:'ramp', icon:'ramp', label:'Add ramp', key:'R', tip:'Click near the road to add a ramp there'},
   {g:'Stickmen', id:'paint', icon:'brush', label:'Paint', key:'B', tip:'Paint stickmen of the selected colour'},
   {g:'Stickmen', id:'erase', icon:'eraser', label:'Eraser', key:'E', tip:'Empty cells'},
-  {g:'Stickmen', id:'hide', icon:'hidden', label:'Hidden stickmen', key:'H', tip:'Brush: grey "?" stickmen that show their colour in the front row'},
+  {g:'Stickmen', id:'hide', icon:'hidden', label:'Hide stickmen', key:'H', tip:'Brush: grey "?" stickmen that show their colour in the front row'},
   {g:'Ramp blockers', id:'tunnel', icon:'tunnel', label:'Colourful tunnel', key:'T', tip:'Drag across ramp cells: a tunnel releasing stickmen of the selected colour'},
   {g:'Ramp blockers', id:'lock', icon:'lock', label:'Lock box', key:'K', tip:'Drag across ramp cells: a crate opened by a key bus'},
   {g:'Ramp blockers', id:'count', icon:'count', label:'Count box', key:'N', tip:'Drag across ramp cells: a crate opened after N completed buses'},
@@ -268,7 +272,8 @@ function setLevel(raw, keepHistory){
   if (sel.kind !== 'level' && !selValid()) sel = {kind:'level'};
   const slots = S.loadSlots(); savedJSON = slots[lvl.id] ? JSON.stringify(C.normalizeLevel(slots[lvl.id].level)) : null;
   if (!keepHistory){ try { if (cv.clientWidth) fitView(); } catch (e) {} }
-  draftSave(); renderAll(); if (autoRun) scheduleAuto();
+  draftSave(); renderAll();
+  if (!keepHistory) run(); else if (autoRun) scheduleAuto();     // a newly opened level restarts the preview at once
 }
 /* every edit: snapshot for undo, mutate a fresh copy, rebuild layout + checks */
 function edit(fn, opts){
@@ -407,7 +412,7 @@ async function playInTab(){
 const preview = $('preview');
 (async function bootPreview(){
   // the single-file editor has no index.html beside it: the preview is its own copy of the packed game
-  if ($('me-game-template')){ const t = await gameTemplate(); preview.srcdoc = t.replace('<script>/* shared/core.js (inlined) */', '<script>window.ME_EMBED = true;</script>\n<script>/* shared/core.js (inlined) */'); }
+  if ($('me-game-template')){ const t = await gameTemplate(); preview.srcdoc = t.replace('<script>/* shared/core.js (inlined) */', '<script>window.ME_EMBED = true;<\/script>\n<script>/* shared/core.js (inlined) */'); }
   else preview.src = 'index.html?embed=1&nosim';
 })();
 function send(type){ const msg = {type, id:'ed' + Date.now() + '-' + (++msgSeq), level:clone(lvl)}; try { preview.contentWindow.postMessage(msg, '*'); } catch (e) {} return msg.id; }
@@ -445,10 +450,13 @@ function clampToZone(x, z){
   for (let k = 0; k < 30; k++){ const m = (lo + hi)/2, px = x + (cx - x)*m, pz = z + (cz - z)*m; if (inZone(px, 0.9, pz) && inZone(px, 0, pz)) hi = m; else lo = m; }
   const m = Math.min(1, hi + 0.04); return [x + (cx - x)*m, z + (cz - z)*m];
 }
+/* fit the level itself (road, ramps, yard) so cells and blockers are readable; the target frame may run off */
 function fitView(){
-  let zMin = 0; for (let i = 0; i < L.ROAD.n; i++) zMin = Math.min(zMin, L.ROAD.P[i*3+2]);
-  const zf = zoneFrame(), fx = Math.max(...zf.map(p => Math.abs(p[0]))) + 0.6, fz = Math.min(...zf.map(p => p[1])) - 1.2;
-  const w = cv.clientWidth, h = cv.clientHeight, X0 = -Math.max(8.5, fx), X1 = -X0, Z0 = Math.min(-12, zMin - 2.5, fz), Z1 = 6;
+  let x0 = -5, x1 = 5, z0 = 0;
+  const add = (x, z) => { x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); };
+  for (let i = 0; i < L.ROAD.n; i++) add(L.ROAD.P[i*3], L.ROAD.P[i*3+2]);
+  L.RAMPS.forEach(r => r.slots.forEach(col => col.forEach(c => add(c.x, c.z))));
+  const w = cv.clientWidth, h = cv.clientHeight, X0 = Math.min(x0, -x1) - 1.4, X1 = -X0, Z0 = z0 - 2.2, Z1 = 6.2;
   VIEW.s = Math.min(w/(X1 - X0), h/(Z1 - Z0)); VIEW.ox = w/2 - (X0 + X1)/2*VIEW.s; VIEW.oy = h/2 - (Z0 + Z1)/2*VIEW.s; VIEW.fitted = true;
 }
 function resize(){ const r = devicePixelRatio || 1; cv.width = cv.clientWidth*r; cv.height = cv.clientHeight*r; if (!VIEW.fitted && L) fitView(); draw(); }
@@ -639,7 +647,9 @@ cv.addEventListener('pointerdown', e => {
   if (['paint', 'erase', 'hide'].includes(tool)){ const ri = hitRamp(x, z); if (ri >= 0){ sel = {kind:'ramp', ramp:ri}; drag = {kind:'paint', ramp:ri, done:new Set(), hiddenOn:null}; paintAt(x, z); renderInspector(); return; } }
   if (['tunnel', 'lock', 'count'].includes(tool)){ for (const R of L.RAMPS){ const c = hitCell(R, x, z, C.RAMP_SP*0.8); if (c){ drag = {kind:'block', tool, ramp:R.src, c0:c, c1:c}; drag.ok = blockOk(drag); draw(); return; } } }
   if (tool === 'ramp'){ addRampAt(x, z); press = null; return; }
-  const pi = hitPoint(x, z, hr);
+  let pi = hitPoint(x, z, hr);
+  const nd0 = tool === 'select' ? hitNode(x, z, hr*1.1) : null;
+  if (nd0 && pi >= 0 && nodeFirst(nd0, pi, x, z)) pi = -1;          // a ramp node on top of a road point: the node wins
   if (pi >= 0 && (tool === 'select' || tool === 'road')){ sel = {kind:'point', i:pi}; renderAll(); if (pi > 0){ drag = {kind:'point', i:pi};
     if (e.pointerType !== 'mouse') press.longTimer = setTimeout(() => { if (press && !press.moved){ deletePoint(pi); drag = null; press = null; } }, 550); } return; }
   if (tool === 'select'){
@@ -688,12 +698,21 @@ cv.addEventListener('pointerup', () => {
       roadEdit(n => { n.road.points.splice(i + 1, 0, {x:round(px), z:round(pz)}); }); sel = {kind:'point', i:i + 1}; renderAll(); }
   } else if (wasClick && drag && drag.deselect){ sel = {kind:'level'}; renderAll(); }
   if (drag && drag.kind === 'front' && drag.started && !drag.snap) toast('The ramp is not connected to the road (warning)');
+  const dragged = drag && drag.started && drag.kind !== 'pan';
   drag = null; press = null; draw();
+  if (dragged) renderInspector();                    // live drags skip the inspector; bring it up to date once
 });
+/* a ramp node and a road point under the cursor: the selected ramp's node wins, otherwise the nearer one */
+function nodeFirst(nd, pi, x, z){
+  if (['ramp', 'tunnel', 'box'].includes(sel.kind) && sel.ramp === nd.ramp) return true;
+  const n = rampOf(nd.ramp).ctrl[nd.i], p = lvl.road.points[pi];
+  return Math.hypot(n[0] - x, n[1] - z) <= Math.hypot(p.x - x, p.z - z);
+}
 function updateHover(x, z){
   const hr = 12/VIEW.s; let h = null;
-  const pi = hitPoint(x, z, hr); if (pi >= 0) h = {kind:'point', i:pi};
-  if (!h){ const nd = hitNode(x, z, hr*1.1); if (nd) h = {kind:'node', ramp:nd.ramp, i:nd.i}; }
+  const pi = hitPoint(x, z, hr), nd = tool === 'road' ? null : hitNode(x, z, hr*1.1);
+  if (pi >= 0 && !(nd && nodeFirst(nd, pi, x, z))) h = {kind:'point', i:pi};
+  if (!h && nd) h = {kind:'node', ramp:nd.ramp, i:nd.i};
   if (!h) h = hitBlocker(x, z);
   if (!h){ const ri = hitRamp(x, z); if (ri >= 0) h = {kind:'ramp', ramp:ri}; }
   const key = JSON.stringify(h); if (key === JSON.stringify(hover)) return;
@@ -775,7 +794,7 @@ function rampAction(a, i){
    The three lanes drawn as buses (length = capacity), hidden buses grey with a "?" (their colour on the
    rim), key buses with a key, connected buses joined by bellows.  Click to select (Shift/Ctrl adds),
    drag to reorder or move to another lane, right-click to delete, double-click toggles hidden. */
-const QW = 62, QX = [8, 80, 152], QK = 30, QTOP = 26;
+const QW = 58, QX = [8, 84, 160], QK = 30, QTOP = 26;
 function queueLayout(){
   const out = []; lvl.lanes.forEach((lane, l) => { let y = QTOP; lane.forEach((b, i) => { const h = C.busLen(b.cap)*QK; out.push({l, i, b, x:QX[l], y, w:QW, h}); y += h + 8; }); });
   return out;
@@ -793,12 +812,14 @@ function renderQueue(){
   // bellows between connected buses (in group order)
   const groups = {}; items.forEach(q => { if (q.b.link != null) (groups[q.b.link] = groups[q.b.link] || []).push(q); });
   Object.values(groups).forEach(ms => { ms.sort((a, b) => a.l - b.l || a.i - b.i);
-    for (let k = 0; k + 1 < ms.length; k++){ const a = ms[k], b = ms[k + 1];
+    for (let k = 1; k < ms.length; k++){      // each member joins its nearest earlier member: lanes first, then places
+      const b = ms[k], a = ms.slice(0, k).reduce((m, q) => Math.abs(q.l - b.l)*10 + Math.abs(q.i - b.i) < Math.abs(m.l - b.l)*10 + Math.abs(m.i - b.i) ? q : m);
       if (a.l === b.l) out += `<rect x="${a.x + 12}" y="${a.y + a.h - 2}" width="${QW - 24}" height="${b.y - a.y - a.h + 4}" fill="url(#bellowH)" stroke="#5d6472" rx="2"/>`;
-      else { const left = a.x < b.x ? a : b, right = a.x < b.x ? b : a, y0 = left.y + left.h/2, y1 = right.y + right.h/2;
-        out += `<polygon points="${left.x + QW - 2},${y0 - 12} ${right.x + 2},${y1 - 12} ${right.x + 2},${y1 + 12} ${left.x + QW - 2},${y0 + 12}" fill="url(#bellow)" stroke="#5d6472"/>`; } } });
+      else { const left = a.x < b.x ? a : b, right = a.x < b.x ? b : a, x0 = left.x + QW - 8, y0 = left.y + left.h/2, x1 = right.x + 8, y1 = right.y + right.h/2;
+        const len = Math.hypot(x1 - x0, y1 - y0), ang = Math.atan2(y1 - y0, x1 - x0)*180/Math.PI;   // a pleated band, pleats across the link
+        out += `<rect transform="translate(${x0},${y0}) rotate(${ang.toFixed(2)})" x="0" y="-12" width="${len.toFixed(1)}" height="24" rx="3" fill="url(#bellow)" stroke="#4a505c" stroke-width="1.5"/>`; } } });
   items.forEach(q => { const b = q.b, k = q.l + ':' + q.i, isSel = selSet.has(k), hid = b.hidden;
-    out += `<g class="bus" data-key="${k}"><title>Lane ${q.l + 1}, bus ${q.i + 1}: ${b.color} ${b.cap} seats${hid ? ', hidden' : ''}${b.link != null ? ', connected (' + esc(b.link) + ')' : ''}${b.key ? ', carries key ' + esc(b.key) : ''}</title>`
+    out += `<g class="bus${isSel ? ' sel' : ''}" data-key="${k}"><title>Lane ${q.l + 1}, bus ${q.i + 1}: ${b.color} ${b.cap} seats${hid ? ', hidden' : ''}${b.link != null ? ', connected (' + esc(b.link) + ')' : ''}${b.key ? ', carries key ' + esc(b.key) : ''}</title>`
       + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="9" fill="${hid ? '#9aa1ad' : C.HEX[b.color]}" stroke="${isSel ? '#ffc531' : hid ? C.HEX[b.color] : '#0006'}" stroke-width="${isSel ? 4 : hid ? 4 : 1.5}"/>`
       + `<rect x="${q.x + 7}" y="${q.y + 7}" width="${q.w - 14}" height="${q.h - 14}" rx="5" fill="#0002"/>`
       + `<text x="${q.x + q.w/2}" y="${q.y + q.h/2 + 5}" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" stroke="#0005" stroke-width="3" paint-order="stroke">${hid ? '?' : b.cap}</text>`
@@ -830,7 +851,11 @@ $('queueSvg').addEventListener('pointermove', ev => {
 });
 $('queueSvg').addEventListener('pointerup', () => {
   const d = qDrag; qDrag = null; if (!d) return;
-  if (!d.moved){ const key = [d.l, d.i];
+  if (!d.moved){ const key = [d.l, d.i], now = performance.now();
+    // a second click on the same bus within 350 ms toggles hidden (the queue is redrawn on every click, so the
+    // browser's own dblclick never sees the same element twice)
+    if (!d.multi && lastBusClick && lastBusClick.key === d.key && now - lastBusClick.t < 350){ lastBusClick = null; toggleHidden(d.l, d.i); return; }
+    lastBusClick = {key:d.key, t:now};
     if (d.multi && sel.kind === 'bus'){ const has = sel.list.findIndex(k => k[0] === d.l && k[1] === d.i); if (has >= 0) sel.list.splice(has, 1); else sel.list.push(key); if (!sel.list.length) sel = {kind:'level'}; }
     else sel = {kind:'bus', list:[key]};
     if (tool === 'link' && sel.kind === 'bus' && !d.multi){ sel = {kind:'bus', list:[key]}; }
@@ -840,8 +865,8 @@ $('queueSvg').addEventListener('pointerup', () => {
     const ni = tl === d.l && ti > d.i ? ti - 1 : ti; sel = {kind:'bus', list:[[tl, ni]]}; renderAll(); }
   else renderQueue();
 });
-$('queueSvg').addEventListener('dblclick', ev => { const g = ev.target.closest('.bus'); if (!g) return; const [l, i] = g.dataset.key.split(':').map(Number);
-  edit(n => { const o = n.lanes[l][i]; if (o.hidden) delete o.hidden; else o.hidden = true; }); });
+let lastBusClick = null;
+function toggleHidden(l, i){ edit(n => { const o = n.lanes[l][i]; if (o.hidden) delete o.hidden; else o.hidden = true; }); sel = {kind:'bus', list:[[l, i]]}; renderAll(); }
 $('queueSvg').addEventListener('contextmenu', e => e.preventDefault());
 document.querySelectorAll('#queueFoot button').forEach(b => b.onclick = () => { const l = +b.dataset.lane;
   edit(n => { n.lanes[l].push({color, cap}); }); sel = {kind:'bus', list:[[l, lvl.lanes[l].length - 1]]}; renderAll(); toast(`Added a ${color} ${cap}-seat bus to lane ${l + 1}`); });
@@ -853,6 +878,8 @@ function linkSelected(){
   const trial = clone(lvl); list.forEach(([l, i]) => { trial.lanes[l][i].link = id; });
   const G = C.linkGroups(C.normalizeLevel(trial)).find(g => g.id === id);
   if (!G || !G.connected || !G.consecutive){ toast('Connected buses must touch: one after another in a lane, or neighbouring lanes at most one row apart'); return false; }
+  const bad = C.checkLevel(trial).warnings.find(w => /^link-/.test(w.kind) && !check.warnings.some(o => o.kind === w.kind && o.msg === w.msg));
+  if (bad){ toast('Not connected: ' + bad.msg); return false; }          // a shape the game can't send, or a queue deadlock
   edit(n => { list.forEach(([l, i]) => { n.lanes[l][i].link = id; }); }); toast('Connected as ' + id); return true;
 }
 function unlinkSelected(){ if (sel.kind !== 'bus') return; edit(n => { sel.list.forEach(([l, i]) => { const b = n.lanes[l][i]; if (!b || b.link == null) return; const id = b.link;
@@ -886,6 +913,7 @@ function setTool(t){
 function h(html){ const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
 function renderInspector(){
   const el = $('insp'); el.innerHTML = '';
+  if (!selValid()) sel = {kind:'level'};
   if (sel.kind === 'point') inspPoint(el); else if (sel.kind === 'ramp') inspRamp(el); else if (sel.kind === 'tunnel') inspTunnel(el);
   else if (sel.kind === 'box') inspBox(el); else if (sel.kind === 'bus') inspBus(el); else inspLevel(el);
 }
@@ -962,7 +990,7 @@ function inspTunnel(el){
   c.querySelectorAll('[data-c]').forEach(s => s.onclick = () => edit(n => { n.ramps[sel.ramp].tunnels[sel.i].color = s.dataset.c; }));
   c.querySelector('#tCount').onchange = e => edit(n => { n.ramps[sel.ramp].tunnels[sel.i].count = Math.max(1, Math.min(99, Math.round(+e.target.value || 1))); });
   c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => moveBlocker('tunnel', b.dataset.a));
-  c.querySelector('#tDel').onclick = () => { edit(n => { n.ramps[sel.ramp].tunnels.splice(sel.i, 1); }); sel = {kind:'ramp', ramp:sel.ramp}; renderAll(); };
+  c.querySelector('#tDel').onclick = () => { const r = sel.ramp, i = sel.i; edit(n => { n.ramps[r].tunnels.splice(i, 1); }); sel = {kind:'ramp', ramp:r}; renderAll(); };
   el.append(c);
 }
 const busLabel = (l, i, b) => `Lane ${l + 1} · #${i + 1} · ${b.color} ${b.cap}`;
@@ -987,8 +1015,8 @@ function inspBox(el){
       if (v){ const [l, i] = v.split(':').map(Number); n.lanes[l][i].key = b.lock; } }); };
   } else c.querySelector('#bCount').onchange = e => edit(n => { n.ramps[sel.ramp].boxes[sel.i].count = Math.max(1, Math.round(+e.target.value || 1)); });
   c.querySelectorAll('[data-a]').forEach(btn => btn.onclick = () => moveBlocker('box', btn.dataset.a));
-  c.querySelector('#bDel').onclick = () => { const id = b.lock; edit(n => { n.ramps[sel.ramp].boxes.splice(sel.i, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); });
-    sel = {kind:'ramp', ramp:sel.ramp}; renderAll(); };
+  c.querySelector('#bDel').onclick = () => { const id = b.lock, r = sel.ramp, k = sel.i; edit(n => { n.ramps[r].boxes.splice(k, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); });
+    sel = {kind:'ramp', ramp:r}; renderAll(); };
   el.append(c);
 }
 function inspBus(el){
@@ -1159,8 +1187,9 @@ addEventListener('keyup', e => { if (e.key === ' ') spaceDown = false; });
 function deleteSelection(){
   if (sel.kind === 'point') deletePoint(sel.i);
   else if (sel.kind === 'ramp') deleteRamp(sel.ramp);
-  else if (sel.kind === 'tunnel'){ edit(n => { n.ramps[sel.ramp].tunnels.splice(sel.i, 1); }); sel = {kind:'ramp', ramp:sel.ramp}; renderAll(); }
-  else if (sel.kind === 'box'){ const id = lvl.ramps[sel.ramp].boxes[sel.i].lock; edit(n => { n.ramps[sel.ramp].boxes.splice(sel.i, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); }); sel = {kind:'ramp', ramp:sel.ramp}; renderAll(); }
+  // (edit() drops a selection that no longer exists, so keep the ramp index first)
+  else if (sel.kind === 'tunnel'){ const r = sel.ramp, i = sel.i; edit(n => { n.ramps[r].tunnels.splice(i, 1); }); sel = {kind:'ramp', ramp:r}; renderAll(); }
+  else if (sel.kind === 'box'){ const r = sel.ramp, k = sel.i, id = lvl.ramps[r].boxes[k].lock; edit(n => { n.ramps[r].boxes.splice(k, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); }); sel = {kind:'ramp', ramp:r}; renderAll(); }
   else if (sel.kind === 'bus'){ const keys = sel.list.slice().sort((a, b) => b[1] - a[1]); edit(n => { keys.forEach(([l, i]) => n.lanes[l].splice(i, 1)); }); sel = {kind:'level'}; renderAll(); }
 }
 
@@ -1174,7 +1203,9 @@ function renderAll(light){
   draw(); renderQueue(); if (!light) renderInspector(); renderChecks(); renderBar();
   const t = TOOLS.find(x => x.id === tool); $('modeTag').textContent = t.label; $('hint').textContent = HINTS[tool];
 }
-function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return; const avail = d.clientHeight - 16, k = Math.min(1, avail/(844 + 28));
+// the phone fits the dock's height and leaves the work area (palette, view, queue, inspector) at least 1014 px
+function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return;
+  const k = Math.max(0.45, Math.min(1, (d.clientHeight - 16)/(844 + 28), (innerWidth - 1014 - 20)/(390 + 28)));
   $('phone').style.transform = `scale(${k})`; d.style.width = Math.round((390 + 28)*k + 20) + 'px'; }
 addEventListener('resize', fitPhone);
 
@@ -1188,7 +1219,7 @@ addEventListener('resize', fitPhone);
 })();
 
 /* test hooks */
-window.__ed = {get level(){ return lvl; }, get layout(){ return L; }, get check(){ return check; }, get sel(){ return sel; }, set sel(v){ sel = v; renderAll(); },
+window.__ed = {get level(){ return lvl; }, get hover(){ return hover; }, get layout(){ return L; }, get check(){ return check; }, get sel(){ return sel; }, set sel(v){ sel = v; renderAll(); },
   get tool(){ return tool; }, setTool, get color(){ return color; }, set color(v){ color = v; renderPalette(); }, set cap(v){ cap = v; renderPalette(); },
   get undoDepth(){ return undoStack.length; }, get redoDepth(){ return redoStack.length; }, get lastTest(){ return lastTest; }, get dirty(){ return isDirty(); },
   setLevel:o => { undoStack.push(JSON.stringify(lvl)); setLevel(o, true); }, edit, undo, redo, run, send, levelJSON, importLevel, saveLevel, renameId, openLevel, newLevel,
