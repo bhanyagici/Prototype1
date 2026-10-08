@@ -116,8 +116,9 @@ console.log('editor checks and warnings');
   const L = C.buildLayout(CL), s = L.ROAD.spirals[0];
   const rs = clone(CL); rs.ramps[1] = Object.assign({}, rs.ramps[1], {at:(s.s0 + s.s1)/2}); delete rs.ramps[1].cp;
   chk(kinds(rs).includes('ramp-spiral'), 'a boarding point on a spiral overpass is reported');
-  const ln = clone(C.LEVEL_DATA); ln.lanes[0][0].link = 'A'; ln.lanes[0][1].link = 'A';
-  chk(kinds(ln).includes('link-lane'), 'linked buses in the same lane are reported (they could never leave together)');
+  const ln = clone(C.LEVEL_DATA); ln.lanes[0][0].link = 'A'; ln.lanes[0][2].link = 'A';
+  const lv_ = clone(C.LEVEL_DATA); lv_.lanes[0][0].link = 'V'; lv_.lanes[0][1].link = 'V';
+  chk(kinds(ln).includes('link-shape') && !kinds(lv_).some(k => k.startsWith('link')), 'connected buses in one lane must follow each other (a vertical pair is fine, a gap is reported)');
   chk(C.difficulty(0.46) === 'Easy' && C.difficulty(0.45) === 'Medium' && C.difficulty(0.15) === 'Medium' && C.difficulty(0.149) === 'Hard' &&
       C.difficulty(0.05) === 'Hard' && C.difficulty(0.049) === 'Very Hard', 'difficulty labels: Easy >45%, Medium 15-45%, Hard 5-15%, Very Hard <5%');
   const t = C.testLevel(CL, 200);
