@@ -399,7 +399,7 @@ async function exportHtml(which){
     if (!st.ids.length){ toast('The level order is empty'); return null; }
     if (st.warns.length){ toast('Fix the level order first: ' + st.warns[0]); openLevels(); return null; }
     const levels = st.ids.map(id => Object.assign(clone(st.slots[id].level), {id}));
-    const html = await playableHTML(levels, 'Match Express — ' + levels.length + ' levels');
+    const html = await playableHTML(levels, 'Level pack (' + levels.length + ' levels)');
     download('match-express-levels.html', html, 'text/html'); toast(`Exported ${levels.length} levels in one HTML file`); return html;
   } catch (e){ toast('Export needs the game files: open the editor from a web server or use the single-file editor (' + e.message + ')'); return null; }
 }

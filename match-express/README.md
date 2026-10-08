@@ -376,6 +376,43 @@ way (a key bus that filled first, or a count box) is a new event. Then every bus
 lap is planned again, so buses ahead may now reach stickmen that were locked away. Stickmen
 who stay with the same bus keep cheering.
 
+### Blocker screenshots and the demo pack
+
+`node tools/shoot-blockers.js` plays each demo in the game at 390×844. It saves one shot
+at the start and one at the moment the blocker acts, chosen by the greedy bot:
+- a hidden bus revealed at its lane front;
+- a connected group on the road;
+- a tunnel releasing stickmen;
+- hidden stickmen;
+- a key flying to its crate;
+- a count box opening;
+- all of them together.
+
+| | start | in action |
+|---|---|---|
+| hidden bus | ![](screenshots/blocker-hidden-bus.png) | ![](screenshots/blocker-hidden-bus-play.png) |
+| connected buses | ![](screenshots/blocker-connected.png) | ![](screenshots/blocker-connected-play.png) |
+| colourful tunnel | ![](screenshots/blocker-tunnel.png) | ![](screenshots/blocker-tunnel-play.png) |
+| hidden stickmen | ![](screenshots/blocker-hidden-men.png) | ![](screenshots/blocker-hidden-men-play.png) |
+| lock & key | ![](screenshots/blocker-lock-box.png) | ![](screenshots/blocker-lock-box-play.png) |
+| count box | ![](screenshots/blocker-count-box.png) | ![](screenshots/blocker-count-box-play.png) |
+| all together | ![](screenshots/blocker-combo.png) | ![](screenshots/blocker-combo-play.png) |
+
+`node tools/export-demo-pack.js` makes the demo pack through the editor's own UI. It types
+the seven demo ids into the Level Order panel
+([screenshot](screenshots/editor-level-order.png)), then clicks *Export order JSON* and
+*Playable HTML*:
+- `levels/demo-level-order.json` is the order;
+- `dist/match-express-blocker-demos.html` is the pack (`dist/` is build output and is not
+  committed).
+
+The tool then opens the pack from `file://` at 390×844 and lets the greedy bot play it.
+It wins all seven levels in order and ends on the *All levels complete* screen, with no
+network request. Screenshots:
+- [level 1 of 7](screenshots/pack-level-1.png);
+- [a win offering the next level](screenshots/pack-level-complete.png);
+- [the end](screenshots/pack-all-complete.png).
+
 ## Speed, sound, animation
 
 - **1x / 2x** (top right, next to settings) sets one global time scale for the
@@ -567,7 +604,7 @@ height.
 node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
 node tests/blockers.test.js   # 43 checks: every blocker, the checker rules for them, the demo levels (bots + cheering)
 node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
-node tests/shared.test.js     # 71 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
+node tests/shared.test.js     # 72 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
 node tests/browser.test.js    # 90 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
 ```

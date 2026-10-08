@@ -172,9 +172,13 @@ console.log('linked buses');
 
 console.log('\nbundled levels');
 {
-  const fs = require('fs'), files = fs.readdirSync(__dirname + '/../levels').filter(f => f.endsWith('.json')).map(f => f.replace('.json', ''));
+  // levels/ holds levels and level orders ({type:'match-express-level-order', levels:[ids]}, exported by the editor)
+  const fs = require('fs'), all = fs.readdirSync(__dirname + '/../levels').filter(f => f.endsWith('.json')).map(f => f.replace('.json', ''));
+  const isOrder = id => require('../levels/' + id + '.json').type === 'match-express-level-order', files = all.filter(id => !isOrder(id)), orders = all.filter(isOrder);
   chk(files.length >= 2 && files.every(id => JSON.stringify(C.PRESETS[id]) === JSON.stringify(require('../levels/' + id + '.json'))) && Object.keys(C.PRESETS).length === files.length,
       'every levels/<id>.json is bundled in core unchanged (tools/sync-presets.js)', files.join(', '));
+  chk(orders.length >= 1 && orders.every(id => { const ids = require('../levels/' + id + '.json').levels; return ids.length && new Set(ids).size === ids.length && ids.every(x => C.PRESETS[x]); }),
+      'every level order in levels/ names bundled levels, each once', orders.map(id => id + ': ' + require('../levels/' + id + '.json').levels.length + ' levels').join(', '));
   // every bundled level (and Level 2) fits the target zone of the one fixed camera
   const hr = 0.156, hy = 0.78 - hr, body = [[0.07,0,0.07], [-0.07,0,-0.07], [0,hy+hr,0], [0,hy,hr], [0,hy,-hr], [0,hy+hr*0.7,-hr*0.7]];
   const manPx = q => { const ys = body.map(b => C.project(q.x + b[0], q.y + b[1], q.z + b[2], C.SCREEN_CAM)[1]); return (Math.max(...ys) - Math.min(...ys))*390/900; };
