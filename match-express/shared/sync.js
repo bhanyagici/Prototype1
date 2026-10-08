@@ -1,28 +1,26 @@
-/* Match Express — browser-side sharing between the editor and the game.
-   Levels travel three ways: postMessage into the editor's preview iframe, a BroadcastChannel
-   named "match-express-levels" for any other open game tab, and localStorage (last run level
-   + the editor's level slots).  Also builds the background bot worker from the shared core. */
+/* Match Express — browser-side storage for the editor (level slots by id, the level order, prefs) and the
+   background bot worker built from the shared core.  The game itself never reads the editor's levels:
+   the editor's preview gets its level by postMessage, exports carry a frozen copy. */
 (function (root) {
   'use strict';
-  const CHANNEL = 'match-express-levels';
-  const KEY_CURRENT = 'match-express:current-level';
   const KEY_SLOTS = 'match-express:level-slots';
+  const KEY_ORDER = 'match-express:level-order';
   const KEY_PREFS = 'match-express:prefs';
+  const KEY_OLD_CURRENT = 'match-express:current-level';      // written by older editors; no longer used
 
-  function channel(){ try { return new BroadcastChannel(CHANNEL); } catch (e) { return null; } }
   function readJSON(key, fallback){
     try { const s = root.localStorage.getItem(key); return s ? JSON.parse(s) : fallback; } catch (e) { return fallback; }
   }
   function writeJSON(key, value){
     try { root.localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; }
   }
-  const saveCurrent = level => writeJSON(KEY_CURRENT, level);
-  const loadCurrent = () => readJSON(KEY_CURRENT, null);
-  const clearCurrent = () => { try { root.localStorage.removeItem(KEY_CURRENT); } catch (e) {} };
   const loadSlots = () => readJSON(KEY_SLOTS, {});
   const saveSlots = slots => writeJSON(KEY_SLOTS, slots);
+  const loadOrder = () => { const o = readJSON(KEY_ORDER, []); return Array.isArray(o) ? o.map(String) : []; };
+  const saveOrder = ids => writeJSON(KEY_ORDER, ids);
   const loadPrefs = () => readJSON(KEY_PREFS, {});
   const savePrefs = p => writeJSON(KEY_PREFS, Object.assign(loadPrefs(), p));
+  const forgetOldCurrent = () => { try { root.localStorage.removeItem(KEY_OLD_CURRENT); } catch (e) {} };
 
   /* a Web Worker running the very same core (serialised from its factory) */
   function botWorker(){
@@ -49,11 +47,10 @@
         const slice = () => { const t0 = performance.now();
           while (r < runs && performance.now() - t0 < 8){ if (C.simulate(level, C.randomPick, C.mulberry32(1000 + r), C.SIM_DT).result === 'win') wins++; r++; }
           if (r < runs) setTimeout(slice, 0);
-          else resolve({greedy:{result:gr.result, sends:gr.sends, landed:gr.landed, t:gr.t, moves:gr.moves}, wins, runs, rate:wins/runs, label:C.difficulty(wins/runs)}); };
+          else resolve({greedy:{result:gr.result, sends:gr.sends, landed:gr.landed, t:gr.t, moves:gr.moves}, wins, runs, rate:wins/runs, label:C.difficulty(wins/runs), warnings:[]}); };
         setTimeout(slice, 0);
       }
     });
   }
-  root.MESync = {CHANNEL, KEY_CURRENT, KEY_SLOTS, channel, saveCurrent, loadCurrent, clearCurrent,
-                 loadSlots, saveSlots, loadPrefs, savePrefs, testInBackground};
+  root.MESync = {KEY_SLOTS, KEY_ORDER, loadSlots, saveSlots, loadOrder, saveOrder, loadPrefs, savePrefs, forgetOldCurrent, testInBackground};
 })(window);

@@ -71,6 +71,9 @@
   .card p{margin:0 0 40px;font-size:36px;opacity:.95}
   .card button{font:inherit;font-size:50px;font-weight:900;color:#fff;padding:20px 80px;border-radius:40px;
     background:linear-gradient(#7be35b,#3fae2a);border:6px solid #fff;box-shadow:0 8px 0 #23801a;cursor:pointer}
+  .card button + button{margin-top:22px}
+  #btnNext + #btnReplay{font-size:34px;padding:12px 50px;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 6px 0 #1559b0}
+  #levelStep{left:30px;top:124px;padding:4px 16px;border-radius:16px;background:rgba(16,24,38,.55);color:#fff;font-size:26px;font-weight:800;display:none}
   /* ---- debug ---- */
   #dbg{left:24px;top:140px;max-width:820px;display:none;padding:14px 18px;border-radius:16px;background:rgba(10,16,30,.78);
     color:#e9f1ff;font:600 22px/1.35 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;pointer-events:none}
@@ -82,6 +85,7 @@
 <div id="app">
   <canvas id="gl"></canvas>
   <div class="ui" id="levelPill">Level 2</div>
+  <div class="ui" id="levelStep"></div>
   <div class="ui rbtn spring" id="btnRestart" title="Restart"><svg viewBox="0 0 48 48"><path d="M24 9a15 15 0 1 1-13.6 8.7" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M5 9l6.5 10.5L20 11z" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnSpeed" title="Game speed">1x</div>
   <div class="ui rbtn spring" id="btnSettings" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div>
@@ -94,7 +98,8 @@
   <div class="ui" id="counter"><svg viewBox="0 0 64 50"><rect x="5" y="3" width="54" height="36" rx="9" fill="#fff"/><rect x="11" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="35" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="5" y="28" width="54" height="4" fill="#cfd8ee"/><circle cx="17" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/><circle cx="47" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/></svg><span id="cnt">0/5</span></div>
   <div class="ui" id="dbg"></div>
   <div class="ui" id="botTag">BOT</div>
-  <div class="panel" id="winPanel"><div class="card"><h1>Level Complete</h1><p>Every passenger is on board!</p><button id="btnReplay" class="spring">Replay</button></div></div>
+  <div class="panel" id="winPanel"><div class="card"><h1>Level Complete</h1><p>Every passenger is on board!</p><button id="btnNext" class="spring" style="display:none">Next level</button><button id="btnReplay" class="spring">Replay</button></div></div>
+  <div class="panel" id="donePanel"><div class="card"><h1>All levels complete</h1><p id="doneText">Every level in this pack is done!</p><button id="btnAgain" class="spring">Play again</button></div></div>
   <div class="panel" id="failPanel"><div class="card fail"><h1>Out of Space</h1><p>A returning bus had nowhere to park.</p><button id="btnRetry" class="spring">Retry</button></div></div>
 </div>
 
@@ -109,9 +114,14 @@ const DW = 900, DH = 1950;
 const app = document.getElementById('app'), canvas = document.getElementById('gl');
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-/* a share build (tools/build-standalone.js) sets window.ME_SHARE = {level, nosim, noSaved}: it opens
-   with that bundled level, runs no background bot test and never loads a saved or sent editor level */
-const SHARE = window.ME_SHARE || null;
+/* a share build (tools/build-standalone.js) or a playable export from the editor sets window.ME_SHARE:
+   {level} opens that bundled level, {levels:[...]} plays a frozen list of levels in order (a win offers
+   the next one, the last ends on "All levels complete"); nosim = no background bot test.  The game never
+   reads levels from the editor's storage; only the editor's own preview (?embed, or window.ME_EMBED in the
+   single-file editor's srcdoc copy) takes levels it sends. */
+const SHARE = window.ME_SHARE || null, EMBED = (params.has('embed') || !!window.ME_EMBED) && parent !== window;
+const PLAYLIST = SHARE && Array.isArray(SHARE.levels) && SHARE.levels.length ? SHARE.levels : null;
+let playIdx = 0;
 
 /* ================================ RENDERER ================================ */
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
@@ -1109,12 +1119,24 @@ function resetGame(){
   $('winPanel').classList.remove('show'); $('failPanel').classList.remove('show');
   updateScene(0);
 }
-/* level priority: a level sent by the editor > ?level=<bundled id> > the last saved level (localStorage) > built-in LEVEL_DATA */
+/* level priority: an exported level list > ?level=<bundled id> > a share file's level > built-in LEVEL_DATA
+   (the editor's preview then gets its level by postMessage) */
 function initialLevel(){
+  if (PLAYLIST){ playIdx = Math.max(0, Math.min(PLAYLIST.length - 1, (+params.get('n') || 1) - 1)); return [PLAYLIST[playIdx], 'export']; }
   const pid = params.get('level') || (SHARE && SHARE.level); if (pid && C.PRESETS[pid]) return [C.PRESETS[pid], 'preset'];
-  if (!params.has('builtin') && !(SHARE && SHARE.noSaved)){ const saved = S.loadCurrent();
-    if (saved){ try { C.buildLayout(saved); return [saved, 'saved']; } catch (e) { console.warn('[level] saved level ignored:', e.message); } } }
   return [C.LEVEL_DATA, 'builtin'];
+}
+function playlistUI(){
+  const on = !!PLAYLIST && levelSource === 'export';
+  $('levelStep').style.display = on && PLAYLIST.length > 1 ? 'block' : 'none';
+  if (on) $('levelStep').textContent = `Level ${playIdx + 1} / ${PLAYLIST.length}`;
+  $('btnNext').style.display = on ? '' : 'none';
+  if (on) $('btnNext').textContent = playIdx + 1 < PLAYLIST.length ? 'Next level' : 'Finish';
+}
+function nextLevel(){
+  $('winPanel').classList.remove('show');
+  if (playIdx + 1 < PLAYLIST.length){ playIdx++; loadLevel(PLAYLIST[playIdx], 'export'); }
+  else { $('doneText').textContent = `All ${PLAYLIST.length} level${PLAYLIST.length > 1 ? 's are' : ' is'} done!`; $('donePanel').classList.add('show'); sfx.win(); }
 }
 function loadLevel(level, source, opts){
   opts = opts || {};
@@ -1123,7 +1145,8 @@ function loadLevel(level, source, opts){
   applyCamera(L.CAM); buildWorld(L); resetGame(); placeCounter();
   setBot(!!opts.bot);
   $('levelPill').textContent = LEVEL.name || 'Level'; fitPill();
-  $('levelSrc').textContent = {editor:'Level from the editor', saved:'Last saved editor level', builtin:'Built-in level', preset:'Bundled level'}[source] || source;
+  $('levelSrc').textContent = {editor:'Level from the editor', builtin:'Built-in level', preset:'Bundled level', export:'Exported level'}[source] || source;
+  playlistUI();
   logLevel(LEVEL, source);
   if (parent !== window) parent.postMessage({type:'game-status', source, name:LEVEL.name, men:game.men.length, buses:game.buses.length, serial:levelSerial}, '*');
   return true;
@@ -1134,7 +1157,7 @@ function logLevel(N, source){
   console.log('[level] seats vs stickmen per colour: ' + ck.perColor.map(p => `${p.color} ${p.seats}/${p.men}`).join('  ') +
               `  ->  ${ck.balanced ? 'ALL MATCH' : 'MISMATCH'}`);
   if (ck.warnings.length) console.warn('[level] warnings: ' + ck.warnings.map(w => w.msg).join('; '));
-  if (params.has('nosim') || (SHARE && SHARE.nosim)) return;
+  if (params.has('nosim') || (SHARE && SHARE.nosim) || window.ME_EMBED) return;
   const serial = levelSerial;
   S.testInBackground(N, 200).then(r => {
     if (serial !== levelSerial) return;
@@ -1143,19 +1166,15 @@ function logLevel(N, source){
     console.log(`[sim] random bot: ${r.wins}/${r.runs} wins (${(r.rate*100).toFixed(1)}%) — difficulty ${r.label}`);
   }).catch(e => console.warn('[sim] failed', e));
 }
-/* editor messages: postMessage into the preview iframe, BroadcastChannel for other tabs */
-let lastMsg = null, helloId = null;
+/* the editor's preview: the editor posts its own copy of the level into this frame (nothing else does) */
+let lastMsg = null;
 function onMessage(d){
   if (!d || typeof d !== 'object') return;
-  if (d.to && d.to !== helloId) return;                // a reply meant for another game tab
   if (d.id){ if (d.id === lastMsg) return; lastMsg = d.id; }
-  if (SHARE) return;                                 // a share file only plays its bundled levels
   if ((d.type === 'run' || d.type === 'watch') && d.level) loadLevel(d.level, 'editor', {bot: d.type === 'watch'});
   else if (d.type === 'restart') resetGame();
 }
-addEventListener('message', e => onMessage(e.data));
-const chan = S.channel();
-if (chan) chan.onmessage = e => onMessage(e.data);
+if (EMBED && !SHARE) addEventListener('message', e => { if (e.source === parent) onMessage(e.data); });
 
 /* ------------------------------ events ------------------------------ */
 function handleEvents(){
@@ -1566,11 +1585,20 @@ function setBot(on){ botOn = on; botT = 0; $('botTag').style.display = botOn ? '
 function setSpeed(s){ timeScale = s; $('btnSpeed').textContent = s + 'x'; $('btnSpeed').classList.toggle('on', s > 1); }
 $('btnRestart').addEventListener('click', () => { audio(); resetGame(); });
 $('btnReplay').addEventListener('click', () => { audio(); resetGame(); });
+$('btnNext').addEventListener('click', () => { audio(); nextLevel(); });
+$('btnAgain').addEventListener('click', () => { audio(); $('donePanel').classList.remove('show'); playIdx = 0; loadLevel(PLAYLIST[0], 'export'); });
 $('btnRetry').addEventListener('click', () => { audio(); resetGame(); });
 $('btnSpeed').addEventListener('click', () => { audio(); setSpeed(timeScale > 1 ? 1 : 2); });
 $('btnSettings').addEventListener('click', () => { audio(); $('settings').classList.toggle('open'); });
 $('btnMute').addEventListener('click', () => { audio(); setMuted(!muted); });
 $('btnBuiltin').addEventListener('click', () => { loadLevel(C.LEVEL_DATA, 'builtin'); $('settings').classList.remove('open'); });
+if (PLAYLIST){                                       // an exported pack: its own levels instead of the bundled ones
+  $('btnBuiltin').style.display = 'none';
+  PLAYLIST.forEach((lv, i) => { const b = document.createElement('button'); b.className = 'spring'; b.dataset.n = i + 1;
+    b.textContent = `${i + 1}. ${lv.name || 'Level'}`;
+    b.addEventListener('click', () => { playIdx = i; $('donePanel').classList.remove('show'); loadLevel(PLAYLIST[i], 'export'); $('settings').classList.remove('open'); });
+    $('presetBtns').append(b); });
+} else
 { const demoBox = document.createElement('details'); demoBox.id = 'demoBtns'; demoBox.innerHTML = '<summary>Blocker demos</summary>';
   Object.entries(C.PRESETS).forEach(([id, lv]) => {   // one button per bundled level (the blocker demos folded away)
     const b = document.createElement('button'); b.className = 'spring'; b.dataset.level = id; b.textContent = 'Play ' + lv.name.replace(/^Demo: /, '');
@@ -1621,13 +1649,8 @@ const [lv0, src0] = initialLevel();
 loadLevel(lv0, src0);
 fit();
 requestAnimationFrame(frame);
-// an open editor answers a hello with its current level (only to this game instance)
-helloId = 'g' + Math.random().toString(36).slice(2);
-if (parent !== window) parent.postMessage({type:'hello', hello:helloId}, '*');
-else {
-  if (chan) chan.postMessage({type:'hello', hello:helloId});
-  try { if (opener && !opener.closed) opener.postMessage({type:'hello', hello:helloId}, '*'); } catch (e) {}   // the editor that opened this tab
-}
+// the editor's preview asks its editor for the level
+if (EMBED && !SHARE) parent.postMessage({type:'hello'}, '*');
 
 /* test hooks */
 window.__me = {
