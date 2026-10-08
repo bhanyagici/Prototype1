@@ -67,8 +67,9 @@ target zone.
   to copy it into the core. The game and editor run from `file://` and cannot fetch
   JSON.
 - **Fit:** all three fit the target zone without any change to their road or ramps.
-- **Bots** (unchanged before and after this layout work; the simulation did not
-  change):
+- **Bots.** The results are identical before and after the fixed-layout work and
+  before and after the road-only sending rule. The bots never parked a queue bus
+  (see *Bots* below), so the new rule does not change what they can do:
 
 | level | greedy bot | random bots | difficulty |
 |---|---|---|---|
@@ -176,8 +177,7 @@ for one load.
 - Toggle **hidden**, drag to reorder within a lane or between lanes, or delete.
 - Select two or more buses and **Link** them. Tapping one linked bus sends the whole
   group. That works only when every bus in the group is at the front of its lane and
-  there is room for all of them (road slots plus free bays). Otherwise the tap is
-  refused.
+  the road has room for all of them. Otherwise the tap is refused.
 
 ### Checks
 Checks shows:
@@ -289,10 +289,10 @@ browsers isolate `file://` pages.
   - They lean in curves, their wheels turn, and they pitch forward on hard brakes.
     A hard stop kicks up a little dust.
   - The queue rolls forward smoothly.
-  - When a bus stops at a ramp, every stickman it will take at that stop starts
-    cheering at once: the whole chain, not just the front row. They hop with their
-    arms up in a V, slightly out of step. They keep cheering until their turn, then
-    run and jump in. Other colours stay calm.
+  - **Cheering starts the moment a bus is sent** (from the queue or a bay). The core
+    works out exactly which stickmen that bus will take on this lap, over all ramps,
+    and only they cheer. They hop with their arms up in a V, each starting a moment
+    after the last, and keep cheering until they board. Everyone else stays calm.
   - Columns step forward in a staggered wave. Idle stickmen breathe, sway and look
     around, each a little differently.
   - **A full bus first drives straight sideways**, perpendicular to the road, off
@@ -312,11 +312,19 @@ browsers isolate `file://` pages.
 
 ## Playing
 
-Tap the front bus of a queue lane. If *buses on the main road + buses heading to it +
-buses returning through the tunnel* is under 5 it drives to the main road (collector
-road, nearer side lane, entry road); otherwise it parks in the leftmost free bay;
-with no free bay it shakes and stays (not a fail). Tap a parked bus to send it to
-the main road, or it does a handbrake lurch when the road check fails.
+**Sending.** Every tap on the front bus of a queue lane sends it to the main road
+(collector road, nearer side lane, entry road). A queue bus never goes to a static
+bay. The road holds at most 5 buses: at 5/5 a queue tap is refused, so the bus shakes
+and nothing else happens (not a fail). A bus parked in a bay can be tapped to send it
+back to the road when the counter is below 5; at 5/5 it does a handbrake lurch.
+
+**The road counter** (the sign on the right):
+- +1 the moment a bus is sent to the road, from the queue or from a bay;
+- -1 when a full bus jumps off the road;
+- a bus that finishes its lap unfilled keeps counting through the tunnel and on its
+  way back, and is subtracted only once it has parked in a static bay.
+
+**Static bays** are only for buses that come back from a lap unfilled.
 
 On the main road a bus stops at a ramp only if a front-row stickman matches its
 colour. Matching front-row stickmen board nearest-the-road first, the columns step
@@ -326,6 +334,16 @@ parachutes away. An unfilled bus goes through the top tunnel, comes out of the
 return tunnel `RETURN_TUNNEL_TIME` later
 and parks in the leftmost free bay with its passengers. If every bay is taken when
 it comes out, it crashes into the parked row (dominoes) and the level is lost.
+Sending a parked bus back to the road in time frees its bay.
+
+**Cheering.** The moment a bus is sent, the core replays the boarding rules forward
+from the current state (`C.lapBoarders`). The buses already on the road, and those
+heading to it ahead of this one, board first. Buses never overtake, so the replay is
+exact. Only the stickmen it gives this bus cheer: never more than its free seats,
+never one already promised to a bus ahead, and hidden ones too, which stay hidden
+until they reach the front row. If a bus ever passed a predicted stickman without
+taking him, his cheering would stop and the game would log a `[cheer]` warning; the
+tests check that this never happens.
 
 Keys: **D** debug (front rows, boarding points, road-capacity maths), **B** greedy bot
 plays live, **R** restart.
@@ -369,8 +387,10 @@ colour. A Web Worker then replays both bots on the frozen level:
 [sim] random bot: 35/200 wins (17.5%) — difficulty Medium
 ```
 
-**Bots.** Both bots tap only when the bus would go to the main road; neither ever
-parks a lane bus on purpose. The **greedy bot** sends the available bus whose colour
+**Bots.** Both bots only ever send buses to the main road, as the rules now require:
+the front bus of a queue lane, or a parked bus sent back, and only while the counter
+is below 5. They never parked a queue bus even under the old rule, so their results
+did not change. The **greedy bot** sends the available bus whose colour
 has the most stickmen in the front rows. It waits while that score is 0 and traffic
 is still moving. On a tie at 0 it takes a lane front, to dig into the queue; on a
 positive tie it takes a parked bus, to free a bay. Without that tie-break it could
@@ -410,10 +430,10 @@ height.
 ## Verification
 
 ```
-node tests/rules.test.js      # 28 rule checks (unchanged)
+node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
 node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
 node tests/shared.test.js     # 64 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels
-node tests/browser.test.js    # 59 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/browser.test.js    # 61 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 16 checks: builds dist/ and opens the single files and both share files from file://
 ```
 
@@ -458,16 +478,25 @@ random bot's 31/200. Only geometry differs for the compact built-in level, and o
     bus in a bay at least 35 px, at 390 × 844;
   - the target zone: an out-of-zone road is listed, and a point added outside the
     frame lands inside it;
-  - cheering: the cheering set equals exactly the stickmen who then board the bus,
-    and is larger than the front row;
+  - real taps: each queue tap counts on the sign at once (1/5 … 5/5); at 5/5 the bus
+    shakes and stays;
+  - cheering: from the moment a bus is sent, exactly the stickmen it will take cheer,
+    already while it is in the yard, and exactly those then board it;
   - the full-bus exit: it moves perpendicular to the road (drift along it 0.000), on
     the side away from its ramp, without lifting. The hop starts only after the bus
     is clear of the road (clear at 1.23, hop at 1.41). A bus filled under the
     overpass hops with no road above it.
 
-- Headless rule suite (28 checks), all passing:
-  - sending destinations and refusal;
-  - the counter, including an invariant checked at every step of 120 bot games;
+- Headless rule suite (37 checks), all passing:
+  - queue taps only ever go to the road; 5/5 refuses a queue tap (shake, no fail);
+  - the counter math, including an invariant checked at every step of 120 bot games;
+  - the fail example, both versions: send 5, 2 return (3/5, bays 2/5), send 2 (5/5),
+    3 return (bays 5/5, no fail), then the 4th to return fails, unless a parked bus
+    was sent back first, in which case it takes the freed bay;
+  - static re-send: a lurch at 5/5, back to the road (+1) below it;
+  - cheering: 10 matching stickmen and an 8-seat bus give 8 cheering; 4 reachable give
+    4; a hidden one who will board cheers; the next bus never takes stickmen promised
+    to the one ahead. In every lap of 120 bot games the cheering set equals who boards;
   - merge order and no overtaking;
   - boarding order and chains, and the instant jump on the last seat;
   - tunnel timing, leftmost-bay parking and keeping passengers;
@@ -513,9 +542,12 @@ The 60 fps target is unverified on real hardware.
   with the fixed camera). It is the on-screen silhouette of a standing
   stickman, from the feet to the top of the head. The figures are 0.78 tall on a
   0.36 grid, so crowds are packed head to head, as in the reference image.
-- **Cheering** covers exactly the stickmen the stopped bus will take at this stop.
-  Hidden stickmen join in only once they are revealed, so cheering never gives a
-  colour away. Boarding is fast (8 per second), so a cheer lasts well under a second.
+- **Cheering** covers exactly the stickmen the bus will take on this lap, from the
+  moment it is sent until they board. As asked, a hidden stickman who will board
+  cheers too. It stays grey, but the cheer does hint at its colour.
+- **The approaching-bus hop is gone.** The front-row bounce for any matching bus
+  rolling up to a ramp would have made stickmen react who will not board, so only
+  the cheering stickmen react now.
 - **The classic preset** keeps the original layout playable and is the regression
   baseline for the rules. It uses the new bus and stickman models with its original
   camera.

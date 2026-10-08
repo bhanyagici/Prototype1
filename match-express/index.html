@@ -1045,6 +1045,7 @@ function handleEvents(){
       case 'tunnelOut': WD.lamps.ret.pulseT = e.t; break;
       case 'rampEmpty': { const b = WD.badges[e.ramp]; b.visible = true; b.userData.t0 = e.t; b.userData.sparkled = false; break; }
       case 'crash': startCrash(e); break;
+      case 'cheerMiss': console.warn(`[cheer] prediction for bus ${e.bus} disagreed (${e.why}): stickmen ${e.men.join(', ')}`); break;
     }
   }
   game.events.length = 0;
@@ -1270,31 +1271,16 @@ function updateWheels(){
 }
 
 /* ------------------------------ stickmen ------------------------------ */
-/* everyone who will board the bus now stopped at a ramp (the whole chain, not just the front row):
-   replays the boarding rounds on a copy of the columns, exactly as the core takes them */
-const cheer = new Map();                            // man id -> time he started cheering
-function predictBoarders(){
-  const now = new Set();
-  for (const b of game.road){
-    if (!b.board) continue;
-    const k = b.board.k, cols = game.ramps[k].cols.map(c => c.slice()), order = L.RAMPS[k].colOrder;
-    let free = b.cap - b.seated - b.transit;
-    while (free > 0){
-      const q = order.filter(c => cols[c].length && game.men[cols[c][0]].color === b.color);
-      if (!q.length) break;
-      for (const c of q.slice(0, free)){ now.add(cols[c].shift()); free--; }
-    }
-  }
-  for (const id of now) if (!cheer.has(id)) cheer.set(id, game.t);
-  for (const id of [...cheer.keys()]) if (!now.has(id)) cheer.delete(id);
-}
-function hopColor(k){                               // a matching bus rolling up to the ramp: the front row gets excited
-  for (const b of game.road){ if (b.nextRamp !== k || b.board) continue; const d = L.RAMPS[k].s - b.rs; if (d > 0 && d < 3.5) return b.color; }
-  return null;
+/* cheering: the core decides, the moment a bus is sent, exactly who will board it this lap
+   (m.cheerBus); they cheer from then until they board, each starting a moment apart */
+const cheer = new Map();                            // man id -> time he starts cheering
+function updateCheer(){
+  cheer.clear();
+  for (const m of game.men) if (m.state === 'ramp' && m.cheerBus >= 0)
+    cheer.set(m.id, m.cheerT + Math.min(0.6, m.cheerI*0.045) + hash(m.id, 23)*0.12);
 }
 function updateMen(t, vdt){
-  predictBoarders();
-  const hop = L.RAMPS.map((_, k) => hopColor(k));
+  updateCheer();
   scene.updateMatrixWorld();
   for (let i=0;i<game.men.length;i++){
     const m = game.men[i], mv = MV[i];
@@ -1318,14 +1304,11 @@ function updateMen(t, vdt){
       const p = slotPos(m, mv.disp), r = L.RAMPS[m.ramp];
       let yaw = Math.atan2(p.fx, p.fz), y = p.y + stepHop, P;
       const ct = cheer.get(i);
-      if (ct !== undefined && m.revealed){             // cheering: staggered hops with both arms up, until it's his turn
-        const ph = t*9.5 + mv.ph*1.7, u = clamp((t - ct - (mv.ph % 1)*0.08)/0.1, 0, 1), hp = Math.abs(Math.sin(ph))*u;
+      if (ct !== undefined && t >= ct){                 // cheering (hidden ones too, still grey): staggered hops, both arms up, until he boards
+        const ph = t*9.5 + mv.ph*1.7, u = clamp((t - ct)/0.12, 0, 1), hp = Math.abs(Math.sin(ph))*u;
         y += hp*0.21; sy *= 1 + 0.12*(hp - 0.4)*u; yaw = lerp(yaw, Math.atan2(r.x - p.x, r.z - p.z), 0.6);
         const wv = Math.sin(ph*1.3)*0.3;                // arms up in a V, waving, so they show around the big head
         P = pose(-2.0*u + wv, -2.0*u - wv, 0.25 + 1.0*u, 0.25 + 1.0*u, -0.4*hp, -0.4*hp);
-      } else if (mv.disp < 0.5 && hop[m.ramp] === m.color && m.revealed){   // a matching bus is coming: bounce, one arm waving
-        const hp = Math.abs(Math.sin(t*8 + mv.ph)); y += hp*0.06; yaw = Math.atan2(r.x - p.x, r.z - p.z);
-        P = pose(-2.4 + Math.sin(t*10 + mv.ph)*0.35, 0.1, 0.3, 0.12, 0, 0);
       } else {                                          // idle: breathing, a little sway, looking around
         mv.lookT -= vdt; if (mv.lookT < 0){ mv.lookT = 2 + frand()*5; mv.lookTo = frand() < 0.35 ? (frand() - 0.5)*1.4 : 0; }
         mv.look += (mv.lookTo - mv.look)*Math.min(1, vdt*4); yaw += mv.look;
@@ -1398,7 +1381,7 @@ function updateDebug(){
   WD.ringIM.count = n; WD.ringIM.instanceMatrix.needsUpdate = true;
   const onRoad = game.road.length, heading = game.toRoad, back = game.buses.filter(b => b.state === 'tunnel' || b.state === 'return').length;
   const sum = onRoad + heading + back, fc = C.frontColors(game);
-  const nextDest = sum < C.ROAD_CAPACITY ? 'MAIN ROAD' : C.freeBay(game) >= 0 ? 'BAY ' + (C.freeBay(game) + 1) : 'REFUSED (shake)';
+  const nextDest = C.canRoad(game) ? 'MAIN ROAD' : 'REFUSED (shake)';
   $('dbg').textContent =
     `road ${onRoad} + heading ${heading} + tunnel/return ${back}\n= ${sum} / ${C.ROAD_CAPACITY}   next lane tap -> ${nextDest}\n` +
     `counter ${game.counter}/${C.ROAD_CAPACITY}   free bays ${[0,1,2,3,4].filter(k => game.bays[k] < 0 && game.bayRes[k] < 0).map(k => k + 1).join(',') || '-'}\n` +

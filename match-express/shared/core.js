@@ -8,7 +8,7 @@
 const BUS_SPEED          = 3.4;   // main-road cruise speed (world units / s)
 const BOARD_RATE         = 8;     // stickmen leaving a front row per second (chains speed up)
 const COLUMN_SHIFT_TIME  = 0.22;  // seconds for a column to step forward one place
-const ROAD_CAPACITY      = 5;     // buses on + heading to + returning from the main road
+const ROAD_CAPACITY      = 5;     // road counter: +1 when a bus is sent to the road, -1 when a full bus jumps off or a returning bus parks
 const STATIC_SLOTS       = 5;     // parking bays in the static row
 const PARACHUTE_DURATION = 2.6;   // seconds a full bus glides before leaving the screen
 const RETURN_TUNNEL_TIME = 2.0;   // seconds between the top tunnel and the return tunnel
@@ -721,13 +721,14 @@ function createGame(level, opts){
     men:[], buses:[], ramps:[], lanes:[[],[],[]], laneLeft:[-1,-1,-1],
     bays:new Array(STATIC_SLOTS).fill(-1), bayRes:new Array(STATIC_SLOTS).fill(-1),
     road:[], trips:[], tunnel:[], running:[], counter:0, toRoad:0, landed:0,
-    sends:0, moves:[], tripSeq:0, sideUse:[0,0]};
+    sends:0, moves:[], tripSeq:0, sideUse:[0,0], cheerMiss:0};
   L.RAMPS.forEach((R, k) => {                       // ramps in boarding order along the road
     const ramp = {k, cols:[], empty:false};
     N.ramps[R.src].columns.forEach((col, c) => { const ids = [];
       col.forEach(cell => { const m = parseCell(cell); if (!m) return;   // empty cells: people stand from the front
         const id = g.men.length;
-        g.men.push({id, color:m.color, hidden:m.hidden, revealed:!m.hidden || !ids.length, ramp:k, col:c, state:'ramp', bus:-1, seat:-1, tLand:0});
+        g.men.push({id, color:m.color, hidden:m.hidden, revealed:!m.hidden || !ids.length, ramp:k, col:c, state:'ramp', bus:-1, seat:-1, tLand:0,
+                    cheerBus:-1, cheerT:0, cheerI:0});
         ids.push(id); });
       ramp.cols.push(ids); });
     ramp.empty = ramp.cols.every(x => !x.length);
@@ -739,7 +740,7 @@ function createGame(level, opts){
       const len = busLen(d.cap);
       const b = {id:g.buses.length, color:d.color, cap:d.cap, hidden:!!d.hidden, revealed:!d.hidden || i===0, link:d.link,
         len, state:'lane', lane:l, bay:-1, x:L.Y.LANE_X[l], y:0, z:z+len/2, dx:0, dz:-1, slope:0, v:0,
-        rs:0, seg:0, nextRamp:0, seated:0, transit:0, trip:null, board:null, side:1, tJump:0, tExit:0};
+        rs:0, seg:0, nextRamp:0, seated:0, transit:0, trip:null, board:null, side:1, tJump:0, tExit:0, cheer:new Set()};
       z += len + LANE_GAP;
       g.buses.push(b); g.lanes[l].push(b.id);
     });
@@ -747,7 +748,7 @@ function createGame(level, opts){
   return g;
 }
 const emit = (g, type, data) => { if (g.emit) g.events.push(Object.assign({type, t:g.t}, data)); };
-const canRoad = g => g.counter + g.toRoad < ROAD_CAPACITY;
+const canRoad = g => g.counter < ROAD_CAPACITY;
 function freeBay(g){ for (let k=0;k<STATIC_SLOTS;k++) if (g.bays[k] < 0 && g.bayRes[k] < 0) return k; return -1; }
 function frontColors(g){ const n = {}; COLORS.forEach(c => n[c]=0);
   for (const r of g.ramps) for (const col of r.cols) if (col.length) n[g.men[col[0]].color]++; return n; }
@@ -800,10 +801,57 @@ function sendToRoad(g, b, from, idx){
     b.side = side; g.sideUse[side > 0 ? 1 : 0]++;
     path = routeToRoad(b.x, b.z, side, g.L.Y);
   } else path = routeBayToRoad(b.x, b.z);
-  b.state = 'toRoad'; g.toRoad++; g.sends++;
+  b.state = 'toRoad'; g.toRoad++; g.counter++; g.sends++;
   startTrip(g, b, 'toRoad', path);
   g.moves.push((from === 'lane' ? 'L' : 'B') + idx + ':' + b.color + b.cap + '>road');
-  emit(g, 'send', {bus:b.id, from, idx, dest:'road'});
+  const cheer = reserveCheer(g, b);
+  emit(g, 'send', {bus:b.id, from, idx, dest:'road', cheer});
+}
+/* ------------------------- cheering at send time -------------------------
+   Who will board each bus during this lap.  Buses never overtake, so at every ramp they board in
+   road order: the ones on the main road (front first), then the ones heading to it in the order
+   they were sent (they merge in that order).  Replaying the boarding rounds of stepBoarding /
+   startRound on copies of the columns therefore gives exactly the stickmen each bus will take. */
+function lapBoarders(g){
+  const order = g.road.slice().concat(g.trips.filter(b => b.trip.kind === 'toRoad').sort((a, c) => a.trip.seq - c.trip.seq));
+  const cols = g.ramps.map(r => r.cols.map(c => c.slice())), out = new Map();
+  for (const b of order){
+    const got = [], B = b.board;
+    let free = b.cap - b.seated - b.transit;
+    for (let k = B ? B.k : b.state === 'road' ? b.nextRamp : 0; k < cols.length && free > 0; k++){
+      const cs = cols[k], ord = g.L.RAMPS[k].colOrder;
+      if (B && k === B.k){                          // stopped here: the columns already called this round, then maybe more rounds
+        for (const c of B.queue){ got.push(cs[c].shift()); free--; }
+        if (B.done) continue;
+      }
+      while (free > 0){                             // one round: every matching front row, nearest the road first
+        const q = ord.filter(c => cs[c].length && g.men[cs[c][0]].color === b.color);
+        if (!q.length) break;
+        for (const c of q.slice(0, free)){ got.push(cs[c].shift()); free--; }
+      }
+    }
+    out.set(b.id, got);
+  }
+  return out;
+}
+/* the stickmen bus b will take cheer from the moment it is sent until they board; a bus never takes
+   over stickmen already promised to a bus ahead (the replay gives those to the bus ahead) */
+function reserveCheer(g, b){
+  const ids = lapBoarders(g).get(b.id) || [], clash = [];
+  b.cheer = new Set();
+  ids.forEach((id, i) => { const m = g.men[id];
+    if (m.cheerBus >= 0 && m.cheerBus !== b.id){ clash.push(id); return; }
+    m.cheerBus = b.id; m.cheerT = g.t; m.cheerI = i; b.cheer.add(id); });
+  if (clash.length){ g.cheerMiss += clash.length; emit(g, 'cheerMiss', {bus:b.id, men:clash, why:'already promised to a bus ahead'}); }
+  return [...b.cheer];
+}
+/* safety net (the prediction is exact, so this should never fire): a bus leaving a ramp, jumping off
+   or entering the tunnel stops the cheering of anyone it was going to take and did not */
+function dropCheer(g, b, keep, why){
+  const left = [...b.cheer].filter(id => g.men[id].state === 'ramp' && !keep(g.men[id]));
+  if (!left.length) return;
+  left.forEach(id => { b.cheer.delete(id); if (g.men[id].cheerBus === b.id) g.men[id].cheerBus = -1; });
+  g.cheerMiss += left.length; emit(g, 'cheerMiss', {bus:b.id, men:left, why});
 }
 function afterLaneShift(g, l, departed){
   g.laneLeft[l] = departed;
@@ -811,7 +859,7 @@ function afterLaneShift(g, l, departed){
   if (nb !== undefined && !g.buses[nb].revealed){ g.buses[nb].revealed = true; emit(g, 'reveal', {bus:nb}); }
 }
 /* Linked buses leave the queue together: tapping one sends all of them, and only when every
-   linked bus is at the front of its lane and each of them has somewhere to go (road or bay).
+   linked bus is at the front of its lane and the road has room for all of them.
    Levels without links behave exactly as before. */
 function linkGroup(g, b){
   if (b.link == null) return null;
@@ -819,9 +867,7 @@ function linkGroup(g, b){
 }
 function linkedReady(g, group){
   if (!group.every(o => o.state === 'lane' && g.lanes[o.lane][0] === o.id)) return false;
-  let road = ROAD_CAPACITY - g.counter - g.toRoad, bays = 0;
-  for (let k=0;k<STATIC_SLOTS;k++) if (g.bays[k] < 0 && g.bayRes[k] < 0) bays++;
-  return group.length <= road + bays;
+  return group.length <= ROAD_CAPACITY - g.counter;
 }
 function tapLane(g, l){
   if (g.result) return 'over';
@@ -837,18 +883,10 @@ function tapLane(g, l){
   }
   return tapSingle(g, l);
 }
-function tapSingle(g, l){
+function tapSingle(g, l){                          // a queue bus only ever goes to the main road
   const lane = g.lanes[l], b = g.buses[lane[0]];
   if (canRoad(g)){ lane.shift(); sendToRoad(g, b, 'lane', l); afterLaneShift(g, l, b.id); return 'road'; }
-  const k = freeBay(g);
-  if (k >= 0){
-    lane.shift(); g.bayRes[k] = b.id; b.bay = k; b.state = 'toBay'; g.sends++;
-    startTrip(g, b, 'toBay', routeLaneToBay(b.x, b.z, k, b.len, g.L.Y));
-    g.moves.push('L' + l + ':' + b.color + b.cap + '>bay' + k);
-    emit(g, 'send', {bus:b.id, from:'lane', idx:l, dest:'bay', bay:k});
-    afterLaneShift(g, l, b.id); return 'bay';
-  }
-  emit(g, 'refuse', {bus:b.id, lane:l}); return 'refused';
+  emit(g, 'refuse', {bus:b.id, lane:l}); return 'refused';      // road counter 5/5: the bus shakes, nothing else
 }
 function tapBay(g, k){
   if (g.result) return 'over';
@@ -928,7 +966,7 @@ function stepTrips(g, dt){
       if (tr.kind === 'toRoad'){
         if (roadEntryFree(g, b)){
           T.splice(i, 1); i--; b.trip = null;
-          b.state = 'road'; b.rs = 0; b.seg = 0; b.nextRamp = 0; g.toRoad--; g.counter++;
+          b.state = 'road'; b.rs = 0; b.seg = 0; b.nextRamp = 0; g.toRoad--;          // already counted when sent
           g.road.push(b); placeOnRoad(g, b);
           emit(g, 'merge', {bus:b.id});
         } else b.v = 0;
@@ -957,6 +995,9 @@ function stepBoarding(g, b){
   while (B.queue.length && g.t >= B.next - 1e-9){
     const c = B.queue.shift(), id = ramp.cols[c].shift(), m = g.men[id], nf = ramp.cols[c][0];
     if (nf !== undefined && !g.men[nf].revealed){ g.men[nf].revealed = true; emit(g, 'revealMan', {man:nf}); }
+    if (m.cheerBus !== b.id){ g.cheerMiss++; emit(g, 'cheerMiss', {bus:b.id, men:[id], why:'boarded without being predicted'});
+      if (m.cheerBus >= 0) g.buses[m.cheerBus].cheer.delete(id); }
+    m.cheerBus = -1; b.cheer.delete(id);
     m.state = 'run'; m.bus = b.id; m.seat = b.seated + b.transit; m.tLand = g.t + RUN_TIME;
     b.transit++; g.running.push(id);
     emit(g, 'board', {man:id, bus:b.id, ramp:B.k, col:c, seat:m.seat, chain:B.chain});
@@ -969,11 +1010,13 @@ function stepBoarding(g, b){
     b.board = null;
     if (b.seated >= b.cap){ jump(g, b); return; }
     b.nextRamp = B.k + 1;
+    dropCheer(g, b, m => m.ramp !== B.k, 'left a ramp without them');
     emit(g, 'depart', {bus:b.id});
   }
 }
 function jump(g, b){
   g.road.splice(g.road.indexOf(b), 1);
+  dropCheer(g, b, () => false, 'filled up before reaching them');
   b.state = 'jump'; b.v = 0; g.counter--; b.tJump = g.t; b.side = b.x >= 0 ? 1 : -1;
   emit(g, 'jump', {bus:b.id, side:b.side});
   if (g.landed === g.men.length){ g.result = 'win'; g.resultT = g.t; emit(g, 'win', {bus:b.id}); }
@@ -1004,11 +1047,13 @@ function stepRoad(g, dt){
         startRound(g, b);
         continue;
       }
+      dropCheer(g, b, m => m.ramp !== k, 'drove past their ramp');
       b.nextRamp++;
     }
     b.rs = ns;
     if (b.rs >= g.L.ROAD.end){
       R.splice(i, 1); i--;
+      dropCheer(g, b, () => false, 'finished the lap without them');
       b.state = 'tunnel'; b.tExit = g.t + RETURN_TUNNEL_TIME; g.tunnel.push(b);
       emit(g, 'tunnelIn', {bus:b.id});
       continue;
@@ -1052,7 +1097,8 @@ function step(g, dt){
 }
 
 /* ================================ BOTS =============================== */
-/* Both bots tap only when the bus would go to the main road (road check passes).
+/* Both bots send buses to the main road only (that is all a tap can do): the front bus of a queue
+   lane or a bus parked in a bay, and only while the road counter is below 5.
    Greedy: the available bus whose colour has the most stickmen in the ramps' front rows.
    Random: a uniformly random available bus. */
 function legalSends(g){
@@ -1061,7 +1107,7 @@ function legalSends(g){
   for (let k=0;k<STATIC_SLOTS;k++) if (g.bays[k] >= 0) a.push({kind:'bay', idx:k, bus:g.bays[k]});
   for (let l=0;l<3;l++) if (g.lanes[l].length){
     const b = g.buses[g.lanes[l][0]], grp = linkGroup(g, b);
-    if (grp && grp.length > 1 && !(linkedReady(g, grp) && grp.length <= ROAD_CAPACITY - g.counter - g.toRoad)) continue;
+    if (grp && grp.length > 1 && !linkedReady(g, grp)) continue;
     a.push({kind:'lane', idx:l, bus:b.id});
   }
   return a;
@@ -1073,7 +1119,7 @@ function greedyPick(g){
     const sc = fc[g.buses[a.bus].color];
     if (sc > bestScore || (sc === bestScore && sc === 0 && a.kind === 'lane' && best.kind === 'bay')){ best = a; bestScore = sc; }
   }
-  if (bestScore === 0 && g.counter + g.toRoad > 0) return null;   // nothing matches yet: let traffic clear first
+  if (bestScore === 0 && g.counter > 0) return null;   // nothing matches yet: let traffic clear first
   return best;
 }
 function randomPick(g, rng){ const acts = legalSends(g); return acts.length ? acts[Math.floor(rng()*acts.length)] : null; }
@@ -1297,7 +1343,7 @@ root.MECore = {
   routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn,
   normalizeLevel, buildLayout, parseCell, cellStr, checkLevel, difficulty, testLevel,
   createGame, step, tapLane, tapBay, canRoad, freeBay, frontColors, legalSends,
-  greedyPick, randomPick, applyAction, simulate, validateLevel, generateLevel, evaluateLevel, searchSeed, mulberry32
+  greedyPick, randomPick, applyAction, simulate, lapBoarders, validateLevel, generateLevel, evaluateLevel, searchSeed, mulberry32
 };
 root.MECoreFactory = factory;
 })(typeof window !== 'undefined' ? window : globalThis);

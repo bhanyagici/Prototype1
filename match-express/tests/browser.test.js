@@ -32,6 +32,18 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
       await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       chk(await p.evaluate(() => __me.levelSource === 'builtin' && __me.LEVEL.name === 'Level 2'), 'with nothing saved the game loads the built-in level');
+      // sending by real taps: every queue tap goes to the road and counts at once; at 5/5 the bus shakes and stays
+      { const tapFront = async l => { const xy = await p.evaluate(l => { const g = __me.game, b = g.buses[g.lanes[l][0]], [x0, y0, x1, y1] = __me.busScreenBox(b),
+            r = document.getElementById('app').getBoundingClientRect(); return [r.left + (x0 + x1)/2/900*r.width, r.top + (y0 + y1)/2/1950*r.height]; }, l);
+          await p.mouse.click(xy[0], xy[1]); };
+        const seen = [];
+        for (let i = 0; i < 5; i++){ await tapFront(i % 3); seen.push(await p.evaluate(() => { __me.pump(1/60); return document.getElementById('cnt').textContent; })); }
+        const front = await p.evaluate(() => __me.game.lanes[0][0]); await tapFront(0);
+        const st6 = await p.evaluate(f => { __me.pump(1/60); const g = __me.game; return {cnt:document.getElementById('cnt').textContent, front:g.lanes[0][0] === f,
+          shook:g.t - __me.views[f].shakeT < 0.5, parked:g.bayRes.some(x => x >= 0) || g.bays.some(x => x >= 0), result:g.result}; }, front);
+        chk(seen.join(' ') === '1/5 2/5 3/5 4/5 5/5', 'each tap on a queue bus sends it to the road; the counter sign counts it at once', seen.join(' '));
+        chk(st6.cnt === '5/5' && st6.front && st6.shook && !st6.parked && !st6.result, 'at 5/5 a tapped queue bus shakes and stays: no bay, no fail', JSON.stringify(st6));
+        await p.evaluate(() => __me.restart()); }
       // 2x speed through one global time scale
       const r1 = await p.evaluate(() => { __me.setSpeed(1); const t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60); return __me.game.t - t0; });
       await p.click('#btnSpeed');
@@ -67,21 +79,24 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       const m = await p.evaluate(() => { __me.freeze(true); __me.render(); return __me.measure(); });
       chk(m.men.n === 192 && m.men.min >= 16, 'on 390 x 844 (fixed camera) every standing stickman is at least 16 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
       chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long (bays at 0.8)', m.bay8.toFixed(1) + ' px');
-      // cheering: everyone the stopped bus will take at this stop (whole chain), checked against who really boards
-      const ch = await p.evaluate(() => { __me.setBot(true);
-        for (let i = 0; i < 3000; i++){ __me.advance(1/30); const g = __me.game;
-          const b = g.road.find(x => x.board && x.board.queue.length && x.seated + x.transit === 0);
-          if (!b) continue;
-          const k = b.board.k, front = g.ramps[k].cols.filter(c => c.length && g.men[c[0]].color === b.color).length, set = __me.cheerSet();
-          if (set.length <= front) continue;
-          const id = b.id; let guard = 0; while (g.buses[id].board && guard++ < 3000) __me.advance(1/30);
-          const boarded = g.men.filter(mm => mm.bus === id && mm.ramp === k).map(mm => mm.id).sort((a, b) => a - b);
-          const others = set.filter(x => g.men[x].color !== g.buses[id].color);
-          return {front, set:set.sort((a, b) => a - b), boarded, others:others.length}; }
-        return null; });
-      chk(ch && ch.set.length > ch.front && JSON.stringify(ch.set) === JSON.stringify(ch.boarded) && ch.others === 0,
-          'a stopped bus makes its whole boarding chain cheer, beyond the front row - exactly the stickmen that then board, no other colours',
-          ch && `${ch.set.length} cheering (front row ${ch.front}), ${ch.boarded.length} boarded`);
+      // cheering from the moment a bus is sent: exactly the stickmen the core predicts, who then board it on that lap
+      const ch = await p.evaluate(() => { __me.setBot(true); const g = __me.game, open = new Map(), laps = []; let warmUp = 0;
+        for (let i = 0; i < 9000 && laps.length < 12; i++){ __me.advance(1/30);
+          for (const b of g.buses) if (b.state === 'toRoad' && !open.has(b.id) && !laps.some(l => l.id === b.id && l.t === b.trip.seq)){
+            const pred = g.men.filter(m => m.cheerBus === b.id).map(m => m.id).sort((x, y) => x - y);
+            const shown = __me.cheerSet().filter(id => g.men[id].cheerBus === b.id).sort((x, y) => x - y);
+            open.set(b.id, {id:b.id, t:b.trip.seq, pred, shown, free:b.cap - b.seated, before:new Set(g.men.filter(m => m.bus === b.id).map(m => m.id)), sentAt:g.t}); }
+          for (const [id, o] of open){ const b = g.buses[id];
+            if (o.pred.length && o.liveAt == null && g.t - o.sentAt > 0.7){ const live = __me.cheerSet().filter(x => g.men[x].cheerBus === id);   // cheering while still in the yard
+              o.liveAt = b.state === 'toRoad' ? live.length : -1; }
+            if (['jump', 'tunnel', 'return', 'bay', 'crash'].includes(b.state)){
+              o.boarded = g.men.filter(m => m.bus === id && !o.before.has(m.id)).map(m => m.id).sort((x, y) => x - y); laps.push(o); open.delete(id); } } }
+        const bad = laps.filter(l => JSON.stringify(l.pred) !== JSON.stringify(l.boarded) || JSON.stringify(l.shown) !== JSON.stringify(l.pred) || l.pred.length > l.free);
+        const early = laps.filter(l => l.pred.length && l.liveAt > 0).length;
+        return {laps:laps.length, bad:bad.length, early, cheered:laps.reduce((a, l) => a + l.pred.length, 0), boarded:laps.reduce((a, l) => a + l.boarded.length, 0)}; });
+      chk(ch && ch.laps >= 10 && ch.bad === 0 && ch.early > 0,
+          'a bus sent to the road makes exactly the stickmen it will take cheer, at once (still in the yard), and exactly those then board it',
+          ch && `${ch.laps} laps, ${ch.cheered} cheered = ${ch.boarded} boarded, ${ch.early} already cheering before the bus reached the road, ${ch.bad} mismatches`);
       // full bus: straight sideways off the road, away from its ramp; the hop starts only once it is clear of the road
       const ex = await p.evaluate(() => { const g = __me.game; let v = null;
         for (let i = 0; i < 6000 && !v; i++){ __me.advance(1/30); v = __me.views.find(w => w.b.state === 'jump' && w.jump && g.t - w.jump.t0 < 0.05); }
