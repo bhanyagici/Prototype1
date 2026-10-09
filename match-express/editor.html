@@ -64,7 +64,7 @@
   #hint{position:absolute;left:10px;bottom:8px;right:10px;color:#fff;font-size:12px;text-shadow:0 1px 2px #000;pointer-events:none;opacity:.9}
   /* ---- queue pane ---- */
   #queuePane{display:flex;flex-direction:column;min-height:0;background:#1a2030;border-left:1px solid var(--line)}
-  #queuePane header{display:flex;align-items:center;gap:6px;padding:8px 10px 4px}
+  #queuePane header{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;padding:8px 10px 4px} #queuePane header .ghost{padding:3px 5px}
   #queuePane header h3{margin:0;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);flex:1}
   #queueScroll{flex:1;overflow:auto;padding:0 6px 8px}
   #queueSvg{display:block}
@@ -114,7 +114,7 @@
   .list{flex:1;overflow:auto;margin:6px 0}
   .lrow{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;margin:3px 0;background:#222a3d;border:1px solid transparent}
   .lrow:hover{border-color:#3d4a6c}
-  .lrow.cur{border-color:var(--accent)}
+  .lrow.cur{border-color:var(--accent)} .lrow.sel{background:#2c3a5c;box-shadow:inset 3px 0 0 var(--accent)}
   .lrow code{font:12px ui-monospace,Menlo,monospace;color:#cfe3ff;overflow:hidden;text-overflow:ellipsis}
   .lrow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .lrow .acts{display:flex;gap:3px} .lrow .acts button{padding:3px 6px;font-size:12px}
@@ -133,6 +133,27 @@
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(30px);opacity:0;background:#0f1422;border:1px solid var(--line);
     padding:8px 16px;border-radius:12px;z-index:70;transition:transform .3s cubic-bezier(.34,1.7,.5,1),opacity .2s;pointer-events:none}
   .toast.show{transform:translateX(-50%);opacity:1}
+  /* ---- context menu, add-bus popover, lane stepper, unsaved dot, empty states ---- */
+  #ctx{position:fixed;z-index:60;min-width:220px;background:#1b2131;border:1px solid var(--line);border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:none}
+  #ctx.show{display:block;animation:drop .12s ease-out}
+  #ctx button{display:flex;width:100%;justify-content:flex-start;background:transparent;border:0;border-radius:7px;padding:6px 9px;font-size:13px}
+  #ctx button:hover:not(:disabled){background:#2c3550} #ctx button kbd{margin-left:auto} #ctx hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+  #ctx .ttl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);padding:4px 9px 2px}
+  #busPop{position:fixed;z-index:55;width:236px;background:#1b2131;border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 14px 34px rgba(0,0,0,.5);display:none}
+  #busPop.show{display:block;animation:drop .12s ease-out}
+  #busPop h4{margin:0 0 6px;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+  #busPop .lanesel{display:flex;gap:4px} #busPop .lanesel button{flex:1;justify-content:center;padding:4px 0}
+  #busPop .row > label:first-child{min-width:52px}
+  #qLanes{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:var(--mute)} #qLanes b{color:var(--text);min-width:12px;text-align:center} #qLanes button{padding:1px 7px}
+  #queueFoot .primary{flex:2}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--warn);margin-right:2px;box-shadow:0 0 0 3px rgba(255,176,32,.2);visibility:hidden}
+  .dot.on{visibility:visible}
+  .iwarn{background:#3a1f26;border:1px solid var(--bad);color:#ffd0d0;border-radius:8px;padding:6px 8px;margin:0 0 8px;font-size:12px}
+  .iwarn b{color:#fff}
+  #qWarn{padding:0 8px} #qWarn .iwarn{margin:6px 0 0;cursor:pointer}
+  #emptyView{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);background:rgba(10,14,24,.72);border:1px solid var(--line);border-radius:12px;padding:10px 14px;
+    color:#e8ecf6;font-size:13px;display:none;align-items:center;gap:8px;pointer-events:auto}
+  #emptyView.show{display:flex}
   [data-tip]{position:relative}
   @media (max-width:1560px){ #status{display:none} }
   @media (max-width:1300px){ #bar .logo b{display:none} #levelName{width:130px} }
@@ -144,29 +165,31 @@
     <div class="logo">Match Express <b>Editor</b></div>
     <div class="menu" id="fileMenu"><button data-menu title="File: new, levels, save, import">ICON:file File</button>
       <div class="items">
-        <button data-act="new">ICON:plus New level</button>
-        <button data-act="levels">ICON:list Levels &amp; level order… <kbd>O</kbd></button>
+        <button data-act="new">ICON:plus New level <kbd>Ctrl N</kbd></button>
+        <button data-act="levels">ICON:list Open · levels &amp; level order… <kbd>Ctrl O</kbd></button>
         <hr><button data-act="save">ICON:save Save <kbd>Ctrl S</kbd></button>
-        <button data-act="saveAs">ICON:copy Save as new level…</button>
+        <button data-act="saveAs">ICON:copy Save as new level… <kbd>Ctrl Shift S</kbd></button>
+        <button data-act="dupLevel">ICON:copy Duplicate this level</button>
         <hr><button data-act="import">ICON:upload Import level JSON…</button>
       </div></div>
-    <button id="undoBtn" title="Undo (Ctrl+Z)">ICON:undo</button>
-    <button id="redoBtn" title="Redo (Ctrl+Shift+Z or Ctrl+Y)">ICON:redo</button>
+    <button id="undoBtn" title="Undo (Ctrl Z)">ICON:undo</button>
+    <button id="redoBtn" title="Redo (Ctrl Shift Z or Ctrl Y)">ICON:redo</button>
     <div class="sep"></div>
+    <span class="dot" id="dirtyDot" title="Unsaved changes (a draft is kept automatically)"></span>
     <input type="text" id="levelId" title="Level id: unique, letters, digits, _ and - (e.g. lvl_001)" spellcheck="false">
     <input type="text" id="levelName" title="Level name (shown in the game)">
     <span id="saveState"></span>
     <div class="sp"></div>
     <span id="status">preview: waiting…</span>
-    <button id="runBtn" class="primary" title="Restart the preview with this level (Enter)">ICON:play Run</button>
+    <button id="runBtn" class="primary" title="Restart the preview with this level (Ctrl Enter)">ICON:play Run</button>
     <button id="autoBtn" title="Restart the preview after every edit">ICON:refresh Auto</button>
     <button id="watchBtn" title="Play the greedy bot's game in the preview">ICON:robot Watch</button>
     <button id="testBtn" title="Run the greedy bot and 200 random bots in the background">ICON:flask Test</button>
     <div class="sep"></div>
     <div class="menu right" id="exportMenu"><button data-menu title="Export">ICON:download Export</button>
       <div class="items">
-        <button data-act="exportJSON">ICON:file Level JSON (with its id)</button>
-        <button data-act="exportHtmlLevel">ICON:play Playable HTML — this level</button>
+        <button data-act="exportJSON">ICON:file Level JSON (with its id) <kbd>Ctrl E</kbd></button>
+        <button data-act="exportHtmlLevel">ICON:play Playable HTML — this level <kbd>Ctrl Shift E</kbd></button>
         <button data-act="exportHtmlOrder">ICON:list Playable HTML — level order</button>
         <hr><button data-act="exportOrder">ICON:list Level order JSON</button>
         <button data-act="playTab">ICON:external Play this level in a new tab</button>
@@ -176,11 +199,13 @@
   </header>
 
   <aside id="palette"></aside>
-  <main id="stage"><canvas id="view"></canvas><div id="modeTag"></div><div id="hint"></div></main>
+  <main id="stage"><canvas id="view"></canvas><div id="modeTag"></div><div id="hint"></div><div id="emptyView"></div></main>
   <section id="queuePane">
-    <header><h3>Queue · front at the top</h3><button class="ghost" id="qLinkBtn" title="Link the selected buses (L)">ICON:link</button><button class="ghost" id="qUnlinkBtn" title="Unlink the selected buses">ICON:unlink</button></header>
+    <header><h3>Queue</h3><span id="qLanes" title="Number of queue lanes (2-5)">Lanes <button id="qLaneMinus" title="Remove the last lane">−</button><b id="qLaneN">3</b><button id="qLanePlus" title="Add a lane">+</button></span>
+      <button class="ghost" id="qLinkBtn" title="Connect the selected buses (L)">ICON:link</button><button class="ghost" id="qUnlinkBtn" title="Disconnect the selected buses">ICON:unlink</button></header>
+    <div id="qWarn"></div>
     <div id="queueScroll"><svg id="queueSvg"></svg></div>
-    <div id="queueFoot"><button data-lane="0" title="Add a bus (colour and capacity from the palette) to lane 1">+ Lane 1</button><button data-lane="1" title="Add a bus to lane 2">+ Lane 2</button><button data-lane="2" title="Add a bus to lane 3">+ Lane 3</button></div>
+    <div id="queueFoot"><button id="addBusBtn" class="primary" title="Add a bus: lane, colour, seats, hidden">ICON:plus Add bus</button></div>
   </section>
   <aside id="inspector"><div id="insp"></div><div id="checks"></div></aside>
   <aside id="previewDock"><div id="phone"><div id="phoneInner"><iframe id="preview" title="Game preview"></iframe></div></div></aside>
@@ -203,12 +228,21 @@
   <header><h2>Keyboard shortcuts</h2><button id="helpClose" title="Close (Esc)">ICON:x</button></header>
   <div class="keys" id="keysList"></div>
   <div class="guide">
-    <b>Road</b>: drag the points; with the road tool, click the road to add one (it lands inside the target zone), right-click a point to delete it.
+    <b>Road</b>: drag the points; with the road tool, click the road to add one (it lands inside the target zone). The exit tunnel is the road's end: drag it anywhere in the target zone.
     <b>Ramps</b>: each ramp is shaped by its nodes. Drag the front node (diamond) along the road: it snaps to the road (green ring) and becomes the boarding
     point; dropped away from the road it turns red and the ramp gets a warning. <b>Blockers</b>: pick the tunnel, lock box or count box tool and drag
-    across the cells of a ramp. <b>Queue</b>: drag buses to reorder, Shift-click to select up to three and press <kbd>L</kbd> to connect them.
+    across the cells of a ramp. <b>Queue</b>: 2–5 lanes (− / +); <i>Add bus</i> picks lane, colour, seats and hidden; drag buses within and between lanes;
+    Shift-click two or three touching buses (also across neighbouring lanes) and press <kbd>L</kbd> to connect them.
+    <b>Everywhere</b>: right-click for a menu; copy, paste, duplicate, delete and the arrow keys work on whatever is selected.
     Exports are frozen copies: later edits never change an exported file or the game page.
   </div></div></div>
+<div id="ctx"></div>
+<div id="busPop"><h4>Add bus</h4>
+  <div class="row"><label>Lane</label><div class="lanesel" id="bpLanes" style="flex:1"></div></div>
+  <div class="row"><label>Colour</label><div class="swatches" id="bpColors" style="flex:1;grid-template-columns:repeat(4,1fr)"></div></div>
+  <div class="row"><label>Seats</label><div class="caps" id="bpCaps" style="flex:1"></div></div>
+  <div class="row"><label>Hidden</label><button id="bpHidden">ICON:hidden Visible</button></div>
+  <div class="row"><button class="primary" id="bpAdd" style="flex:1;justify-content:center">ICON:plus Add</button><button id="bpClose">Close</button></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
 <div class="toast" id="toast"></div>
 
@@ -249,7 +283,7 @@ const icon = (name, extra = '') => `<svg class="i" viewBox="0 0 24 24" ${extra}>
 document.body.innerHTML = document.body.innerHTML.replace(/ICON:([a-z]+)/g, (m, n) => icon(n));
 
 /* ================================ STATE ================================ */
-let lvl, L, check, undoStack = [], redoStack = [], savedJSON = null;
+let lvl, L, check, undoStack = [], redoStack = [], undoSel = [], redoSel = [], savedJSON = null;   // (the selection with each snapshot)
 let tool = 'select', color = 'red', cap = 8, sel = {kind:'level'}, hover = null, highlight = null;
 let autoRun = false, autoTimer = null, msgSeq = 0, lastTest = null, testRun = 0;
 const TOOLS = [
@@ -268,7 +302,7 @@ function draftSave(){ try { localStorage.setItem(KEY_DRAFT, JSON.stringify(lvl))
 function setLevel(raw, keepHistory){
   lvl = clone(C.normalizeLevel(raw)); if (!lvl.id) lvl.id = nextId();
   L = C.buildLayout(lvl); check = C.checkLevel(lvl);
-  if (!keepHistory){ undoStack = []; redoStack = []; }
+  if (!keepHistory){ undoStack = []; redoStack = []; undoSel = []; redoSel = []; }
   if (sel.kind !== 'level' && !selValid()) sel = {kind:'level'};
   const slots = S.loadSlots(); savedJSON = slots[lvl.id] ? JSON.stringify(C.normalizeLevel(slots[lvl.id].level)) : null;
   if (!keepHistory){ try { if (cv.clientWidth) fitView(); } catch (e) {} }
@@ -278,23 +312,27 @@ function setLevel(raw, keepHistory){
 /* every edit: snapshot for undo, mutate a fresh copy, rebuild layout + checks */
 function edit(fn, opts){
   opts = opts || {};
-  if (!opts.noUndo){ undoStack.push(JSON.stringify(lvl)); if (undoStack.length > 300) undoStack.shift(); redoStack = []; }
+  if (!opts.noUndo) pushUndo();
   const next = clone(lvl); fn(next);
-  lvl = clone(C.normalizeLevel(next)); L = C.buildLayout(lvl); check = C.checkLevel(lvl);
+  // a fresh copy: the core caches each object it normalizes, and an edit may have measured the level mid-way
+  lvl = clone(C.normalizeLevel(clone(next))); L = C.buildLayout(lvl); check = C.checkLevel(lvl);
   if (!selValid()) sel = {kind:'level'};
   draftSave(); renderAll(opts.light);
   if (autoRun) scheduleAuto();
 }
 const editLive = fn => edit(fn, {noUndo:true, light:true});
-function undo(){ if (!undoStack.length) return; redoStack.push(JSON.stringify(lvl)); setLevel(JSON.parse(undoStack.pop()), true); toast('Undo'); }
-function redo(){ if (!redoStack.length) return; undoStack.push(JSON.stringify(lvl)); setLevel(JSON.parse(redoStack.pop()), true); toast('Redo'); }
+function pushUndo(){ undoStack.push(JSON.stringify(lvl)); undoSel.push(clone(sel)); if (undoStack.length > 300){ undoStack.shift(); undoSel.shift(); } redoStack = []; redoSel = []; }
+/* undo / redo bring back the level and what was selected with it (a redone paste is selected again) */
+function undo(){ if (!undoStack.length) return; redoStack.push(JSON.stringify(lvl)); redoSel.push(clone(sel)); const s0 = undoSel.pop(); sel = s0 || sel; setLevel(JSON.parse(undoStack.pop()), true); toast('Undo'); }
+function redo(){ if (!redoStack.length) return; undoStack.push(JSON.stringify(lvl)); undoSel.push(clone(sel)); const s0 = redoSel.pop(); sel = s0 || sel; setLevel(JSON.parse(redoStack.pop()), true); toast('Redo'); }
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1600); }
 function selValid(){
   const r = sel.ramp != null ? lvl.ramps[sel.ramp] : null;
-  if (sel.kind === 'point') return !!lvl.road.points[sel.i];
-  if (sel.kind === 'ramp') return !!r;
-  if (sel.kind === 'tunnel') return !!(r && r.tunnels && r.tunnels[sel.i]);
-  if (sel.kind === 'box') return !!(r && r.boxes && r.boxes[sel.i]);
+  if (sel.kind === 'point') return ptList().length > 0 && ptList().every(i => !!lvl.road.points[i]);
+  if (sel.kind === 'ramp') return rampList().length > 0 && rampList().every(i => !!lvl.ramps[i]);
+  if (sel.kind === 'tunnel' || sel.kind === 'box'){ const key = sel.kind === 'tunnel' ? 'tunnels' : 'boxes';
+    return blkList().every(o => lvl.ramps[o.ramp] && lvl.ramps[o.ramp][key] && lvl.ramps[o.ramp][key][o.i]); }
+  if (sel.kind === 'cells') return !!r && sel.cells.length > 0 && sel.cells.every(([c, k]) => c < r.columns.length && k < r.rows);
   if (sel.kind === 'bus') return sel.list.length > 0 && sel.list.every(([l, i]) => lvl.lanes[l] && lvl.lanes[l][i]);
   return true;
 }
@@ -346,7 +384,8 @@ function newLevel(){
 }
 function duplicateLevel(id){
   const slots = S.loadSlots(), sl = slots[id]; if (!sl) return; let nid = id + '_copy', k = 2; while (slots[nid]) nid = id + '_copy' + (k++);
-  const lv = Object.assign(clone(sl.level), {id:nid, name:sl.name + ' copy'}); slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots); renderLevels();
+  const lv = Object.assign(clone(sl.level), {id:nid, name:sl.name + ' copy'}); slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots);
+  lvSelId = nid; renderLevels(); toast(`Duplicated "${id}" as "${nid}"`); return nid;
 }
 function deleteLevel(id){
   if (!confirm(`Delete the saved level "${id}"?`)) return; const slots = S.loadSlots(); delete slots[id]; S.saveSlots(slots);
@@ -508,9 +547,11 @@ function draw(){
   { let run_ = []; const flush = () => { if (run_.length > 1) poly(run_, RAD*2 + 0.1, 'rgba(255,59,59,.75)'); run_ = []; };
     seg.forEach(p => { if (!inZone(p[0], p[2] + 0.9, p[1]) || !inZone(p[0], p[2], p[1])) run_.push(p); else flush(); }); flush(); }
   tunnelIcon(L.exit.x, L.exit.z, Math.atan2(-L.exit.dx, -L.exit.dz), 'exit tunnel', check.warnings.some(w => w.kind === 'zone-exit'));
+  if (sel.kind === 'exit' || (hover && hover.kind === 'exit')){ const [ex, ey] = W2S(L.exit.x, L.exit.z);
+    ctx.beginPath(); ctx.arc(ex, ey, 1.25*s, 0, 7); ctx.lineWidth = sel.kind === 'exit' ? 3 : 2; ctx.strokeStyle = sel.kind === 'exit' ? SEL : HOV; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]); }
   // ramps
   L.RAMPS.forEach(r => {
-    const rd = lvl.ramps[r.src], selR = sel.ramp === r.src && ['ramp', 'tunnel', 'box'].includes(sel.kind), hovR = hover && hover.ramp === r.src;
+    const rd = lvl.ramps[r.src], selR = rampList().includes(r.src) || (sel.ramp === r.src && ['tunnel', 'box', 'cells'].includes(sel.kind)), hovR = hover && hover.ramp === r.src;
     const warnR = check.warnings.some(w => w.ramp === r.src);
     path(rampOutline(r)); ctx.fillStyle = '#cdd1d6'; ctx.fill();
     ctx.lineWidth = selR ? 3 : hovR ? 2.5 : 1.5; ctx.strokeStyle = warnR ? '#ff3b3b' : selR ? SEL : hovR ? HOV : '#ffffff'; ctx.stroke();
@@ -523,14 +564,16 @@ function draw(){
           ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.max(8, rad*1.5)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 0.5); } }
       else { ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(60,70,90,.45)'; ctx.stroke(); }
     }
+    if (sel.kind === 'cells' && sel.ramp === r.src) sel.cells.forEach(([c, k]) => { const sl = r.slots[c] && r.slots[c][k]; if (!sl) return; const [x, y] = W2S(sl.x, sl.z);
+      ctx.beginPath(); ctx.arc(x, y, rad + 3, 0, 7); ctx.lineWidth = 2.5; ctx.strokeStyle = SEL; ctx.stroke(); });
     // blockers
     (rd.tunnels || []).forEach((t, i) => { if (t.col + t.w > r.cols || t.row + t.h > r.rows) return;
-      const q = cellQuad(r, t.col, t.row, t.w, t.h), isSel = sel.kind === 'tunnel' && sel.ramp === r.src && sel.i === i, isHov = sameHover(hover, {kind:'tunnel', ramp:r.src, i});
+      const q = cellQuad(r, t.col, t.row, t.w, t.h), isSel = sel.kind === 'tunnel' && blkList().some(o => o.ramp === r.src && o.i === i), isHov = sameHover(hover, {kind:'tunnel', ramp:r.src, i});
       path(q); ctx.fillStyle = C.HEX[t.color] || '#999'; ctx.fill(); ctx.lineWidth = isSel ? 3 : 2; ctx.strokeStyle = isSel ? SEL : isHov ? HOV : '#1d2333'; ctx.stroke();
       const cx = q.reduce((a, p) => a + p[0], 0)/4, cz = q.reduce((a, p) => a + p[1], 0)/4, [x, y] = W2S(cx, cz);
       label(x, y, String(t.count), '#1d2333'); });
     (rd.boxes || []).forEach((b, i) => { if (b.col + b.w > r.cols || b.row + b.h > r.rows) return;
-      const q = cellQuad(r, b.col, b.row, b.w, b.h), isSel = sel.kind === 'box' && sel.ramp === r.src && sel.i === i, isHov = sameHover(hover, {kind:'box', ramp:r.src, i});
+      const q = cellQuad(r, b.col, b.row, b.w, b.h), isSel = sel.kind === 'box' && blkList().some(o => o.ramp === r.src && o.i === i), isHov = sameHover(hover, {kind:'box', ramp:r.src, i});
       path(q); ctx.fillStyle = 'rgba(176,118,62,.9)'; ctx.fill(); ctx.lineWidth = isSel ? 3 : 2; ctx.strokeStyle = isSel ? SEL : isHov ? HOV : '#5b3818'; ctx.stroke();
       const cx = q.reduce((a, p) => a + p[0], 0)/4, cz = q.reduce((a, p) => a + p[1], 0)/4, [x, y] = W2S(cx, cz);
       label(x, y, b.lock != null ? '🔒 ' + b.lock : '#' + b.count, '#5b3818'); });
@@ -558,7 +601,7 @@ function draw(){
     else label(px, py - 22, 'not on the road', '#8a1f24'); }
   // road control points
   lvl.road.points.forEach((p, i) => {
-    const [x, y] = W2S(p.x, p.z), isSel = sel.kind === 'point' && sel.i === i, isHov = sameHover(hover, {kind:'point', i});
+    const [x, y] = W2S(p.x, p.z), isSel = ptList().includes(i), isHov = sameHover(hover, {kind:'point', i});
     ctx.beginPath(); ctx.arc(x, y, isSel || isHov ? 8 : 6, 0, 7);
     const out = !inZone(p.x, (p.y || 0) + 0.9, p.z);
     ctx.fillStyle = out ? '#ff3b3b' : i === 0 ? '#9aa1ad' : p.spiral ? '#a77bff' : '#ffffff'; ctx.fill();
@@ -566,9 +609,25 @@ function draw(){
     if (p.spiral){ ctx.strokeStyle = '#a77bff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.stroke(); }
   });
   // warnings
-  check.warnings.forEach(wn => { if (wn.x == null || !isFinite(wn.x)) return; const [x, y] = W2S(wn.x, wn.z), hl = highlight === wn;
-    ctx.beginPath(); ctx.arc(x, y, (hl ? 1.3 : 0.9)*s, 0, 7); ctx.lineWidth = hl ? 4 : 2.5; ctx.strokeStyle = '#ff3b3b'; ctx.stroke(); ctx.fillStyle = 'rgba(255,59,59,.15)'; ctx.fill(); });
+  // warnings: a red ring where the problem is and a short note next to it (ramp problems without a spot: at the ramp's
+  // number badge); the full text is in the Checks list
+  const placed = [];
+  check.warnings.forEach(wn => { let wx = wn.x, wz = wn.z, ring = true;
+    if (wx == null || !isFinite(wx)){ const r = wn.ramp != null ? rampOf(wn.ramp) : null; if (!r) return; const e = r.ctrl[r.ctrl.length - 1]; wx = e[0]; wz = e[1]; ring = false; }
+    const [x, y] = W2S(wx, wz), hl = highlight === wn;
+    if (ring){ ctx.beginPath(); ctx.arc(x, y, (hl ? 1.3 : 0.9)*s, 0, 7); ctx.lineWidth = hl ? 4 : 2.5; ctx.strokeStyle = '#ff3b3b'; ctx.stroke(); ctx.fillStyle = 'rgba(255,59,59,.15)'; ctx.fill(); }
+    let ly = y + (ring ? 0.9*s + 14 : 22); while (placed.some(q => Math.abs(q[0] - x) < 140 && Math.abs(q[1] - ly) < 18)) ly += 18; placed.push([x, ly]);
+    label(x, ly, '⚠ ' + shortWarn(wn), hl ? '#d81f26' : 'rgba(170,25,32,.92)'); });
+  if (drag && (drag.kind === 'box' || drag.kind === 'cellbox') && drag.sx1 != null){
+    const x0 = Math.min(drag.sx0, drag.sx1), y0 = Math.min(drag.sy0, drag.sy1), bw = Math.abs(drag.sx1 - drag.sx0), bh = Math.abs(drag.sy1 - drag.sy0);
+    ctx.fillStyle = 'rgba(74,168,255,.14)'; ctx.fillRect(x0, y0, bw, bh); ctx.setLineDash([5, 4]); ctx.strokeStyle = '#4aa8ff'; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, bw, bh); ctx.setLineDash([]); }
 }
+const WARN_SHORT = {'zone-road':'road leaves the target zone', 'zone-ramp':'ramp leaves the target zone', 'zone-exit':'exit tunnel outside the zone', 'road-cross':'road crosses itself',
+  'road-tight':'turn too tight', 'ramp-road':'ramp overlaps the road', 'ramp-ramp':'ramps overlap', 'ramp-spiral':'ramp on a spiral', 'ramp-unsnapped':'not connected to the road',
+  'ramp-exit':'ramp too near the exit', 'ramp-fold':'ramp folds over itself', 'blocker-bounds':'blocker leaves the ramp', 'blocker-overlap':'two blockers in a column',
+  'tunnel-front':'tunnel needs a free cell in front', 'tunnel-count':'tunnel needs stickmen', 'tunnel-cells':'tunnel sits on stickmen', 'count-range':'count out of range',
+  'lock-dup':'lock id used twice', 'lock-keys':'several key buses', 'lock-no-key':'no key bus', 'bay':'yard problem'};
+const shortWarn = w => WARN_SHORT[w.kind] || (w.msg.length > 40 ? w.msg.slice(0, 38) + '…' : w.msg);
 function label(x, y, text, bg){ ctx.font = 'bold 11px sans-serif'; const w = ctx.measureText(text).width + 10; ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(x - w/2, y - 9, w, 18, 8); ctx.fill();
   ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y + 0.5); }
 function tunnelIcon(x, z, ang, name, bad){
@@ -630,40 +689,69 @@ function blockOk(d){ const b = blockRect(d), rd = lvl.ramps[d.ramp]; if (!b) ret
   if (d.tool === 'tunnel' && b.row < 1) return false;
   const others = (rd.tunnels || []).concat(rd.boxes || []);
   return !others.some(o => o.col < b.col + b.w && b.col < o.col + o.w); }
-let drag = null, press = null, spaceDown = false;
+let drag = null, press = null, spaceDown = false, focusPane = 'view';
+const touches = new Map();                          // two fingers: pinch to zoom, move to pan
 cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });      // middle button pans (no autoscroll)
 cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my);
-  const k = Math.exp(-e.deltaY*0.0015); VIEW.s = Math.max(4, Math.min(200, VIEW.s*k)); VIEW.ox = mx - x*VIEW.s; VIEW.oy = my - z*VIEW.s; draw(); }, {passive:false});
+  const k = Math.exp(-e.deltaY*(e.ctrlKey ? 0.01 : 0.0015)); VIEW.s = Math.max(4, Math.min(200, VIEW.s*k)); VIEW.ox = mx - x*VIEW.s; VIEW.oy = my - z*VIEW.s; draw(); }, {passive:false});
+const hitExit = (x, z) => Math.hypot(x - L.exit.x, z - L.exit.z) < 1.1;
 cv.addEventListener('pointerdown', e => {
+  focusPane = 'view'; closeCtx(); closeBusPop();
   try { cv.setPointerCapture(e.pointerId); } catch (err) {}
   const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my), hr = 12/VIEW.s;
+  if (e.pointerType === 'touch'){ touches.set(e.pointerId, [mx, my]);
+    if (touches.size === 2){ clearTimeout(press && press.longTimer); const [a, b] = [...touches.values()];
+      drag = {kind:'pinch', d0:Math.hypot(a[0] - b[0], a[1] - b[1]), s0:VIEW.s, c0:[(a[0] + b[0])/2, (a[1] + b[1])/2], ox:VIEW.ox, oy:VIEW.oy}; press = {mx, my, moved:true}; return; } }
   press = {mx, my, x, z, moved:false, button:e.button, type:e.pointerType};
+  const multi = e.shiftKey || e.ctrlKey || e.metaKey;
   if (e.button === 1 || spaceDown){ drag = {kind:'pan', ox:VIEW.ox, oy:VIEW.oy}; return; }
-  if (e.button === 2){ rightClick(x, z, hr); press = null; return; }
+  if (e.button === 2){ press = null; ctxAt(e.clientX, e.clientY, x, z, hr); return; }
   if (['paint', 'erase', 'hide'].includes(tool)){ const ri = hitRamp(x, z); if (ri >= 0){ sel = {kind:'ramp', ramp:ri}; drag = {kind:'paint', ramp:ri, done:new Set(), hiddenOn:null}; paintAt(x, z); renderInspector(); return; } }
   if (['tunnel', 'lock', 'count'].includes(tool)){ for (const R of L.RAMPS){ const c = hitCell(R, x, z, C.RAMP_SP*0.8); if (c){ drag = {kind:'block', tool, ramp:R.src, c0:c, c1:c}; drag.ok = blockOk(drag); draw(); return; } } }
   if (tool === 'ramp'){ addRampAt(x, z); press = null; return; }
   let pi = hitPoint(x, z, hr);
   const nd0 = tool === 'select' ? hitNode(x, z, hr*1.1) : null;
   if (nd0 && pi >= 0 && nodeFirst(nd0, pi, x, z)) pi = -1;          // a ramp node on top of a road point: the node wins
-  if (pi >= 0 && (tool === 'select' || tool === 'road')){ sel = {kind:'point', i:pi}; renderAll(); if (pi > 0){ drag = {kind:'point', i:pi};
-    if (e.pointerType !== 'mouse') press.longTimer = setTimeout(() => { if (press && !press.moved){ deletePoint(pi); drag = null; press = null; } }, 550); } return; }
+  if (tool === 'select' && pi === lvl.road.points.length - 1 && hitExit(x, z) && !multi) pi = -1;   // the road's last point is the exit tunnel
+  if (pi >= 0 && (tool === 'select' || tool === 'road')){
+    if (multi){ toggleSel('point', pi); press = null; return; }
+    if (!(sel.kind === 'point' && ptList().includes(pi))) sel = {kind:'point', i:pi};
+    else sel = Object.assign({}, sel, {i:pi});
+    renderAll();
+    if (pi > 0){ const list = ptList().filter(i => i > 0), at = {}; list.forEach(i => { at[i] = [lvl.road.points[i].x, lvl.road.points[i].z]; });
+      drag = {kind:'point', i:pi, list, at, x0:x, z0:z};
+      if (e.pointerType !== 'mouse') press.longTimer = setTimeout(() => { if (press && !press.moved){ deletePoint(pi); drag = null; press = null; } }, 550); }
+    return; }
+  if (tool === 'select' && hitExit(x, z)){ sel = {kind:'exit'}; renderAll(); drag = {kind:'exit'}; return; }   // (the road tool drags the last point)
   if (tool === 'select'){
     const nd = hitNode(x, z, hr*1.1);
-    if (nd){ sel = {kind:'ramp', ramp:nd.ramp}; renderAll(); drag = nd.i === 0 ? {kind:'front', ramp:nd.ramp, x, z} : {kind:'shape', ramp:nd.ramp, k:nd.i - 1}; return; }
-    const bl = hitBlocker(x, z); if (bl){ sel = bl; renderAll(); return; }
-    const ri = hitRamp(x, z); if (ri >= 0){ sel = {kind:'ramp', ramp:ri}; renderAll(); return; }
+    if (nd){ if (multi){ toggleSel('ramp', nd.ramp); press = null; return; }
+      sel = {kind:'ramp', ramp:nd.ramp}; renderAll(); drag = nd.i === 0 ? {kind:'front', ramp:nd.ramp, x, z} : {kind:'shape', ramp:nd.ramp, k:nd.i - 1}; return; }
+    const bl = hitBlocker(x, z); if (bl){ if (multi) toggleSel(bl.kind, {ramp:bl.ramp, i:bl.i}); else { sel = bl; renderAll(); } press = multi ? null : press; return; }
+    const ri = hitRamp(x, z);
+    if (ri >= 0){ if (multi){ toggleSel('ramp', ri); press = null; return; }
+      if (!(sel.kind === 'ramp' && rampList().includes(ri))){ sel = {kind:'ramp', ramp:ri}; renderAll(); }
+      const R = rampOf(ri), c = hitCell(R, x, z, C.RAMP_SP*0.8);
+      drag = {kind:'cellbox', ramp:ri, c0:c, sx0:mx, sy0:my}; return; }
   }
-  drag = {kind:'pan', ox:VIEW.ox, oy:VIEW.oy, deselect:true};
+  drag = {kind:'box', sx0:mx, sy0:my, multi, deselect:!multi};    // empty space: a box selects; a click deselects
 });
 cv.addEventListener('pointermove', e => {
   const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my);
+  if (e.pointerType === 'touch' && touches.has(e.pointerId)){ touches.set(e.pointerId, [mx, my]);
+    if (drag && drag.kind === 'pinch' && touches.size === 2){ const [a, b] = [...touches.values()], c = [(a[0] + b[0])/2, (a[1] + b[1])/2];
+      const s1 = Math.max(4, Math.min(200, drag.s0*Math.hypot(a[0] - b[0], a[1] - b[1])/Math.max(1, drag.d0))), wx = (drag.c0[0] - drag.ox)/drag.s0, wz = (drag.c0[1] - drag.oy)/drag.s0;
+      VIEW.s = s1; VIEW.ox = c[0] - wx*s1; VIEW.oy = c[1] - wz*s1; draw(); return; } }
   if (!press){ updateHover(x, z); return; }
   if (Math.hypot(mx - press.mx, my - press.my) > 4){ press.moved = true; clearTimeout(press.longTimer); }
   if (!drag || !press.moved) return;
   const first = !drag.started; drag.started = true;
   if (drag.kind === 'pan'){ VIEW.ox = drag.ox + mx - press.mx; VIEW.oy = drag.oy + my - press.my; draw(); return; }
-  if (drag.kind === 'point'){ const i = drag.i; roadEdit(n => { n.road.points[i].x = round(x); n.road.points[i].z = round(z); }, !first); return; }
+  if (drag.kind === 'box' || drag.kind === 'cellbox'){ drag.sx1 = mx; drag.sy1 = my; draw(); return; }
+  if (drag.kind === 'point'){ const dx = x - drag.x0, dz = z - drag.z0;
+    roadEdit(n => { drag.list.forEach(i => { if (!n.road.points[i]) return; n.road.points[i].x = round(drag.at[i][0] + dx); n.road.points[i].z = round(drag.at[i][1] + dz); }); }, !first); return; }
+  if (drag.kind === 'exit'){ roadEdit(n => { const p = n.road.points[n.road.points.length - 1]; p.x = round(x); p.z = round(z); }, !first); return; }
   if (drag.kind === 'paint'){ paintAt(x, z); return; }
   if (drag.kind === 'block'){ const R = rampOf(drag.ramp), c = hitCell(R, x, z, C.RAMP_SP*1.5); if (c){ drag.c1 = c; drag.ok = blockOk(drag); } draw(); return; }
   if (drag.kind === 'front'){ drag.x = x; drag.z = z; drag.snap = snapFront(x, z); moveFront(drag, !first); return; }
@@ -682,19 +770,25 @@ function moveFront(d, live){
     rd.shape = rd.shape.map(p => [round(p[0] + dx), round(p[1] + dz)]); };
   live ? editLive(fn) : edit(fn);
 }
-cv.addEventListener('pointerup', () => {
+const endTouch = e => { if (e && e.pointerType === 'touch'){ touches.delete(e.pointerId); if (drag && drag.kind === 'pinch'){ if (!touches.size){ drag = null; press = null; } return true; } } return false; };
+cv.addEventListener('pointercancel', e => { endTouch(e); });
+cv.addEventListener('pointerup', e => {
+  if (endTouch(e)) return;
   if (!press) return; clearTimeout(press.longTimer);
   const wasClick = !press.moved, {x, z} = press;
   if (drag && drag.kind === 'block'){ finishBlock(drag); }
-  else if (wasClick && tool === 'road' && (!drag || drag.kind === 'pan')){
+  else if (drag && drag.kind === 'box' && !wasClick){ boxSelect(drag); }
+  else if (drag && drag.kind === 'cellbox' && !wasClick && drag.sx1 != null){ cellBoxSelect(drag); }
+  else if (wasClick && tool === 'road' && (!drag || drag.kind === 'box')){
     const near = nearestRoadS(x, z);
     if (near.d < RAD + 0.15 && hitPoint(x, z, 12/VIEW.s) < 0){
       const sArr = L.ROAD.pointS; let i = 0; while (i < sArr.length - 1 && sArr[i+1] < near.s) i++;
       const [px, pz] = clampToZone(x, z);
       roadEdit(n => { n.road.points.splice(i + 1, 0, {x:round(px), z:round(pz)}); }); sel = {kind:'point', i:i + 1}; renderAll(); }
+    else if (drag && drag.deselect){ sel = {kind:'level'}; renderAll(); }
   } else if (wasClick && drag && drag.deselect){ sel = {kind:'level'}; renderAll(); }
   if (drag && drag.kind === 'front' && drag.started && !drag.snap) toast('The ramp is not connected to the road (warning)');
-  const dragged = drag && drag.started && drag.kind !== 'pan';
+  const dragged = drag && drag.started && !['pan', 'box', 'cellbox'].includes(drag.kind);
   drag = null; press = null; draw();
   if (dragged) renderInspector();                    // live drags skip the inspector; bring it up to date once
 });
@@ -707,17 +801,28 @@ function nodeFirst(nd, pi, x, z){
 function updateHover(x, z){
   const hr = 12/VIEW.s; let h = null;
   const pi = hitPoint(x, z, hr), nd = tool === 'road' ? null : hitNode(x, z, hr*1.1);
-  if (pi >= 0 && !(nd && nodeFirst(nd, pi, x, z))) h = {kind:'point', i:pi};
+  if (pi >= 0 && !(nd && nodeFirst(nd, pi, x, z)) && !(tool === 'select' && pi === lvl.road.points.length - 1 && hitExit(x, z))) h = {kind:'point', i:pi};
   if (!h && nd) h = {kind:'node', ramp:nd.ramp, i:nd.i};
+  if (!h && tool === 'select' && hitExit(x, z)) h = {kind:'exit'};
   if (!h) h = hitBlocker(x, z);
-  if (!h){ const ri = hitRamp(x, z); if (ri >= 0) h = {kind:'ramp', ramp:ri}; }
+  if (!h){ const ri = hitRamp(x, z); if (ri >= 0){ h = {kind:'ramp', ramp:ri}; const c = hitCell(rampOf(ri), x, z, C.RAMP_SP*0.8); if (c) h.cell = c; } }
   const key = JSON.stringify(h); if (key === JSON.stringify(hover)) return;
-  hover = h; cv.style.cursor = h ? (h.kind === 'point' || h.kind === 'node' ? 'grab' : 'pointer') : (['paint', 'erase', 'hide', 'tunnel', 'lock', 'count'].includes(tool) ? 'crosshair' : 'default'); draw();
+  hover = h; cv.style.cursor = h ? (h.kind === 'point' || h.kind === 'node' || h.kind === 'exit' ? 'grab' : 'pointer') : (['paint', 'erase', 'hide', 'tunnel', 'lock', 'count'].includes(tool) ? 'crosshair' : 'default'); draw();
 }
 cv.addEventListener('pointerleave', () => { if (hover){ hover = null; draw(); } });
-function rightClick(x, z, hr){
-  const pi = hitPoint(x, z, hr*1.2); if (pi > 0){ deletePoint(pi); return; }
-  for (const r of L.RAMPS){ const c = hitCell(r, x, z); if (c){ edit(n => { n.ramps[r.src].columns[c[0]][c[1]] = null; }); return; } }
+/* right-click: select what is under the cursor (keeping a selection it belongs to) and open the menu for it */
+function ctxAt(cx, cy, x, z, hr){
+  let pi = hitPoint(x, z, hr*1.2); if (pi === lvl.road.points.length - 1 && hitExit(x, z)) pi = -1;
+  if (pi >= 0){ if (!(sel.kind === 'point' && ptList().includes(pi))) sel = {kind:'point', i:pi}; renderAll(); openCtx(cx, cy, 'point', {x, z}); return; }
+  if (hitExit(x, z)){ sel = {kind:'exit'}; renderAll(); openCtx(cx, cy, 'exit', {x, z}); return; }
+  const nd = hitNode(x, z, hr*1.1); if (nd){ if (!(sel.kind === 'ramp' && rampList().includes(nd.ramp))) sel = {kind:'ramp', ramp:nd.ramp}; renderAll(); openCtx(cx, cy, 'ramp', {x, z}); return; }
+  const bl = hitBlocker(x, z); if (bl){ if (!(sel.kind === bl.kind && blkList().some(o => o.ramp === bl.ramp && o.i === bl.i))) sel = bl; renderAll(); openCtx(cx, cy, bl.kind, {x, z}); return; }
+  const ri = hitRamp(x, z);
+  if (ri >= 0){ const c = hitCell(rampOf(ri), x, z, C.RAMP_SP*0.8);
+    if (c && sel.kind === 'cells' && sel.ramp === ri && sel.cells.some(q => q[0] === c[0] && q[1] === c[1])){ openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
+    if (c && ['paint', 'erase', 'hide'].includes(tool)){ sel = {kind:'cells', ramp:ri, cells:[c]}; renderAll(); openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
+    if (!(sel.kind === 'ramp' && rampList().includes(ri))) sel = {kind:'ramp', ramp:ri}; renderAll(); openCtx(cx, cy, 'ramp', {x, z, cell:c}); return; }
+  openCtx(cx, cy, 'view', {x, z});
 }
 function paintAt(x, z){
   const r = rampOf(drag.ramp); if (!r) return; const cell = hitCell(r, x, z); if (!cell) return;
@@ -759,6 +864,7 @@ function addRampAt(x, z){
   if (!pick){ const ss = L.RAMPS.map(r => r.s).filter(isFinite).concat([0.8, L.ROAD.portalS - 0.8]).sort((a, b) => a - b), gaps = [];
     for (let i=0;i<ss.length-1;i++) gaps.push([ss[i+1] - ss[i], (ss[i] + ss[i+1])/2]); gaps.sort((a, b) => b[0] - a[0]);
     for (const [, mid] of gaps){ for (const side of [sn.side, -sn.side]) if (ok(mid, side)){ pick = make(mid, side); break; } if (pick) break; } }
+  for (let at = 1.2; !pick && at < L.ROAD.portalS - 0.8; at += 0.4) for (const side of [sn.side, -sn.side]) if (ok(at, side)){ pick = make(at, side); break; }   // anywhere on the road
   if (!pick){ pick = make(sn.s, sn.side); toast('No free spot inside the target zone: check the warnings'); }
   edit(n => { n.ramps.push(pick); }); sel = {kind:'ramp', ramp:lvl.ramps.length - 1}; renderAll();
 }
@@ -789,24 +895,45 @@ function rampAction(a, i){
 }
 
 /* =============================== QUEUE PANE ===============================
-   The three lanes drawn as buses (length = capacity), hidden buses grey with a "?" (their colour on the
-   rim), key buses with a key, connected buses joined by bellows.  Click to select (Shift/Ctrl adds),
-   drag to reorder or move to another lane, right-click to delete, double-click toggles hidden. */
-const QW = 58, QX = [8, 84, 160], QK = 30, QTOP = 26;
+   The level's 2-5 lanes drawn as buses (length = capacity), hidden buses grey with a "?" (their colour on the
+   rim), key buses with a key, connected buses joined by bellows.  Click to select (Shift/Ctrl/Cmd adds), drag a
+   box over empty space to select several, drag a bus to reorder it or move it to another lane, double-click
+   toggles hidden, right-click for the menu.  The pane widens for 4-5 lanes. */
+const QK = 30, QTOP = 26;
+let QW = 58, QX = [8, 84, 160];
+function queueGeom(){
+  const n = lvl.lanes.length; QW = n >= 4 ? 50 : 58; QX = Array.from({length:n}, (_, l) => 8 + l*(QW + 18));
+  const w = QX[n - 1] + QW + 8, pane = Math.max(258, w + 14);     // (wide enough for the header on one line)
+  if ($('app').dataset.qw !== String(pane)){ $('app').dataset.qw = pane; $('app').style.gridTemplateColumns = `190px minmax(320px,1fr) ${pane}px 280px auto`; setTimeout(() => { resize(); fitPhone(); }, 0); }
+  return w;
+}
 function queueLayout(){
+  queueGeom();
   const out = []; lvl.lanes.forEach((lane, l) => { let y = QTOP; lane.forEach((b, i) => { const h = C.busLen(b.cap)*QK; out.push({l, i, b, x:QX[l], y, w:QW, h}); y += h + 8; }); });
   return out;
 }
 let qDrag = null;
 function renderQueue(){
-  const svg = $('queueSvg'), items = queueLayout(), H = Math.max(200, ...items.map(q => q.y + q.h + 30));
-  svg.setAttribute('width', 222); svg.setAttribute('height', H);
+  const svg = $('queueSvg'), items = queueLayout(), W = queueGeom(), H = Math.max(200, ...items.map(q => q.y + q.h + 30));
+  svg.setAttribute('width', W); svg.setAttribute('height', H); $('qLaneN').textContent = lvl.lanes.length;
+  $('qLaneMinus').disabled = lvl.lanes.length <= C.LANE_MIN; $('qLanePlus').disabled = lvl.lanes.length >= C.LANE_MAX;
   const selSet = new Set(sel.kind === 'bus' ? sel.list.map(([l, i]) => l + ':' + i) : []);
+  // queue problems next to the queue: the buses of a bad connection get a red rim
+  const qw = check.warnings.filter(w => /^link|^key/.test(w.kind)), badLink = new Set();
+  lvl.lanes.flat().forEach(b => { if (b.link != null && qw.some(w => w.msg.includes(`Link ${b.link}`) || w.kind === 'link-deadlock')) badLink.add(b.link); });
+  $('qWarn').innerHTML = qw.slice(0, 3).map(w => `<div class="iwarn" title="${esc(w.msg)}">⚠ ${esc(w.msg.length > 90 ? w.msg.slice(0, 88) + '…' : w.msg)}</div>`).join('');
+  $('qWarn').querySelectorAll('.iwarn').forEach((d, k) => d.onclick = () => { const w = qw[k], id = (/Link (\S+?)[:\s]/.exec(w.msg) || [])[1];
+    const list = []; lvl.lanes.forEach((ln, l) => ln.forEach((b, i) => { if (id != null && String(b.link) === id) list.push([l, i]); })); if (list.length){ sel = {kind:'bus', list}; renderAll(); } });
   const at = (l, i) => items.find(q => q.l === l && q.i === i);
   let out = '<defs><pattern id="bellow" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8b919c"/><rect width="3" height="6" fill="#bfc4cc"/></pattern>'
     + '<pattern id="bellowH" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8b919c"/><rect width="6" height="3" fill="#bfc4cc"/></pattern></defs>';
-  [0, 1, 2].forEach(l => { out += `<text x="${QX[l] + QW/2}" y="16" fill="#97a1ba" font-size="11" text-anchor="middle">Lane ${l + 1}</text>`;
-    out += `<rect class="lane" data-lane="${l}" x="${QX[l] - 3}" y="${QTOP - 4}" width="${QW + 6}" height="${H - QTOP}" rx="8" fill="#141927" stroke="#2c3550"/>`; });
+  lvl.lanes.forEach((ln, l) => { out += `<text x="${QX[l] + QW/2}" y="16" fill="#97a1ba" font-size="11" text-anchor="middle">Lane ${l + 1}</text>`;
+    out += `<rect class="lane" data-lane="${l}" x="${QX[l] - 3}" y="${QTOP - 4}" width="${QW + 6}" height="${H - QTOP}" rx="8" fill="#141927" stroke="#2c3550"/>`;
+    // an empty lane says so, with its own "Add bus"
+    if (!ln.length) out += `<g class="qadd" data-lane="${l}" style="cursor:pointer"><title>Add a bus to lane ${l + 1}</title><rect x="${QX[l]}" y="${QTOP + 8}" width="${QW}" height="72" fill="rgba(0,0,0,0)"/>`
+      + `<text x="${QX[l] + QW/2}" y="${QTOP + 26}" fill="#97a1ba" font-size="11" text-anchor="middle">No buses</text><text x="${QX[l] + QW/2}" y="${QTOP + 40}" fill="#97a1ba" font-size="11" text-anchor="middle">yet</text>`
+      + `<rect x="${QX[l] + 3}" y="${QTOP + 50}" width="${QW - 6}" height="26" rx="7" fill="#25426b" stroke="#4aa8ff"/><text x="${QX[l] + QW/2}" y="${QTOP + 67}" fill="#fff" font-size="12" font-weight="700" text-anchor="middle">+ Add</text></g>`; });
+  if (!items.length) out += `<text x="${W/2}" y="${QTOP + 104}" fill="#c6cde0" font-size="12" text-anchor="middle">No buses yet – Add bus</text>`;
   // bellows between connected buses (in group order)
   const groups = {}; items.forEach(q => { if (q.b.link != null) (groups[q.b.link] = groups[q.b.link] || []).push(q); });
   Object.values(groups).forEach(ms => { ms.sort((a, b) => a.l - b.l || a.i - b.i);
@@ -818,12 +945,14 @@ function renderQueue(){
         out += `<rect transform="translate(${x0},${y0}) rotate(${ang.toFixed(2)})" x="0" y="-12" width="${len.toFixed(1)}" height="24" rx="3" fill="url(#bellow)" stroke="#4a505c" stroke-width="1.5"/>`; } } });
   items.forEach(q => { const b = q.b, k = q.l + ':' + q.i, isSel = selSet.has(k), hid = b.hidden;
     out += `<g class="bus${isSel ? ' sel' : ''}" data-key="${k}"><title>Lane ${q.l + 1}, bus ${q.i + 1}: ${b.color} ${b.cap} seats${hid ? ', hidden' : ''}${b.link != null ? ', connected (' + esc(b.link) + ')' : ''}${b.key ? ', carries key ' + esc(b.key) : ''}</title>`
-      + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="9" fill="${hid ? '#9aa1ad' : C.HEX[b.color]}" stroke="${isSel ? '#ffc531' : hid ? C.HEX[b.color] : '#0006'}" stroke-width="${isSel ? 4 : hid ? 4 : 1.5}"/>`
+      + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="9" fill="${hid ? '#9aa1ad' : C.HEX[b.color]}" stroke="${isSel ? '#ffc531' : badLink.has(b.link) ? '#ff3b3b' : hid ? C.HEX[b.color] : '#0006'}" stroke-width="${isSel || hid || badLink.has(b.link) ? 4 : 1.5}"${badLink.has(b.link) && !isSel ? ' stroke-dasharray="6 3"' : ''}/>`
       + `<rect x="${q.x + 7}" y="${q.y + 7}" width="${q.w - 14}" height="${q.h - 14}" rx="5" fill="#0002"/>`
       + `<text x="${q.x + q.w/2}" y="${q.y + q.h/2 + 5}" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" stroke="#0005" stroke-width="3" paint-order="stroke">${hid ? '?' : b.cap}</text>`
       + (hid ? `<text x="${q.x + q.w - 9}" y="${q.y + 14}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">${b.cap}</text>` : '')
       + (b.key ? `<g transform="translate(${q.x + 4},${q.y + q.h - 22})"><circle cx="9" cy="9" r="9" fill="#ffd34d" stroke="#8a5a00"/><text x="9" y="13" text-anchor="middle" font-size="11" font-weight="800" fill="#6b4200">${esc(String(b.key)).slice(0, 2)}</text></g>` : '')
       + `</g>`; });
+  if (qDrag && qDrag.box && qDrag.x1 != null){ const x0 = Math.min(qDrag.x0, qDrag.x1), y0 = Math.min(qDrag.y0, qDrag.y1);
+    out += `<rect x="${x0}" y="${y0}" width="${Math.abs(qDrag.x1 - qDrag.x0)}" height="${Math.abs(qDrag.y1 - qDrag.y0)}" fill="rgba(74,168,255,.15)" stroke="#4aa8ff" stroke-dasharray="4 3"/>`; }
   if (qDrag && qDrag.target){ const [tl, ti] = qDrag.target, lane = items.filter(q => q.l === tl), y = ti < lane.length ? lane[ti].y - 5 : (lane.length ? lane[lane.length - 1].y + lane[lane.length - 1].h + 3 : QTOP);
     out += `<rect x="${QX[tl] - 2}" y="${y}" width="${QW + 4}" height="3" rx="1.5" fill="#4aa8ff"/>`; }
   svg.innerHTML = out;
@@ -831,9 +960,14 @@ function renderQueue(){
 }
 function queueHit(ev){ const svg = $('queueSvg'), r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; return {x, y, items:queueLayout()}; }
 $('queueSvg').addEventListener('pointerdown', ev => {
-  const g = ev.target.closest('.bus'), {x, y, items} = queueHit(ev);
-  if (ev.button === 2){ ev.preventDefault(); if (g){ const [l, i] = g.dataset.key.split(':').map(Number); edit(n => { n.lanes[l].splice(i, 1); }); sel = {kind:'level'}; renderAll(); } return; }
-  if (!g){ if (!ev.shiftKey && !ev.ctrlKey && !ev.metaKey){ sel = {kind:'level'}; renderAll(); } return; }
+  focusPane = 'queue';
+  const g = ev.target.closest('.bus'), add = ev.target.closest('.qadd'), {x, y, items} = queueHit(ev);
+  if (ev.button === 2){ ev.preventDefault();
+    if (g){ const key = g.dataset.key.split(':').map(Number); if (!(sel.kind === 'bus' && sel.list.some(k => k[0] === key[0] && k[1] === key[1]))){ sel = {kind:'bus', list:[key]}; renderAll(); } }
+    let lane = QX.findIndex(qx => x >= qx - 8 && x <= qx + QW + 8); openCtx(ev.clientX, ev.clientY, g ? 'bus' : 'queue', {lane:Math.max(0, lane)}); return; }
+  if (add){ openBusPop(+add.dataset.lane, add); return; }
+  if (!g){ qDrag = {box:true, x0:x, y0:y, sx:ev.clientX, sy:ev.clientY, moved:false, multi:ev.shiftKey || ev.ctrlKey || ev.metaKey};
+    try { $('queueSvg').setPointerCapture(ev.pointerId); } catch (e) {} return; }
   const [l, i] = g.dataset.key.split(':').map(Number);
   qDrag = {key:g.dataset.key, l, i, sx:ev.clientX, sy:ev.clientY, moved:false, multi:ev.shiftKey || ev.ctrlKey || ev.metaKey};
   try { $('queueSvg').setPointerCapture(ev.pointerId); } catch (e) {}
@@ -843,12 +977,20 @@ $('queueSvg').addEventListener('pointermove', ev => {
   if (!qDrag.moved && Math.hypot(ev.clientX - qDrag.sx, ev.clientY - qDrag.sy) < 5) return;
   qDrag.moved = true;
   const {x, y, items} = queueHit(ev);
+  if (qDrag.box){ qDrag.x1 = x; qDrag.y1 = y; renderQueue(); return; }
   let tl = QX.findIndex(qx => x >= qx - 8 && x <= qx + QW + 8); if (tl < 0){ qDrag.target = null; renderQueue(); return; }
   const lane = items.filter(q => q.l === tl); let ti = lane.length; for (let k = 0; k < lane.length; k++) if (y < lane[k].y + lane[k].h/2){ ti = k; break; }
   qDrag.target = [tl, ti]; renderQueue();
 });
 $('queueSvg').addEventListener('pointerup', () => {
   const d = qDrag; qDrag = null; if (!d) return;
+  if (d.box){                                         // a click on empty space deselects; a box selects every bus it touches
+    if (!d.moved){ if (!d.multi){ sel = {kind:'level'}; renderAll(); } return; }
+    const x0 = Math.min(d.x0, d.x1), x1 = Math.max(d.x0, d.x1), y0 = Math.min(d.y0, d.y1), y1 = Math.max(d.y0, d.y1);
+    const hit = queueLayout().filter(q => q.x < x1 && q.x + q.w > x0 && q.y < y1 && q.y + q.h > y0).map(q => [q.l, q.i]);
+    const base = d.multi && sel.kind === 'bus' ? sel.list.slice() : [];
+    hit.forEach(k => { if (!base.some(o => o[0] === k[0] && o[1] === k[1])) base.push(k); });
+    sel = base.length ? {kind:'bus', list:base} : {kind:'level'}; renderAll(); return; }
   if (!d.moved){ const key = [d.l, d.i], now = performance.now();
     // a second click on the same bus within 350 ms toggles hidden (the queue is redrawn on every click, so the
     // browser's own dblclick never sees the same element twice)
@@ -866,8 +1008,46 @@ $('queueSvg').addEventListener('pointerup', () => {
 let lastBusClick = null;
 function toggleHidden(l, i){ edit(n => { const o = n.lanes[l][i]; if (o.hidden) delete o.hidden; else o.hidden = true; }); sel = {kind:'bus', list:[[l, i]]}; renderAll(); }
 $('queueSvg').addEventListener('contextmenu', e => e.preventDefault());
-document.querySelectorAll('#queueFoot button').forEach(b => b.onclick = () => { const l = +b.dataset.lane;
-  edit(n => { n.lanes[l].push({color, cap}); }); sel = {kind:'bus', list:[[l, lvl.lanes[l].length - 1]]}; renderAll(); toast(`Added a ${color} ${cap}-seat bus to lane ${l + 1}`); });
+/* lanes: 2-5; removing the last lane moves its buses to the lane before it */
+function setLanes(n){
+  n = Math.max(C.LANE_MIN, Math.min(C.LANE_MAX, n)); const cur = lvl.lanes.length; if (n === cur) return;
+  let moved = 0;
+  edit(o => { while (o.lanes.length < n) o.lanes.push([]);
+    while (o.lanes.length > n){ const last = o.lanes.pop(); moved += last.length; o.lanes[o.lanes.length - 1].push(...last); }
+    o.laneCount = n; });
+  if (sel.kind === 'bus') sel = {kind:'level'};
+  renderAll(); toast(`${n} lanes` + (moved ? ` · ${moved} bus${moved > 1 ? 'es' : ''} moved to lane ${n}` : ''));
+}
+$('qLaneMinus').onclick = () => setLanes(lvl.lanes.length - 1);
+$('qLanePlus').onclick = () => setLanes(lvl.lanes.length + 1);
+/* "Add bus": a small form (lane, colour, seats, hidden) that remembers its last choice */
+const BP = {lane:0, color:'red', cap:8, hidden:false};
+function addBus(l, o){
+  o = Object.assign({}, BP, o || {}); l = Math.max(0, Math.min(lvl.lanes.length - 1, l));
+  edit(n => { const b = {color:o.color, cap:o.cap}; if (o.hidden) b.hidden = true; n.lanes[l].push(b); });
+  sel = {kind:'bus', list:[[l, lvl.lanes[l].length - 1]]}; renderAll();
+  toast(`Added a ${o.hidden ? 'hidden ' : ''}${o.color} ${o.cap}-seat bus to lane ${l + 1}`);
+}
+function renderBusPop(){
+  $('bpLanes').innerHTML = lvl.lanes.map((_, l) => `<button data-l="${l}" class="${BP.lane === l ? 'on' : ''}" title="Lane ${l + 1}">${l + 1}</button>`).join('');
+  $('bpColors').innerHTML = C.COLORS.map(c => `<div class="sw ${BP.color === c ? 'on' : ''}" data-c="${c}" title="${c}" style="background:${C.HEX[c]}"></div>`).join('');
+  $('bpCaps').innerHTML = [4, 6, 8, 12].map(c => `<button data-cap="${c}" class="${BP.cap === c ? 'on' : ''}">${c}</button>`).join('');
+  $('bpHidden').classList.toggle('on', BP.hidden); $('bpHidden').lastChild.textContent = BP.hidden ? ' Hidden (grey ?)' : ' Visible';
+  $('bpLanes').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { BP.lane = +b.dataset.l; renderBusPop(); });
+  $('bpColors').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { BP.color = b.dataset.c; renderBusPop(); });
+  $('bpCaps').querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { BP.cap = cap = +b.dataset.cap; renderBusPop(); renderPalette(); });
+}
+function openBusPop(lane, anchor){
+  if (lane != null) BP.lane = Math.min(lane, lvl.lanes.length - 1); else BP.lane = Math.min(BP.lane, lvl.lanes.length - 1);
+  BP.color = BP.color || color; renderBusPop(); const p = $('busPop'); p.classList.add('show');
+  const r = (anchor || $('addBusBtn')).getBoundingClientRect(), h = p.offsetHeight || 230, w = p.offsetWidth || 236;
+  p.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width/2 - w/2)) + 'px'; p.style.top = Math.max(8, r.top - h - 8) + 'px';
+}
+const closeBusPop = () => $('busPop').classList.remove('show');
+$('addBusBtn').onclick = () => openBusPop(sel.kind === 'bus' ? sel.list[0][0] : null, $('addBusBtn'));
+$('bpHidden').onclick = () => { BP.hidden = !BP.hidden; renderBusPop(); };
+$('bpAdd').onclick = () => addBus(BP.lane);
+$('bpClose').onclick = closeBusPop;
 function linkSelected(){
   const list = sel.kind === 'bus' ? sel.list : [];
   if (list.length < 2 || list.length > 3){ toast('Select 2 or 3 buses in the queue to connect them'); return false; }
@@ -889,17 +1069,18 @@ function renderPalette(){
   const el = $('palette'); let html = ''; let g = null;
   TOOLS.forEach(t => { if (t.g !== g){ if (g) html += '</div>'; g = t.g; html += `<div class="grp"><h3>${t.g}</h3>`;
       if (t.g === 'Ramp blockers') html += ''; }
-    html += `<button class="tool ${tool === t.id ? 'on' : ''}" data-tool="${t.id}" title="${esc(t.tip)} (${t.key})">${icon(t.icon)}<span>${t.label}</span><kbd>${t.key}</kbd></button>`;
-    if (t.id === 'hide') html += `<div class="swatches">${C.COLORS.map((c, i) => `<div class="sw ${color === c ? 'on' : ''}" data-color="${c}" title="${c} (${i + 1})" style="background:${C.HEX[c]}"><small>${i + 1}</small></div>`).join('')}</div>
+    const num = (TOOLS.indexOf(t) + 1) % 10;
+    html += `<button class="tool ${tool === t.id ? 'on' : ''}" data-tool="${t.id}" title="${esc(t.tip)} (${num} or ${t.key})">${icon(t.icon)}<span>${t.label}</span><kbd>${num}</kbd></button>`;
+    if (t.id === 'hide') html += `<div class="swatches">${C.COLORS.map((c, i) => `<div class="sw ${color === c ? 'on' : ''}" data-color="${c}" title="${c} (${esc(kb('Shift ' + (i + 1)))})" style="background:${C.HEX[c]}"><small>⇧${i + 1}</small></div>`).join('')}</div>
       <div class="row"><button id="fillBtn" title="Fill the selected ramp with random runs of the colours in use">${icon('shuffle')} Fill random</button></div>`;
     if (t.id === 'link') html += `<h3 style="margin-top:8px">New bus</h3><div class="caps">${[4, 6, 8, 12].map(c => `<button class="${cap === c ? 'on' : ''}" data-cap="${c}" title="${c} seats">${c}</button>`).join('')}</div>
-      <div class="hint" style="margin-top:4px">Colour from the swatches above; add it with the + buttons under the queue.</div>`;
+      <div class="hint" style="margin-top:4px">The seats the next bus starts with in <b>Add bus</b> (under the queue).</div>`;
   });
   html += '</div>'; el.innerHTML = html;
   el.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
   el.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { color = b.dataset.color; if (!['paint', 'tunnel'].includes(tool)) setTool('paint'); else renderPalette();
     if (sel.kind === 'tunnel') edit(n => { n.ramps[sel.ramp].tunnels[sel.i].color = color; }); });
-  el.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { cap = +b.dataset.cap; renderPalette(); });
+  el.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { cap = BP.cap = +b.dataset.cap; renderPalette(); if ($('busPop').classList.contains('show')) renderBusPop(); });
   $('fillBtn').onclick = () => { if (sel.ramp == null || !lvl.ramps[sel.ramp]){ toast('Select a ramp first'); return; } rampAction('fill'); };
 }
 function setTool(t){
@@ -912,20 +1093,78 @@ function h(html){ const d = document.createElement('div'); d.innerHTML = html.tr
 function renderInspector(){
   const el = $('insp'); el.innerHTML = '';
   if (!selValid()) sel = {kind:'level'};
-  if (sel.kind === 'point') inspPoint(el); else if (sel.kind === 'ramp') inspRamp(el); else if (sel.kind === 'tunnel') inspTunnel(el);
-  else if (sel.kind === 'box') inspBox(el); else if (sel.kind === 'bus') inspBus(el); else inspLevel(el);
+  const many = selCount() > 1 && ['point', 'ramp', 'tunnel', 'box'].includes(sel.kind);
+  if (many) inspMany(el); else if (sel.kind === 'point') inspPoint(el); else if (sel.kind === 'ramp') inspRamp(el); else if (sel.kind === 'tunnel') inspTunnel(el);
+  else if (sel.kind === 'box') inspBox(el); else if (sel.kind === 'bus') inspBus(el); else if (sel.kind === 'exit') inspExit(el); else if (sel.kind === 'cells') inspCells(el); else inspLevel(el);
+  const ws = selWarnings(); if (ws.length && el.firstChild){ const card = el.firstChild, after = card.querySelector('h2');
+    ws.slice(0, 4).forEach(w => { const d = h(`<div class="iwarn">⚠ <b>${esc(shortWarn(w))}</b><br>${esc(w.msg)}</div>`); d.onclick = () => { highlight = w; draw(); setTimeout(() => { highlight = null; draw(); }, 1600); };
+      after ? after.after(d) : card.prepend(d); }); }
+}
+/* the checker's warnings about what is selected (shown in the inspector next to it) */
+function selWarnings(){
+  const W = check.warnings, near = (w, x, z, r) => w.x != null && Math.hypot(w.x - x, w.z - z) < r;
+  if (sel.kind === 'exit') return W.filter(w => w.kind === 'zone-exit' || w.kind === 'ramp-exit');
+  if (sel.kind === 'point') return W.filter(w => ['zone-road', 'road-cross', 'road-tight'].includes(w.kind) && ptList().some(i => lvl.road.points[i] && near(w, lvl.road.points[i].x, lvl.road.points[i].z, 2.2)));
+  if (sel.kind === 'ramp') return W.filter(w => w.ramp != null && rampList().includes(w.ramp));
+  if (sel.kind === 'tunnel' || sel.kind === 'box' || sel.kind === 'cells') return W.filter(w => w.ramp === sel.ramp && (sel.kind === 'cells' || /blocker|tunnel|lock|count/.test(w.kind)));
+  if (sel.kind === 'bus'){ const links = new Set(sel.list.map(([l, i]) => lvl.lanes[l][i].link).filter(x => x != null)), keys = new Set(sel.list.map(([l, i]) => lvl.lanes[l][i].key).filter(Boolean));
+    return W.filter(w => (/^link/.test(w.kind) && [...links].some(id => w.msg.includes(`Link ${id}`))) || w.kind === 'link-deadlock' || ([...keys].some(k => w.msg.includes(k)) && /key|lock/.test(w.kind))); }
+  return [];
+}
+const ROLES = ['Tutorial', 'Teach', 'Teach + POPUP', 'Practice', 'Challenge', 'Milestone', 'Relax', 'Fun', 'Finale'];
+function inspMany(el){
+  const n = selCount(), kind = sel.kind, name = kind === 'point' ? 'road point' : kind;
+  const c = h(`<div class="card"><h2>${icon(kind === 'point' ? 'road' : kind === 'ramp' ? 'ramp' : kind === 'tunnel' ? 'tunnel' : 'lock')} ${esc(plural(n, name))} selected</h2>
+    <div class="row"><button data-m="copy">${icon('copy')} Copy <kbd>${kb('Ctrl C')}</kbd></button><button data-m="dup">${icon('copy')} Duplicate <kbd>${kb('Ctrl D')}</kbd></button></div>
+    <div class="row"><button data-m="cut">Cut <kbd>${kb('Ctrl X')}</kbd></button><button data-m="del" class="danger">${icon('trash')} Delete <kbd>Del</kbd></button></div>
+    <div class="hint">Arrow keys move them all (Shift: further)${kind === 'ramp' ? '; ramps on the road slide along it' : ''}. Shift- or ${MAC ? '⌘' : 'Ctrl'}-click adds or removes one; Esc deselects.</div></div>`);
+  c.querySelectorAll('[data-m]').forEach(b => b.onclick = () => ({copy:copySel, dup:duplicateSel, cut:cutSel, del:deleteSelection})[b.dataset.m]());
+  el.append(c);
+}
+function inspExit(el){
+  const pts = lvl.road.points, p = pts[pts.length - 1], bad = check.warnings.some(w => w.kind === 'zone-exit');
+  const c = h(`<div class="card"><h2>${icon('tunnel')} Exit tunnel</h2>
+    <div class="row"><label>Position</label><span>x ${p.x.toFixed(2)} · z ${p.z.toFixed(2)}</span>${bad ? '<span class="pill bad">outside the zone</span>' : '<span class="pill ok">in the zone</span>'}</div>
+    <div class="row"><label>Top edge</label><button data-x="left">Left</button><button data-x="centre">Centre</button><button data-x="right">Right</button></div>
+    <div class="hint">The exit tunnel is the end of the road: drag it (or the road's last point) anywhere in the target zone, or use the arrow keys. It faces the way the road arrives.</div></div>`);
+  c.querySelectorAll('[data-x]').forEach(b => b.onclick = () => exitTo(b.dataset.x));
+  el.append(c);
+}
+function inspCells(el){
+  const rd = lvl.ramps[sel.ramp], men = sel.cells.map(([c, k]) => C.parseCell(rd.columns[c][k])).filter(Boolean), hid = men.filter(m => m.hidden).length;
+  const c = h(`<div class="card"><h2>${icon('brush')} ${esc(plural(sel.cells.length, 'cell'))} · ramp ${sel.ramp + 1}</h2>
+    <div class="row"><label>Stickmen</label><span>${men.length} (${hid} hidden) · ${sel.cells.length - men.length} empty</span></div>
+    <div class="row"><label>Paint</label><div class="swatches" style="flex:1">${C.COLORS.map(cc => `<div class="sw" data-c="${cc}" title="${cc}" style="background:${C.HEX[cc]}"></div>`).join('')}</div></div>
+    <div class="row"><button id="cHide">${icon('hidden')} Hide / show</button><button id="cClear">${icon('eraser')} Empty</button></div>
+    <div class="hint">Copy and paste them into another spot or ramp (paste goes to the hovered cell); the arrow keys move them a cell.</div></div>`);
+  const tun = (n, cc, k) => (n.ramps[sel.ramp].tunnels || []).some(t => cc >= t.col && cc < t.col + t.w && k >= t.row && k < t.row + t.h);
+  c.querySelectorAll('[data-c]').forEach(b => b.onclick = () => edit(n => { const cols = n.ramps[sel.ramp].columns; sel.cells.forEach(([cc, k]) => { if (!tun(n, cc, k)){ const m = C.parseCell(cols[cc][k]); cols[cc][k] = C.cellStr({color:b.dataset.c, hidden:m ? m.hidden : false}); } }); }));
+  c.querySelector('#cHide').onclick = () => edit(n => { const cols = n.ramps[sel.ramp].columns, on = !sel.cells.every(([cc, k]) => { const m = C.parseCell(cols[cc][k]); return !m || m.hidden; });
+    sel.cells.forEach(([cc, k]) => { const m = C.parseCell(cols[cc][k]); if (m) cols[cc][k] = C.cellStr({color:m.color, hidden:on}); }); });
+  c.querySelector('#cClear').onclick = deleteSelection;
+  el.append(c);
 }
 function inspLevel(el){
-  const nb = lvl.lanes.flat().length;
+  const nb = lvl.lanes.flat().length, m = lvl.meta || {}, role = m.role || '', diff = m.diff;
+  const roles = ROLES.includes(role) || !role ? ROLES : [role].concat(ROLES);
   const c = h(`<div class="card"><h2>${icon('file')} Level</h2>
-    <div class="row"><label>Id</label><code>${esc(lvl.id)}</code></div>
-    <div class="row"><label>Name</label><span>${esc(lvl.name)}</span></div>
+    <div class="row"><label>Id</label><input type="text" id="lvId" value="${esc(lvl.id)}" style="flex:1" title="Unique id: letters, digits, - and _"></div>
+    <div class="row"><label>Name</label><input type="text" id="lvName" value="${esc(lvl.name || '')}" style="flex:1"></div>
+    <div class="row"><label>Role</label><select id="lvRole" style="flex:1"><option value="">—</option>${roles.map(r => `<option ${r === role ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+    <div class="row"><label>Target difficulty</label><span class="stepper"><button id="dMinus" title="Easier">−</button><b>${diff != null ? diff : '–'}</b><button id="dPlus" title="Harder">+</button></span><span class="hint">${diff != null ? 'of 10' : 'not set'}</span></div>
+    <div class="row"><label>Queue lanes</label><span class="stepper"><button id="lnMinus" ${lvl.lanes.length <= C.LANE_MIN ? 'disabled' : ''}>−</button><b>${lvl.lanes.length}</b><button id="lnPlus" ${lvl.lanes.length >= C.LANE_MAX ? 'disabled' : ''}>+</button></span><span class="hint">${C.LANE_MIN}-${C.LANE_MAX}</span></div>
     <div class="row"><label>Road</label><span>${lvl.road.points.length} points · length ${L.ROAD.portalS.toFixed(1)}</span></div>
     <div class="row"><label>Ramps</label><span>${lvl.ramps.length}</span></div>
     <div class="row"><label>Queue</label><span>${nb} buses</span></div>
     <div class="row"><button id="fitBtn">${icon('fit')} Fit view <kbd>F</kbd></button></div>
     <div class="hint">Select something in the view or the queue to edit it. The return tunnel picks its side by itself (now <b>${L.TUNNEL.side > 0 ? 'right' : 'left'}</b>).</div></div>`);
   c.querySelector('#fitBtn').onclick = () => { fitView(); draw(); };
+  c.querySelector('#lvId').onchange = e => { if (!renameId(e.target.value)) e.target.value = lvl.id; };
+  c.querySelector('#lvName').onchange = e => edit(n => { n.name = e.target.value.trim() || 'Untitled level'; });
+  c.querySelector('#lvRole').onchange = e => edit(n => { n.meta = Object.assign({}, n.meta); if (e.target.value) n.meta.role = e.target.value; else delete n.meta.role; if (!Object.keys(n.meta).length) delete n.meta; });
+  const setDiff = d => edit(n => { n.meta = Object.assign({}, n.meta); const v = (n.meta.diff != null ? n.meta.diff : 4) + d; n.meta.diff = Math.max(1, Math.min(10, v)); });
+  c.querySelector('#dMinus').onclick = () => setDiff(-1); c.querySelector('#dPlus').onclick = () => setDiff(1);
+  c.querySelector('#lnMinus').onclick = () => setLanes(lvl.lanes.length - 1); c.querySelector('#lnPlus').onclick = () => setLanes(lvl.lanes.length + 1);
   el.append(c);
 }
 function inspPoint(el){
@@ -1081,7 +1320,7 @@ function runTest(){
 }
 
 /* =========================== LEVELS & ORDER =========================== */
-function openLevels(){ $('levelsModal').classList.add('show'); renderLevels(); }
+function openLevels(){ $('levelsModal').classList.add('show'); if (!lvSelId) lvSelId = lvl.id; renderLevels(); }
 function closeModals(){ document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); }
 function renderLevels(){
   if (!$('levelsModal').classList.contains('show')) return;
@@ -1090,10 +1329,12 @@ function renderLevels(){
     .sort((a, b) => a.localeCompare(b, undefined, {numeric:true}));
   const list = $('levelList'); list.innerHTML = '';
   ids.forEach(id => { const sl = slots[id];
-    const row = h(`<div class="lrow ${id === lvl.id ? 'cur' : ''}" data-id="${esc(id)}"><code title="${esc(id)}">${esc(id)}</code><span class="nm" title="${esc(sl.name)}">${esc(sl.name)}</span>
+    const row = h(`<div class="lrow ${id === lvl.id ? 'cur' : ''} ${id === lvSelId ? 'sel' : ''}" data-id="${esc(id)}" title="Click to highlight · double-click opens · ${esc(kb('Ctrl D'))} duplicates · Del deletes"><code title="${esc(id)}">${esc(id)}</code><span class="nm" title="${esc(sl.name)}">${esc(sl.name)}</span>
       <span class="acts"><button data-a="open" title="Open">Open</button><button data-a="order" title="Add to the level order">${icon('order')}</button><button data-a="dup" title="Duplicate">${icon('copy')}</button><button data-a="del" class="danger" title="Delete">${icon('trash')}</button></span></div>`);
     row.querySelectorAll('button').forEach(b => b.onclick = () => { const a = b.dataset.a;
       if (a === 'open'){ if (openLevel(id)) closeModals(); } if (a === 'order') orderAdd(id); if (a === 'dup') duplicateLevel(id); if (a === 'del') deleteLevel(id); });
+    row.addEventListener('click', e => { if (e.target.closest('button')) return; lvSelId = id; renderLevels(); });
+    row.addEventListener('dblclick', e => { if (e.target.closest('button')) return; if (openLevel(id)) closeModals(); });
     list.append(row); });
   if (!ids.length) list.append(h(`<div class="hint">No saved levels${q ? ' match' : ''}.</div>`));
   $('orderIds').innerHTML = Object.keys(slots).map(id => `<option value="${esc(id)}">`).join('');
@@ -1136,7 +1377,8 @@ function importLevel(txt){
 /* ============================== TOP BAR ============================== */
 function renderBar(){
   $('levelId').value = lvl.id; $('levelName').value = lvl.name || '';
-  const dirty = isDirty(); $('saveState').textContent = savedJSON == null ? 'not saved yet' : dirty ? 'unsaved changes' : 'saved'; $('saveState').classList.toggle('dirty', dirty);
+  const dirty = isDirty(); $('saveState').textContent = savedJSON == null ? 'not saved yet · draft kept' : dirty ? 'unsaved · draft kept' : 'saved'; $('saveState').classList.toggle('dirty', dirty);
+  $('dirtyDot').classList.toggle('on', dirty); document.title = (dirty ? '● ' : '') + (lvl.name || lvl.id) + ' — Match Express Editor';
   $('undoBtn').disabled = !undoStack.length; $('redoBtn').disabled = !redoStack.length;
 }
 document.querySelectorAll('.menu').forEach(m => { m.querySelector('[data-menu]').onclick = e => { e.stopPropagation(); const open = !m.classList.contains('open');
@@ -1144,7 +1386,7 @@ document.querySelectorAll('.menu').forEach(m => { m.querySelector('[data-menu]')
 addEventListener('pointerdown', e => { if (!e.target.closest('.menu')) document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); });
 document.querySelectorAll('.menu [data-act]').forEach(b => b.onclick = () => { document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); ACT[b.dataset.act](); });
 const ACT = {new:newLevel, levels:openLevels, save:() => saveLevel(false), saveAs:() => saveLevel(true), import:() => pickFile(importLevel),
-  exportJSON:exportLevelJSON, exportHtmlLevel:() => exportHtml('level'), exportHtmlOrder:() => exportHtml('order'), exportOrder:exportOrderJSON, playTab:playInTab};
+  dupLevel:duplicateCurrentLevel, exportJSON:exportLevelJSON, exportHtmlLevel:() => exportHtml('level'), exportHtmlOrder:() => exportHtml('order'), exportOrder:exportOrderJSON, playTab:playInTab};
 $('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
 $('levelId').onchange = e => { if (!renameId(e.target.value)) e.target.value = lvl.id; };
 $('levelName').onchange = e => edit(n => { n.name = e.target.value.trim() || 'Untitled level'; });
@@ -1155,51 +1397,326 @@ $('autoBtn').onclick = () => { autoRun = !autoRun; $('autoBtn').classList.toggle
 $('previewBtn').onclick = () => { const d = $('previewDock'); d.classList.toggle('hide'); $('previewBtn').classList.toggle('on', !d.classList.contains('hide')); fitPhone(); setTimeout(resize, 30); };
 $('helpBtn').onclick = () => $('helpModal').classList.add('show');
 
+/* ============================ SELECTION + CLIPBOARD ============================
+   One kind of thing selected at a time (road points, ramps, tunnels, boxes, stickman cells, buses, the exit, or the
+   level itself), one or several of it. Copy / cut / paste / duplicate / delete / nudge / select all work on it. */
+const ptList = () => sel.kind === 'point' ? (sel.list || [sel.i]) : [];
+const rampList = () => sel.kind === 'ramp' ? (sel.list || [sel.ramp]) : [];
+const blkList = () => sel.kind === 'tunnel' || sel.kind === 'box' ? (sel.list || [{ramp:sel.ramp, i:sel.i}]) : [];
+function toggleSel(kind, item){
+  const same = (a, b) => typeof a === 'object' ? a.ramp === b.ramp && a.i === b.i : a === b;
+  let list = kind === 'point' ? ptList() : kind === 'ramp' ? rampList() : sel.kind === kind ? blkList() : [];
+  if (sel.kind !== kind) list = [];
+  list = list.some(o => same(o, item)) ? list.filter(o => !same(o, item)) : list.concat([item]);
+  if (!list.length) sel = {kind:'level'};
+  else if (kind === 'point') sel = {kind, i:list[list.length - 1], list};
+  else if (kind === 'ramp') sel = {kind, ramp:list[list.length - 1], list};
+  else sel = {kind, ramp:list[list.length - 1].ramp, i:list[list.length - 1].i, list};
+  renderAll();
+}
+/* a box dragged over empty space: road points (road tool), ramps (select tool, by their front node or middle) or
+   blockers (blocker tools) inside it */
+function boxSelect(d){
+  const x0 = Math.min(d.sx0, d.sx1), x1 = Math.max(d.sx0, d.sx1), y0 = Math.min(d.sy0, d.sy1), y1 = Math.max(d.sy0, d.sy1);
+  const inBox = (x, z) => { const [sx, sy] = W2S(x, z); return sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1; };
+  const add = (kind, items) => { if (!items.length){ if (!d.multi) sel = {kind:'level'}; renderAll(); return; }
+    if (d.multi && sel.kind === kind){ items = (kind === 'point' ? ptList() : kind === 'ramp' ? rampList() : blkList()).concat(items); }
+    const last = items[items.length - 1];
+    sel = kind === 'point' ? {kind, i:last, list:items} : kind === 'ramp' ? {kind, ramp:last, list:items} : {kind, ramp:last.ramp, i:last.i, list:items}; renderAll(); };
+  if (tool === 'road') return add('point', lvl.road.points.map((p, i) => i).filter(i => i > 0 && inBox(lvl.road.points[i].x, lvl.road.points[i].z)));
+  if (['tunnel', 'lock', 'count'].includes(tool)){ const kind = tool === 'tunnel' ? 'tunnel' : 'box', out = [];
+    L.RAMPS.forEach(r => (lvl.ramps[r.src][kind === 'tunnel' ? 'tunnels' : 'boxes'] || []).forEach((o, i) => { if (kind === 'box' && (tool === 'lock') !== (o.lock != null)) return;
+      if (o.col + o.w > r.cols || o.row + o.h > r.rows) return; const q = cellQuad(r, o.col, o.row, o.w, o.h);
+      if (inBox(q.reduce((a, p) => a + p[0], 0)/4, q.reduce((a, p) => a + p[1], 0)/4)) out.push({ramp:r.src, i}); }));
+    return add(kind, out); }
+  const ramps = L.RAMPS.filter(r => inBox(r.ctrl[0][0], r.ctrl[0][1]) || inBox(...(() => { const o = {}; C.pathAt(r.spline, r.length/2, o, 0); return [o.x, o.z]; })())).map(r => r.src);
+  if (ramps.length || tool !== 'select') return add('ramp', ramps);
+  add('point', lvl.road.points.map((p, i) => i).filter(i => i > 0 && inBox(lvl.road.points[i].x, lvl.road.points[i].z)));
+}
+/* a box dragged over a ramp: its stickman cells */
+function cellBoxSelect(d){
+  const r = rampOf(d.ramp); if (!r) return;
+  const x0 = Math.min(d.sx0, d.sx1), x1 = Math.max(d.sx0, d.sx1), y0 = Math.min(d.sy0, d.sy1), y1 = Math.max(d.sy0, d.sy1), cells = [];
+  for (let c = 0; c < r.cols; c++) for (let k = 0; k < r.rows; k++){ const [sx, sy] = W2S(r.slots[c][k].x, r.slots[c][k].z); if (sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1) cells.push([c, k]); }
+  sel = cells.length ? {kind:'cells', ramp:d.ramp, cells} : {kind:'ramp', ramp:d.ramp}; renderAll();
+  if (cells.length) toast(`${cells.length} cell${cells.length > 1 ? 's' : ''} selected · copy, cut, paste, Delete, arrows`);
+}
+function selectAll(){
+  if (focusPane === 'queue' || tool === 'link'){ const list = []; lvl.lanes.forEach((ln, l) => ln.forEach((b, i) => list.push([l, i]))); sel = list.length ? {kind:'bus', list} : {kind:'level'}; }
+  else if (tool === 'road'){ const list = lvl.road.points.map((p, i) => i).filter(i => i > 0); sel = {kind:'point', i:list[list.length - 1], list}; }
+  else if (['paint', 'erase', 'hide'].includes(tool)){ const ri = sel.ramp != null && lvl.ramps[sel.ramp] ? sel.ramp : 0, r = lvl.ramps[ri]; if (!r){ toast('No ramps yet'); return; }
+    const cells = []; r.columns.forEach((col, c) => col.forEach((_, k) => cells.push([c, k]))); sel = {kind:'cells', ramp:ri, cells}; }
+  else if (['tunnel', 'lock', 'count'].includes(tool)){ const kind = tool === 'tunnel' ? 'tunnel' : 'box', list = [];
+    lvl.ramps.forEach((r, ri) => (r[kind === 'tunnel' ? 'tunnels' : 'boxes'] || []).forEach((o, i) => { if (kind === 'box' && (tool === 'lock') !== (o.lock != null)) return; list.push({ramp:ri, i}); }));
+    sel = list.length ? {kind, ramp:list[0].ramp, i:list[0].i, list} : {kind:'level'}; }
+  else { const list = lvl.ramps.map((r, i) => i); sel = list.length ? {kind:'ramp', ramp:list[list.length - 1], list} : {kind:'level'}; }
+  renderAll(); const n = selCount(); toast(n ? `Selected ${n}` : 'Nothing to select here');
+}
+function selCount(){ return sel.kind === 'bus' ? sel.list.length : sel.kind === 'cells' ? sel.cells.length : ptList().length || rampList().length || blkList().length; }
+/* a ramp as plain data at its current place (boarding point and shape written out) */
+function rampData(i){ const rd = clone(lvl.ramps[i]), r = rampOf(i); if (!r) return rd;
+  if (r.snapped && rd.at == null){ rd.at = round(r.s, 3); delete rd.cp; } if (!rd.shape && rd.tilt == null) rd.shape = r.ctrl.slice(1).map(p => [round(p[0]), round(p[1])]); return rd; }
+let CLIP = null;
+function clipOf(){
+  switch (sel.kind){
+    case 'point': { const items = ptList().filter(i => i > 0).sort((a, b) => a - b).map(i => clone(lvl.road.points[i])); return items.length ? {kind:'point', items} : null; }
+    case 'ramp': return {kind:'ramp', items:rampList().slice().sort((a, b) => a - b).map(rampData)};
+    case 'tunnel': case 'box': return {kind:sel.kind, ramp:blkList()[0].ramp, items:blkList().map(o => clone(lvl.ramps[o.ramp][sel.kind === 'tunnel' ? 'tunnels' : 'boxes'][o.i]))};
+    case 'cells': { const c0 = Math.min(...sel.cells.map(q => q[0])), k0 = Math.min(...sel.cells.map(q => q[1])), cols = lvl.ramps[sel.ramp].columns;
+      return {kind:'cells', items:sel.cells.map(([c, k]) => [c - c0, k - k0, cols[c][k]])}; }
+    case 'bus': { const l0 = Math.min(...sel.list.map(q => q[0]));
+      return {kind:'bus', items:sel.list.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([l, i]) => { const b = clone(lvl.lanes[l][i]); delete b.link; delete b.key; return [l - l0, b]; })}; }
+    default: return {kind:'level', level:clone(lvl)};
+  }
+}
+const KIND_NAME = {point:'road point', ramp:'ramp', tunnel:'tunnel', box:'box', cells:'cell', bus:'bus', level:'level'};
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : w === 'bus' ? 'es' : w === 'box' ? 'es' : 's'}`;
+function copySel(){
+  const c = clipOf(); if (!c){ toast('Nothing to copy'); return false; } CLIP = c;
+  try { navigator.clipboard.writeText(JSON.stringify(c.kind === 'level' ? c.level : {matchExpressClip:c}, null, c.kind === 'level' ? 2 : 0)).catch(() => {}); } catch (e) {}
+  toast(c.kind === 'level' ? `Copied the level "${lvl.id}"` : `Copied ${plural(c.items.length, KIND_NAME[c.kind])}`); return true;
+}
+function cutSel(){ if (['level', 'exit'].includes(sel.kind)){ toast('Select something to cut'); return; } if (copySel()){ deleteSelection(); toast(`Cut ${plural(CLIP.items.length, KIND_NAME[CLIP.kind])}`); } }
+function duplicateSel(){ const c = clipOf(); if (!c) return; if (c.kind === 'level') duplicateCurrentLevel(); else pasteClip(c, true); }
+function duplicateCurrentLevel(){
+  const slots = S.loadSlots(); let nid = lvl.id + '_copy', k = 2; while (slots[nid]) nid = lvl.id + '_copy' + (k++);
+  const lv = Object.assign(clone(lvl), {id:nid, name:(lvl.name || 'Level') + ' copy'}); slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots); renderLevels();
+  toast(`Duplicated as "${nid}" (in Levels)`); return nid;
+}
+/* paste: next to the selection (or where the copies came from), never over what is there */
+function pasteClip(clip, dup){
+  clip = clip || CLIP; if (!clip){ toast('Nothing to paste'); return false; }
+  const n0 = clip.items ? clip.items.length : 1;
+  if (clip.kind === 'level'){
+    const lv = clone(clip.level), slots = S.loadSlots(); let nid = (lv.id || 'level') + '_copy', k = 2; while (slots[nid]) nid = (lv.id || 'level') + '_copy' + (k++);
+    lv.id = nid; slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots); renderLevels(); toast(`Pasted the level as "${nid}" (in Levels)`); return true; }
+  if (clip.kind === 'point'){
+    const pts = lvl.road.points, after = sel.kind === 'point' ? Math.max(...ptList()) : pts.length - 2, at = Math.min(after, pts.length - 2);
+    roadEdit(n => { clip.items.forEach((p, k) => { const [x, z] = clampToZone(p.x + 0.6, p.z); const q = clone(p); q.x = round(x); q.z = round(z); n.road.points.splice(at + 1 + k, 0, q); }); });
+    const list = clip.items.map((_, k) => at + 1 + k); sel = {kind:'point', i:list[list.length - 1], list}; }
+  else if (clip.kind === 'ramp'){
+    const first = lvl.ramps.length;
+    edit(n => { clip.items.forEach((rd0, k) => { const rd = clone(rd0);
+      if (rd.at != null){ rd.at = round(Math.min(L.ROAD.portalS - 0.8, rd.at + 1.4*(k + 1)), 3);
+        if (rd.shape){ const t = clone(n); t.ramps.push(Object.assign(clone(rd0))); const a = C.buildLayout(t).RAMPS.find(q => q.src === t.ramps.length - 1);
+          const t2 = clone(n); t2.ramps.push(Object.assign(clone(rd0), {at:rd.at})); const b = C.buildLayout(t2).RAMPS.find(q => q.src === t2.ramps.length - 1);
+          const dx = b.ctrl[0][0] - a.ctrl[0][0], dz = b.ctrl[0][1] - a.ctrl[0][1]; rd.shape = rd.shape.map(q => [round(q[0] + dx), round(q[1] + dz)]); } }
+      else if (rd.front){ rd.front = [round(rd.front[0] + 1), rd.front[1]]; if (rd.shape) rd.shape = rd.shape.map(q => [round(q[0] + 1), q[1]]); }
+      n.ramps.push(rd); }); });
+    const list = clip.items.map((_, k) => first + k); sel = {kind:'ramp', ramp:list[list.length - 1], list}; }
+  else if (clip.kind === 'tunnel' || clip.kind === 'box'){
+    const ri = sel.ramp != null && lvl.ramps[sel.ramp] ? sel.ramp : clip.ramp; if (!lvl.ramps[ri]){ toast('Select a ramp to paste into'); return false; }
+    const key = clip.kind === 'tunnel' ? 'tunnels' : 'boxes', placed = [];
+    edit(n => { const rd = n.ramps[ri], cols = rd.columns.length;
+      clip.items.forEach(o0 => { const o = clone(o0), taken = c => (rd.tunnels || []).concat(rd.boxes || []).some(x => c >= x.col && c < x.col + x.w);
+        if (o.row + o.h > rd.rows || o.w > cols) return;
+        let col = null; for (let d = 0; d < cols && col == null; d++) for (const c of [o.col + d, o.col - d]) if (c >= 0 && c + o.w <= cols && ![...Array(o.w).keys()].some(j => taken(c + j))){ col = c; break; }
+        if (col == null) return; o.col = col;
+        if (o.lock != null){ const used = new Set(n.ramps.flatMap(r => (r.boxes || []).map(x => x.lock)).filter(Boolean)); let k = 1; while (used.has('K' + k)) k++; o.lock = 'K' + k; }
+        if (clip.kind === 'tunnel') for (let c = o.col; c < o.col + o.w; c++) for (let r = o.row; r < o.row + o.h; r++) rd.columns[c][r] = null;
+        rd[key] = (rd[key] || []).concat([o]); placed.push(rd[key].length - 1); }); });
+    if (!placed.length){ toast('No free columns on that ramp'); return false; }
+    const list = placed.map(i => ({ramp:ri, i})); sel = {kind:clip.kind, ramp:ri, i:placed[placed.length - 1], list}; }
+  else if (clip.kind === 'cells'){
+    const ri = sel.ramp != null && lvl.ramps[sel.ramp] ? sel.ramp : 0; if (!lvl.ramps[ri]){ toast('Select a ramp to paste into'); return false; }
+    let a = [0, 0]; if (sel.kind === 'cells' && sel.ramp === ri){ a = [Math.min(...sel.cells.map(q => q[0])), Math.min(...sel.cells.map(q => q[1]))]; if (dup) a[0] += 1 + Math.max(...clip.items.map(q => q[0])); }
+    else if (hover && hover.cell && hover.ramp === ri) a = hover.cell;
+    const cells = [];
+    edit(n => { const rd = n.ramps[ri], tun = (c, k) => (rd.tunnels || []).some(t => c >= t.col && c < t.col + t.w && k >= t.row && k < t.row + t.h);
+      clip.items.forEach(([dc, dk, v]) => { const c = a[0] + dc, k = a[1] + dk; if (c < rd.columns.length && k < rd.rows && !tun(c, k)){ rd.columns[c][k] = v; cells.push([c, k]); } }); });
+    sel = cells.length ? {kind:'cells', ramp:ri, cells} : {kind:'ramp', ramp:ri}; }
+  else if (clip.kind === 'bus'){
+    const last = sel.kind === 'bus' ? sel.list.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]).pop() : null, l0 = last ? last[0] : 0, list = [];
+    edit(n => { const nl = n.lanes.length, at = {};
+      clip.items.forEach(([dl, b]) => { const l = Math.min(nl - 1, l0 + dl), i = at[l] != null ? at[l] : (last && l === last[0] ? last[1] + 1 : n.lanes[l].length);
+        n.lanes[l].splice(i, 0, clone(b)); at[l] = i + 1; list.push([l, i]); }); });
+    sel = {kind:'bus', list}; }
+  renderAll(); toast(`${dup ? 'Duplicated' : 'Pasted'} ${plural(n0, KIND_NAME[clip.kind])}`); return true;
+}
+/* arrows: road points and loose ramp fronts move (0.1, Shift 0.5), a ramp on the road slides along it, blockers and
+   cells move a cell, buses move up / down their lane or to the next lane */
+function nudge(dx, dz, big){
+  const st = big ? 0.5 : 0.1;
+  if (sel.kind === 'point'){ const list = ptList().filter(i => i > 0); if (!list.length) return;
+    roadEdit(n => list.forEach(i => { const p = n.road.points[i]; p.x = round(p.x + dx*st); p.z = round(p.z + dz*st); })); return; }
+  if (sel.kind === 'exit'){ roadEdit(n => { const p = n.road.points[n.road.points.length - 1]; p.x = round(p.x + dx*st); p.z = round(p.z + dz*st); }); return; }
+  if (sel.kind === 'ramp'){ const list = rampList();
+    edit(n => list.forEach(i => { const rd = n.ramps[i], r = rampOf(i); if (!r) return;
+      if (r.snapped){ const old = r.ctrl[0]; rd.at = round(Math.max(0.6, Math.min(L.ROAD.portalS - 0.7, r.s + (dx - dz)*st*2)), 3); delete rd.cp;
+        if (!rd.shape) rd.shape = r.ctrl.slice(1).map(p => [round(p[0]), round(p[1])]);
+        const nr = C.buildLayout(clone(n)).RAMPS.find(q => q.src === i), ddx = nr.ctrl[0][0] - old[0], ddz = nr.ctrl[0][1] - old[1];
+        rd.shape = rd.shape.map(p => [round(p[0] + ddx), round(p[1] + ddz)]); }
+      else if (rd.front){ rd.front = [round(rd.front[0] + dx*st), round(rd.front[1] + dz*st)]; if (rd.shape) rd.shape = rd.shape.map(p => [round(p[0] + dx*st), round(p[1] + dz*st)]); } })); return; }
+  if (sel.kind === 'tunnel' || sel.kind === 'box'){ const key = sel.kind === 'tunnel' ? 'tunnels' : 'boxes', list = blkList(); let blocked = false;
+    edit(n => list.forEach(o => { const rd = n.ramps[o.ramp], b = rd[key][o.i], nx = Object.assign({}, b, {col:b.col + dx, row:b.row + dz});
+      if (nx.col < 0 || nx.row < (sel.kind === 'tunnel' ? 1 : 0) || nx.col + nx.w > rd.columns.length || nx.row + nx.h > rd.rows){ blocked = true; return; }
+      const others = (rd.tunnels || []).concat(rd.boxes || []).filter(x => x !== b);
+      if (others.some(x => x.col < nx.col + nx.w && nx.col < x.col + x.w)){ blocked = true; return; }
+      Object.assign(b, nx); if (sel.kind === 'tunnel') for (let c = b.col; c < b.col + b.w; c++) for (let r = b.row; r < b.row + b.h; r++) rd.columns[c][r] = null; }));
+    if (blocked) toast('It cannot move there'); return; }
+  if (sel.kind === 'cells'){ const rd = lvl.ramps[sel.ramp], moved = sel.cells.map(([c, k]) => [c + dx, k + dz]);
+    if (moved.some(([c, k]) => c < 0 || k < 0 || c >= rd.columns.length || k >= rd.rows)){ toast('The cells would leave the ramp'); return; }
+    const vals = sel.cells.map(([c, k]) => rd.columns[c][k]);
+    edit(n => { const cols = n.ramps[sel.ramp].columns; sel.cells.forEach(([c, k]) => { cols[c][k] = null; }); moved.forEach(([c, k], j) => { cols[c][k] = vals[j]; }); });
+    sel = {kind:'cells', ramp:sel.ramp, cells:moved}; renderAll(); return; }
+  if (sel.kind === 'bus' && sel.list.length === 1){ const [l, i] = sel.list[0], nl = lvl.lanes.length;
+    if (dz){ const j = i + dz; if (j < 0 || j >= lvl.lanes[l].length) return; edit(n => { const ln = n.lanes[l]; [ln[i], ln[j]] = [ln[j], ln[i]]; }); sel = {kind:'bus', list:[[l, j]]}; }
+    else { const t = l + dx; if (t < 0 || t >= nl) return; const j = Math.min(i, lvl.lanes[t].length); edit(n => { const [b] = n.lanes[l].splice(i, 1); n.lanes[t].splice(j, 0, b); }); sel = {kind:'bus', list:[[t, j]]}; }
+    renderAll(); }
+}
+/* the exit tunnel: the road's last point. Put it on the top edge of the target zone (left, middle, right): the
+   highest spot where the whole tunnel still fits */
+function exitTo(where){
+  const pts = lvl.road.points, last = pts[pts.length - 1], x = where === 'left' ? -4.6 : where === 'right' ? 4.6 : 0;
+  const fits = z => { const t = clone(lvl); const p = t.road.points[t.road.points.length - 1]; p.x = x; p.z = z; delete t.road.tail;
+    try { return !C.checkLevel(t).warnings.some(w => w.kind === 'zone-exit'); } catch (e) { return false; } };
+  let z = null; for (let zz = -21; zz <= -8; zz += 0.25) if (fits(zz)){ z = zz; break; }
+  if (z == null){ toast('No spot on the top edge fits the tunnel there'); return; }
+  roadEdit(n => { const p = n.road.points[n.road.points.length - 1]; p.x = x; p.z = round(z + 0.3); }); sel = {kind:'exit'}; renderAll();
+  toast(`Exit tunnel at the top ${where === 'centre' ? 'centre' : where}`);
+}
+
+/* =============================== CONTEXT MENU =============================== */
+const MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
+// "Ctrl Shift S" -> "Ctrl+Shift+S" (or ⌘⇧S on a Mac); only before a key name, so "Shift / Ctrl adds" stays prose
+const KEY_AHEAD = '(?=(?:Ctrl|Shift|Alt|Enter|Del|Backspace|[A-Z0-9])(?:\\b|$))';
+const kb = s => MAC ? s.replace(new RegExp('Ctrl ' + KEY_AHEAD, 'g'), '⌘').replace(new RegExp('Shift ' + KEY_AHEAD, 'g'), '⇧').replace(new RegExp('Alt ' + KEY_AHEAD, 'g'), '⌥')
+  : s.replace(new RegExp('(Ctrl|Shift|Alt) ' + KEY_AHEAD, 'g'), '$1+');
+let ctxInfo = null;
+function openCtx(cx, cy, kind, info){
+  ctxInfo = Object.assign({kind}, info || {}); const items = [], has = !!CLIP, sep = () => items.push(null);
+  const it = (label, key, fn, ok = true, icn) => items.push({label, key, fn, ok, icn});
+  const common = (canPaste = true) => { it('Cut', 'Ctrl X', cutSel, true, 'copy'); it('Copy', 'Ctrl C', copySel, true, 'copy'); it('Paste', 'Ctrl V', () => pasteClip(), has && canPaste, 'upload');
+    it('Duplicate', 'Ctrl D', duplicateSel, true, 'copy'); it('Delete', 'Del', deleteSelection, true, 'trash'); };
+  let title = '';
+  if (kind === 'point'){ const n = ptList().length; title = n > 1 ? plural(n, 'road point') : 'Road point'; common();
+    if (n === 1 && sel.i > 0 && sel.i < lvl.road.points.length - 1){ sep(); const p = lvl.road.points[sel.i]; it(p.spiral ? 'Spiral off' : 'Spiral on', '', () => roadEdit(nn => { const q = nn.road.points[sel.i]; if (q.spiral) delete q.spiral; else q.spiral = {r:1.2, side:1}; }), true, 'spiral'); } }
+  else if (kind === 'exit'){ title = 'Exit tunnel'; it('Top left', '', () => exitTo('left'), true, 'node'); it('Top centre', '', () => exitTo('centre'), true, 'node'); it('Top right', '', () => exitTo('right'), true, 'node'); }
+  else if (kind === 'ramp'){ const n = rampList().length; title = n > 1 ? plural(n, 'ramp') : 'Ramp ' + (sel.ramp + 1); common();
+    if (n === 1){ sep(); it('Flip side', '', () => rampAction('flip'), true, 'shuffle'); it('Fill random', '', () => rampAction('fill'), true, 'shuffle'); it('Clear stickmen', '', () => rampAction('clear'), true, 'eraser');
+      if (!rampOf(sel.ramp).snapped) it('Snap to road', '', () => rampAction('snap'), true, 'node');
+      if (info && info.cell){ sep(); it('Select this cell', '', () => { sel = {kind:'cells', ramp:sel.ramp, cells:[info.cell]}; renderAll(); }, true, 'select'); } } }
+  else if (kind === 'tunnel' || kind === 'box'){ const n = blkList().length; title = n > 1 ? plural(n, kind === 'tunnel' ? 'tunnel' : 'box') : kind === 'tunnel' ? 'Colourful tunnel' : 'Box'; common(); }
+  else if (kind === 'cells'){ title = plural(sel.cells.length, 'cell'); common();
+    sep(); it('Hide / show stickmen', 'H', () => edit(nn => { const cols = nn.ramps[sel.ramp].columns, on = !sel.cells.every(([c, k]) => { const m = C.parseCell(cols[c][k]); return !m || m.hidden; });
+      sel.cells.forEach(([c, k]) => { const m = C.parseCell(cols[c][k]); if (m) cols[c][k] = C.cellStr({color:m.color, hidden:on}); }); }), true, 'hidden');
+    it(`Paint ${color}`, '', () => edit(nn => { const cols = nn.ramps[sel.ramp].columns; sel.cells.forEach(([c, k]) => { cols[c][k] = color; }); }), true, 'brush'); }
+  else if (kind === 'bus'){ const n = sel.list.length; title = n > 1 ? plural(n, 'bus') : busLabel(sel.list[0][0], sel.list[0][1], lvl.lanes[sel.list[0][0]][sel.list[0][1]]); common();
+    sep(); it('Toggle hidden', 'double-click', () => edit(nn => { const on = !sel.list.every(([l, i]) => nn.lanes[l][i].hidden); sel.list.forEach(([l, i]) => { if (on) nn.lanes[l][i].hidden = true; else delete nn.lanes[l][i].hidden; }); }), true, 'hidden');
+    it('Connect', 'L', linkSelected, n >= 2 && n <= 3, 'link'); it('Disconnect', '', unlinkSelected, sel.list.some(([l, i]) => lvl.lanes[l][i].link != null), 'unlink');
+    if (n === 1){ sep(); lvl.lanes.forEach((_, l) => { if (l !== sel.list[0][0]) it(`Move to lane ${l + 1}`, '', () => { const [ol, oi] = sel.list[0], j = lvl.lanes[l].length;
+      edit(nn => { const [b] = nn.lanes[ol].splice(oi, 1); nn.lanes[l].push(b); }); sel = {kind:'bus', list:[[l, j]]}; renderAll(); }, true, 'bus'); }); } }
+  else if (kind === 'queue'){ title = 'Queue'; it('Add bus…', '', () => openBusPop(info.lane), true, 'plus'); it('Paste', 'Ctrl V', () => pasteClip(), has && CLIP.kind === 'bus', 'upload');
+    it('Select all buses', 'Ctrl A', () => { focusPane = 'queue'; selectAll(); }, true, 'select'); sep();
+    it('Add a lane', '', () => setLanes(lvl.lanes.length + 1), lvl.lanes.length < C.LANE_MAX, 'plus'); it('Remove the last lane', '', () => setLanes(lvl.lanes.length - 1), lvl.lanes.length > C.LANE_MIN, 'trash'); }
+  else { title = 'Level'; it('Paste', 'Ctrl V', () => pasteClip(), has, 'upload'); it('Add a ramp here', 'R', () => addRampAt(info.x, info.z), true, 'ramp');
+    const near = nearestRoadS(info.x, info.z); if (near.d < RAD + 0.4) it('Add a road point here', '', () => { const sArr = L.ROAD.pointS; let i = 0; while (i < sArr.length - 1 && sArr[i+1] < near.s) i++;
+      const [px, pz] = clampToZone(info.x, info.z); roadEdit(nn => { nn.road.points.splice(i + 1, 0, {x:round(px), z:round(pz)}); }); sel = {kind:'point', i:i + 1}; renderAll(); }, true, 'road');
+    sep(); it('Select all', 'Ctrl A', selectAll, true, 'select'); it('Copy the level', 'Ctrl C', () => { sel = {kind:'level'}; copySel(); }, true, 'copy'); it('Fit view', 'F', () => { fitView(); draw(); }, true, 'fit'); }
+  const m = $('ctx'); m.innerHTML = (title ? `<div class="ttl">${esc(title)}</div>` : '') + items.map((x, k) => x ? `<button data-k="${k}" ${x.ok ? '' : 'disabled'}>${icon(x.icn || 'select')}<span>${esc(x.label)}</span>${x.key ? `<kbd>${esc(kb(x.key))}</kbd>` : ''}</button>` : '<hr>').join('');
+  m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { const x = items[+b.dataset.k]; closeCtx(); x.fn(); });
+  m.classList.add('show'); const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.max(4, Math.min(innerWidth - w - 4, cx)) + 'px'; m.style.top = Math.max(4, Math.min(innerHeight - h - 4, cy)) + 'px';
+}
+function closeCtx(){ $('ctx').classList.remove('show'); ctxInfo = null; }
+addEventListener('pointerdown', e => { if (!e.target.closest('#ctx')) closeCtx(); if (!e.target.closest('#busPop') && !e.target.closest('#addBusBtn') && !e.target.closest('.qadd')) closeBusPop(); }, true);
+
 /* ============================ KEYBOARD + HELP ============================ */
-const KEYS = [['V', 'Select / move'], ['P', 'Road points tool'], ['R', 'Add ramp tool'], ['B', 'Paint stickmen'], ['E', 'Eraser'], ['H', 'Hidden stickmen brush'],
-  ['T', 'Colourful tunnel'], ['K', 'Lock box'], ['N', 'Count box'], ['L', 'Connect the selected buses'], ['1 – 8', 'Pick a colour'], ['Del / Backspace', 'Delete the selection'],
-  ['Esc', 'Deselect / close'], ['Ctrl Z', 'Undo'], ['Ctrl Shift Z / Ctrl Y', 'Redo'], ['Ctrl S', 'Save the level'], ['O', 'Levels & level order'], ['Enter', 'Run the preview'],
-  ['F', 'Fit the view'], ['Wheel / Space-drag', 'Zoom / pan'], ['Shift-click (queue)', 'Select several buses'], ['Double-click (queue)', 'Toggle a hidden bus'], ['?', 'This help']];
-$('keysList').innerHTML = KEYS.map(([k, t]) => `<div><span>${esc(t)}</span><kbd>${esc(k)}</kbd></div>`).join('');
+const KEYS = [['1 – 9, 0', 'Tools (select, road, ramp, paint, eraser, hide, tunnel, lock, count, connect)'], ['V P R B E H T K N', 'The same tools by letter'],
+  ['Shift 1 – 8', 'Pick a colour'], ['L', 'Connect the selected buses'],
+  ['Ctrl S', 'Save'], ['Ctrl Shift S', 'Save as a new level'], ['Ctrl N', 'New level'], ['Ctrl O', 'Open a level (Levels & order)'], ['Ctrl E', 'Export the level JSON'], ['Ctrl Shift E', 'Export a playable HTML of the level'],
+  ['Ctrl Z', 'Undo'], ['Ctrl Shift Z / Ctrl Y', 'Redo'],
+  ['Ctrl C / Ctrl X / Ctrl V', 'Copy / cut / paste (road points, ramps, blockers, stickman cells, buses, the whole level)'], ['Ctrl D', 'Duplicate (in Levels: the highlighted level)'],
+  ['Del / Backspace', 'Delete the selection'], ['Ctrl A', 'Select all of the current tool\'s things'],
+  ['Shift-click / Ctrl-click', 'Add to / remove from the selection'], ['Drag on empty space', 'Box select (on a ramp: its cells)'], ['Arrows', 'Nudge (Shift: further)'], ['Esc', 'Deselect / close'],
+  ['Space-drag / middle mouse', 'Pan'], ['Wheel / pinch', 'Zoom'], ['F', 'Fit the view'], ['Ctrl Enter', 'Run the preview'], ['Right-click', 'Menu with the same actions'], ['Double-click a bus', 'Hidden on / off'], ['?', 'This help']];
+$('keysList').innerHTML = KEYS.map(([k, t]) => `<div><span>${esc(t)}</span><kbd>${esc(kb(k))}</kbd></div>`).join('');
 const TOOL_KEYS = {v:'select', p:'road', r:'ramp', b:'paint', e:'erase', h:'hide', t:'tunnel', k:'lock', n:'count'};
+let lvSelId = null;                                   // the highlighted row of the Levels list (keyboard actions)
+const typing = t => t && t.matches && t.matches('input,textarea,select,[contenteditable]');
 addEventListener('keydown', e => {
-  if (e.key === ' ' && !e.target.matches('input,textarea,select')) spaceDown = true;
-  if (e.target.matches('input,textarea,select')) return;
-  const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
-  if (mod && k === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
-  if (mod && k === 'y'){ e.preventDefault(); redo(); return; }
-  if (mod && k === 's'){ e.preventDefault(); saveLevel(false); return; }
+  if (e.key === ' ' && !typing(e.target)){ spaceDown = true; if (e.target === document.body || e.target === cv) e.preventDefault(); }
+  const k = e.key.toLowerCase(), code = e.code || '', mod = e.ctrlKey || e.metaKey, modal = document.querySelector('.modal.show');
+  const stop = () => { e.preventDefault(); e.stopPropagation(); };
+  // file shortcuts work everywhere, even while typing in a field (the field's change is committed first)
+  if (mod && !e.altKey && ['s', 'n', 'o', 'e'].includes(k)){ stop(); if (typing(e.target)) e.target.blur();
+    if (k === 's') saveLevel(e.shiftKey); else if (k === 'n') newLevel(); else if (k === 'o') openLevels(); else e.shiftKey ? exportHtml('level') : exportLevelJSON(); return; }
+  if (mod && k === 'enter'){ stop(); run(); return; }
+  if (typing(e.target)){ if (k === 'escape') e.target.blur(); return; }
+  if (k === 'escape'){ if ($('ctx').classList.contains('show')) closeCtx(); else if ($('busPop').classList.contains('show')) closeBusPop();
+    else if (modal) closeModals(); else if (sel.kind !== 'level'){ sel = {kind:'level'}; renderAll(); } return; }
+  if (mod && k === 'z'){ stop(); e.shiftKey ? redo() : undo(); return; }
+  if (mod && k === 'y'){ stop(); redo(); return; }
+  if (modal){ if (modal.id === 'levelsModal') levelsKey(e, k, mod, stop); return; }
+  if (mod && k === 'c'){ stop(); copySel(); return; }
+  if (mod && k === 'x'){ stop(); cutSel(); return; }
+  if (mod && k === 'v'){ if (CLIP){ stop(); pasteClip(); } return; }       // nothing copied here: the paste event reads the system clipboard
+  if (mod && k === 'd'){ stop(); duplicateSel(); return; }
+  if (mod && k === 'a'){ stop(); selectAll(); return; }
   if (mod) return;
   if (e.key === '?'){ $('helpModal').classList.add('show'); return; }
-  if (k === 'escape'){ if (document.querySelector('.modal.show')) closeModals(); else { sel = {kind:'level'}; renderAll(); } return; }
-  if (document.querySelector('.modal.show')) return;
+  if (k === 'delete' || k === 'backspace'){ e.preventDefault(); deleteSelection(); return; }
+  if (k.startsWith('arrow')){ e.preventDefault(); const d = {arrowleft:[-1, 0], arrowright:[1, 0], arrowup:[0, -1], arrowdown:[0, 1]}[k]; nudge(d[0], d[1], e.shiftKey); return; }
+  const dg = /^Digit(\d)$/.exec(code) || /^Numpad(\d)$/.exec(code);
+  if (dg && e.shiftKey){ const i = +dg[1]; if (i >= 1 && i <= C.COLORS.length){ color = C.COLORS[i - 1]; renderPalette(); toast(`Colour: ${color}`); } return; }
+  if (dg){ const i = (+dg[1] + 9) % 10; if (TOOLS[i]) setTool(TOOLS[i].id); return; }
   if (TOOL_KEYS[k]){ setTool(TOOL_KEYS[k]); return; }
   if (k === 'l'){ linkSelected(); return; }
-  if (k === 'o'){ openLevels(); return; }
   if (k === 'f'){ fitView(); draw(); return; }
-  if (k === 'enter'){ run(); return; }
-  if (/^[1-8]$/.test(k)){ color = C.COLORS[+k - 1]; renderPalette(); return; }
-  if (k === 'delete' || k === 'backspace'){ e.preventDefault(); deleteSelection(); }
 });
 addEventListener('keyup', e => { if (e.key === ' ') spaceDown = false; });
+addEventListener('blur', () => { spaceDown = false; });
+/* the system clipboard: a level JSON (or a copied selection from another editor tab) pasted with Ctrl+V */
+addEventListener('paste', e => {
+  if (typing(e.target)) return; const txt = (e.clipboardData && e.clipboardData.getData('text')) || ''; if (!txt.trim()) return;
+  let o; try { o = JSON.parse(txt); } catch (err) { return; } e.preventDefault();
+  if (o && o.matchExpressClip) pasteClip(o.matchExpressClip);
+  else if (o && o.road && o.lanes){ try { C.buildLayout(clone(o)); } catch (err) { toast('That JSON is not a level'); return; } pasteClip({kind:'level', level:o}); openLevels(); }
+});
+/* Levels list: arrows move the highlight, Enter opens, Ctrl+D / Ctrl+C+V duplicate, Delete deletes */
+function levelsKey(e, k, mod, stop){
+  if (typing(e.target)) return; const rows = [...document.querySelectorAll('#levelList .lrow')].map(r => r.dataset.id); if (!rows.length) return;
+  let i = rows.indexOf(lvSelId);
+  if (k === 'arrowdown' || k === 'arrowup'){ stop(); i = Math.max(0, Math.min(rows.length - 1, i + (k === 'arrowdown' ? 1 : -1))); lvSelId = rows[i]; renderLevels(); return; }
+  if (i < 0) return; const id = rows[i];
+  if (k === 'enter'){ stop(); if (openLevel(id)) closeModals(); return; }
+  if (mod && k === 'd'){ stop(); duplicateLevel(id); return; }
+  if (mod && k === 'c'){ stop(); const sl = S.loadSlots()[id]; if (sl){ CLIP = {kind:'level', level:clone(sl.level)}; toast(`Copied the level "${id}"`); } return; }
+  if (mod && k === 'v'){ if (CLIP && CLIP.kind === 'level'){ stop(); pasteClip(); } return; }
+  if (k === 'delete' || k === 'backspace'){ stop(); deleteLevel(id); }
+}
 function deleteSelection(){
-  if (sel.kind === 'point') deletePoint(sel.i);
-  else if (sel.kind === 'ramp') deleteRamp(sel.ramp);
+  if (sel.kind === 'point'){ const list = ptList().filter(i => i > 0).sort((a, b) => b - a);
+    if (!list.length){ toast('The first point is fixed to the yard entry'); return; }
+    if (lvl.road.points.length - list.length < 3){ toast('The road needs at least 3 points'); return; }
+    roadEdit(n => { list.forEach(i => n.road.points.splice(i, 1)); }); sel = {kind:'level'}; renderAll(); toast(`Deleted ${plural(list.length, 'road point')}`); }
+  else if (sel.kind === 'ramp'){ const list = rampList().slice().sort((a, b) => b - a); edit(n => { list.forEach(i => n.ramps.splice(i, 1)); }); sel = {kind:'level'}; renderAll(); toast(`Deleted ${plural(list.length, 'ramp')}`); }
   // (edit() drops a selection that no longer exists, so keep the ramp index first)
-  else if (sel.kind === 'tunnel'){ const r = sel.ramp, i = sel.i; edit(n => { n.ramps[r].tunnels.splice(i, 1); }); sel = {kind:'ramp', ramp:r}; renderAll(); }
-  else if (sel.kind === 'box'){ const r = sel.ramp, k = sel.i, id = lvl.ramps[r].boxes[k].lock; edit(n => { n.ramps[r].boxes.splice(k, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); }); sel = {kind:'ramp', ramp:r}; renderAll(); }
+  else if (sel.kind === 'tunnel' || sel.kind === 'box'){ const key = sel.kind === 'tunnel' ? 'tunnels' : 'boxes', list = blkList().slice().sort((a, b) => b.ramp - a.ramp || b.i - a.i), r = sel.ramp;
+    const ids = sel.kind === 'box' ? list.map(o => lvl.ramps[o.ramp].boxes[o.i].lock).filter(Boolean) : [];
+    edit(n => { list.forEach(o => n.ramps[o.ramp][key].splice(o.i, 1)); if (ids.length) n.lanes.forEach(ln => ln.forEach(x => { if (ids.includes(x.key)) delete x.key; })); });
+    sel = {kind:'ramp', ramp:r}; renderAll(); }
+  else if (sel.kind === 'cells'){ const r = sel.ramp, cells = sel.cells; edit(n => { cells.forEach(([c, k]) => { n.ramps[r].columns[c][k] = null; }); }); toast(`Emptied ${plural(cells.length, 'cell')}`); }
   else if (sel.kind === 'bus'){ const keys = sel.list.slice().sort((a, b) => b[1] - a[1]); edit(n => { keys.forEach(([l, i]) => n.lanes[l].splice(i, 1)); }); sel = {kind:'level'}; renderAll(); }
+  else if (sel.kind === 'exit') toast('The exit tunnel is the end of the road: move it instead');
 }
 
 /* ================================ RENDER ================================ */
-const HINTS = {select:'click to select · drag points, ramp nodes (the diamond snaps to the road) · drag empty space to pan · wheel zooms',
-  road:'click the road to add a point · drag to move · right-click (or long-press) a point to delete', ramp:'click next to the road: a ramp appears there, on that side',
-  paint:'drag over ramp cells to paint stickmen (1-8 picks the colour)', erase:'drag over ramp cells to empty them', hide:'drag over stickmen to hide / show them (grey "?")',
+const HINTS = {select:'click to select (Shift / Ctrl adds) · drag points, ramp nodes (the diamond snaps to the road), the exit tunnel · drag empty space to box-select · Space-drag pans · wheel zooms · right-click for a menu',
+  road:'click the road to add a point · drag to move · drag empty space to select several · Del deletes', ramp:'click next to the road: a ramp appears there, on that side',
+  paint:'drag over ramp cells to paint stickmen (Shift 1-8 picks the colour) · Ctrl A selects a whole ramp', erase:'drag over ramp cells to empty them', hide:'drag over stickmen to hide / show them (grey "?")',
   tunnel:'drag across empty cells of a ramp (not the front row) to place a tunnel', lock:'drag across ramp cells to place a lock box', count:'drag across ramp cells to place a count box',
   link:'Shift-click 2 or 3 touching buses in the queue, then press L'};
 function renderAll(light){
-  draw(); renderQueue(); if (!light) renderInspector(); renderChecks(); renderBar();
-  const t = TOOLS.find(x => x.id === tool); $('modeTag').textContent = t.label; $('hint').textContent = HINTS[tool];
+  draw(); renderQueue(); if (!light) renderInspector(); renderChecks(); renderBar(); renderEmpty();
+  const t = TOOLS.find(x => x.id === tool); $('modeTag').textContent = t.label; $('hint').textContent = kb(HINTS[tool]);
+}
+/* empty states: a level without ramps says what to do next, with the button for it */
+function renderEmpty(){
+  const ev = $('emptyView'), none = !lvl.ramps.length; ev.classList.toggle('show', none); if (!none){ ev.innerHTML = ''; return; }
+  if (ev.dataset.k === 'ramps') return; ev.dataset.k = 'ramps';
+  ev.innerHTML = `<span>No ramps yet – add one next to the road</span><button class="primary" id="evAddRamp">${icon('ramp')} Add ramp</button><span class="hint">or press <kbd>3</kbd> and click by the road</span>`;
+  ev.querySelector('#evAddRamp').onclick = () => { const R = L.ROAD, o = {}; C.pathAt(R, R.portalS*0.45, o, 0); addRampAt(o.x - o.dz*1.5, o.z + o.dx*1.5); };
 }
 // the phone fits the dock's height and leaves the work area (palette, view, queue, inspector) at least 1014 px
 function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return;
@@ -1210,6 +1727,9 @@ addEventListener('resize', fitPhone);
 /* ================================ START ================================ */
 (function start(){
   migrateAndSeed();
+  // shortcut labels in the platform's words: ⌘ ⇧ on a Mac, Ctrl+Shift+ elsewhere
+  document.querySelectorAll('#bar kbd, .modal kbd').forEach(k => { k.textContent = kb(k.textContent); });
+  document.querySelectorAll('[title]').forEach(el => { if (/Ctrl|Shift/.test(el.title)) el.title = el.title.replace(/\((.*?)\)/g, (m, t) => '(' + kb(t) + ')'); });
   renderPalette();
   const initial = draftLoad() || Object.assign(clone(C.LEVEL_DATA), {id:'level-2'});
   try { setLevel(initial); } catch (e) { setLevel(Object.assign(clone(C.LEVEL_DATA), {id:'level-2'})); }
@@ -1218,11 +1738,13 @@ addEventListener('resize', fitPhone);
 
 /* test hooks */
 window.__ed = {get level(){ return lvl; }, get hover(){ return hover; }, get layout(){ return L; }, get check(){ return check; }, get sel(){ return sel; }, set sel(v){ sel = v; renderAll(); },
-  get tool(){ return tool; }, setTool, get color(){ return color; }, set color(v){ color = v; renderPalette(); }, set cap(v){ cap = v; renderPalette(); },
+  get tool(){ return tool; }, setTool, get color(){ return color; }, set color(v){ color = v; renderPalette(); }, set cap(v){ cap = BP.cap = v; renderPalette(); },
   get undoDepth(){ return undoStack.length; }, get redoDepth(){ return redoStack.length; }, get lastTest(){ return lastTest; }, get dirty(){ return isDirty(); },
-  setLevel:o => { undoStack.push(JSON.stringify(lvl)); setLevel(o, true); }, edit, undo, redo, run, send, levelJSON, importLevel, saveLevel, renameId, openLevel, newLevel,
+  setLevel:o => { pushUndo(); setLevel(o, true); }, edit, undo, redo, run, send, levelJSON, importLevel, saveLevel, renameId, openLevel, newLevel,
   orderAdd, orderRemove, orderMove, orderJSON, importOrder, orderState, exportHtml, playableHTML, gameTemplate, exportLevelJSON, exportOrderJSON,
-  linkSelected, unlinkSelected, addRampAt, rampAction, W2S, S2W, snapFront, fitView, openLevels, closeModals, runTest};
+  linkSelected, unlinkSelected, addRampAt, rampAction, W2S, S2W, snapFront, fitView, openLevels, closeModals, runTest,
+  copySel, cutSel, pasteClip, duplicateSel, duplicateLevel, selectAll, nudge, setLanes, addBus, openBusPop, openCtx, closeCtx, exitTo, toggleSel, deleteSelection,
+  get CLIP(){ return CLIP; }, set CLIP(v){ CLIP = v; }, get focusPane(){ return focusPane; }, set focusPane(v){ focusPane = v; }, get lvSelId(){ return lvSelId; }, kb};
 </script>
 </body>
 </html>

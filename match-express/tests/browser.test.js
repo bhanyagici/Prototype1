@@ -160,7 +160,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const ui = await ed.evaluate(() => ({
         bar: ['#fileMenu', '#undoBtn', '#redoBtn', '#runBtn', '#testBtn', '#exportMenu', '#helpBtn'].every(q => document.querySelector(q)),
         barTips: [...document.querySelectorAll('#bar > button, #bar .menu > [data-menu]')].every(b => b.title && b.querySelector('svg.i')),
-        tools: [...document.querySelectorAll('#palette [data-tool]')].map(b => ({id:b.dataset.tool, tip:/\(\w\)$/.test(b.title), icon:!!b.querySelector('svg.i')})),
+        tools: [...document.querySelectorAll('#palette [data-tool]')].map(b => ({id:b.dataset.tool, tip:/\(\d or \w\)$/.test(b.title), icon:!!b.querySelector('svg.i')})),
         insp: !!document.querySelector('#insp .card'), queue: document.querySelectorAll('#queueSvg .bus').length }));
       chk(ui.bar && ui.barTips, 'top toolbar: file menu, undo/redo, run/test, export, help; every button has an icon and a tooltip');
       chk(ui.tools.map(t => t.id).join(',') === 'select,road,ramp,paint,erase,hide,tunnel,lock,count,link' && ui.tools.every(t => t.tip && t.icon),
@@ -224,7 +224,9 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     const moved = await ed.evaluate(i => __ed.level.road.points[i].x, ins);
     chk(moved > pt[0] + 0.5 && await ed.evaluate(i => __ed.sel.kind === 'point' && __ed.sel.i === i, ins), 'dragging a control point moves it and selects it', `${pt[0]} -> ${moved}`);
     [mx, my] = await toScreen(moved, pt[1]); await ed.mouse.click(mx, my, {button:'right'});
-    chk(await ed.evaluate(() => __ed.level.road.points.length) === n0, 'right-clicking a control point deletes it');
+    chk(await ed.evaluate(() => document.getElementById('ctx').classList.contains('show') && /Road point/.test(document.getElementById('ctx').textContent)), 'right-clicking a control point opens its menu');
+    await ed.locator('#ctx button', {hasText:'Delete'}).click();
+    chk(await ed.evaluate(() => __ed.level.road.points.length) === n0, 'Delete in that menu deletes the point');
     { const p5 = await ed.evaluate(() => { const p = __ed.level.road.points[5]; return [p.x, p.z]; }); const [lx, ly] = await toScreen(...p5);
       await ed.evaluate(([x, y]) => { const cv = document.getElementById('view'); const o = {clientX:x, clientY:y, pointerId:77, pointerType:'touch', bubbles:true, button:0};
         cv.dispatchEvent(new PointerEvent('pointerdown', o)); }, [lx, ly]);
@@ -327,9 +329,8 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     chk(await ed.evaluate(() => !(__ed.level.ramps[0].tunnels || []).length), 'Delete removes the selected blocker');
     await ed.keyboard.press('Control+z');
     // queue: add, hide, connect (with bellows), refuse a non-touching group, reorder
-    await ed.evaluate(() => { __ed.color = 'green'; __ed.cap = 4; });
-    await ed.click('#queueFoot button[data-lane="2"]');
-    chk(await ed.evaluate(() => { const l = __ed.level.lanes[2]; return l[l.length-1].color === 'green' && l[l.length-1].cap === 4; }), '"+ Lane 3" adds a bus with the palette colour and size');
+    await ed.click('#addBusBtn'); await ed.click('#bpLanes [data-l="2"]'); await ed.click('#bpColors [data-c="green"]'); await ed.click('#bpCaps [data-cap="4"]'); await ed.click('#bpAdd'); await ed.click('#bpClose');
+    chk(await ed.evaluate(() => { const l = __ed.level.lanes[2]; return l[l.length-1].color === 'green' && l[l.length-1].cap === 4; }), '"Add bus" (lane 3, green, 4 seats) adds that bus to the end of lane 3');
     await ed.dblclick('#queueSvg .bus[data-key="2:1"]');
     chk(await ed.evaluate(() => __ed.level.lanes[2][1].hidden === true && /\?/.test(document.querySelector('#queueSvg .bus[data-key="2:1"]').textContent)), 'double-clicking a bus makes it a hidden "?" bus');
     await ed.click('#queueSvg .bus[data-key="0:2"]'); await ed.click('#queueSvg .bus[data-key="1:2"]', {modifiers:['Shift']});
@@ -356,7 +357,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     await ed.evaluate(() => __ed.newLevel());
     chk(await ed.evaluate(() => /^lvl_\d{3}$/.test(__ed.level.id) && __ed.level.id !== 'lvl_900' && __ed.level.ramps.length === 0), 'New level gets the next free "lvl_###" id', await ed.evaluate(() => __ed.level.id));
     await ed.evaluate(() => { __ed.openLevel('lvl_900'); document.activeElement.blur(); });    // shortcuts don't fire while typing in a field
-    await ed.keyboard.press('o');
+    await ed.keyboard.press('Control+o');
     chk(await ed.evaluate(() => { const ids = [...document.querySelectorAll('#levelList .lrow code')].map(c => c.textContent); return ids.includes('lvl_900') && ids.includes('demo_combo') && ids.includes('crowded-rush'); }),
       'the Levels panel lists the saved levels by id (bundled demos seeded)');
     // level order: add, warn on unknown / duplicate ids, reorder by drag, remove, export / import

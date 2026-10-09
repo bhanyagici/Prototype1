@@ -134,9 +134,11 @@ python3 -m http.server 8000
 ![editor at 1440x900](screenshot-editor.png)
 
 - **Top toolbar:**
-  - *File* (new, Levels & level order, save, save as, import);
+  - *File* (new, open: Levels & level order, save, save as, duplicate, import);
   - undo / redo;
-  - the level's **id** and name, and whether it is saved;
+  - the level's **id** and name, and whether it is saved (an orange dot and a ● in the
+    tab title mark unsaved changes; every edit is also kept as a draft, so a reload
+    picks up where you left off);
   - *Run*, *Auto*, *Watch*, *Test*;
   - *Export*;
   - show / hide the preview;
@@ -147,28 +149,63 @@ python3 -m http.server 8000
   - the ramp blockers: colourful tunnel, lock box, count box;
   - connect buses, plus the size for new buses.
 - **Centre:** a top-down view you edit with the mouse or touch. The yellow frame is the
-  target zone. Wheel zooms; dragging empty space (or Space-drag) pans; *F* fits.
-  Whatever is under the pointer is highlighted, and the selection is outlined in yellow.
-- **Queue pane:** the three lanes, front at the top, drawn as buses whose length shows
-  their size.
-- **Right:** the **inspector** for the selection (level, road point, ramp, tunnel, box,
-  one bus or several) and the **Checks**.
+  target zone. Wheel (or a trackpad / touch pinch) zooms; Space-drag or the middle mouse
+  button pans; *F* fits. Dragging over empty space draws a selection box. Whatever is
+  under the pointer is highlighted, and the selection is outlined in yellow.
+  Problems are circled in red with a short note next to them.
+- **Queue pane:** 2 to 5 lanes (the − / + stepper), front at the top, drawn as buses
+  whose length shows their size. The pane widens for 4 and 5 lanes.
+- **Level card** (nothing selected): id, name, **role** (Tutorial, Teach, Practice,
+  Challenge, Milestone, Relax, Fun, Finale…), **target difficulty** (1–10), queue lanes.
+  Role and difficulty are design notes kept in the level's `meta`.
+- **Right:** the **inspector** for the selection (level, road point(s), exit tunnel,
+  ramp(s), tunnel(s), box(es), stickman cells, one bus or several). A problem with the
+  selected thing is shown at the top of its card. Below: the **Checks**.
 - **Far right:** the preview, the real game in a 390×844 phone frame.
+- With no ramps the view says so, with an *Add ramp* button; an empty queue says
+  "No buses yet – Add bus"; an empty lane has its own *+ Add*.
 
-Every icon has a tooltip. **?** opens the list of keyboard shortcuts.
+Every icon and menu entry has a tooltip or label with its shortcut. **?** opens the list.
+**Right-click** anything (a point, the exit tunnel, a ramp, a blocker, stickman cells, a
+bus, an empty lane, the ground) for a menu with the same actions.
+
+Shortcuts use **Cmd** on a Mac and **Ctrl** elsewhere (both are accepted everywhere);
+they replace the browser's own (Ctrl+S does not save the web page, Ctrl+D does not
+bookmark it). Some browsers keep Ctrl+N / Ctrl+W for themselves in a normal tab; *File →
+New level* always works.
 
 | key | action | key | action |
 |---|---|---|---|
-| V | select / move | Ctrl Z | undo |
-| P | road points | Ctrl Shift Z, Ctrl Y | redo |
-| R | add ramp | Ctrl S | save |
-| B | paint stickmen | O | levels & level order |
-| E | eraser | Enter | run the preview |
-| H | hidden-stickmen brush | F | fit the view |
-| T | colourful tunnel | Del / Backspace | delete the selection |
-| K | lock box | Esc | deselect / close |
-| N | count box | 1 – 8 | pick a colour |
-| L | connect the selected buses | ? | help |
+| 1 … 9, 0 | tools: select, road, ramp, paint, eraser, hide, tunnel, lock, count, connect | Ctrl S | save |
+| V P R B E H T K N | the same tools by letter | Ctrl Shift S | save as a new level |
+| Shift 1 … 8 | pick a colour | Ctrl N | new level |
+| L | connect the selected buses | Ctrl O | open (Levels & level order) |
+| Ctrl Z | undo | Ctrl E / Ctrl Shift E | export level JSON / playable HTML |
+| Ctrl Shift Z, Ctrl Y | redo | Ctrl Enter | run the preview |
+| Ctrl C / X / V | copy / cut / paste | Ctrl D | duplicate |
+| Del / Backspace | delete the selection | Ctrl A | select all of the current tool's things |
+| Shift- / Ctrl-click | add to / remove from the selection | drag on empty space | box select |
+| arrows | nudge (Shift: further) | Esc | deselect / close |
+| Space-drag, middle mouse | pan | wheel, pinch | zoom |
+| F | fit the view | ? | help |
+
+What the selection commands work on:
+- **Road points** (road tool, or click / box): copy-paste inserts the copies after the
+  selection; arrows move them 0.1 (Shift 0.5); the first point stays fixed to the yard.
+- **Ramps** (select tool): pasted copies board further along the road; arrows slide a
+  ramp along the road (a loose one moves freely).
+- **Tunnels and boxes** (their tools): pasted into the selected ramp, in a free column;
+  arrows move them a cell.
+- **Stickman cells:** drag a box over a ramp (select tool), or *Ctrl A* with a stickmen
+  tool for a whole ramp; paste goes to the hovered cell or the selected ramp's first
+  cell; arrows move them a cell; *Delete* empties them; their card paints or hides them.
+- **Buses:** paste inserts after the selected bus; arrows up / down reorder, left / right
+  move to the neighbouring lane.
+- **The level:** with nothing selected, *Ctrl C* copies the whole level and *Ctrl D*
+  duplicates it into the saved levels; in the Levels list the arrows pick a level,
+  *Enter* opens it, *Ctrl D* duplicates it and *Del* deletes it. A level JSON on the
+  system clipboard pastes in as a new saved level.
+- Undo and redo bring back the selection with the level.
 
 ### The game, the preview and exports are independent
 - The editor's changes never reach the game page or an exported file. `index.html`
@@ -186,12 +223,14 @@ Every icon has a tooltip. **?** opens the list of keyboard shortcuts.
 ### Road
 - With the road tool, click the road to insert a point; with either tool, drag a point
   to move it.
-- Right-click (or long-press on touch) deletes a point.
+- Right-click for the point's menu (delete, spiral, copy…); long-press on touch deletes it.
 - **Spiral** (point inspector) turns the point into a loop that crosses over itself,
   with an overpass and pillars. You can set its side.
 - These parts are placed automatically:
   - the road start, at the entry road;
-  - the exit tunnel, at the road end along the last tangent;
+  - the exit tunnel, at the road end along the last tangent. It can sit anywhere in the
+    target zone: drag it (the road's last point), nudge it with the arrows, or put it
+    on the top edge with *Left / Centre / Right* in its card or menu;
   - the return tunnel, at the collector end on the side nearer the exit tunnel,
     facing the bays;
   - the pillars, evenly spaced.
@@ -234,14 +273,22 @@ Every icon has a tooltip. **?** opens the list of keyboard shortcuts.
   its key off the bus.
 
 ### Queue
-- *+ Lane 1/2/3* adds a bus with the palette colour and the chosen size.
-- Click to select. Shift-click (or Ctrl-click) adds to the selection.
+- **Lanes:** 2 to 5 (the − / + stepper above the queue, or *Queue lanes* in the level
+  card). Removing the last lane moves its buses to the lane before it. The level stores
+  the count as `laneCount`.
+- **Add bus** (under the queue, or *+ Add* in an empty lane) opens a small form: lane,
+  colour, seats (4 / 6 / 8 / 12) and hidden. It stays open for adding several and
+  remembers the last choice.
+- Click to select. Shift-click (or Ctrl-click) adds to the selection; drag a box over
+  empty queue space to select several.
 - Drag within a lane or to another lane to reorder.
-- Right-click deletes.
+- Right-click for the bus menu (move to any lane, hidden, connect, copy, delete…).
 - Double-click toggles **hidden**: a grey bus with a "?", its colour on the rim.
 - **Connect:** select 2 or 3 buses and press **L** (or the link button). The buses must
-  touch: one after another in a lane, or neighbouring lanes at most one place apart. A
-  shape the game can't send, or a group that would deadlock the queue, is refused.
+  touch: one after another in a lane, or neighbouring lanes at most one place apart — any
+  pair of neighbouring lanes, lanes 4 and 5 included. A shape the game can't send, or a
+  group that would deadlock the queue, is refused. Problems with connections are listed
+  above the queue and their buses get a dashed red rim.
 - Connected buses are drawn joined by grey **bellows**, as in the game.
 - The bus inspector sets colour, size, hidden, the key it carries, and disconnects it.
 
@@ -428,8 +475,8 @@ network request. Screenshots:
 
 ## The 40-level funnel
 
-Forty levels for a first-session funnel, built from a design table (role, target difficulty 1–10, ramps,
-colours, stickmen, bus sizes, blockers, road and ramp idea per level):
+Forty levels for a first-session funnel, built from a design table (role, target difficulty 1–10, queue
+lanes, ramps, colours, stickmen, bus sizes, blockers, road and ramp idea per level):
 - `levels/funnel/f01.json` … `f40.json`, the order `levels/funnel/funnel-order.json`, and the measured data
   `funnel-report.json` (tuning) and `funnel-bots.json` (the bot table);
 - **`dist/match-express-funnel-40.html`**: all 40 levels in one file (double-click, no server, no network);
@@ -442,6 +489,9 @@ Download: [match-express-funnel-40.html](https://github.com/bhanyagici/Prototype
 ```
 node tools/make-funnel.js                 # roads, ramps, content, tuning -> levels/funnel (about 8 minutes on 4 cores)
 FUNNEL_PASS=2 node tools/make-funnel.js --refine   # more candidates per level (passes 1 and 2 were run)
+node tools/make-funnel.js --search 6 8 16 # the lane retune: saved roads and ramps kept, content made again
+FUNNEL_PASS=2 node tools/make-funnel.js --search 6 8   # another pass; the saved level stays unless beaten
+node tools/make-funnel.js --measure 7 11  # saved levels unchanged, measured again (meta from the design table)
 node tools/funnel-bots.js                 # the bot table -> levels/funnel/funnel-bots.json
 python3 tools/make-funnel-xlsx.py         # -> dist/funnel.xlsx (then recalculate, e.g. LibreOffice)
 node tools/build-funnel.js                # -> dist/match-express-funnel-40.html
@@ -466,6 +516,10 @@ node tools/shoot-funnel.js                # -> screenshots/funnel/
   lanes and the blocker placement change. Bisection on `h`, then two refine passes of more (h, seed)
   candidates; the greedy bot must win and no cheering prediction may miss. Among in-band candidates the longer
   greedy game wins (playtime).
+- **Queue lanes**: 2 lanes on 1–5, 9, 22 and 31; 4 on 16, 20, 23 and 35; 5 on 38 and 40; 3 on all others
+  (25–30 always 3). The 4- and 5-lane levels carry 6–14 connected groups, most of them across neighbouring
+  lanes. The lane retune (`--search`) kept every level's road and ramps and made only the content again:
+  many (h, seed, group count) candidates with a quick 50-game estimate, the nearest few checked with 200.
 - **Levels 1–5 cannot be lost**: enough colours sit in whole columns of their own that at most 5 buses could
   ever come back unfilled; each was played 1000 times by the random bot and by an adversarial bot without a loss.
 
@@ -480,66 +534,65 @@ The stickmen counts stayed; these ramps changed proportion or shape:
 ### Difficulty, measured
 
 Random-bot win rate over 200 games (the target bands: 1–2 ≥ 70%, 3: 55–75%, 4: 45–60%, 5: 35–50%,
-6: 25–40%, 7: 18–30%, 8: 12–22%, 9: 8–15%). The greedy bot wins all 40.
+6: 25–40%, 7: 18–30%, 8: 12–22%, 9: 8–15%). Challenge, Milestone, Finale and Practice levels must land in
+their band; Relax, Fun and Teach levels may be easier. Measured diff places the win rate on the same scale
+(band centres, a straight line between them). The greedy bot wins all 40; levels 1–5 cannot be lost.
 
-| Lv | Role | Diff | Band | Random wins / fails / unfinished | Win rate | In band | Greedy 1x | Greedy 2x |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Tutorial | 1 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 13.3 s | 6.6 s |
-| 2 | Teach | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 17.7 s | 8.9 s |
-| 3 | Tutorial (bay re-send) | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 40.3 s | 20.2 s |
-| 4 | Teach (bus sizes) | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 37.7 s | 18.9 s |
-| 5 | Fun | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 33.7 s | 16.9 s |
-| 6 | Challenge | 5 | 35–50% | 200 / 0 / 0 | 100.0% | **no** | 62.5 s | 31.2 s |
-| 7 | Teach + POPUP | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 72.4 s | 36.2 s |
-| 8 | Practice | 4 | 45–60% | 189 / 11 / 0 | 94.5% | **no** | 81.5 s | 40.8 s |
-| 9 | Relax | 3 | 55–75% | 195 / 5 / 0 | 97.5% | **no** | 68.9 s | 34.4 s |
-| 10 | Milestone | 6 | 25–40% | 154 / 46 / 0 | 77.0% | **no** | 70.9 s | 35.4 s |
-| 11 | Relax | 3 | 55–75% | 146 / 54 / 0 | 73.0% | yes | 76.7 s | 38.4 s |
-| 12 | Challenge | 5 | 35–50% | 200 / 0 / 0 | 100.0% | **no** | 75.6 s | 37.8 s |
-| 13 | Teach + POPUP | 3 | 55–75% | 128 / 20 / 52 | 64.0% | yes | 135.9 s | 68.0 s |
-| 14 | Practice | 5 | 35–50% | 83 / 0 / 117 | 41.5% | yes | 142.5 s | 71.2 s |
-| 15 | Fun | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 53.0 s | 26.5 s |
-| 16 | Challenge | 7 | 18–30% | 57 / 9 / 134 | 28.5% | yes | 145.0 s | 72.5 s |
-| 17 | Teach (no popup, short hint) | 4 | 45–60% | 93 / 7 / 100 | 46.5% | yes | 130.7 s | 65.3 s |
-| 18 | Relax | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 73.1 s | 36.5 s |
-| 19 | Practice | 5 | 35–50% | 84 / 13 / 103 | 42.0% | yes | 184.7 s | 92.3 s |
-| 20 | Milestone | 8 | 12–22% | 42 / 0 / 158 | 21.0% | yes | 146.2 s | 73.1 s |
-| 21 | Teach (combo, no popup) | 5 | 35–50% | 80 / 94 / 26 | 40.0% | yes | 122.2 s | 61.1 s |
-| 22 | Relax | 3 | 55–75% | 160 / 40 / 0 | 80.0% | **no** | 48.3 s | 24.1 s |
-| 23 | Challenge | 6 | 25–40% | 75 / 61 / 64 | 37.5% | yes | 136.8 s | 68.4 s |
-| 24 | Fun | 4 | 45–60% | 200 / 0 / 0 | 100.0% | **no** | 105.6 s | 52.8 s |
-| 25 | Challenge | 8 | 12–22% | 41 / 0 / 159 | 20.5% | yes | 169.5 s | 84.7 s |
-| 26 | Teach + POPUP | 3 | 55–75% | 140 / 60 / 0 | 70.0% | yes | 115.7 s | 57.8 s |
-| 27 | Practice | 5 | 35–50% | 130 / 70 / 0 | 65.0% | **no** | 118.4 s | 59.2 s |
-| 28 | Relax | 3 | 55–75% | 173 / 27 / 0 | 86.5% | **no** | 65.5 s | 32.7 s |
-| 29 | Challenge | 6 | 25–40% | 59 / 31 / 110 | 29.5% | yes | 131.4 s | 65.7 s |
-| 30 | Milestone | 9 | 8–15% | 30 / 59 / 111 | 15.0% | yes | 176.4 s | 88.2 s |
-| 31 | Relax | 3 | 55–75% | 168 / 32 / 0 | 84.0% | **no** | 73.2 s | 36.6 s |
-| 32 | Teach + POPUP | 4 | 45–60% | 91 / 109 / 0 | 45.5% | yes | 134.8 s | 67.4 s |
-| 33 | Practice | 5 | 35–50% | 68 / 132 / 0 | 34.0% | **no** | 147.7 s | 73.8 s |
-| 34 | Fun | 4 | 45–60% | 176 / 24 / 0 | 88.0% | **no** | 119.5 s | 59.8 s |
-| 35 | Challenge | 8 | 12–22% | 43 / 91 / 66 | 21.5% | yes | 137.8 s | 68.9 s |
-| 36 | Relax | 4 | 45–60% | 104 / 96 / 0 | 52.0% | yes | 105.0 s | 52.5 s |
-| 37 | Practice | 6 | 25–40% | 75 / 125 / 0 | 37.5% | yes | 247.6 s | 123.8 s |
-| 38 | Challenge | 8 | 12–22% | 41 / 141 / 18 | 20.5% | yes | 210.7 s | 105.4 s |
-| 39 | Fun | 5 | 35–50% | 133 / 67 / 0 | 66.5% | **no** | 114.8 s | 57.4 s |
-| 40 | Finale | 9 | 8–15% | 29 / 143 / 28 | 14.5% | yes | 232.7 s | 116.3 s |
-| | **Total** | | | | | **23 / 40** | **72.9 min** | **36.5 min** |
+| Lv | Role | Lanes | Target diff | Band | Random wins / fails / unfinished | Win rate | Measured diff | In band | Greedy 1x | Greedy 2x |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Tutorial | 2 | 1 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 13.5 s | 6.8 s |
+| 2 | Teach | 2 | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 17.9 s | 8.9 s |
+| 3 | Tutorial (bay re-send) | 2 | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 40.7 s | 20.4 s |
+| 4 | Teach (bus sizes) | 2 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 34.2 s | 17.1 s |
+| 5 | Fun | 2 | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 33.9 s | 16.9 s |
+| 6 | Challenge | 3 | 5 | 35–50% | 197 / 3 / 0 | 98.5% | 1.1 | **no** | 72.0 s | 36.0 s |
+| 7 | Teach + POPUP | 3 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 72.4 s | 36.2 s |
+| 8 | Practice | 3 | 5 | 35–50% | 181 / 19 / 0 | 90.5% | 1.6 | **no** | 40.7 s | 20.4 s |
+| 9 | Relax | 2 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 65.8 s | 32.9 s |
+| 10 | Milestone | 3 | 6 | 25–40% | 120 / 80 / 0 | 60.0% | 3.4 | **no** | 90.1 s | 45.0 s |
+| 11 | Relax | 3 | 3 | 55–75% | 146 / 54 / 0 | 73.0% | 2.6 | yes | 76.7 s | 38.4 s |
+| 12 | Challenge | 3 | 6 | 25–40% | 123 / 77 / 0 | 61.5% | 3.3 | **no** | 77.3 s | 38.6 s |
+| 13 | Teach + POPUP | 3 | 3 | 55–75% | 128 / 20 / 52 | 64.0% | 3.1 | yes | 135.9 s | 68.0 s |
+| 14 | Practice | 3 | 6 | 25–40% | 75 / 125 / 0 | 37.5% | 5.5 | yes | 112.6 s | 56.3 s |
+| 15 | Fun | 3 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 53.0 s | 26.5 s |
+| 16 | Challenge | 4 | 7 | 18–30% | 44 / 156 / 0 | 22.0% | 7.3 | yes | 132.2 s | 66.1 s |
+| 17 | Teach (no popup, short hint) | 3 | 4 | 45–60% | 93 / 7 / 100 | 46.5% | 4.6 | yes | 130.7 s | 65.3 s |
+| 18 | Relax | 3 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 73.1 s | 36.5 s |
+| 19 | Practice | 3 | 6 | 25–40% | 68 / 132 / 0 | 34.0% | 5.8 | yes | 178.1 s | 89.0 s |
+| 20 | Milestone | 4 | 8 | 12–22% | 37 / 163 / 0 | 18.5% | 7.8 | yes | 191.5 s | 95.8 s |
+| 21 | Teach (combo, no popup) | 3 | 5 | 35–50% | 80 / 94 / 26 | 40.0% | 5.3 | yes | 122.2 s | 61.1 s |
+| 22 | Relax | 2 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 72.0 s | 36.0 s |
+| 23 | Challenge | 4 | 7 | 18–30% | 45 / 155 / 0 | 22.5% | 7.2 | yes | 128.2 s | 64.1 s |
+| 24 | Fun | 3 | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 105.6 s | 52.8 s |
+| 25 | Challenge | 3 | 8 | 12–22% | 41 / 0 / 159 | 20.5% | 7.5 | yes | 169.5 s | 84.8 s |
+| 26 | Teach + POPUP | 3 | 3 | 55–75% | 140 / 60 / 0 | 70.0% | 2.8 | yes | 115.7 s | 57.9 s |
+| 27 | Practice | 3 | 6 | 25–40% | 121 / 79 / 0 | 60.5% | 3.4 | **no** | 110.2 s | 55.1 s |
+| 28 | Relax | 3 | 3 | 55–75% | 173 / 27 / 0 | 86.5% | 1.9 | easier (allowed) | 65.5 s | 32.8 s |
+| 29 | Challenge | 3 | 7 | 18–30% | 59 / 31 / 110 | 29.5% | 6.4 | yes | 131.4 s | 65.7 s |
+| 30 | Milestone | 3 | 9 | 8–15% | 30 / 59 / 111 | 15.0% | 8.4 | yes | 176.4 s | 88.2 s |
+| 31 | Relax | 2 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 73.2 s | 36.6 s |
+| 32 | Teach + POPUP | 3 | 4 | 45–60% | 91 / 109 / 0 | 45.5% | 4.7 | yes | 134.8 s | 67.4 s |
+| 33 | Practice | 3 | 6 | 25–40% | 68 / 132 / 0 | 34.0% | 5.8 | yes | 147.7 s | 73.8 s |
+| 34 | Fun | 3 | 4 | 45–60% | 176 / 24 / 0 | 88.0% | 1.8 | easier (allowed) | 119.5 s | 59.8 s |
+| 35 | Challenge | 4 | 8 | 12–22% | 34 / 166 / 0 | 17.0% | 8.0 | yes | 200.2 s | 100.1 s |
+| 36 | Relax | 3 | 4 | 45–60% | 104 / 96 / 0 | 52.0% | 4.0 | yes | 105.0 s | 52.5 s |
+| 37 | Practice | 3 | 7 | 18–30% | 56 / 144 / 0 | 28.0% | 6.5 | yes | 198.8 s | 99.4 s |
+| 38 | Challenge | 5 | 8 | 12–22% | 36 / 155 / 9 | 18.0% | 7.9 | yes | 195.3 s | 97.7 s |
+| 39 | Fun | 3 | 5 | 35–50% | 133 / 67 / 0 | 66.5% | 2.9 | easier (allowed) | 114.8 s | 57.4 s |
+| 40 | Finale | 5 | 9 | 8–15% | 17 / 105 / 78 | 8.5% | 9.3 | yes | 235.6 s | 117.8 s |
+| | **Total** | | | | | | | **24 / 40** (must-land: 13 / 18) | **72.7 min** | **36.4 min** |
 
-**Out of band (17 levels), and why.** The tuning may only change the stickmen order in the columns, the bus
-order and sizes in the lanes and the blocker placement, and under the current rules (5 on the road, 5 bays,
-unlimited re-sends) these knobs cannot make small levels hard:
-- **The random bot only loses when 6 unfilled buses are out at once.** A bus sent out of order still takes
-  whatever stickmen of its colour are open, and the random bot re-sends parked buses as often as lane buses,
-  so the bays drain. Measured on levels 6 and 12 at full hardness, with trap buses and a buried colour
-  added: 2-10 unfilled laps per game, at most 2-3 bays in use, random wins 98-100%. The levels without
-  connected buses and with 4-6 colours and 10-20 buses (6, 7, 8, 9, 12, 15, 18, 24; hidden buses do not
-  change this) stay at 94-100% whatever the arrangement.
-- **Connected groups are what make a level hard** (a returning group needs a free bay for every member),
-  so the levels with groups land in their bands, and so do the large late levels. The other levels without
-  groups (tunnels, a lock box or nothing) end up between 65% and 88% (10, 22, 27, 28, 31, 34, 39), and 33
-  (lock & key) at 34%, one point under its 35-50% band.
-- **Level 4** (band 55-75%) is fail-free by the rule "no fail before level 6", so it is at 100%.
+**Out of band, closest version kept (5 levels).** The tuning may only change the stickmen order in the
+columns, the bus order and sizes in the lanes and the blocker placement; three search passes (about 640
+candidates each, the best checked over 200 games) got these as close as they go:
+- **6 (98.5%), 8 (90.5%), 10 (60.0%), 12 (61.5%), 27 (60.5%)**: small or medium 3-lane levels without
+  connected buses. Under the current rules (5 on the road, 5 bays, unlimited re-sends) the random bot only
+  loses when 6 unfilled buses are out at once; a bus sent out of order still takes whatever stickmen of its
+  colour are open, and parked buses are re-sent as often as lane buses, so the bays drain. Connected groups
+  are what make a level hard (a returning group needs a free bay for every member), and these levels have
+  none in their design row.
+- **Level 4** (band 55–75%) is fail-free by the rule "no fail before level 6", so it is at 100% (allowed:
+  a Teach level may be easier).
 
 **Unfinished games.** On the levels with connected groups many random games end without a result
 (the "unfinished" column): the bot keeps re-sending half-full buses, so the road never has room for a
@@ -588,6 +641,8 @@ through `normalizeLevel` (and so the editor keeps it too):
 | ![](screenshots/funnel/level-30.png) | ![](screenshots/funnel/level-32.png) | ![](screenshots/funnel/level-40.png) |
 | the Hidden Bus popup | the Stats panel | |
 | ![](screenshots/funnel/popup-hidden-bus.png) | ![](screenshots/funnel/stats-panel.png) | |
+| 2 lanes (level 9) | 4 lanes (level 35) | 5 lanes (level 38) |
+| ![](screenshots/funnel/lanes-2.png) | ![](screenshots/funnel/lanes-4.png) | ![](screenshots/funnel/lanes-5.png) |
 
 ## Speed, sound, animation
 
