@@ -1,5 +1,5 @@
 # Builds dist/funnel.xlsx from the funnel data (levels/funnel/funnel-report.json and funnel-bots.json).
-#   Funnel   one row per level: role, target / measured difficulty, ramps, colours, stickmen per colour, buses per
+#   Funnel   one row per level: role, queue lanes, target / measured difficulty, ramps, colours, stickmen per colour, buses per
 #            size, blockers, tutorial or popup, road and ramp shape, greedy time at 1x and 2x, random-bot results
 #   Curve    target vs measured difficulty (line chart), stickmen per level (bar chart)
 #   Summary  total playtime at 1x and 2x, first-session estimate (levels 1-12), blocker intro levels, levels per role
@@ -44,13 +44,13 @@ S = wb.active
 S.title = 'Summary'
 # difficulty scale: random-bot win rate at the centre of each target band (ascending rate) -> difficulty
 SCALE = [(0.0, 10), (0.115, 9), (0.17, 8), (0.24, 7), (0.325, 6), (0.425, 5), (0.525, 4), (0.65, 3), (0.85, 2), (1.0, 1)]
-SC_ROW = 40          # the scale table sits low on the Summary sheet
+SC_ROW = 46          # the scale table sits low on the Summary sheet
 RATE = f'Summary!$A${SC_ROW + 2}:$A${SC_ROW + 1 + len(SCALE)}'
 DIFF = f'Summary!$B${SC_ROW + 2}:$B${SC_ROW + 1 + len(SCALE)}'
 
 # ------------------------------------------------------------------ Funnel
 W = wb.create_sheet('Funnel')
-cols = [('Level', 7), ('Id', 6), ('Role', 24), ('Target diff', 8), ('Band low', 8), ('Band high', 8), ('Random win rate', 9),
+cols = [('Level', 7), ('Id', 6), ('Role', 24), ('Lanes', 6), ('Target diff', 8), ('Band low', 8), ('Band high', 8), ('Random win rate', 9),
         ('Measured diff', 9), ('In band', 8), ('Ramps (columns x rows)', 22), ('Ramps', 7), ('Colours', 8), ('Stickmen', 9),
         ('Stickmen per colour', 34), ('Buses 4-seat', 7), ('Buses 6-seat', 7), ('Buses 8-seat', 7), ('Buses 12-seat', 7),
         ('Buses total', 7), ('Blockers', 30), ('Tutorial / popup', 30), ('Road shape', 22), ('Ramp shape', 30),
@@ -61,7 +61,7 @@ for c, (name, w) in enumerate(cols, 1):
     cell.font, cell.fill, cell.alignment, cell.border = head, headFill, Alignment(wrap_text=True, vertical='center', horizontal='center'), grid
     W.column_dimensions[get_column_letter(c)].width = w
 W.row_dimensions[1].height = 44
-W.freeze_panes = 'D2'
+W.freeze_panes = 'E2'
 L = {name: get_column_letter(i) for i, (name, _) in enumerate(cols, 1)}
 
 for i, fid in enumerate(order):
@@ -71,7 +71,7 @@ for i, fid in enumerate(order):
     tp = ROLE_TUT.get(r.get('tutorial')) or POPUP.get(r.get('popup')) or HINT.get(r.get('hint')) or '-'
     kinds = sorted(set(x['kind'] for x in r['ramps']))
     vals = {
-        'Level': r['n'], 'Id': fid, 'Role': r['role'], 'Target diff': r['diff'], 'Band low': r['band'][0], 'Band high': r['band'][1],
+        'Level': r['n'], 'Id': fid, 'Role': r['role'], 'Lanes': r.get('lanes', 3), 'Target diff': r['diff'], 'Band low': r['band'][0], 'Band high': r['band'][1],
         'Random win rate': f"={L['Random wins']}{row}/({L['Random wins']}{row}+{L['Random fails']}{row}+{L['Random unfinished']}{row})",
         'Measured diff': (f"=IF({L['Random win rate']}{row}>=1,1,INDEX({DIFF},MATCH({L['Random win rate']}{row},{RATE},1))"
                           f"+({L['Random win rate']}{row}-INDEX({RATE},MATCH({L['Random win rate']}{row},{RATE},1)))"
@@ -113,6 +113,10 @@ notes = [
     'Measured diff: the win rate placed on the difficulty scale on the Summary sheet (straight-line between band centres).',
     'Greedy 1x: game seconds for the greedy bot (always sends the bus with the most matching stickmen at the fronts, waits when nothing matches). 2x = the same game at double speed.',
     'Levels 1-5 cannot be lost (no fail before level 6): each was played 1000 times by the random bot and 6 times by an adversarial bot without a loss. That puts level 4 above its band (55-75%).',
+    'Lanes: queue lanes (2-5). Challenge, Milestone, Finale and Practice levels must land in their band; Relax, Fun and Teach levels may be easier.',
+    'Out of band, closest version kept: ' + (', '.join(f"{fid} ({rep[fid]['rate']*100:.1f}%, band {rep[fid]['band'][0]*100:.0f}-{rep[fid]['band'][1]*100:.0f}%)" for fid in order
+        if rep[fid]['role'].split(' ')[0] in ('Challenge', 'Milestone', 'Finale', 'Practice') and not rep[fid]['inBand']) or 'none')
+    + '. Small 3-lane levels: stickman order, bus order / sizes and blocker placement alone cannot make a random player fail that often under the current rules.',
 ]
 for k, t in enumerate(notes):
     c = W.cell(row=nr + k, column=1, value=t); c.font = note
@@ -196,8 +200,13 @@ for k, role in enumerate(roles):
     put(r0 + 1 + k, 1, role); put(r0 + 1 + k, 2, f'=COUNTIF(Funnel!{RC}2:{RC}{LAST},"{role}*")'); put(r0 + 1 + k, 3, ''); put(r0 + 1 + k, 4, '')
 rt = r0 + 1 + len(roles)
 put(rt, 1, 'Total', f=bold); put(rt, 2, f'=SUM(B{r0 + 1}:B{rt - 1})', f=bold); put(rt, 3, ''); put(rt, 4, '')
+LC = L['Lanes']
+hrow(rt + 4, ['Levels per queue size', 'Levels', '', 'Which'])
+for k, nl in enumerate([2, 3, 4, 5]):
+    put(rt + 5 + k, 1, f'{nl} lanes'); put(rt + 5 + k, 2, f'=COUNTIF(Funnel!{LC}2:{LC}{LAST},{nl})'); put(rt + 5 + k, 3, '')
+    put(rt + 5 + k, 4, ', '.join(f for f in order if rep[f].get('lanes', 3) == nl) if nl != 3 else 'all others')
 put(rt + 2, 1, 'Levels in their difficulty band'); put(rt + 2, 2, f'=COUNTIF(Funnel!{L["In band"]}2:{L["In band"]}{LAST},TRUE)'); put(rt + 2, 3, ''); put(rt + 2, 4, 'Random-bot win rate inside the target band')
-assert rt + 2 < SC_ROW - 1, 'the scale table would overlap'
+assert rt + 9 < SC_ROW - 1, 'the scale table would overlap'
 S.cell(row=SC_ROW, column=1, value='Difficulty scale (used by Funnel!Measured diff)').font = bold
 hrow(SC_ROW + 1, ['Random win rate (band centre)', 'Difficulty', '', 'Note'])
 for k, (rate, d) in enumerate(SCALE):

@@ -133,6 +133,9 @@ python3 -m http.server 8000
 
 ![editor at 1440x900](screenshot-editor.png)
 
+![a 5-lane level (f38) in the editor: a connected pair across lanes 4 and 5 selected, its right-click menu](screenshots/editor-5-lanes.png)
+(`node tools/shoot-editor.js`)
+
 - **Top toolbar:**
   - *File* (new, open: Levels & level order, save, save as, duplicate, import);
   - undo / redo;
@@ -297,7 +300,8 @@ Checks shows:
 - stickmen against seats for each colour (tunnels included), green when they match and
   red when they don't;
 - totals, the number of buses of each size, the number of hidden stickmen;
-- every layout and blocker warning (click one to show it).
+- every layout and blocker warning (click one to show it), among them the exit tunnel leaving the target zone
+  or sitting on another stretch of the road (`exit-road`).
 
 **Test** runs the greedy bot plus 200 random games in a background worker. It
 reports:
@@ -564,7 +568,7 @@ their band; Relax, Fun and Teach levels may be easier. Measured diff places the 
 | 22 | Relax | 2 | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 72.0 s | 36.0 s |
 | 23 | Challenge | 4 | 7 | 18–30% | 45 / 155 / 0 | 22.5% | 7.2 | yes | 128.2 s | 64.1 s |
 | 24 | Fun | 3 | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 105.6 s | 52.8 s |
-| 25 | Challenge | 3 | 8 | 12–22% | 41 / 0 / 159 | 20.5% | 7.5 | yes | 169.5 s | 84.8 s |
+| 25 | Challenge | 3 | 8 | 12–22% | 41 / 0 / 159 | 20.5% | 7.5 | yes | 168.7 s | 84.3 s |
 | 26 | Teach + POPUP | 3 | 3 | 55–75% | 140 / 60 / 0 | 70.0% | 2.8 | yes | 115.7 s | 57.9 s |
 | 27 | Practice | 3 | 6 | 25–40% | 121 / 79 / 0 | 60.5% | 3.4 | **no** | 110.2 s | 55.1 s |
 | 28 | Relax | 3 | 3 | 55–75% | 173 / 27 / 0 | 86.5% | 1.9 | easier (allowed) | 65.5 s | 32.8 s |
@@ -574,13 +578,13 @@ their band; Relax, Fun and Teach levels may be easier. Measured diff places the 
 | 32 | Teach + POPUP | 3 | 4 | 45–60% | 91 / 109 / 0 | 45.5% | 4.7 | yes | 134.8 s | 67.4 s |
 | 33 | Practice | 3 | 6 | 25–40% | 68 / 132 / 0 | 34.0% | 5.8 | yes | 147.7 s | 73.8 s |
 | 34 | Fun | 3 | 4 | 45–60% | 176 / 24 / 0 | 88.0% | 1.8 | easier (allowed) | 119.5 s | 59.8 s |
-| 35 | Challenge | 4 | 8 | 12–22% | 34 / 166 / 0 | 17.0% | 8.0 | yes | 200.2 s | 100.1 s |
+| 35 | Challenge | 4 | 8 | 12–22% | 36 / 164 / 0 | 18.0% | 7.9 | yes | 202.6 s | 101.3 s |
 | 36 | Relax | 3 | 4 | 45–60% | 104 / 96 / 0 | 52.0% | 4.0 | yes | 105.0 s | 52.5 s |
 | 37 | Practice | 3 | 7 | 18–30% | 56 / 144 / 0 | 28.0% | 6.5 | yes | 198.8 s | 99.4 s |
 | 38 | Challenge | 5 | 8 | 12–22% | 36 / 155 / 9 | 18.0% | 7.9 | yes | 195.3 s | 97.7 s |
 | 39 | Fun | 3 | 5 | 35–50% | 133 / 67 / 0 | 66.5% | 2.9 | easier (allowed) | 114.8 s | 57.4 s |
 | 40 | Finale | 5 | 9 | 8–15% | 17 / 105 / 78 | 8.5% | 9.3 | yes | 235.6 s | 117.8 s |
-| | **Total** | | | | | | | **24 / 40** (must-land: 13 / 18) | **72.7 min** | **36.4 min** |
+| | **Total** | | | | | | | **24 / 40** (must-land: 13 / 18) | **72.8 min** | **36.4 min** |
 
 **Out of band, closest version kept (5 levels).** The tuning may only change the stickmen order in the
 columns, the bus order and sizes in the lanes and the blocker placement; three search passes (about 640
@@ -601,9 +605,13 @@ core's no-deadlock rule holds); under the agreed metric it counts as "not won". 
 unfinished are listed separately here and in the spreadsheet. On level 20, for example, the random bot
 never fails and 158 of 200 games stay unfinished, so a person will find it easier than its 21% suggests.
 
-**Rendering fix found while shooting.** On the 7 levels whose road ends heading down toward the yard (7, 11,
-17, 25, 28, 35, 36), the exit tunnel's hill covered the bays; the hill now stops short of the yard plateau,
-and the tunnel's roof shell has a closed rock end.
+**Exit tunnels out in the open.** On the levels whose road ends heading down toward the yard (7, 11, 17, 28,
+36) the exit tunnel sits in its own mound mid-screen: the hill stops short of the yard plateau, the tunnel's
+roof shell has a closed rock end, and its rock sides now reach down to the ground (a tunnel whose hill gives way
+to the road nearby stands as a rock outcrop instead of floating over the canyon). The tunnel's darkening ends at
+its back end, so a road beyond it stays lit. Levels 25 and 35 ended with the tunnel sitting on the road's own
+climb (a new checker warning, `exit-road`, flags that); their roads now turn outward after the last point and
+end in the side hillside (4 units longer; still 20.5% and 18.0%, in band).
 
 ### Tutorials, popups and the hint
 
@@ -834,11 +842,15 @@ height.
 ```
 node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
 node tests/blockers.test.js   # 43 checks: every blocker, the checker rules for them, the demo levels (bots + cheering)
-node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
+node tests/layout.test.js     # yard clearance sweep (both yard presets, 2-5 lanes) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
+node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, sending, sides), connected buses across 4-5 lanes,
+                              #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
-node tests/browser.test.js    # 93 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/browser.test.js    # 94 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/editor.test.js     # 62 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
+                              #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
-node tests/funnel.test.js     # 41 checks: the 40 funnel levels against the design table, the bots (greedy wins all, playtime, levels 1-5
+node tests/funnel.test.js     # 44 checks: the 40 funnel levels against the design table (lane counts included), the bots (greedy wins all, playtime, levels 1-5
                               #   fail-free), two ramps on one spot, and the 40-level file from file:// at 390x844: tutorials, popups,
                               #   the hint, previous / next, auto-advance, stats + CSV + reset, 1x / 2x, the front bus outline and size
 ```

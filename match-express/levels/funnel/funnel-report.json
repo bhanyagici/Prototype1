@@ -2668,8 +2668,8 @@
    "wins": 41,
    "runs": 200,
    "inBand": true,
-   "greedyT": 169.5,
-   "greedySends": 39,
+   "greedyT": 168.7,
+   "greedySends": 38,
    "notes": [],
    "failFree": null,
    "ramps": [
@@ -2738,7 +2738,7 @@
    "tutorial": null,
    "popup": null,
    "hint": null,
-   "roadLen": 27.9
+   "roadLen": 32.3
   },
   "f39": {
    "id": "f39",
@@ -2934,11 +2934,11 @@
    ],
    "lanes": 4,
    "h": 0.871,
-   "rate": 0.17,
-   "wins": 34,
+   "rate": 0.18,
+   "wins": 36,
    "runs": 200,
    "inBand": true,
-   "greedyT": 200.2,
+   "greedyT": 202.6,
    "greedySends": 40,
    "notes": [
     "ramp 1: 10x6 did not fit, built as 12x5"
@@ -3010,7 +3010,7 @@
    "tutorial": null,
    "popup": null,
    "hint": null,
-   "roadLen": 27.9
+   "roadLen": 31.9
   },
   "f40": {
    "id": "f40",
@@ -3118,5 +3118,5 @@
   }
  },
  "generated": "2026-10-09",
- "totalGreedy1x": 4363.900000000001
+ "totalGreedy1x": 4365.5
 }

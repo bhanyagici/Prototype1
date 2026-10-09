@@ -2097,6 +2097,12 @@ function rampWarnings(L){
     if (!r.snapped) W.push({kind:'ramp-unsnapped', msg: label + ': its front node is not on the road (no bus can reach it)', x:r.x, z:r.z, ramp:r.src});
     else if (inSpiral(R, r.s, 0.8)) W.push({kind:'ramp-spiral', msg: label + ': boarding point is on a spiral overpass', x:r.x, z:r.z, ramp:r.src});
   });
+  // the exit tunnel and its hill sit on open ground: no earlier stretch of road may run through them at a similar height
+  // (one passing well below, as under a spiral's overpass, is fine)
+  { const ex = exitFootprint(L.exit); let hit = null;
+    for (const p of road){ if (p.s > R.portalS - 2.6) break; if (Math.abs(p.y - L.exit.y) > 1.3) continue;
+      if (polyDist(ex, p.x, p.z) < ROAD_HALF - 0.2){ hit = p; break; } }
+    if (hit) W.push({kind:'exit-road', msg:'The exit tunnel sits on another stretch of the road', x:hit.x, z:hit.z}); }
   return W;
 }
 /* connected buses: queue positions of every link group, and whether each group has a valid shape

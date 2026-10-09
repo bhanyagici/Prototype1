@@ -438,9 +438,9 @@
    "id": "f25",
    "greedy": {
     "result": "win",
-    "t1x": 169.5,
-    "t2x": 84.7,
-    "sends": 39
+    "t1x": 168.7,
+    "t2x": 84.3,
+    "sends": 38
    },
    "random": {
     "wins": 41,
@@ -618,16 +618,16 @@
    "id": "f35",
    "greedy": {
     "result": "win",
-    "t1x": 200.2,
-    "t2x": 100.1,
+    "t1x": 202.6,
+    "t2x": 101.3,
     "sends": 40
    },
    "random": {
-    "wins": 34,
-    "fails": 166,
+    "wins": 36,
+    "fails": 164,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.17
+    "rate": 0.18
    },
    "men": 240,
    "buses": 31
@@ -723,6 +723,6 @@
    "buses": 44
   }
  ],
- "totalGreedy1x": 4363.9,
- "totalGreedy2x": 2182
+ "totalGreedy1x": 4365.5,
+ "totalGreedy2x": 2182.8
 }

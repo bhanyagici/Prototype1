@@ -624,7 +624,7 @@ function draw(){
 }
 const WARN_SHORT = {'zone-road':'road leaves the target zone', 'zone-ramp':'ramp leaves the target zone', 'zone-exit':'exit tunnel outside the zone', 'road-cross':'road crosses itself',
   'road-tight':'turn too tight', 'ramp-road':'ramp overlaps the road', 'ramp-ramp':'ramps overlap', 'ramp-spiral':'ramp on a spiral', 'ramp-unsnapped':'not connected to the road',
-  'ramp-exit':'ramp too near the exit', 'ramp-fold':'ramp folds over itself', 'blocker-bounds':'blocker leaves the ramp', 'blocker-overlap':'two blockers in a column',
+  'ramp-exit':'ramp too near the exit', 'exit-road':'exit tunnel on the road', 'ramp-fold':'ramp folds over itself', 'blocker-bounds':'blocker leaves the ramp', 'blocker-overlap':'two blockers in a column',
   'tunnel-front':'tunnel needs a free cell in front', 'tunnel-count':'tunnel needs stickmen', 'tunnel-cells':'tunnel sits on stickmen', 'count-range':'count out of range',
   'lock-dup':'lock id used twice', 'lock-keys':'several key buses', 'lock-no-key':'no key bus', 'bay':'yard problem'};
 const shortWarn = w => WARN_SHORT[w.kind] || (w.msg.length > 40 ? w.msg.slice(0, 38) + '…' : w.msg);
@@ -1103,7 +1103,7 @@ function renderInspector(){
 /* the checker's warnings about what is selected (shown in the inspector next to it) */
 function selWarnings(){
   const W = check.warnings, near = (w, x, z, r) => w.x != null && Math.hypot(w.x - x, w.z - z) < r;
-  if (sel.kind === 'exit') return W.filter(w => w.kind === 'zone-exit' || w.kind === 'ramp-exit');
+  if (sel.kind === 'exit') return W.filter(w => w.kind === 'zone-exit' || w.kind === 'ramp-exit' || w.kind === 'exit-road');
   if (sel.kind === 'point') return W.filter(w => ['zone-road', 'road-cross', 'road-tight'].includes(w.kind) && ptList().some(i => lvl.road.points[i] && near(w, lvl.road.points[i].x, lvl.road.points[i].z, 2.2)));
   if (sel.kind === 'ramp') return W.filter(w => w.ramp != null && rampList().includes(w.ramp));
   if (sel.kind === 'tunnel' || sel.kind === 'box' || sel.kind === 'cells') return W.filter(w => w.ramp === sel.ramp && (sel.kind === 'cells' || /blocker|tunnel|lock|count/.test(w.kind)));
@@ -1718,9 +1718,11 @@ function renderEmpty(){
   ev.innerHTML = `<span>No ramps yet – add one next to the road</span><button class="primary" id="evAddRamp">${icon('ramp')} Add ramp</button><span class="hint">or press <kbd>3</kbd> and click by the road</span>`;
   ev.querySelector('#evAddRamp').onclick = () => { const R = L.ROAD, o = {}; C.pathAt(R, R.portalS*0.45, o, 0); addRampAt(o.x - o.dz*1.5, o.z + o.dx*1.5); };
 }
-// the phone fits the dock's height and leaves the work area (palette, view, queue, inspector) at least 1014 px
+// the phone fits the dock's height and leaves the work area its room: palette 190 + view 320 + the queue pane
+// (wider for 4-5 lanes) + inspector 280
 function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return;
-  const k = Math.max(0.45, Math.min(1, (d.clientHeight - 16)/(844 + 28), (innerWidth - 1014 - 20)/(390 + 28)));
+  const work = 190 + 320 + (+$('app').dataset.qw || 258) + 280;
+  const k = Math.max(0.4, Math.min(1, (d.clientHeight - 16)/(844 + 28), (innerWidth - work - 20)/(390 + 28)));
   $('phone').style.transform = `scale(${k})`; d.style.width = Math.round((390 + 28)*k + 20) + 'px'; }
 addEventListener('resize', fitPhone);
 

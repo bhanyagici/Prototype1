@@ -1,13 +1,14 @@
 // Screenshots of the 40-level pack (dist/match-express-funnel-40.html, from file://) at 390x844:
 //   screenshots/funnel/level-01.png ... (levels 1, 7, 13, 15, 20, 26, 30, 32, 40, a few seconds into greedy play;
 //   level 1 shows its tutorial hand), popup-hidden-bus.png (the level 7 intro popup) and stats-panel.png (after
-//   levels 1-3 were won and level 40 was lost once, all by play).
+//   levels 1-3 were won and level 40 was lost once, all by play), and one level per queue size: lanes-2.png (level 9),
+//   lanes-4.png (level 35) and lanes-5.png (level 38), a few seconds in.
 //   node tools/shoot-funnel.js        (needs playwright; CHROMIUM=/path/to/chrome optional)
 const fs = require('fs'), path = require('path'), {pathToFileURL} = require('url');
 const {chromium} = require('playwright');
 const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'screenshots', 'funnel');
 const PACK = pathToFileURL(path.join(ROOT, 'dist', 'match-express-funnel-40.html')).href;
-const LEVELS = [1, 7, 13, 15, 20, 26, 30, 32, 40];
+const LEVELS = [1, 7, 13, 15, 20, 26, 30, 32, 40], LANES = {2:9, 4:35, 5:38};
 (async () => {
   fs.mkdirSync(OUT, {recursive:true});
   const b = await chromium.launch({executablePath: process.env.CHROMIUM || undefined, args:['--use-gl=swiftshader', '--enable-unsafe-swiftshader']});
@@ -28,6 +29,11 @@ const LEVELS = [1, 7, 13, 15, 20, 26, 30, 32, 40];
     await p.evaluate(n => { __me.goLevel(n - 1); if (__me.intro) __me.closeIntro(); __me.advance(0.3); }, n);
     if (n !== 1) await play(n >= 20 ? 9 : 6);
     await shot(`level-${String(n).padStart(2, '0')}.png`);
+  }
+  for (const [nl, n] of Object.entries(LANES)){
+    await p.evaluate(n => { __me.goLevel(n - 1); if (__me.intro) __me.closeIntro(); __me.advance(0.3); }, n);
+    const lanes = await p.evaluate(() => __me.game.lanes.length); if (lanes !== +nl) throw new Error(`level ${n} has ${lanes} lanes, not ${nl}`);
+    await play(4); await shot(`lanes-${nl}.png`);
   }
   // stats from play: levels 1-3 won, level 40 lost once
   for (const n of [1, 2, 3]){ await p.evaluate(n => __me.goLevel(n - 1), n); await play(400); }

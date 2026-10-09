@@ -22,7 +22,7 @@ const TYPES = {'.html':'text/html', '.js':'text/javascript', '.json':'applicatio
     await ctx.route('https://cdn.jsdelivr.net/**', r => r.fulfill({status:200, contentType:'application/javascript', body:src})); }
   const p = await ctx.newPage(); p.on('pageerror', e => { console.error('page error:', e.message); process.exitCode = 1; });
   await p.goto(base + '/editor.html'); await p.waitForFunction(() => window.__ed, null, {timeout:60000});
-  await p.keyboard.press('o');
+  await p.keyboard.press('Control+o');                              // (Cmd+O on a Mac)
   for (const id of ORDER){ await p.fill('#orderAdd', id); await p.press('#orderAdd', 'Enter'); }
   const warns = await p.evaluate(() => __ed.orderState().warns);
   if (warns.length) throw new Error('level order warnings: ' + warns.join('; '));

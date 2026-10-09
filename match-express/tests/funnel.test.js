@@ -19,6 +19,7 @@ for (const s of SPECS){
   const lv = LV[id(s.n)], ck = C.checkLevel(JSON.parse(JSON.stringify(lv))), sizes = new Set(lv.lanes.flat().map(b => b.cap));
   const p = [];
   if (lv.id !== id(s.n)) p.push('id ' + lv.id);
+  if (C.normalizeLevel(JSON.parse(JSON.stringify(lv))).lanes.length !== (s.lanes || 3)) p.push(`${lv.lanes.length} lanes (want ${s.lanes || 3})`);
   if (!ck.balanced) p.push('seats != stickmen');
   if (ck.warnings.length) p.push('warnings: ' + ck.warnings.map(w => w.kind).join(','));
   if (ck.totalMen !== s.men) p.push(`stickmen ${ck.totalMen} (want ${s.men})`);
@@ -35,7 +36,10 @@ for (const s of SPECS){
   if (B.lock && !flat.some(b => b.key)) p.push('no key bus');
   if (p.length) probs.push(`${id(s.n)}: ${p.join('; ')}`);
 }
-chk(!probs.length, 'every level matches its row of the design table (stickmen, colours, seats per colour, sizes, ramps, blockers) and passes the checker', probs.join(' | '));
+chk(!probs.length, 'every level matches its row of the design table (queue lanes, stickmen, colours, seats per colour, sizes, ramps, blockers) and passes the checker', probs.join(' | '));
+{ const n = {}; SPECS.forEach(s => { (n[s.lanes || 3] = n[s.lanes || 3] || []).push(s.n); });
+  chk(n[2].join() === '1,2,3,4,5,9,22,31' && n[4].join() === '16,20,23,35' && n[5].join() === '38,40' && SPECS.filter(s => s.n >= 25 && s.n <= 30).every(s => (s.lanes || 3) === 3),
+    'lanes: 2 on f01-f05, f09, f22, f31; 4 on f16, f20, f23, f35; 5 on f38, f40; 3 elsewhere (f25-f30 always 3)', JSON.stringify(n)); }
 // meta: tutorials, popups and the hint only where the design puts them; combination levels have no popup
 const metas = order.map(i => LV[i].meta || {});
 const at = k => order.filter((i, n) => metas[n][k]).map(i => +i.slice(1) + ':' + LV[i].meta[k]).join(' ');
