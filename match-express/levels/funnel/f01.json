@@ -20,17 +20,17 @@
     [
       {"color": "blue", "cap": 8}
     ],
-    [],
     [
       {"color": "red", "cap": 8}
     ]
   ],
+  "laneCount": 2,
   "meta": {
     "role": "Tutorial",
     "diff": 1,
     "road": "short road, one gentle curve",
     "ramps": "one diagonal ramp",
     "tutorial": "first-sends",
-    "tutorialLane": 2
+    "tutorialLane": 1
   }
 }

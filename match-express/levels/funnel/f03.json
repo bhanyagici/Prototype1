@@ -28,16 +28,15 @@
   "lanes": [
     [
       {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 8},
       {"color": "yellow", "cap": 8}
     ],
     [
       {"color": "red", "cap": 8},
       {"color": "blue", "cap": 8}
-    ],
-    [
-      {"color": "yellow", "cap": 8}
     ]
   ],
+  "laneCount": 2,
   "meta": {
     "role": "Tutorial (bay re-send)",
     "diff": 2,

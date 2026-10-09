@@ -27,18 +27,17 @@
   "lanes": [
     [
       {"color": "yellow", "cap": 8},
+      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 8},
       {"color": "red", "cap": 8}
     ],
     [
       {"color": "green", "cap": 12},
-      {"color": "blue", "cap": 8}
-    ],
-    [
-      {"color": "yellow", "cap": 12},
       {"color": "blue", "cap": 8},
       {"color": "red", "cap": 8}
     ]
   ],
+  "laneCount": 2,
   "meta": {
     "role": "Fun",
     "diff": 2,

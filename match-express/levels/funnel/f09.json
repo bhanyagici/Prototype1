@@ -26,27 +26,26 @@
     ]
   },
   "ramps": [
-    {"rows": 10, "columns": [["yellow", "yellow", "yellow", "red", "blue", "blue", "blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "green", "green", "green", "green", "green", "red", "red"], ["yellow", "yellow", "red", "red", "red", "red", "blue", "blue", "blue", "red"], ["yellow", "yellow", "yellow", "yellow", "green", "green", "green", "blue", "blue", "red"]], "at": 4.667, "side": -1, "push": 0.48, "shape": [[-1.81, -8.3], [-3.07, -10.16]]},
-    {"rows": 9, "columns": [["yellow", "yellow", "yellow", "yellow", "blue", "blue", "blue", "blue", "red"], ["yellow", "yellow", "red", "red", "red", "green", "blue", "blue", "blue"], ["yellow", "yellow", "green", "green", "green", "green", "green", "blue", "blue"], ["yellow", "yellow", "red", "red", "red", "red", "blue", "blue", "red"]], "at": 15.057, "side": 1, "push": 0.76, "shape": [[5.88, -17.71], [6.51, -19.68]]}
+    {"rows": 10, "columns": [["yellow", "yellow", "yellow", "yellow", "green", "green", "green", "red", "red", "red"], ["blue", "blue", "blue", "blue", "green", "green", "red", "red", "red", "red"], ["blue", "blue", "blue", "blue", "green", "yellow", "yellow", "yellow", "red", "red"], ["blue", "blue", "yellow", "green", "green", "green", "green", "red", "red", "red"]], "at": 4.667, "side": -1, "push": 0.48, "shape": [[-1.81, -8.3], [-3.07, -10.16]]},
+    {"rows": 9, "columns": [["blue", "blue", "green", "green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "green", "green", "green", "yellow", "yellow", "yellow", "red"], ["yellow", "yellow", "green", "green", "green", "green", "green", "red", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "red", "red", "red", "red"]], "at": 15.057, "side": 1, "push": 0.76, "shape": [[5.88, -17.71], [6.51, -19.68]]}
   ],
   "lanes": [
     [
-      {"color": "yellow", "cap": 8},
-      {"color": "red", "cap": 12},
-      {"color": "green", "cap": 6}
+      {"color": "blue", "cap": 6},
+      {"color": "blue", "cap": 8},
+      {"color": "green", "cap": 6},
+      {"color": "yellow", "cap": 6},
+      {"color": "red", "cap": 8},
+      {"color": "red", "cap": 8}
     ],
     [
       {"color": "red", "cap": 6},
-      {"color": "yellow", "cap": 8},
-      {"color": "yellow", "cap": 6},
-      {"color": "blue", "cap": 8}
-    ],
-    [
+      {"color": "yellow", "cap": 12},
       {"color": "green", "cap": 8},
-      {"color": "blue", "cap": 6},
-      {"color": "blue", "cap": 8}
+      {"color": "green", "cap": 8}
     ]
   ],
+  "laneCount": 2,
   "meta": {
     "role": "Relax",
     "diff": 3,

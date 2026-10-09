@@ -22,36 +22,36 @@
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["green", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "blue"], ["purple", "red", "red", "yellow", "yellow"], ["green", "green", "yellow", "blue", "blue"], ["green", "red", "red", "yellow", "blue"], ["green", "red", "green", "green", "blue"], ["purple", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "blue"]], "at": 3.9, "side": 1, "push": 0.04, "shape": [[0.53, -5.53], [1.06, -5.64], [1.59, -5.7], [2.13, -5.71], [2.67, -5.68]]},
-    {"rows": 5, "columns": [["purple", "red", "red", "yellow", "blue"], ["purple", "purple", "yellow", "yellow", "blue"], ["green", "green", "yellow", "yellow", "blue"], ["purple", "purple", "green", "green", "blue"], ["purple", "purple", "red", "red", "yellow"], ["green", "green", "green", "green", "blue"], ["purple", "red", "red", "red", "blue"], ["green", "green", "yellow", "yellow", "blue"]], "at": 5.4, "side": -1, "push": 0.72, "shape": [[-3.12, -6.09], [-3.62, -5.87], [-4.12, -5.68], [-4.64, -5.52], [-5.16, -5.39]]},
-    {"rows": 5, "columns": [["purple", "purple", "yellow", "yellow", "yellow"], ["green", "green", "green", "green", "blue"], ["purple", "purple", "red", "red", "blue"], ["purple", "red", "red", "red", "blue"], ["purple", "purple", "red", "yellow", "blue"], ["green", "green", "yellow", "yellow", "yellow"], ["purple", "purple", "green", "green", "blue"], ["green", "red", "green", "green", "yellow"]], "at": 22.299, "side": 1, "push": 0.64, "shape": [[-2.18, -11.78], [-1.72, -12.07], [-1.29, -12.39], [-0.89, -12.75], [-0.53, -13.15]]}
+    {"rows": 5, "columns": [["blue", "blue", "yellow", "red", "red"], ["green", "green", "yellow", "yellow", "purple"], ["blue", "blue", "blue", "blue", "blue"], ["blue", "blue", "blue", "red", "red"], ["purple", "purple", "yellow", "yellow", "purple"], ["purple", "red", "red", "yellow", "purple"], ["blue", "blue", "green", "green", "purple"], ["purple", "red", "red", "red", "red"]], "at": 3.9, "side": 1, "push": 0.04, "shape": [[0.53, -5.53], [1.06, -5.64], [1.59, -5.7], [2.13, -5.71], [2.67, -5.68]]},
+    {"rows": 5, "columns": [["purple", "green", "green", "blue", "blue"], ["blue", "blue", "blue", "blue", "purple"], ["red", "red", "yellow", "yellow", "purple"], ["purple", "purple", "yellow", "yellow", "purple"], ["blue", "blue", "blue", "blue", "blue"], ["yellow", "red", "red", "blue", "blue"], ["purple", "purple", "green", "purple", "purple"], ["red", "red", "red", "yellow", "yellow"]], "at": 5.4, "side": -1, "push": 0.72, "shape": [[-3.12, -6.09], [-3.62, -5.87], [-4.12, -5.68], [-4.64, -5.52], [-5.16, -5.39]]},
+    {"rows": 5, "columns": [["green", "green", "green", "yellow", "yellow"], ["purple", "green", "yellow", "yellow", "purple"], ["blue", "green", "green", "red", "red"], ["yellow", "yellow", "yellow", "purple", "purple"], ["blue", "blue", "blue", "purple", "purple"], ["red", "green", "blue", "yellow", "purple"], ["purple", "purple", "yellow", "red", "red"], ["yellow", "yellow", "green", "green", "purple"]], "at": 22.299, "side": 1, "push": 0.64, "shape": [[-2.18, -11.78], [-1.72, -12.07], [-1.29, -12.39], [-0.89, -12.75], [-0.53, -13.15]]}
   ],
   "lanes": [
     [
-      {"color": "blue", "cap": 12},
-      {"color": "yellow", "cap": 6},
-      {"color": "purple", "cap": 12},
       {"color": "red", "cap": 12},
-      {"color": "red", "cap": 4},
-      {"color": "yellow", "cap": 8}
+      {"color": "blue", "cap": 4, "link": "G1"},
+      {"color": "yellow", "cap": 6, "link": "G1"},
+      {"color": "purple", "cap": 12}
     ],
     [
-      {"color": "green", "cap": 4},
-      {"color": "green", "cap": 12, "link": "G1"},
-      {"color": "red", "cap": 4}
+      {"color": "yellow", "cap": 6, "link": "G5"},
+      {"color": "blue", "cap": 6, "link": "G5"},
+      {"color": "purple", "cap": 12, "link": "G4"},
+      {"color": "green", "cap": 4, "link": "G4"},
+      {"color": "green", "cap": 12, "link": "G3"},
+      {"color": "yellow", "cap": 12, "link": "G3"}
     ],
     [
-      {"color": "blue", "cap": 6},
-      {"color": "purple", "cap": 6, "link": "G1"},
-      {"color": "purple", "cap": 8},
-      {"color": "yellow", "cap": 12},
-      {"color": "green", "cap": 6, "link": "G2"},
-      {"color": "green", "cap": 8, "link": "G2"}
+      {"color": "blue", "cap": 12, "link": "G6"},
+      {"color": "blue", "cap": 8, "link": "G6"},
+      {"color": "red", "cap": 4, "link": "G2"},
+      {"color": "red", "cap": 6, "link": "G2"},
+      {"color": "purple", "cap": 4}
     ]
   ],
   "meta": {
     "role": "Practice",
-    "diff": 5,
+    "diff": 6,
     "road": "spiral in the middle",
     "ramps": "arc ramps around the spiral"
   }

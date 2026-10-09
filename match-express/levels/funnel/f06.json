@@ -27,26 +27,29 @@
     ]
   },
   "ramps": [
-    {"rows": 4, "columns": [["red", "red", "red", "red"], ["red", "red", "red", "green"], ["blue", "blue", "blue", "green"], ["blue", "blue", "blue", "green"], ["red", "blue", "blue", "blue"], ["green", "green", "green", "green"]], "at": 4.199, "side": 1, "push": 0.04, "shape": [[3.33, -2.85], [4.01, -1.9]]},
-    {"rows": 4, "columns": [["green", "green", "green", "green"], ["red", "red", "red", "red"], ["red", "red", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow"], ["red", "red", "green", "green"], ["yellow", "yellow", "yellow", "yellow"]], "at": 10.078, "side": -1, "push": 0.04, "shape": [[-1.37, -7.51], [-2.31, -6.81]]},
-    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "yellow"], ["blue", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue"], ["red", "red", "red", "red"], ["blue", "yellow", "blue", "green"], ["blue", "blue", "blue", "blue"]], "at": 15.537, "side": 1, "push": 0.04, "shape": [[4.93, -12.13], [6.04, -11.76]]}
+    {"rows": 4, "columns": [["green", "green", "green", "red"], ["green", "green", "red", "red"], ["blue", "blue", "blue", "blue"], ["green", "green", "green", "red"], ["blue", "yellow", "yellow", "yellow"], ["green", "green", "green", "blue"]], "at": 4.199, "side": 1, "push": 0.04, "shape": [[3.33, -2.85], [4.01, -1.9]]},
+    {"rows": 4, "columns": [["green", "green", "green", "blue"], ["green", "green", "red", "red"], ["blue", "blue", "yellow", "yellow"], ["blue", "blue", "red", "red"], ["blue", "blue", "yellow", "red"], ["blue", "yellow", "yellow", "red"]], "at": 10.078, "side": -1, "push": 0.04, "shape": [[-1.37, -7.51], [-2.31, -6.81]]},
+    {"rows": 4, "columns": [["blue", "blue", "blue", "red"], ["green", "yellow", "red", "red"], ["blue", "blue", "yellow", "yellow"], ["green", "yellow", "red", "red"], ["yellow", "yellow", "yellow", "red"], ["green", "green", "yellow", "blue"]], "at": 15.537, "side": 1, "push": 0.04, "shape": [[4.93, -12.13], [6.04, -11.76]]}
   ],
   "lanes": [
     [
+      {"color": "blue", "cap": 4},
+      {"color": "green", "cap": 4},
       {"color": "yellow", "cap": 4},
-      {"color": "green", "cap": 8}
+      {"color": "yellow", "cap": 4},
+      {"color": "red", "cap": 8}
     ],
     [
-      {"color": "red", "cap": 8},
-      {"color": "blue", "cap": 4},
+      {"color": "red", "cap": 4},
       {"color": "yellow", "cap": 4},
-      {"color": "green", "cap": 8}
+      {"color": "yellow", "cap": 4},
+      {"color": "blue", "cap": 4}
     ],
     [
-      {"color": "red", "cap": 12},
-      {"color": "blue", "cap": 4},
-      {"color": "yellow", "cap": 8},
-      {"color": "blue", "cap": 12}
+      {"color": "red", "cap": 4},
+      {"color": "blue", "cap": 12},
+      {"color": "green", "cap": 8},
+      {"color": "green", "cap": 8}
     ]
   ],
   "meta": {

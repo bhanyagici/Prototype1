@@ -23,41 +23,43 @@
     ]
   },
   "ramps": [
-    {"rows": 6, "columns": [["green", "green", "red", "yellow", "purple", "orange"], ["green", "blue", "blue", "yellow", "yellow", "orange"], ["green", "blue", "blue", "red", "red", "purple"], ["green", "green", "red", "red", "purple", "purple"], ["green", "blue", "blue", "red", "red", "orange"], ["orange", "green", "red", "yellow", "yellow", "orange"]], "at": 4.337, "side": 1, "push": 0.6, "shape": [[4.58, -2.91], [6, -2.32]]},
-    {"rows": 6, "columns": [["green", "green", "blue", "yellow", "yellow", "orange"], ["green", "blue", "red", "red", "yellow", "purple"], ["orange", "orange", "blue", "blue", "purple", "purple"], ["green", "blue", "blue", "red", "yellow", "yellow"], ["green", "green", "blue", "yellow", "purple", "purple"], ["orange", "orange", "blue", "red", "purple", "purple"]], "at": 2.641, "side": -1, "push": 0.26, "shape": [[-0.86, -5.57], [-1.95, -6.64]]},
-    {"rows": 6, "columns": [["green", "green", "blue", "blue", "purple", "purple"], ["green", "blue", "blue", "yellow", "yellow", "orange"], ["green", "green", "blue", "yellow", "yellow", "orange"], ["green", "blue", "blue", "red", "red", "orange"], ["green", "green", "blue", "red", "purple", "purple"], ["green", "green", "red", "yellow", "yellow", "orange"]], "at": 20.619, "side": 1, "push": 0.26, "shape": [[2.56, -10.57], [3.99, -11.13]]},
-    {"rows": 6, "columns": [["orange", "blue", "blue", "yellow", "purple", "orange"], ["orange", "green", "red", "red", "purple", "orange"], ["green", "green", "blue", "red", "red", "purple"], ["green", "green", "blue", "blue", "purple", "purple"], ["green", "green", "blue", "blue", "purple", "purple"], ["orange", "green", "blue", "red", "red", "orange"]], "at": 23.002, "side": -1, "push": 0.36, "shape": [[-2.81, -9.01], [-3.36, -7.58]]}
+    {"rows": 6, "columns": [["orange", "orange", "green", "green", "green", "yellow"], ["orange", "orange", "blue", "blue", "yellow", "yellow"], ["red", "green", "green", "yellow", "yellow", "yellow"], ["purple", "purple", "purple", "red", "green", "green"], ["orange", "orange", "green", "green", "green", "yellow"], ["blue", "blue", "blue", "blue", "green", "green"]], "at": 4.337, "side": 1, "push": 0.6, "shape": [[4.58, -2.91], [6, -2.32]]},
+    {"rows": 6, "columns": [["blue", "blue", "yellow", "yellow", "red", "red"], ["purple", "purple", "purple", "purple", "purple", "yellow"], ["orange", "orange", "blue", "blue", "red", "red"], ["orange", "orange", "blue", "blue", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "purple", "purple", "purple", "yellow"]], "at": 2.641, "side": -1, "push": 0.26, "shape": [[-0.86, -5.57], [-1.95, -6.64]]},
+    {"rows": 6, "columns": [["orange", "orange", "orange", "purple", "purple", "purple"], ["orange", "orange", "orange", "yellow", "red", "yellow"], ["orange", "orange", "yellow", "red", "green", "green"], ["orange", "orange", "orange", "yellow", "red", "red"], ["blue", "blue", "green", "green", "red", "red"], ["purple", "purple", "purple", "red", "red", "red"]], "at": 20.619, "side": 1, "push": 0.26, "shape": [[2.56, -10.57], [3.99, -11.13]]},
+    {"rows": 6, "columns": [["orange", "orange", "blue", "blue", "red", "red"], ["red", "red", "green", "green", "green", "yellow"], ["blue", "blue", "blue", "red", "red", "red"], ["red", "purple", "green", "red", "red", "red"], ["orange", "green", "green", "red", "red", "yellow"], ["blue", "blue", "blue", "purple", "green", "green"]], "at": 23.002, "side": -1, "push": 0.36, "shape": [[-2.81, -9.01], [-3.36, -7.58]]}
   ],
   "lanes": [
     [
-      {"color": "purple", "cap": 6},
-      {"color": "yellow", "cap": 4, "hidden": true},
-      {"color": "green", "cap": 4, "link": "G2"},
-      {"color": "green", "cap": 4},
+      {"color": "orange", "cap": 8, "link": "G4"},
+      {"color": "red", "cap": 4, "link": "G5"},
+      {"color": "orange", "cap": 4},
+      {"color": "blue", "cap": 6, "link": "G6"},
+      {"color": "yellow", "cap": 6, "link": "G2"}
+    ],
+    [
+      {"color": "green", "cap": 8, "link": "G3"},
+      {"color": "orange", "cap": 12, "link": "G4", "hidden": true},
+      {"color": "purple", "cap": 12, "link": "G5"},
+      {"color": "blue", "cap": 4, "link": "G6"},
+      {"color": "purple", "cap": 8, "link": "G2"},
+      {"color": "red", "cap": 4}
+    ],
+    [
+      {"color": "yellow", "cap": 4, "link": "G3"},
+      {"color": "blue", "cap": 12},
       {"color": "green", "cap": 12},
-      {"color": "green", "cap": 4},
-      {"color": "blue", "cap": 4},
-      {"color": "yellow", "cap": 4}
+      {"color": "red", "cap": 12},
+      {"color": "red", "cap": 4, "link": "G1"}
     ],
     [
       {"color": "purple", "cap": 4},
-      {"color": "yellow", "cap": 6},
-      {"color": "orange", "cap": 4, "link": "G2"},
-      {"color": "blue", "cap": 6, "link": "G1"},
-      {"color": "red", "cap": 4},
-      {"color": "red", "cap": 6},
-      {"color": "red", "cap": 12},
+      {"color": "green", "cap": 4, "hidden": true},
       {"color": "yellow", "cap": 4},
-      {"color": "purple", "cap": 12}
-    ],
-    [
-      {"color": "orange", "cap": 4},
-      {"color": "green", "cap": 8, "hidden": true},
-      {"color": "blue", "cap": 12},
-      {"color": "blue", "cap": 8, "link": "G1"},
-      {"color": "orange", "cap": 12}
+      {"color": "red", "cap": 6, "link": "G1"},
+      {"color": "yellow", "cap": 6}
     ]
   ],
+  "laneCount": 4,
   "meta": {
     "role": "Challenge",
     "diff": 7,

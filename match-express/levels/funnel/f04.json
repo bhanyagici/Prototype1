@@ -25,19 +25,18 @@
   "lanes": [
     [
       {"color": "yellow", "cap": 4},
-      {"color": "red", "cap": 12},
-      {"color": "green", "cap": 4}
-    ],
-    [
-      {"color": "blue", "cap": 4},
+      {"color": "yellow", "cap": 12},
       {"color": "blue", "cap": 8},
       {"color": "green", "cap": 4}
     ],
     [
-      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 4},
+      {"color": "red", "cap": 12},
+      {"color": "green", "cap": 4},
       {"color": "green", "cap": 4}
     ]
   ],
+  "laneCount": 2,
   "meta": {
     "role": "Teach (bus sizes)",
     "diff": 3,

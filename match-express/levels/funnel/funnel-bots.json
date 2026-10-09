@@ -6,8 +6,8 @@
    "id": "f01",
    "greedy": {
     "result": "win",
-    "t1x": 13.3,
-    "t2x": 6.6,
+    "t1x": 13.5,
+    "t2x": 6.7,
     "sends": 2
    },
    "random": {
@@ -24,8 +24,8 @@
    "id": "f02",
    "greedy": {
     "result": "win",
-    "t1x": 17.7,
-    "t2x": 8.9,
+    "t1x": 17.9,
+    "t2x": 9,
     "sends": 4
    },
    "random": {
@@ -42,8 +42,8 @@
    "id": "f03",
    "greedy": {
     "result": "win",
-    "t1x": 40.3,
-    "t2x": 20.2,
+    "t1x": 40.7,
+    "t2x": 20.4,
     "sends": 8
    },
    "random": {
@@ -60,8 +60,8 @@
    "id": "f04",
    "greedy": {
     "result": "win",
-    "t1x": 37.7,
-    "t2x": 18.9,
+    "t1x": 34.2,
+    "t2x": 17.1,
     "sends": 10
    },
    "random": {
@@ -78,8 +78,8 @@
    "id": "f05",
    "greedy": {
     "result": "win",
-    "t1x": 33.7,
-    "t2x": 16.9,
+    "t1x": 33.9,
+    "t2x": 17,
     "sends": 7
    },
    "random": {
@@ -96,19 +96,19 @@
    "id": "f06",
    "greedy": {
     "result": "win",
-    "t1x": 62.5,
-    "t2x": 31.2,
-    "sends": 13
+    "t1x": 72,
+    "t2x": 36,
+    "sends": 19
    },
    "random": {
-    "wins": 200,
-    "fails": 0,
+    "wins": 197,
+    "fails": 3,
     "unfinished": 0,
     "runs": 200,
-    "rate": 1
+    "rate": 0.985
    },
    "men": 72,
-   "buses": 10
+   "buses": 13
   },
   {
    "id": "f07",
@@ -132,34 +132,34 @@
    "id": "f08",
    "greedy": {
     "result": "win",
-    "t1x": 81.5,
-    "t2x": 40.8,
-    "sends": 20
+    "t1x": 40.7,
+    "t2x": 20.3,
+    "sends": 11
    },
    "random": {
-    "wins": 189,
-    "fails": 11,
+    "wins": 181,
+    "fails": 19,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.945
+    "rate": 0.905
    },
    "men": 84,
-   "buses": 12
+   "buses": 11
   },
   {
    "id": "f09",
    "greedy": {
     "result": "win",
-    "t1x": 68.9,
-    "t2x": 34.4,
-    "sends": 16
+    "t1x": 65.8,
+    "t2x": 32.9,
+    "sends": 15
    },
    "random": {
-    "wins": 195,
-    "fails": 5,
+    "wins": 200,
+    "fails": 0,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.975
+    "rate": 1
    },
    "men": 76,
    "buses": 10
@@ -168,19 +168,19 @@
    "id": "f10",
    "greedy": {
     "result": "win",
-    "t1x": 70.9,
-    "t2x": 35.4,
-    "sends": 19
+    "t1x": 90.1,
+    "t2x": 45,
+    "sends": 22
    },
    "random": {
-    "wins": 154,
-    "fails": 46,
+    "wins": 120,
+    "fails": 80,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.77
+    "rate": 0.6
    },
    "men": 104,
-   "buses": 14
+   "buses": 13
   },
   {
    "id": "f11",
@@ -204,19 +204,19 @@
    "id": "f12",
    "greedy": {
     "result": "win",
-    "t1x": 75.6,
-    "t2x": 37.8,
-    "sends": 23
+    "t1x": 77.3,
+    "t2x": 38.6,
+    "sends": 25
    },
    "random": {
-    "wins": 200,
-    "fails": 0,
+    "wins": 123,
+    "fails": 77,
     "unfinished": 0,
     "runs": 200,
-    "rate": 1
+    "rate": 0.615
    },
    "men": 112,
-   "buses": 20
+   "buses": 16
   },
   {
    "id": "f13",
@@ -240,16 +240,16 @@
    "id": "f14",
    "greedy": {
     "result": "win",
-    "t1x": 142.5,
-    "t2x": 71.2,
-    "sends": 30
+    "t1x": 112.6,
+    "t2x": 56.3,
+    "sends": 24
    },
    "random": {
-    "wins": 83,
-    "fails": 0,
-    "unfinished": 117,
+    "wins": 75,
+    "fails": 125,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.415
+    "rate": 0.375
    },
    "men": 120,
    "buses": 15
@@ -276,19 +276,19 @@
    "id": "f16",
    "greedy": {
     "result": "win",
-    "t1x": 145,
-    "t2x": 72.5,
-    "sends": 31
+    "t1x": 132.2,
+    "t2x": 66.1,
+    "sends": 33
    },
    "random": {
-    "wins": 57,
-    "fails": 9,
-    "unfinished": 134,
+    "wins": 44,
+    "fails": 156,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.285
+    "rate": 0.22
    },
    "men": 144,
-   "buses": 22
+   "buses": 21
   },
   {
    "id": "f17",
@@ -330,34 +330,34 @@
    "id": "f19",
    "greedy": {
     "result": "win",
-    "t1x": 184.7,
-    "t2x": 92.3,
-    "sends": 28
+    "t1x": 178.1,
+    "t2x": 89,
+    "sends": 25
    },
    "random": {
-    "wins": 84,
-    "fails": 13,
-    "unfinished": 103,
+    "wins": 68,
+    "fails": 132,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.42
+    "rate": 0.34
    },
    "men": 152,
-   "buses": 18
+   "buses": 21
   },
   {
    "id": "f20",
    "greedy": {
     "result": "win",
-    "t1x": 146.2,
-    "t2x": 73.1,
-    "sends": 37
+    "t1x": 191.5,
+    "t2x": 95.7,
+    "sends": 32
    },
    "random": {
-    "wins": 42,
-    "fails": 0,
-    "unfinished": 158,
+    "wins": 37,
+    "fails": 163,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.21
+    "rate": 0.185
    },
    "men": 176,
    "buses": 24
@@ -384,37 +384,37 @@
    "id": "f22",
    "greedy": {
     "result": "win",
-    "t1x": 48.3,
-    "t2x": 24.1,
-    "sends": 14
+    "t1x": 72,
+    "t2x": 36,
+    "sends": 17
    },
    "random": {
-    "wins": 160,
-    "fails": 40,
+    "wins": 200,
+    "fails": 0,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.8
+    "rate": 1
    },
    "men": 128,
-   "buses": 14
+   "buses": 13
   },
   {
    "id": "f23",
    "greedy": {
     "result": "win",
-    "t1x": 136.8,
-    "t2x": 68.4,
-    "sends": 37
+    "t1x": 128.2,
+    "t2x": 64.1,
+    "sends": 33
    },
    "random": {
-    "wins": 75,
-    "fails": 61,
-    "unfinished": 64,
+    "wins": 45,
+    "fails": 155,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.375
+    "rate": 0.225
    },
    "men": 168,
-   "buses": 26
+   "buses": 23
   },
   {
    "id": "f24",
@@ -474,19 +474,19 @@
    "id": "f27",
    "greedy": {
     "result": "win",
-    "t1x": 118.4,
-    "t2x": 59.2,
-    "sends": 36
+    "t1x": 110.2,
+    "t2x": 55.1,
+    "sends": 34
    },
    "random": {
-    "wins": 130,
-    "fails": 70,
+    "wins": 121,
+    "fails": 79,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.65
+    "rate": 0.605
    },
    "men": 176,
-   "buses": 23
+   "buses": 27
   },
   {
    "id": "f28",
@@ -548,17 +548,17 @@
     "result": "win",
     "t1x": 73.2,
     "t2x": 36.6,
-    "sends": 19
+    "sends": 20
    },
    "random": {
-    "wins": 168,
-    "fails": 32,
+    "wins": 200,
+    "fails": 0,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.84
+    "rate": 1
    },
    "men": 160,
-   "buses": 15
+   "buses": 16
   },
   {
    "id": "f32",
@@ -618,16 +618,16 @@
    "id": "f35",
    "greedy": {
     "result": "win",
-    "t1x": 137.8,
-    "t2x": 68.9,
-    "sends": 36
+    "t1x": 200.2,
+    "t2x": 100.1,
+    "sends": 40
    },
    "random": {
-    "wins": 43,
-    "fails": 91,
-    "unfinished": 66,
+    "wins": 34,
+    "fails": 166,
+    "unfinished": 0,
     "runs": 200,
-    "rate": 0.215
+    "rate": 0.17
    },
    "men": 240,
    "buses": 31
@@ -654,37 +654,37 @@
    "id": "f37",
    "greedy": {
     "result": "win",
-    "t1x": 247.6,
-    "t2x": 123.8,
-    "sends": 54
+    "t1x": 198.8,
+    "t2x": 99.4,
+    "sends": 42
    },
    "random": {
-    "wins": 75,
-    "fails": 125,
+    "wins": 56,
+    "fails": 144,
     "unfinished": 0,
     "runs": 200,
-    "rate": 0.375
+    "rate": 0.28
    },
    "men": 256,
-   "buses": 35
+   "buses": 32
   },
   {
    "id": "f38",
    "greedy": {
     "result": "win",
-    "t1x": 210.7,
-    "t2x": 105.4,
-    "sends": 59
+    "t1x": 195.3,
+    "t2x": 97.6,
+    "sends": 50
    },
    "random": {
-    "wins": 41,
-    "fails": 141,
-    "unfinished": 18,
+    "wins": 36,
+    "fails": 155,
+    "unfinished": 9,
     "runs": 200,
-    "rate": 0.205
+    "rate": 0.18
    },
    "men": 280,
-   "buses": 44
+   "buses": 38
   },
   {
    "id": "f39",
@@ -708,21 +708,21 @@
    "id": "f40",
    "greedy": {
     "result": "win",
-    "t1x": 232.7,
-    "t2x": 116.3,
-    "sends": 52
+    "t1x": 235.6,
+    "t2x": 117.8,
+    "sends": 50
    },
    "random": {
-    "wins": 29,
-    "fails": 143,
-    "unfinished": 28,
+    "wins": 17,
+    "fails": 105,
+    "unfinished": 78,
     "runs": 200,
-    "rate": 0.145
+    "rate": 0.085
    },
    "men": 320,
-   "buses": 46
+   "buses": 44
   }
  ],
- "totalGreedy1x": 4375.9,
- "totalGreedy2x": 2187.9
+ "totalGreedy1x": 4363.9,
+ "totalGreedy2x": 2182
 }

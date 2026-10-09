@@ -27,18 +27,18 @@
     {
       "rows": 5,
       "columns": [
-        ["cyan", "blue", "blue", "red", "red"],
-        ["orange", "orange", "blue", "green", "green"],
-        ["yellow", "yellow", "blue", "blue", "purple"],
-        ["cyan", "cyan", "blue", "red", "purple"],
-        ["cyan", "cyan", "blue", "blue", "purple"],
-        ["orange", "blue", "blue", "red", "red"],
-        ["yellow", "yellow", "blue", "red", "purple"],
-        ["cyan", "cyan", "cyan", "red", "green"],
-        ["orange", "orange", "red", "green", "green"],
-        ["cyan", "cyan", "blue", "red", "red"],
-        ["orange", "cyan", "cyan", "green", "purple"],
-        ["orange", "cyan", "red", "red", "red"]
+        ["green", "green", "red", "red", "orange"],
+        ["orange", "orange", "blue", "blue", "blue"],
+        ["yellow", "yellow", "yellow", "cyan", "cyan"],
+        ["purple", "purple", "red", "red", "yellow"],
+        ["green", "green", "blue", "orange", "orange"],
+        ["green", "green", "green", "cyan", "cyan"],
+        ["purple", "purple", "blue", "blue", "orange"],
+        ["green", "green", "green", "cyan", "cyan"],
+        ["purple", "purple", "blue", "blue", "yellow"],
+        ["orange", "orange", "orange", "orange", "orange"],
+        ["purple", "purple", "orange", "orange", "orange"],
+        ["green", "green", "blue", "cyan", "yellow"]
       ],
       "at": 15.786,
       "side": 1,
@@ -54,16 +54,16 @@
     {
       "rows": 6,
       "columns": [
-        ["orange", "cyan", "cyan", "red", "red", "yellow"],
-        ["orange", "orange", "red", "red", "purple", "yellow"],
-        ["cyan", "cyan", "blue", "red", "purple", "yellow"],
-        ["orange", "blue", "blue", "green", "purple", "purple"],
-        ["orange", "orange", "blue", "green", "purple", "yellow"],
-        ["orange", "blue", "blue", "red", "red", "yellow"],
-        ["yellow", "yellow", "red", "green", "green", "purple"],
-        ["cyan", "cyan", "blue", "green", "green", "purple"],
-        ["yellow", "yellow", "blue", "blue", "purple", "purple"],
-        ["yellow", "yellow", "blue", "red", "red", "yellow"]
+        ["orange", "orange", "red", "red", "yellow", "yellow"],
+        ["purple", "purple", "blue", "cyan", "yellow", "yellow"],
+        ["purple", "purple", "blue", "blue", "orange", "orange"],
+        ["green", "orange", "orange", "cyan", "cyan", "cyan"],
+        ["green", "orange", "orange", "cyan", "cyan", "cyan"],
+        ["green", "green", "cyan", "cyan", "orange", "blue"],
+        ["purple", "purple", "cyan", "cyan", "yellow", "yellow"],
+        ["yellow", "yellow", "red", "cyan", "yellow", "yellow"],
+        ["green", "red", "blue", "blue", "cyan", "cyan"],
+        ["green", "green", "red", "cyan", "cyan", "cyan"]
       ],
       "at": 20.535,
       "side": 1,
@@ -76,22 +76,22 @@
         [5.72, -12.91]
       ],
       "boxes": [
-        {"col": 3, "row": 4, "w": 2, "h": 2, "lock": "K1"}
+        {"col": 0, "row": 4, "w": 2, "h": 2, "lock": "K1"}
       ]
     },
     {
       "rows": 6,
       "columns": [
-        ["orange", "blue", "red", "red", "purple", "yellow"],
-        ["cyan", "cyan", "cyan", "green", "purple", "yellow"],
-        ["orange", "cyan", "cyan", "green", "green", "purple"],
-        ["cyan", "blue", "red", "green", "green", "yellow"],
-        ["yellow", "blue", "blue", "red", "purple", "purple"],
-        ["orange", "cyan", "blue", "green", "purple", "purple"],
-        ["yellow", "yellow", "blue", "green", "green", "yellow"],
-        ["cyan", "blue", "red", "red", "purple", "yellow"],
-        ["orange", "orange", "blue", "red", "green", "yellow"],
-        ["orange", "cyan", "red", "green", "purple", "yellow"]
+        ["purple", "purple", "red", "red", "yellow", "yellow"],
+        ["yellow", "orange", "orange", "cyan", "orange", "blue"],
+        ["orange", "orange", "orange", "orange", "orange", "blue"],
+        ["green", "green", "green", "cyan", "orange", "orange"],
+        ["yellow", "yellow", "yellow", "cyan", "cyan", "blue"],
+        ["purple", "purple", "red", "cyan", "cyan", "blue"],
+        ["orange", "orange", "blue", "cyan", "cyan", "yellow"],
+        ["green", "red", "red", "red", "cyan", "cyan"],
+        ["purple", "purple", "blue", "blue", "yellow", "blue"],
+        ["green", "green", "red", "red", "yellow", "blue"]
       ],
       "at": 22.47,
       "side": 1,
@@ -107,16 +107,16 @@
     {
       "rows": 6,
       "columns": [
-        ["orange", "blue", "blue", "purple", "purple", "yellow"],
-        ["orange", "orange", "red", "green", "purple", "purple"],
-        ["yellow", "yellow", "red", "red", "purple", "purple"],
-        ["yellow", "cyan", "blue", "blue", "purple", "purple"],
-        ["yellow", "yellow", "blue", "blue", "purple", "purple"],
-        ["cyan", "cyan", "blue", "green", "purple", "purple"],
-        ["cyan", "cyan", "blue", "blue", "purple", "yellow"],
-        ["cyan", "blue", "red", "red", "purple", "yellow"],
-        ["cyan", "blue", "blue", "red", "red", "purple"],
-        ["orange", "cyan", "red", "red", "purple", "purple"]
+        ["green", "green", "blue", "blue", "orange", "orange"],
+        ["yellow", "red", "red", "red", "blue", "blue"],
+        ["green", "green", "red", "red", "blue", "blue"],
+        ["orange", "orange", "orange", "cyan", "cyan", "cyan"],
+        ["purple", "purple", "blue", "blue", "blue", "blue"],
+        ["purple", "purple", "red", "cyan", "cyan", "cyan"],
+        ["green", "red", "blue", "blue", "yellow", "yellow"],
+        ["purple", "purple", "blue", "blue", "yellow", "yellow"],
+        ["yellow", "yellow", "orange", "orange", "blue", "blue"],
+        ["purple", "purple", "red", "red", "yellow", "yellow"]
       ],
       "at": 25.627,
       "side": 1,
@@ -126,43 +126,46 @@
   ],
   "lanes": [
     [
-      {"color": "purple", "cap": 6, "link": "G2"},
+      {"color": "green", "cap": 4, "link": "G9"},
+      {"color": "yellow", "cap": 12, "link": "G9"},
+      {"color": "green", "cap": 8, "link": "G1"},
+      {"color": "orange", "cap": 8, "link": "G14"},
+      {"color": "orange", "cap": 8, "link": "G6"},
+      {"color": "orange", "cap": 4, "link": "G6"},
+      {"color": "orange", "cap": 4, "link": "G13"},
+      {"color": "blue", "cap": 4, "link": "G13"}
+    ],
+    [
+      {"color": "blue", "cap": 12, "link": "G2"},
+      {"color": "purple", "cap": 6, "link": "G3"},
+      {"color": "green", "cap": 6, "link": "G1"},
+      {"color": "cyan", "cap": 12, "link": "G14"},
+      {"color": "cyan", "cap": 12, "key": "K1"},
+      {"color": "yellow", "cap": 12, "link": "G7"},
+      {"color": "yellow", "cap": 4, "link": "G7"}
+    ],
+    [
+      {"color": "blue", "cap": 4, "link": "G2"},
       {"color": "purple", "cap": 12},
-      {"color": "orange", "cap": 4},
-      {"color": "cyan", "cap": 4},
-      {"color": "blue", "cap": 12},
-      {"color": "red", "cap": 6, "link": "G3"},
-      {"color": "red", "cap": 4, "link": "G3"},
-      {"color": "green", "cap": 12},
-      {"color": "red", "cap": 8},
-      {"color": "green", "cap": 4}
+      {"color": "purple", "cap": 4, "link": "G3"},
+      {"color": "purple", "cap": 6, "link": "G5"},
+      {"color": "green", "cap": 12, "link": "G5"},
+      {"color": "red", "cap": 4, "link": "G4"},
+      {"color": "red", "cap": 6, "link": "G4"},
+      {"color": "blue", "cap": 12, "link": "G8"},
+      {"color": "blue", "cap": 8, "link": "G8"}
     ],
     [
-      {"color": "purple", "cap": 12, "link": "G2"},
-      {"color": "purple", "cap": 6},
-      {"color": "cyan", "cap": 8},
-      {"color": "blue", "cap": 8},
-      {"color": "blue", "cap": 4},
-      {"color": "green", "cap": 4},
-      {"color": "red", "cap": 6},
-      {"color": "purple", "cap": 4},
-      {"color": "yellow", "cap": 4},
-      {"color": "yellow", "cap": 12}
-    ],
-    [
-      {"color": "orange", "cap": 12},
-      {"color": "yellow", "cap": 12, "key": "K1"},
-      {"color": "orange", "cap": 8},
-      {"color": "yellow", "cap": 6},
-      {"color": "cyan", "cap": 12, "link": "G1"},
-      {"color": "cyan", "cap": 12, "link": "G1"},
-      {"color": "blue", "cap": 12},
-      {"color": "blue", "cap": 6},
-      {"color": "red", "cap": 12},
-      {"color": "red", "cap": 4},
-      {"color": "green", "cap": 4}
+      {"color": "red", "cap": 4, "link": "G12"},
+      {"color": "cyan", "cap": 4, "link": "G12"},
+      {"color": "red", "cap": 12, "link": "G11"},
+      {"color": "cyan", "cap": 12, "link": "G11"},
+      {"color": "orange", "cap": 12, "link": "G10"},
+      {"color": "orange", "cap": 6, "link": "G10"},
+      {"color": "yellow", "cap": 6}
     ]
   ],
+  "laneCount": 4,
   "meta": {
     "role": "Challenge",
     "diff": 8,

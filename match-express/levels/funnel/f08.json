@@ -21,33 +21,32 @@
     ]
   },
   "ramps": [
-    {"rows": 4, "columns": [["red", "red", "purple", "blue"], ["red", "red", "green", "green"], ["yellow", "green", "green", "blue"], ["green", "green", "purple", "blue"], ["red", "green", "green", "blue"], ["red", "red", "blue", "blue"], ["yellow", "yellow", "purple", "purple"]], "at": 3.538, "side": -1, "push": 0.57, "shape": [[-0.43, -5.36], [-0.86, -5.55], [-1.27, -5.77], [-1.66, -6.04], [-2.01, -6.35]]},
-    {"rows": 4, "columns": [["red", "green", "green", "blue"], ["yellow", "green", "purple", "blue"], ["red", "green", "purple", "blue"], ["yellow", "yellow", "purple", "blue"], ["red", "red", "purple", "blue"], ["yellow", "yellow", "blue", "blue"], ["yellow", "yellow", "purple", "blue"]], "at": 16.644, "side": 1, "push": 0.85, "shape": [[3.62, -5.33], [3.9, -4.96], [4.15, -4.56], [4.35, -4.14], [4.5, -3.7]]},
-    {"rows": 4, "columns": [["red", "red", "blue", "blue"], ["red", "red", "purple", "blue"], ["red", "red", "purple", "purple"], ["red", "green", "green", "blue"], ["red", "green", "purple", "blue"], ["red", "green", "purple", "blue"], ["yellow", "yellow", "purple", "purple"]], "at": 20.483, "side": -1, "push": 0.64, "shape": [[2.75, -10.41], [2.37, -10.68], [2.02, -10.99], [1.7, -11.33], [1.42, -11.71]]}
+    {"rows": 4, "columns": [["red", "red", "green", "green"], ["red", "red", "red", "green"], ["purple", "purple", "green", "green"], ["red", "red", "purple", "purple"], ["red", "red", "purple", "purple"], ["red", "red", "purple", "purple"], ["blue", "blue", "green", "green"]], "at": 3.538, "side": -1, "push": 0.57, "shape": [[-0.43, -5.36], [-0.86, -5.55], [-1.27, -5.77], [-1.66, -6.04], [-2.01, -6.35]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "green"], ["purple", "purple", "purple", "purple"], ["yellow", "yellow", "yellow", "green"], ["red", "blue", "blue", "green"], ["red", "red", "purple", "purple"], ["blue", "blue", "blue", "green"], ["red", "blue", "blue", "green"]], "at": 16.644, "side": 1, "push": 0.85, "shape": [[3.62, -5.33], [3.9, -4.96], [4.15, -4.56], [4.35, -4.14], [4.5, -3.7]]},
+    {"rows": 4, "columns": [["red", "red", "purple", "purple"], ["yellow", "yellow", "yellow", "green"], ["red", "green", "green", "green"], ["red", "red", "green", "green"], ["yellow", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "green"], ["yellow", "yellow", "yellow", "green"]], "at": 20.483, "side": -1, "push": 0.64, "shape": [[2.75, -10.41], [2.37, -10.68], [2.02, -10.99], [1.7, -11.33], [1.42, -11.71]]}
   ],
   "lanes": [
     [
+      {"color": "green", "cap": 12},
       {"color": "blue", "cap": 4},
-      {"color": "blue", "cap": 4},
-      {"color": "red", "cap": 8, "hidden": true},
-      {"color": "purple", "cap": 4}
+      {"color": "green", "cap": 4}
     ],
     [
-      {"color": "yellow", "cap": 12},
-      {"color": "red", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 12, "hidden": true},
+      {"color": "red", "cap": 12},
+      {"color": "red", "cap": 8, "hidden": true}
+    ],
+    [
+      {"color": "blue", "cap": 8},
       {"color": "purple", "cap": 12},
-      {"color": "blue", "cap": 8}
-    ],
-    [
-      {"color": "blue", "cap": 4},
-      {"color": "green", "cap": 8, "hidden": true},
-      {"color": "green", "cap": 8},
-      {"color": "red", "cap": 8}
+      {"color": "green", "cap": 4}
     ]
   ],
   "meta": {
     "role": "Practice",
-    "diff": 4,
+    "diff": 5,
     "road": "S-curve + spiral",
     "ramps": "curved arc ramps"
   }

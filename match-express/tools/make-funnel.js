@@ -5,6 +5,10 @@
 //   node tools/make-funnel.js --search 6 8 16   the lane-count retune: each level keeps its saved road and ramps (only the
 //                                        content is made again), many (h, seed, group count) candidates with a quick
 //                                        50-game estimate, the best few checked with 200 games
+//   FUNNEL_PASS=2 node tools/make-funnel.js --search ...   another search pass (other candidates); the saved level is
+//                                        measured again and stays unless a candidate is nearer the band (or as near with a
+//                                        longer greedy game)
+//   node tools/make-funnel.js --measure [ids]   the saved levels unchanged: their meta from the specs, 200 games again
 //   FUNNEL_PASS=2 node tools/make-funnel.js --refine ...   (each pass number draws other candidates)
 //   node tools/make-funnel.js --refine [7 13 ...]   a second pass from the saved levels: many more (h, seed) candidates
 //                                        around the tuned h; a candidate replaces the saved level when it is closer to the
@@ -20,7 +24,7 @@ const BANDS = {1:[0.70, 1], 2:[0.70, 1], 3:[0.55, 0.75], 4:[0.45, 0.60], 5:[0.35
 const id = n => 'f' + String(n).padStart(2, '0');
 
 if (process.env.FUNNEL_WORKER){ worker(); return; }
-const REFINE = process.argv.includes('--refine'), SEARCH = process.argv.includes('--search');
+const REFINE = process.argv.includes('--refine'), SEARCH = process.argv.includes('--search'), MEASURE = process.argv.includes('--measure');
 const want = process.argv.slice(2).map(Number).filter(Boolean);
 const todo = SPECS.filter(s => (!want.length || want.includes(s.n)) && !(REFINE && s.n <= 5)).map(s => s.n);
 fs.mkdirSync(OUT, {recursive:true});
@@ -31,7 +35,7 @@ const next = () => {
   while (running < 4 && queue.length){
     const n = queue.shift(); running++;
     const w = fork(__filename, [], {env:Object.assign({}, process.env, {FUNNEL_WORKER:'1'})});
-    w.send({n, refine:REFINE, search:SEARCH, prev:report.levels[id(n)] || null});
+    w.send({n, refine:REFINE, search:SEARCH, measure:MEASURE, prev:report.levels[id(n)] || null});
     w.on('message', m => { if (m.log) console.log(m.log); if (m.result){ report.levels[id(n)] = m.result; } });
     w.on('exit', () => { running--; if (!queue.length && !running) finish(); else next(); });
   }
@@ -50,7 +54,8 @@ function finish(){
 function worker(){
   const G = require('./funnel/geometry.js'), CT = require('./funnel/content.js'), C = G.C, fmt = require('./level-format.js');
   process.on('message', m => { const spec = SPECS.find(s => s.n === m.n); PREV = m.prev;
-    const result = m.refine ? refineLevel(spec, m.prev) : m.search && spec.n > 5 ? searchLevel(spec) : tuneLevel(spec); process.send({result}); process.exit(0); });
+    const result = m.measure ? measureLevel(spec) : m.refine ? refineLevel(spec, m.prev) : m.search && spec.n > 5 ? searchLevel(spec) : tuneLevel(spec);
+    process.send({result}); process.exit(0); });
   let PREV = null;
   const log = s => process.send({log:s});
 
@@ -97,12 +102,15 @@ function worker(){
      milestone, finale and practice levels must land in the band; the others may be easier than it */
   function searchLevel(spec){
     const t0 = Date.now(), b = base(spec), band = BANDS[spec.diff], must = /^(Challenge|Milestone|Finale|Practice)/.test(spec.role);
-    const link = spec.blockers && spec.blockers.link, rng = C.mulberry32(spec.n*977 + 13);
+    const pass = +(process.env.FUNNEL_PASS || 1), saved = pass > 1 ? savedLevel(spec) : null;
+    const link = spec.blockers && spec.blockers.link, rng = C.mulberry32(spec.n*977 + 13 + (pass - 1)*7919);
     const dist = r => must ? bandDist(r, band) : (r < band[0] ? band[0] - r : 0);
-    const budget = spec.men > 200 ? 70 : spec.men > 120 ? 110 : 160, pool = []; let tries = 0, near = 0;
+    // a later pass on a level still too easy draws only from the hard end
+    const hLo = saved && PREV && PREV.rate > band[1] ? Math.max(0.3, Math.min(0.75, PREV.h - 0.15)) : 0.3;
+    const budget = (spec.men > 200 ? 70 : spec.men > 120 ? 110 : 160)*(pass > 1 ? 1.5 : 1), pool = []; let tries = 0, near = 0;
     for (let k = 0; k < budget && near < 8; k++){
-      const h = must ? 0.3 + 0.7*rng() : 0.15 + 0.55*rng(), gk = link ? [0.8, 1, 1.4, 1.9, 2.5][Math.floor(rng()*5)] : 1;
-      const lv = candidate(spec, b, h, 2000 + k*13, gk); if (!lv) continue; tries++;
+      const h = must ? hLo + (1 - hLo)*rng() : 0.15 + 0.55*rng(), gk = link ? (pass > 1 ? [1, 1.4, 1.9, 2.5, 3, 3.5] : [0.8, 1, 1.4, 1.9, 2.5])[Math.floor(rng()*(pass > 1 ? 6 : 5))] : 1;
+      const lv = candidate(spec, b, h, 2000 + k*13 + (pass - 1)*100003, gk); if (!lv) continue; tries++;
       const e = evaluate(lv, 50, true); if (!e.ok) continue;
       const d = dist(e.rate); if (d === 0) near++;
       pool.push({lv, h, gk, q:e.rate, d, gt:e.greedy.t});
@@ -115,8 +123,27 @@ function worker(){
       const d = dist(full.rate), gt = full.greedy.t;
       if (!best || d < best.d - 1e-9 || (Math.abs(d - best.d) < 1e-9 && gt > best.gt)) best = {lv:c.lv, h:c.h, gk:c.gk, d, gt, full};
     }
+    if (saved){                                       // the saved level stays unless the new one is nearer the band
+      const full = evaluate(saved, 200), d = dist(full.rate);
+      if (full.ok && (!best || d < best.d - 1e-9 || (Math.abs(d - best.d) < 1e-9 && full.greedy.t >= best.gt)))
+        return finish(spec, b, saved, PREV ? PREV.h : 0, full, t0, tries, `search pass ${pass}: saved level kept, ${pool.length} candidates`);
+    }
     if (!best){ log(`${id(spec.n)} search: no candidate passed the full check`); return PREV; }
-    return finish(spec, b, best.lv, best.h, best.full, t0, tries, `search, groups x${best.gk}, ${pool.length} candidates`);
+    return finish(spec, b, best.lv, best.h, best.full, t0, tries, `search${pass > 1 ? ' pass ' + pass : ''}, groups x${best.gk}, ${pool.length} candidates`);
+  }
+  function savedLevel(spec){
+    const file = path.join(OUT, id(spec.n) + '.json'); if (!fs.existsSync(file)) return null;
+    const lv = JSON.parse(fs.readFileSync(file, 'utf8')); lv.meta = Object.assign({}, lv.meta, meta(spec));
+    if ((spec.lanes || 3) !== 3) lv.laneCount = spec.lanes; else delete lv.laneCount;
+    return lv;
+  }
+  /* the saved level unchanged (its meta from the spec): 200 games again for the report */
+  function measureLevel(spec){
+    const t0 = Date.now(), lv = savedLevel(spec);
+    if (!lv || lv.lanes.length !== (spec.lanes || 3)){ log(`${id(spec.n)} measure: the saved level does not match the spec`); return PREV; }
+    const full = evaluate(lv, 200);
+    if (!full.ok) log(`${id(spec.n)} measure: greedy ${full.greedy.result}`);
+    return finish(spec, {notes:(PREV && PREV.notes) || []}, lv, PREV ? PREV.h : 0, full, t0, 0, 'measured');
   }
   function tuneLevel(spec){
     const t0 = Date.now(), b = base(spec), band = BANDS[spec.diff], early = spec.n <= 5;
