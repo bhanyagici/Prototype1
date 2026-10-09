@@ -971,9 +971,13 @@ const Z_BAY_TOP = 1.18, Z_BAY_BOT = 4.0, Z_COLL = 5.2, Z_LANE_TOP = 6.28;
    drives sideways off the road above the neighbouring crowds).  "compact" is the default.  "classic" is the original, wider layout; a
    level with "yard": "classic" plays exactly as before the compaction (the regression baseline). */
 const YARDS = {
-  compact: {name:'compact', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.64,0,1.64], X_SIDE:3.8, TUNNEL_X:4.85, RAMP_DROP:0.85},
-  classic: {name:'classic', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.72,0,1.72], X_SIDE:4.32, TUNNEL_X:5.45, RAMP_DROP:0}
+  compact: {name:'compact', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.64,0,1.64], LANE_SP:1.64, X_SIDE:3.8, TUNNEL_X:4.85, RAMP_DROP:0.85},
+  classic: {name:'classic', BAY_X:[-2.72,-1.36,0,1.36,2.72], LANE_X:[-1.72,0,1.72], LANE_SP:1.72, X_SIDE:4.32, TUNNEL_X:5.45, RAMP_DROP:0}
 };
+/* queue lanes: a level has 2-5 (laneCount, 3 when omitted), centred under the bays; five lanes sit a little closer
+   (the outer buses keep clear of the side lanes and stay on screen) */
+const LANE_MIN = 2, LANE_MAX = 5;
+const laneXs = (n, Y) => { const sp = n >= 5 ? Math.min(Y.LANE_SP, 1.52) : Y.LANE_SP; return Array.from({length:n}, (_, i) => +((i - (n - 1)/2)*sp).toFixed(4)); };
 Object.values(YARDS).forEach(Y => {
   Y.TUNNEL_R = {x:Y.TUNNEL_X, z:Z_COLL, nx:-0.8, nz:0.6, depth:1.6, side:1};    // return tunnel on the right, mouth to the bays
   Y.TUNNEL_L = {x:-Y.TUNNEL_X, z:Z_COLL, nx:0.8, nz:0.6, depth:1.6, side:-1};   // mirrored on the left
@@ -1142,7 +1146,9 @@ function normalizeLevel(lv){
     if (box.length) nr.boxes = box;
     out.ramps.push(nr);
   });
-  for (let l=0;l<3;l++) out.lanes.push(((lv.lanes[l]) || []).filter(b => b && COLORS.includes(b.color) && [4,6,8,12].includes(+b.cap))
+  const nl = clamp(Math.round(+lv.laneCount) || lv.lanes.length || 3, LANE_MIN, LANE_MAX);
+  out.laneCount = nl;
+  for (let l=0;l<nl;l++) out.lanes.push(((lv.lanes[l]) || []).filter(b => b && COLORS.includes(b.color) && [4,6,8,12].includes(+b.cap))
     .map(b => { const o = {color:b.color, cap:+b.cap}; if (b.hidden) o.hidden = true; if (b.link != null && b.link !== '') o.link = String(b.link);
       if (b.key != null && b.key !== '') o.key = String(b.key); return o; }));
   normCache.set(lv, out); normCache.set(out, out);
@@ -1266,7 +1272,8 @@ const layoutCache = new WeakMap();
 function buildLayout(level){
   const N = normalizeLevel(level);
   if (layoutCache.has(N)) return layoutCache.get(N);
-  const ROAD = buildRoad(N.road), Y = YARDS[N.yard] || YARD;
+  const ROAD = buildRoad(N.road), base = YARDS[N.yard] || YARD;
+  const Y = N.laneCount === 3 ? base : Object.assign({}, base, {LANE_X:laneXs(N.laneCount, base)});   // the level's queue lanes
   const RAMPS = N.ramps.map((r, i) => buildRamp(ROAD, r, i, Y)).sort((a, b) => (a.s === b.s ? 0 : a.s - b.s) || a.src - b.src);
   RAMPS.forEach((r, k) => r.k = k);
   const ex = {}; pathAt(ROAD, ROAD.portalS, ex, 0);
@@ -1384,7 +1391,7 @@ function createGame(level, opts){
   opts = opts || {};
   const N = normalizeLevel(level), L = buildLayout(N);
   const g = {t:0, emit:!opts.headless, events:[], result:null, resultT:0, L, level:N,
-    men:[], buses:[], ramps:[], lanes:[[],[],[]], laneLeft:[-1,-1,-1],
+    men:[], buses:[], ramps:[], lanes:N.lanes.map(() => []), laneLeft:N.lanes.map(() => -1),
     bays:new Array(STATIC_SLOTS).fill(-1), bayRes:new Array(STATIC_SLOTS).fill(-1),
     road:[], trips:[], tunnel:[], running:[], counter:0, toRoad:0, landed:0,
     sends:0, moves:[], tripSeq:0, sideUse:[0,0], cheerMiss:0, completed:0, timers:[], locks:{}, groups:[], keyFallbacks:0};
@@ -1466,7 +1473,8 @@ function startTrip(g, b, kind, path){
 function sendToRoad(g, b, from, idx){
   let path;
   if (from === 'lane'){
-    const side = idx === 0 ? -1 : idx === 2 ? 1 : (g.sideUse[1] < g.sideUse[0] ? 1 : -1);
+    const mid = (g.lanes.length - 1)/2;             // lanes left of the middle use the left side lane, right of it the right one
+    const side = idx < mid ? -1 : idx > mid ? 1 : (g.sideUse[1] < g.sideUse[0] ? 1 : -1);
     b.side = side; g.sideUse[side > 0 ? 1 : 0]++;
     path = routeToRoad(b.x, b.z, side, g.L.Y);
   } else path = routeBayToRoad(b.x, b.z);
@@ -1614,7 +1622,7 @@ function roadEntryFree(g, b){
   return !last || last.rs - last.len/2 - b.len/2 - ROAD_GAP >= 0;
 }
 function stepLanes(g, dt){
-  for (let l=0;l<3;l++){
+  for (let l=0;l<g.lanes.length;l++){
     let limit = -Infinity;                       // nothing may pass the tail of the bus that just left
     const dep = g.laneLeft[l] >= 0 ? g.buses[g.laneLeft[l]] : null;
     if (dep && dep.trip){
@@ -1923,7 +1931,7 @@ function legalSends(g){
   for (let k=0;k<STATIC_SLOTS;k++) if (g.bays[k] >= 0){ const b = g.buses[g.bays[k]];
     if (b.group){ if (seen.has(b.group) || !groupParked(g, b.group) || g.counter + b.group.members.length > ROAD_CAPACITY) continue; seen.add(b.group); }
     a.push({kind:'bay', idx:k, bus:b.id}); }
-  for (let l=0;l<3;l++) if (g.lanes[l].length){
+  for (let l=0;l<g.lanes.length;l++) if (g.lanes[l].length){
     const b = g.buses[g.lanes[l][0]];
     if (b.group){ if (seen.has(b.group) || !groupReady(g, b.group) || g.counter + b.group.members.length > ROAD_CAPACITY) continue; seen.add(b.group); }
     a.push({kind:'lane', idx:l, bus:b.id});
@@ -2021,7 +2029,12 @@ function roadWarnings(L){
   const off = [];
   for (const p of pts) if (!inTarget(p.x, p.y + 0.9, p.z) || !inTarget(p.x, p.y, p.z)){ if (!near(off, p.x, p.z)) off.push(p); }
   off.forEach(p => W.push({kind:'zone-road', msg:'Road leaves the target zone', x:p.x, z:p.z}));
-  const E = L.exit; if (!inTarget(E.x, E.y + 1.9, E.z)) W.push({kind:'zone-exit', msg:'Exit tunnel is outside the target zone', x:E.x, z:E.z});
+  // the whole exit tunnel (its arch, both shoulders and feet) is on screen, wherever it is along the edge of the zone
+  // (its top inside the zone, its shoulders and feet on screen within the zone's height)
+  const E = L.exit, la = [-E.dz, E.dx], onZone = (x, y, z) => { const [u, v] = project(x, y, z, SCREEN_CAM);
+    return u >= 0 && u <= SCREEN.w && v >= SCREEN.TARGET_TOP*SCREEN.h && v <= SCREEN.TARGET_BOT*SCREEN.h; };
+  if (!inTarget(E.x, E.y + 1.9, E.z) || [[1.35, 1.25], [-1.35, 1.25], [1.35, 0], [-1.35, 0]].some(([u, h]) => !onZone(E.x + la[0]*u, E.y + h, E.z + la[1]*u)))
+    W.push({kind:'zone-exit', msg:'Exit tunnel reaches outside the target zone', x:E.x, z:E.z});
   // curves too tight for a 12-seat bus (heading change over a 0.6-unit window)
   const tight = [], o1 = {}, o2 = {};
   for (let s = 0.6; s < R.portalS - 0.6; s += 0.15){
@@ -2106,7 +2119,7 @@ function queueDeadlock(N){
   let left = q.reduce((a, l) => a + l.length, 0);
   for (let guard = 0; guard < 400 && left; guard++){
     let moved = false;
-    for (let l = 0; l < 3 && !moved; l++){
+    for (let l = 0; l < q.length && !moved; l++){
       if (!q[l].length) continue;
       const f = q[l][0];
       if (!f.link){ q[l].shift(); left--; moved = true; continue; }
@@ -2254,7 +2267,7 @@ root.MECore = {
   rampOutline, polyDist, inPoly, polysOverlap,
   RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
-  Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
+  Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
   routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn,
   normalizeLevel, buildLayout, parseCell, cellStr, checkLevel, difficulty, testLevel,

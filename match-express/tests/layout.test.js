@@ -1,8 +1,9 @@
 // static layout check: every yard route at max bus length vs every parked / queued bus,
-// for each yard preset (compact = default, classic = the original wide layout)
+// for each yard preset (compact = default, classic = the original wide layout) and every lane count (2-5)
 const C=require('./core.js')();
 let allMin=9;
-for (const Y of Object.values(C.YARDS)){
+for (const Y0 of Object.values(C.YARDS)) for (let NL=C.LANE_MIN; NL<=C.LANE_MAX; NL++){
+const Y=Object.assign({},Y0,{LANE_X:C.laneXs(NL,Y0)});
 const W=C.BUS_W;
 const rect=(x,z,dx,dz,len)=>({x,z,dx,dz,len});
 const sep=(a,b)=>{const ax=[[a.dx,a.dz],[-a.dz,a.dx]],bx=[[b.dx,b.dz],[-b.dz,b.dx]],ha=[a.len/2,W/2],hb=[b.len/2,W/2],d=[b.x-a.x,b.z-a.z];let m=-9;
@@ -19,28 +20,27 @@ function sweep(name,path,len,statics){
 }
 for(const len of LENS){
   // lane -> road, both sides; statics: other lanes' fronts (max len), all parked (max len)
-  for(let l=0;l<3;l++) for(const side of (l===1?[-1,1]:[l===0?-1:1])){
-    const st=[]; for(let m=0;m<3;m++) if(m!==l) st.push(['lane'+m,laneFront(m,LMAX)]); for(let k=0;k<5;k++) st.push(['bay'+k,parked(k,LMAX)]);
+  const mid=(NL-1)/2;
+  for(let l=0;l<NL;l++) for(const side of (l===mid?[-1,1]:[l<mid?-1:1])){
+    const st=[]; for(let m=0;m<NL;m++) if(m!==l) st.push(['lane'+m,laneFront(m,LMAX)]); for(let k=0;k<5;k++) st.push(['bay'+k,parked(k,LMAX)]);
     sweep(`lane${l}->road(${side})`,C.routeToRoad(Y.LANE_X[l],C.laneSlotZ(len),side,Y),len,st);
   }
-  for(let l=0;l<3;l++) for(let k=0;k<5;k++){
-    const st=[]; for(let m=0;m<3;m++) if(m!==l) st.push(['lane'+m,laneFront(m,LMAX)]); for(let j=0;j<5;j++) if(j!==k) st.push(['bay'+j,parked(j,LMAX)]);
+  for(let l=0;l<NL;l++) for(let k=0;k<5;k++){
+    const st=[]; for(let m=0;m<NL;m++) if(m!==l) st.push(['lane'+m,laneFront(m,LMAX)]); for(let j=0;j<5;j++) if(j!==k) st.push(['bay'+j,parked(j,LMAX)]);
     sweep(`lane${l}->bay${k}`,C.routeLaneToBay(Y.LANE_X[l],C.laneSlotZ(len),k,len,Y),len,st);
   }
   for(let k=0;k<5;k++){
     const st=[]; for(let j=0;j<5;j++) if(j!==k) st.push(['bay'+j,parked(j,LMAX)]);
     sweep(`bay${k}->road`,C.routeBayToRoad(Y.BAY_X[k],C.parkZ(len)),len,st);
-    const st2=[]; for(let m=0;m<3;m++) st2.push(['lane'+m,laneFront(m,LMAX)]); for(let j=0;j<5;j++) if(j!==k) st2.push(['bay'+j,parked(j,LMAX)]);
+    const st2=[]; for(let m=0;m<NL;m++) st2.push(['lane'+m,laneFront(m,LMAX)]); for(let j=0;j<5;j++) if(j!==k) st2.push(['bay'+j,parked(j,LMAX)]);
     const rp=C.routeReturn(k,len,Y.TUNNEL_R,Y); sweep(`return->bay${k}`,rp,len,st2);
   }
 }
 worst.sort((a,b)=>a[0]-b[0]);
-console.log(`[${Y.name} yard]`);
-worst.slice(0,5).forEach(w=>console.log(' ',w[0].toFixed(3),w[1]));
-console.log('  min separation',worst[0][0].toFixed(3));
+console.log(`[${Y.name} yard, ${NL} lanes]  min separation ${worst[0][0].toFixed(3)}  (${worst[0][1]})`);
 allMin=Math.min(allMin,worst[0][0]); worst=[];
 }
-console.log('min separation',allMin.toFixed(3));
+console.log('min separation (every yard and lane count)',allMin.toFixed(3));
 
 // the drawn queue on the fixed 390 x 844 screen: lanes start in the queue zone; with every lane full of
 // 8-seat buses at least 3 per lane are fully visible; for any mix of sizes the drawn buses never overlap
@@ -58,19 +58,22 @@ function visible(x, b){                       // the whole drawn bus (wheels to 
     const [u,v]=C.project(x*sx+dx,y,z,cam); if(u<0||u>SW||v<0||v>H) return false; }
   return true;
 }
-for(const l of [0,1,2]){
-  const q=drawnQueue(new Array(8).fill(8)), x=C.LANE_X[l];
-  const n=q.filter(b=>visible(x,b)).length;
-  const topV=C.project(x*C.dispSx(C.Z_LANE_TOP),0,q[0].top,cam)[1]/H;
-  const ok=n>=3 && q[0].s===1 && q.slice(1).every(b=>Math.abs(b.s-C.DISP.QS)<1e-9) && topV>=C.SCREEN.STATIC_BOT-0.01;
-  if(!ok) qFail++;
-  console.log(`  lane ${l}: ${n} eight-seat buses fully visible, front at ${(q[0].s*100).toFixed(0)}%, the rest at ${(q[1].s*100).toFixed(0)}%, queue starts at ${(topV*100).toFixed(1)}% ${ok?'OK':'FAIL'}`);
+for(let NL=C.LANE_MIN; NL<=C.LANE_MAX; NL++){ const LX=C.laneXs(NL,C.YARD), res=[];
+  for(let l=0;l<NL;l++){
+    const q=drawnQueue(new Array(8).fill(8)), x=LX[l];
+    const n=q.filter(b=>visible(x,b)).length, front12=visible(x,drawnQueue([12])[0]);
+    const topV=C.project(x*C.dispSx(C.Z_LANE_TOP),0,q[0].top,cam)[1]/H;
+    const ok=n>=3 && front12 && q[0].s===1 && q.slice(1).every(b=>Math.abs(b.s-C.DISP.QS)<1e-9) && topV>=C.SCREEN.STATIC_BOT-0.01;
+    if(!ok) qFail++; res.push(`${n}${ok?'':' FAIL'}`);
+  }
+  const gap=(LX[1]-LX[0])*C.dispSx(C.Z_LANE_TOP)-C.BUS_W;
+  if(!(gap>0.05)) qFail++;
+  console.log(`  ${NL} lanes at x ${LX.join(', ')}: eight-seat buses fully visible per lane ${res.join(' / ')} (the front bus and a front 12-seat bus always), gap between lanes ${gap.toFixed(2)} ${gap>0.05?'OK':'FAIL'}`);
 }
 { const caps=[4,6,8,12]; let minGap=9;
   for(const a of caps) for(const b of caps) for(const c of caps){ const q=drawnQueue([a,b,c]); for(let i=1;i<q.length;i++) minGap=Math.min(minGap,q[i].top-q[i-1].bot); }
-  const lanesGap=(C.LANE_X[1]-C.LANE_X[0])*C.dispSx(C.Z_LANE_TOP)-C.BUS_W;
-  console.log(`  drawn queue: smallest gap between buses ${minGap.toFixed(3)}, between lanes ${lanesGap.toFixed(3)} ${minGap>0.05&&lanesGap>0.05?'OK':'FAIL'}`);
-  if(!(minGap>0.05&&lanesGap>0.05)) qFail++;
+  console.log(`  drawn queue: smallest gap between buses ${minGap.toFixed(3)} ${minGap>0.05?'OK':'FAIL'}`);
+  if(!(minGap>0.05)) qFail++;
   const n4=drawnQueue(new Array(10).fill(4)).filter(b=>visible(0,b)).length, n12=drawnQueue(new Array(10).fill(12)).filter(b=>visible(0,b)).length;
   console.log(`  fully visible per lane: ${n4} four-seat, ${n12} twelve-seat buses`);
 }

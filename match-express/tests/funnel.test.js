@@ -107,6 +107,9 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     chk(s.n === 40 && s.pill === 'Level 1 / 40' && s.prev && !s.next, 'the pack holds 40 levels, opens on "Level 1 / 40", Previous is off on level 1', JSON.stringify(s).slice(0, 120));
     const red = await p.evaluate(() => __me.game.buses.find(x => x.color === 'red').id), blue = await p.evaluate(() => __me.game.buses.find(x => x.color === 'blue').id);
     chk(s.hand && s.T && s.T.hand === red && /matches the front row/.test(s.T.tip), 'level 1: the hand points at the bus that matches the front row', JSON.stringify(s.T));
+    await step(p, 0.4);
+    const rg = await p.evaluate(() => __me.game.buses.filter(b => __me.views[b.id].ring.visible && __me.views[b.id].ring.material.opacity > 0.5).map(b => b.id));
+    chk(rg.length === 1 && rg[0] === red, 'level 1: only the bus the hand points at wears the outline', JSON.stringify(rg));
     await clickBus(p, blue); await step(p, 0.3);
     chk(await p.evaluate(i => __me.game.buses[i].state === 'lane', blue), 'level 1: a tap on another bus does nothing while the hand shows');
     await clickBus(p, red); await step(p, 0.3);
@@ -116,11 +119,11 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     chk(await p.evaluate(i => __me.game.buses[i].state === 'lane', blue), 'level 1: taps stay blocked while the stickmen board');
     const r = await playTo(p, 0, 120);
     chk(r.res === 'win' && r.steps.some(x => /parachute/.test(x)) && r.steps.some(x => /blue bus/.test(x)), 'level 1: then the parachute tip, the second bus, and a win', JSON.stringify(r.steps));
-    // the front bus: outline and 10% larger than the bus behind it (the bus size fix)
+    // outside a tutorial no bus wears the outline; the front bus is 10% larger than the bus behind it
     await p.evaluate(() => __me.goLevel(1)); await step(p, 0.5);
     const q = await p.evaluate(() => { const g = __me.game, v = __me.views, l = g.lanes.findIndex(x => x.length > 1), f = v[g.lanes[l][0]], bh = v[g.lanes[l][1]];
-      return {front:f.root.scale.x, behind:bh.root.scale.x, ring:f.ring.visible, ringBehind:bh.ring.visible}; });
-    chk(Math.abs(q.front/q.behind - 1.1) < 0.02 && q.ring && !q.ringBehind, 'the front bus has the tap outline and is 10% larger than the bus behind it', JSON.stringify(q));
+      return {front:f.root.scale.x, behind:bh.root.scale.x, ring:g.buses.some(b => v[b.id].ring.visible)}; });
+    chk(Math.abs(q.front/q.behind - 1.1) < 0.02 && !q.ring, 'no bus has the tap outline outside a tutorial; the front bus is 10% larger than the bus behind it', JSON.stringify(q));
     await p.close(); }
   // ---- level 3: the first bus parks, then the hand points at it once its colour is reachable
   { const p = await open(3);
@@ -129,6 +132,9 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
       front:bb && __me.C.frontColors(__me.game)[bb.color]}; });
     chk(T && T.step === 4 && s.state === 'bay' && s.seated < s.cap && s.front > 0 && s.hand && /parked bus/.test(T.tip),
         'level 3: the parked bus (not full) gets the hand once its colour is at the front again', JSON.stringify([T, s]));
+    await step(p, 0.4);
+    const rg3 = await p.evaluate(() => __me.game.buses.filter(b => __me.views[b.id].ring.visible && __me.views[b.id].ring.material.opacity > 0.5).map(b => b.id));
+    chk(rg3.length === 1 && rg3[0] === T.hand, 'level 3: the parked bus the hand points at wears the outline, nothing else does', JSON.stringify(rg3));
     const other = await p.evaluate(() => { const l = __me.game.lanes.findIndex(x => x.length); return l < 0 ? -1 : __me.game.lanes[l][0]; });
     if (other >= 0){ await clickBus(p, other); await step(p, 0.3); chk(await p.evaluate(i => __me.game.buses[i].state === 'lane', other), 'level 3: other buses wait while the hand points at the parked bus'); }
     const r2 = await playTo(p, 0, 300);
