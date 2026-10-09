@@ -2,6 +2,9 @@
 // levels/funnel/funnel-report.json (the measured data behind the spreadsheet).
 //   node tools/make-funnel.js            all levels, 4 in parallel
 //   node tools/make-funnel.js 7 13 26    only these (the others' results are kept in the report)
+//   node tools/make-funnel.js --search 6 8 16   the lane-count retune: each level keeps its saved road and ramps (only the
+//                                        content is made again), many (h, seed, group count) candidates with a quick
+//                                        50-game estimate, the best few checked with 200 games
 //   FUNNEL_PASS=2 node tools/make-funnel.js --refine ...   (each pass number draws other candidates)
 //   node tools/make-funnel.js --refine [7 13 ...]   a second pass from the saved levels: many more (h, seed) candidates
 //                                        around the tuned h; a candidate replaces the saved level when it is closer to the
@@ -17,7 +20,7 @@ const BANDS = {1:[0.70, 1], 2:[0.70, 1], 3:[0.55, 0.75], 4:[0.45, 0.60], 5:[0.35
 const id = n => 'f' + String(n).padStart(2, '0');
 
 if (process.env.FUNNEL_WORKER){ worker(); return; }
-const REFINE = process.argv.includes('--refine');
+const REFINE = process.argv.includes('--refine'), SEARCH = process.argv.includes('--search');
 const want = process.argv.slice(2).map(Number).filter(Boolean);
 const todo = SPECS.filter(s => (!want.length || want.includes(s.n)) && !(REFINE && s.n <= 5)).map(s => s.n);
 fs.mkdirSync(OUT, {recursive:true});
@@ -28,7 +31,7 @@ const next = () => {
   while (running < 4 && queue.length){
     const n = queue.shift(); running++;
     const w = fork(__filename, [], {env:Object.assign({}, process.env, {FUNNEL_WORKER:'1'})});
-    w.send({n, refine:REFINE, prev:report.levels[id(n)] || null});
+    w.send({n, refine:REFINE, search:SEARCH, prev:report.levels[id(n)] || null});
     w.on('message', m => { if (m.log) console.log(m.log); if (m.result){ report.levels[id(n)] = m.result; } });
     w.on('exit', () => { running--; if (!queue.length && !running) finish(); else next(); });
   }
@@ -46,20 +49,32 @@ function finish(){
 /* ------------------------------------------------------------------ worker ------------------------------------------ */
 function worker(){
   const G = require('./funnel/geometry.js'), CT = require('./funnel/content.js'), C = G.C, fmt = require('./level-format.js');
-  process.on('message', m => { const spec = SPECS.find(s => s.n === m.n); const result = m.refine ? refineLevel(spec, m.prev) : tuneLevel(spec); process.send({result}); process.exit(0); });
+  process.on('message', m => { const spec = SPECS.find(s => s.n === m.n); PREV = m.prev;
+    const result = m.refine ? refineLevel(spec, m.prev) : m.search && spec.n > 5 ? searchLevel(spec) : tuneLevel(spec); process.send({result}); process.exit(0); });
+  let PREV = null;
   const log = s => process.send({log:s});
 
+  const lanesOf = spec => Array.from({length:spec.lanes || 3}, () => []);
   function base(spec){
-    const lv = {format:2, id:id(spec.n), name:'Level ' + spec.n, road:G.road(spec), ramps:[], lanes:[[], [], []]};
+    const file = path.join(OUT, id(spec.n) + '.json');
+    if (fs.existsSync(file)){                      // keep the saved road and ramps exactly: only the content is made again
+      const old = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const ramps = old.ramps.map(r => { const o = Object.assign({}, r); o.columns = r.columns.map(c => c.map(() => null)); delete o.tunnels; delete o.boxes; return o; });
+      const lv = {format:2, id:old.id, name:old.name, road:old.road, ramps, lanes:lanesOf(spec)};
+      if ((spec.lanes || 3) !== 3) lv.laneCount = spec.lanes;
+      return {lv, notes:(PREV && PREV.notes) || []};
+    }
+    const lv = {format:2, id:id(spec.n), name:'Level ' + spec.n, road:G.road(spec), ramps:[], lanes:lanesOf(spec)};
+    if ((spec.lanes || 3) !== 3) lv.laneCount = spec.lanes;
     const notes = G.place(spec, lv);
     return {lv, notes};
   }
-  function candidate(spec, b, h, seed){
+  function candidate(spec, b, h, seed, gk){
     const rng = C.mulberry32(seed*7919 + spec.n*104729);
     let gen;
     if (spec.n === 1) gen = tutorial1(b.lv); else if (spec.n === 3) gen = tutorial3(b.lv);
     else { gen = CT.generate(spec, b.lv, h, rng); if (!gen) return null;
-      if (!CT.queueBlockers(spec, gen, rng)) return null;
+      if (!CT.queueBlockers(spec, gen, rng, gk)) return null;
       if (spec.blockers && spec.blockers.lock && !CT.lockBox(spec, gen, rng)) return null; }
     const lv = CT.strip(gen.level);
     lv.meta = meta(spec);
@@ -67,12 +82,41 @@ function worker(){
     if (!ck.balanced || ck.warnings.length) return null;
     return lv;
   }
-  function evaluate(lv, runs){
+  // quick: a random game still unfinished after 3x the greedy time (at least 600 s) counts as unfinished at once (the
+  // full check runs them to the agreed 1500 s)
+  function evaluate(lv, runs, quick){
     const g = C.simulate(lv, C.greedyPick, null, C.SIM_DT);
     if (g.result !== 'win' || g.cheerMiss) return {greedy:g, ok:false};
     let wins = 0, fb = g.keyFallbacks ? 1 : 0, miss = 0;
-    for (let r = 0; r < runs; r++){ const s = C.simulate(lv, C.randomPick, C.mulberry32(1000 + r), C.SIM_DT); if (s.result === 'win') wins++; if (s.keyFallbacks) fb++; miss += s.cheerMiss; }
+    const maxT = quick ? Math.max(600, 3*g.t) : 1500;
+    for (let r = 0; r < runs; r++){ const s = C.simulate(lv, C.randomPick, C.mulberry32(1000 + r), C.SIM_DT, maxT); if (s.result === 'win') wins++; if (s.keyFallbacks) fb++; miss += s.cheerMiss; }
     return {greedy:g, ok:!miss && !fb, rate:wins/runs, wins, runs, fb, miss};
+  }
+  /* the lane-count retune: candidates over hardness h, seeds and (with connected buses) the number of groups; each gets a
+     quick 50-game estimate; the nearest to the band (a longer greedy game breaks ties) get the 200-game check. Challenge,
+     milestone, finale and practice levels must land in the band; the others may be easier than it */
+  function searchLevel(spec){
+    const t0 = Date.now(), b = base(spec), band = BANDS[spec.diff], must = /^(Challenge|Milestone|Finale|Practice)/.test(spec.role);
+    const link = spec.blockers && spec.blockers.link, rng = C.mulberry32(spec.n*977 + 13);
+    const dist = r => must ? bandDist(r, band) : (r < band[0] ? band[0] - r : 0);
+    const budget = spec.men > 200 ? 70 : spec.men > 120 ? 110 : 160, pool = []; let tries = 0, near = 0;
+    for (let k = 0; k < budget && near < 8; k++){
+      const h = must ? 0.3 + 0.7*rng() : 0.15 + 0.55*rng(), gk = link ? [0.8, 1, 1.4, 1.9, 2.5][Math.floor(rng()*5)] : 1;
+      const lv = candidate(spec, b, h, 2000 + k*13, gk); if (!lv) continue; tries++;
+      const e = evaluate(lv, 50, true); if (!e.ok) continue;
+      const d = dist(e.rate); if (d === 0) near++;
+      pool.push({lv, h, gk, q:e.rate, d, gt:e.greedy.t});
+    }
+    if (!pool.length){ log(`${id(spec.n)} search: nothing playable`); return PREV; }
+    pool.sort((x, y) => x.d - y.d || y.gt - x.gt);
+    let best = null;
+    for (const c of pool.slice(0, 6)){
+      const full = evaluate(c.lv, 200); if (!full.ok) continue;
+      const d = dist(full.rate), gt = full.greedy.t;
+      if (!best || d < best.d - 1e-9 || (Math.abs(d - best.d) < 1e-9 && gt > best.gt)) best = {lv:c.lv, h:c.h, gk:c.gk, d, gt, full};
+    }
+    if (!best){ log(`${id(spec.n)} search: no candidate passed the full check`); return PREV; }
+    return finish(spec, b, best.lv, best.h, best.full, t0, tries, `search, groups x${best.gk}, ${pool.length} candidates`);
   }
   function tuneLevel(spec){
     const t0 = Date.now(), b = base(spec), band = BANDS[spec.diff], early = spec.n <= 5;
@@ -128,7 +172,7 @@ function worker(){
     const ff = early ? failFree(lv) : null;
     fs.writeFileSync(path.join(OUT, id(spec.n) + '.json'), fmt(lv) + '\n');
     const ck = C.checkLevel(JSON.parse(JSON.stringify(lv))), N = C.normalizeLevel(JSON.parse(JSON.stringify(lv)));
-    const res = {id:id(spec.n), n:spec.n, role:spec.role, diff:spec.diff, band, h:+h.toFixed(3), rate:full.rate, wins:full.wins, runs:full.runs,
+    const res = {id:id(spec.n), n:spec.n, role:spec.role, diff:spec.diff, band, lanes:lv.lanes.length, h:+h.toFixed(3), rate:full.rate, wins:full.wins, runs:full.runs,
       inBand:full.rate >= band[0] && full.rate <= band[1], greedyT:+full.greedy.t.toFixed(1), greedySends:full.greedy.sends, notes:b.notes, failFree:ff,
       ramps:N.ramps.map(r => ({cols:r.columns.length, rows:r.rows, kind:shapeName(spec, r)})), colors:ck.perColor.filter(p => p.men).map(p => ({color:p.color, men:p.men})),
       buses:ck.sizes, nBuses:ck.buses, men:ck.totalMen, road:spec.road, rampIdea:spec.rampIdea,
@@ -169,7 +213,7 @@ function worker(){
   function tutorial1(base){
     const lv = JSON.parse(JSON.stringify(base)), r = lv.ramps[0];
     r.columns = r.columns.map(col => col.map((_, i) => i < 2 ? 'red' : 'blue'));
-    lv.lanes = [[{color:'blue', cap:8}], [], [{color:'red', cap:8}]];
+    lv.lanes = lv.lanes.length === 2 ? [[{color:'blue', cap:8}], [{color:'red', cap:8}]] : [[{color:'blue', cap:8}], [], [{color:'red', cap:8}]];
     return {level:lv};
   }
   /* level 3: the first bus (red) can take only the 4 red stickmen at the front of the first ramp - the other 4 wait at
@@ -186,7 +230,8 @@ function worker(){
     const cnt = x => lv.ramps.flat().length && lv.ramps.reduce((a, r) => a + r.columns.flat().filter(v => v === x).length, 0);
     for (const r of [first, second]) for (const col of r.columns) for (let i = 1; i < col.length; i++){
       if (cnt('blue') > 16 && col[i] === 'blue') col[i] = 'yellow'; else if (cnt('yellow') > 16 && col[i] === 'yellow') col[i] = 'blue'; }
-    lv.lanes = [[{color:'blue', cap:8}, {color:'yellow', cap:8}], [{color:'red', cap:8}, {color:'blue', cap:8}], [{color:'yellow', cap:8}]];
+    lv.lanes = lv.lanes.length === 2 ? [[{color:'blue', cap:8}, {color:'yellow', cap:8}, {color:'yellow', cap:8}], [{color:'red', cap:8}, {color:'blue', cap:8}]]
+      : [[{color:'blue', cap:8}, {color:'yellow', cap:8}], [{color:'red', cap:8}, {color:'blue', cap:8}], [{color:'yellow', cap:8}]];
     return {level:lv};
   }
 }

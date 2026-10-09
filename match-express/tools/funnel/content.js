@@ -141,9 +141,9 @@ function generate(spec, base, h, rng){
     level.ramps[c.ramp].columns[c.c] = phys;
     if (t) level.ramps[c.ramp].tunnels = (level.ramps[c.ramp].tunnels || []).concat([{col:c.c, row:t.d, w:1, h:tunH, color:content[i][t.d], count:tunCount}]);
     else { const o = owner[i].slice(); while (o.length < c.cap) o.push(-1); ownerAt[c.ramp + ':' + c.c] = o; } });
-  // the queue: deal the plan into three lanes (in step with the plan for easy levels), then a few swaps against it
-  const lanes = [[], [], []]; let rr = 0;
-  P.forEach((bi, k) => { const l = rng() < 0.1 + 0.9*h ? Math.floor(rng()*3) : rr % 3; rr++; lanes[l].push(Object.assign({}, buses[bi], {plan:k})); });
+  // the queue: deal the plan into the level's lanes (2-5; in step with the plan for easy levels), then a few swaps against it
+  const NL = spec.lanes || 3, lanes = Array.from({length:NL}, () => []); let rr = 0;
+  P.forEach((bi, k) => { const l = rng() < 0.1 + 0.9*h ? Math.floor(rng()*NL) : rr % NL; rr++; lanes[l].push(Object.assign({}, buses[bi], {plan:k})); });
   // keep the lanes about even
   for (let g = 0; g < 50; g++){ const lens = lanes.map(l => l.length), mx = lens.indexOf(Math.max(...lens)), mn = lens.indexOf(Math.min(...lens));
     if (lens[mx] - lens[mn] <= 2) break; const b = lanes[mx].pop(); lanes[mn].push(b); lanes[mn].sort((a, c) => a.plan - c.plan); }
@@ -156,7 +156,7 @@ function generate(spec, base, h, rng){
   const nTrap = spec.n <= 5 ? 0 : Math.floor(h*h*(Math.min(spec.trapMax || 4, Math.floor(buses.length/4)) + 0.99));
   if (nTrap > 0){
     const open = new Set(content.map(c => c[0]).filter(Boolean));
-    const firstLane = lanes.findIndex(ln => ln.some(b => b.plan === 0)), trapLanes = [0, 1, 2].filter(l => l !== firstLane);
+    const firstLane = lanes.findIndex(ln => ln.some(b => b.plan === 0)), trapLanes = lanes.map((_, l) => l).filter(l => l !== firstLane);
     const cand = lanes.flatMap((ln, l) => ln.map((b, i) => ({b, l, i}))).filter(x => !open.has(x.b.color) && x.i >= 2 && x.b.plan >= P.length*0.3)
       .sort((x, y) => y.b.plan - x.b.plan);
     for (let t = 0; t < nTrap && cand.length; t++){
@@ -164,7 +164,7 @@ function generate(spec, base, h, rng){
       ln.splice(ln.indexOf(x.b), 1); lanes[trapLanes[t % trapLanes.length]].splice(Math.floor(t/2), 0, x.b);
     }
   }
-  level.lanes = lanes;
+  level.lanes = lanes; if (NL !== 3) level.laneCount = NL;
   return {level, buses, P, palette, counts, pure:[...pure], ownerAt};
 }
 function subsetSum(caps, target, rng){                 // indices of caps adding up to target (randomised)
@@ -175,27 +175,31 @@ function subsetSum(caps, target, rng){                 // indices of caps adding
 }
 
 /* blockers that sit on the queue: hidden buses, connected groups, the key bus; boxes over plan-late cells */
-function queueBlockers(spec, gen, rng){
-  const {level} = gen, B = spec.blockers || {}, lanes = level.lanes, hard = spec.diff >= 7;
+function queueBlockers(spec, gen, rng, gk){
+  const {level} = gen, B = spec.blockers || {}, lanes = level.lanes, hard = spec.diff >= 7, NL = lanes.length;
+  gk = gk || 1;                                    // the tuner may ask for more (or fewer) connected groups
   // connected groups: buses the plan sends close together (pairs, or triples), checked by the core's link rules
-  const want = B.link === 'pairs' ? {2:Math.max(2, Math.round(lanes.flat().length/9)), 3:0} : B.link === 'triple' ? {2:0, 3:1}
-             : B.link === 'triples' ? {2:0, 3:Math.max(2, Math.round(lanes.flat().length/14))} : B.link === 'pairs+triples' ? {2:2, 3:2} : {2:0, 3:0};
+  // (4-5 lanes: plenty of groups, most of them across neighbouring lanes)
+  const nb = lanes.flat().length, wide = NL >= 4 ? 1.8 : 1, k = n => Math.max(1, Math.round(n*gk*wide));
+  const want = B.link === 'pairs' ? {2:k(Math.max(2, nb/9)), 3:0} : B.link === 'triple' ? {2:NL >= 4 ? k(nb/12) : 0, 3:1}
+             : B.link === 'triples' ? {2:NL >= 4 ? k(nb/14) : 0, 3:k(Math.max(2, nb/14))} : B.link === 'pairs+triples' ? {2:k(2), 3:k(2)} : {2:0, 3:0};
   let gid = 0;
   const shapes = {2:[[[0, 0], [1, 0]], [[0, 0], [0, 1]], [[0, 0], [1, 1]], [[0, 1], [1, 0]]], 3:[[[0, 0], [1, 0], [2, 0]], [[0, 0], [0, 1], [0, 2]], [[0, 0], [1, 0], [1, 1]], [[0, 0], [0, 1], [1, 1]]]};
   const teachLink = spec.popup === 'connected' || spec.hint === 'triple';
   for (const size of [3, 2]) for (let k = 0; k < want[size]; k++){
     let best = null;
     for (let t = 0; t < 400; t++){
-      const sh = shapes[size][Math.floor(rng()*shapes[size].length)], l0 = Math.floor(rng()*3), i0 = teachLink && gid === 0 ? 0 : Math.floor(rng()*6);
+      const across = shapes[size].filter(q => q.some(([dl]) => dl > 0)), pool = NL >= 4 && rng() < 0.8 ? across : shapes[size];
+      const sh = pool[Math.floor(rng()*pool.length)], l0 = Math.floor(rng()*NL), i0 = teachLink && gid === 0 ? 0 : Math.floor(rng()*(NL >= 4 ? 8 : 6));
       const cells = sh.map(([dl, di]) => [l0 + dl, i0 + di]);
-      if (cells.some(([l, i]) => l > 2 || !lanes[l][i] || lanes[l][i].link)) continue;
+      if (cells.some(([l, i]) => l > NL - 1 || !lanes[l][i] || lanes[l][i].link)) continue;
       const plans = cells.map(([l, i]) => lanes[l][i].plan), spreadP = Math.max(...plans) - Math.min(...plans);
-      const trial = JSON.parse(JSON.stringify(level)); cells.forEach(([l, i]) => { trial.lanes[l][i].link = 'G' + (gid + 1); });
-      if (C.checkLevel(trial).warnings.some(w => /^link/.test(w.kind))) continue;
+      const trial = {lanes:lanes.map(ln => ln.map(b => ({link:b.link})))}; cells.forEach(([l, i]) => { trial.lanes[l][i].link = 'G' + (gid + 1); });
+      if (!linksOk(trial)) continue;
       const score = -spreadP - (teachLink && gid === 0 ? cells.reduce((a, [, i]) => a + i, 0)*3 : 0) + rng()*0.5;
       if (!best || score > best.score) best = {cells, score};
     }
-    if (!best) return false;
+    if (!best){ if (k === 0) return false; break; }      // the first group of a size is the design; more are best effort
     gid++; best.cells.forEach(([l, i]) => { lanes[l][i].link = 'G' + gid; });
   }
   // hidden buses: revealed early (second in a lane); in hard levels only in the first two places of a lane, where
@@ -231,6 +235,11 @@ function lockBox(spec, gen, rng){
   kb.b.key = 'K1';
   const rd = level.ramps[best.src]; rd.boxes = [{col:best.c0, row:best.row, w:best.w, h:best.h, lock:'K1'}];
   return true;
+}
+/* the core's rules for connected buses (as checkLevel reports them), on the queue alone: 2-3 buses that touch, and
+   the queue can still be emptied */
+function linksOk(N){
+  return C.linkGroups(N).every(G => G.members.length >= 2 && G.members.length <= 3 && G.connected && G.consecutive) && !C.queueDeadlock(N);
 }
 function strip(level){ level.lanes.forEach(ln => ln.forEach(b => { delete b.plan; })); return level; }
 module.exports = {generate, queueBlockers, lockBox, strip, BASE};
