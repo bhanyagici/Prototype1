@@ -334,7 +334,7 @@ with no internet connection (three.js is inlined from `vendor/`):
     test.
   - Their settings menu plays each bundled level.
 
-These files, and the blocker demo pack below, are committed (the rest of `dist/` stays
+These files, the blocker demo pack and the 40-level funnel file below, are committed (the rest of `dist/` stays
 ignored), so they can be downloaded straight from GitHub. On a file page, use *Download
 raw file*, or save one of these links:
 - [match-express-editor.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/dist/match-express-editor.html)
@@ -425,6 +425,169 @@ network request. Screenshots:
 - [level 1 of 7](screenshots/pack-level-1.png);
 - [a win offering the next level](screenshots/pack-level-complete.png);
 - [the end](screenshots/pack-all-complete.png).
+
+## The 40-level funnel
+
+Forty levels for a first-session funnel, built from a design table (role, target difficulty 1–10, ramps,
+colours, stickmen, bus sizes, blockers, road and ramp idea per level):
+- `levels/funnel/f01.json` … `f40.json`, the order `levels/funnel/funnel-order.json`, and the measured data
+  `funnel-report.json` (tuning) and `funnel-bots.json` (the bot table);
+- **`dist/match-express-funnel-40.html`**: all 40 levels in one file (double-click, no server, no network);
+- **`dist/funnel.xlsx`**: the funnel sheet, the curves and a summary (opens in Google Sheets).
+
+Download: [match-express-funnel-40.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/dist/match-express-funnel-40.html) ·
+[funnel.xlsx](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/dist/funnel.xlsx) ·
+[funnel-order.json](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/match-express/levels/funnel/funnel-order.json)
+
+```
+node tools/make-funnel.js                 # roads, ramps, content, tuning -> levels/funnel (about 8 minutes on 4 cores)
+FUNNEL_PASS=2 node tools/make-funnel.js --refine   # more candidates per level (passes 1 and 2 were run)
+node tools/funnel-bots.js                 # the bot table -> levels/funnel/funnel-bots.json
+python3 tools/make-funnel-xlsx.py         # -> dist/funnel.xlsx (then recalculate, e.g. LibreOffice)
+node tools/build-funnel.js                # -> dist/match-express-funnel-40.html
+node tools/shoot-funnel.js                # -> screenshots/funnel/
+```
+
+### How a level is made
+
+- **Road** (`tools/funnel/geometry.js`): a turtle program per level: straights, turns on a minimum
+  radius, spirals (`S`); heights climb gently and rise over each spiral's crossing.
+- **Ramps**: a shape per ramp: straight out, diagonal, curved arc, L, fan (columns spreading toward the back)
+  or wedge (drawing together). Two new ramp fields in the core: `spread` (fan / wedge) and `push` (a turned
+  ramp's front edge kept clear of the road). A solver finds a spot along the road inside the target zone,
+  clear of the road, the exit, spirals and the other ramps (real outlines, a new `ramp-fold` check for bent
+  ramps and a `ramp-exit` check for the tunnel mouth).
+- **Content** (`tools/funnel/content.js`): the buses, an intended send order (the plan), then the columns
+  filled front-to-back following the plan, so the plan always works; the lanes are dealt from the plan. One
+  knob, hardness `h`, sets how forgiving the level is for out-of-order play: same-colour run lengths, how far
+  the lanes drift from the plan, and "trap" buses (colours still buried at the start) at the lane heads.
+  Tunnels, lock boxes, connected groups and hidden buses are placed against the plan.
+- **Tuning** (`tools/make-funnel.js`): only the stickmen order in the columns, the bus order and sizes in the
+  lanes and the blocker placement change. Bisection on `h`, then two refine passes of more (h, seed)
+  candidates; the greedy bot must win and no cheering prediction may miss. Among in-band candidates the longer
+  greedy game wins (playtime).
+- **Levels 1–5 cannot be lost**: enough colours sit in whole columns of their own that at most 5 buses could
+  ever come back unfilled; each was played 1000 times by the random bot and by an adversarial bot without a loss.
+
+### Ramp changes (did not fit the target zone at the fixed camera)
+
+The stickmen counts stayed; these ramps changed proportion or shape:
+- level 18, ramp 3: the L shape did not fit, built as a diagonal;
+- level 35, ramp 1: 10x6 did not fit, built as 12x5 (60 cells, as before);
+- level 40, ramp 3: straight did not fit, built as a diagonal;
+- level 40, ramp 6: 8x6 did not fit, built as 4x12 (48 cells, as before).
+
+### Difficulty, measured
+
+Random-bot win rate over 200 games (the target bands: 1–2 ≥ 70%, 3: 55–75%, 4: 45–60%, 5: 35–50%,
+6: 25–40%, 7: 18–30%, 8: 12–22%, 9: 8–15%). The greedy bot wins all 40.
+
+| Lv | Role | Diff | Band | Random wins / fails / unfinished | Win rate | In band | Greedy 1x | Greedy 2x |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Tutorial | 1 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 13.3 s | 6.6 s |
+| 2 | Teach | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 17.7 s | 8.9 s |
+| 3 | Tutorial (bay re-send) | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 40.3 s | 20.2 s |
+| 4 | Teach (bus sizes) | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 37.7 s | 18.9 s |
+| 5 | Fun | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | yes | 33.7 s | 16.9 s |
+| 6 | Challenge | 5 | 35–50% | 200 / 0 / 0 | 100.0% | **no** | 62.5 s | 31.2 s |
+| 7 | Teach + POPUP | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 72.4 s | 36.2 s |
+| 8 | Practice | 4 | 45–60% | 189 / 11 / 0 | 94.5% | **no** | 81.5 s | 40.8 s |
+| 9 | Relax | 3 | 55–75% | 195 / 5 / 0 | 97.5% | **no** | 68.9 s | 34.4 s |
+| 10 | Milestone | 6 | 25–40% | 154 / 46 / 0 | 77.0% | **no** | 70.9 s | 35.4 s |
+| 11 | Relax | 3 | 55–75% | 146 / 54 / 0 | 73.0% | yes | 76.7 s | 38.4 s |
+| 12 | Challenge | 5 | 35–50% | 200 / 0 / 0 | 100.0% | **no** | 75.6 s | 37.8 s |
+| 13 | Teach + POPUP | 3 | 55–75% | 128 / 20 / 52 | 64.0% | yes | 135.9 s | 68.0 s |
+| 14 | Practice | 5 | 35–50% | 83 / 0 / 117 | 41.5% | yes | 142.5 s | 71.2 s |
+| 15 | Fun | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 53.0 s | 26.5 s |
+| 16 | Challenge | 7 | 18–30% | 57 / 9 / 134 | 28.5% | yes | 145.0 s | 72.5 s |
+| 17 | Teach (no popup, short hint) | 4 | 45–60% | 93 / 7 / 100 | 46.5% | yes | 130.7 s | 65.3 s |
+| 18 | Relax | 3 | 55–75% | 200 / 0 / 0 | 100.0% | **no** | 73.1 s | 36.5 s |
+| 19 | Practice | 5 | 35–50% | 84 / 13 / 103 | 42.0% | yes | 184.7 s | 92.3 s |
+| 20 | Milestone | 8 | 12–22% | 42 / 0 / 158 | 21.0% | yes | 146.2 s | 73.1 s |
+| 21 | Teach (combo, no popup) | 5 | 35–50% | 80 / 94 / 26 | 40.0% | yes | 122.2 s | 61.1 s |
+| 22 | Relax | 3 | 55–75% | 160 / 40 / 0 | 80.0% | **no** | 48.3 s | 24.1 s |
+| 23 | Challenge | 6 | 25–40% | 75 / 61 / 64 | 37.5% | yes | 136.8 s | 68.4 s |
+| 24 | Fun | 4 | 45–60% | 200 / 0 / 0 | 100.0% | **no** | 105.6 s | 52.8 s |
+| 25 | Challenge | 8 | 12–22% | 41 / 0 / 159 | 20.5% | yes | 169.5 s | 84.7 s |
+| 26 | Teach + POPUP | 3 | 55–75% | 140 / 60 / 0 | 70.0% | yes | 115.7 s | 57.8 s |
+| 27 | Practice | 5 | 35–50% | 130 / 70 / 0 | 65.0% | **no** | 118.4 s | 59.2 s |
+| 28 | Relax | 3 | 55–75% | 173 / 27 / 0 | 86.5% | **no** | 65.5 s | 32.7 s |
+| 29 | Challenge | 6 | 25–40% | 59 / 31 / 110 | 29.5% | yes | 131.4 s | 65.7 s |
+| 30 | Milestone | 9 | 8–15% | 30 / 59 / 111 | 15.0% | yes | 176.4 s | 88.2 s |
+| 31 | Relax | 3 | 55–75% | 168 / 32 / 0 | 84.0% | **no** | 73.2 s | 36.6 s |
+| 32 | Teach + POPUP | 4 | 45–60% | 91 / 109 / 0 | 45.5% | yes | 134.8 s | 67.4 s |
+| 33 | Practice | 5 | 35–50% | 68 / 132 / 0 | 34.0% | **no** | 147.7 s | 73.8 s |
+| 34 | Fun | 4 | 45–60% | 176 / 24 / 0 | 88.0% | **no** | 119.5 s | 59.8 s |
+| 35 | Challenge | 8 | 12–22% | 43 / 91 / 66 | 21.5% | yes | 137.8 s | 68.9 s |
+| 36 | Relax | 4 | 45–60% | 104 / 96 / 0 | 52.0% | yes | 105.0 s | 52.5 s |
+| 37 | Practice | 6 | 25–40% | 75 / 125 / 0 | 37.5% | yes | 247.6 s | 123.8 s |
+| 38 | Challenge | 8 | 12–22% | 41 / 141 / 18 | 20.5% | yes | 210.7 s | 105.4 s |
+| 39 | Fun | 5 | 35–50% | 133 / 67 / 0 | 66.5% | **no** | 114.8 s | 57.4 s |
+| 40 | Finale | 9 | 8–15% | 29 / 143 / 28 | 14.5% | yes | 232.7 s | 116.3 s |
+| | **Total** | | | | | **23 / 40** | **72.9 min** | **36.5 min** |
+
+**Out of band (17 levels), and why.** The tuning may only change the stickmen order in the columns, the bus
+order and sizes in the lanes and the blocker placement, and under the current rules (5 on the road, 5 bays,
+unlimited re-sends) these knobs cannot make small levels hard:
+- **The random bot only loses when 6 unfilled buses are out at once.** A bus sent out of order still takes
+  whatever stickmen of its colour are open, and the random bot re-sends parked buses as often as lane buses,
+  so the bays drain. Measured on levels 6 and 12 at full hardness, with trap buses and a buried colour
+  added: 2-10 unfilled laps per game, at most 2-3 bays in use, random wins 98-100%. The levels without
+  connected buses and with 4-6 colours and 10-20 buses (6, 7, 8, 9, 12, 15, 18, 24; hidden buses do not
+  change this) stay at 94-100% whatever the arrangement.
+- **Connected groups are what make a level hard** (a returning group needs a free bay for every member),
+  so the levels with groups land in their bands, and so do the large late levels. The other levels without
+  groups (tunnels, a lock box or nothing) end up between 65% and 88% (10, 22, 27, 28, 31, 34, 39), and 33
+  (lock & key) at 34%, one point under its 35-50% band.
+- **Level 4** (band 55-75%) is fail-free by the rule "no fail before level 6", so it is at 100%.
+
+**Unfinished games.** On the levels with connected groups many random games end without a result
+(the "unfinished" column): the bot keeps re-sending half-full buses, so the road never has room for a
+connected pair or triple. That is not a dead end for a player, who can wait for the road to clear (the
+core's no-deadlock rule holds); under the agreed metric it counts as "not won". Wins / fails /
+unfinished are listed separately here and in the spreadsheet. On level 20, for example, the random bot
+never fails and 158 of 200 games stay unfinished, so a person will find it easier than its 21% suggests.
+
+**Rendering fix found while shooting.** On the 7 levels whose road ends heading down toward the yard (7, 11,
+17, 25, 28, 35, 36), the exit tunnel's hill covered the bays; the hill now stops short of the yard plateau,
+and the tunnel's roof shell has a closed rock end.
+
+### Tutorials, popups and the hint
+
+They come from each level's `meta` (`tutorial`, `tutorialLane`, `popup`, `hint`), which the core now keeps
+through `normalizeLevel` (and so the editor keeps it too):
+- **Level 1**: a hand pointer and a short tip. Tap the bus whose colour matches the front row → watch the
+  stickmen board → a full bus leaves with a parachute → the next bus. While the hand shows (and while the
+  stickmen board), taps on other buses do nothing.
+- **Level 3**: built so the first bus (the hand's) can reach only half of its stickmen: it comes back and parks.
+  Once its colour is at a front again (and the road has room), the hand points at the parked bus: parked
+  buses can be sent back.
+- **Intro popups** on the first appearance of a blocker: level 7 Hidden Bus, 13 Connected Buses, 26 Colorful
+  Tunnel, 32 Lock & Key. Title, one sentence, a small looping picture and OK; the game waits behind it. Seen
+  popups are remembered (`localStorage`, key `me-intro-seen`). Combination levels have none.
+- **Level 17**: a short hint about triple connected buses, for 5.5 s, that does not stop the game.
+
+### The 40-level file
+
+`window.ME_SHARE` turns on two extras for this pack (other packs are unchanged):
+- **nav**: Previous and Next buttons around a "Level x / 40" title pill; a won level moves on to the next
+  one by itself after a 3.5 s countdown on its Next button (Replay stops it).
+- **stats**: per level the completion time (game seconds of the first win, so 2x does not halve it), the fail
+  count and the second of each fail, saved in `localStorage` (`me-stats:funnel-40`). The Stats panel lists
+  all 40 levels; *Export CSV* saves `match-express-stats.csv`
+  (`level,id,name,completion_s,fails,fail_seconds,wins`); *Reset stats* asks for a second tap. The bot's games
+  (B key) are not counted.
+
+| | | |
+|---|---|---|
+| level 1 (tutorial) | level 7 | level 13 |
+| ![](screenshots/funnel/level-01.png) | ![](screenshots/funnel/level-07.png) | ![](screenshots/funnel/level-13.png) |
+| level 15 | level 20 | level 26 |
+| ![](screenshots/funnel/level-15.png) | ![](screenshots/funnel/level-20.png) | ![](screenshots/funnel/level-26.png) |
+| level 30 | level 32 | level 40 |
+| ![](screenshots/funnel/level-30.png) | ![](screenshots/funnel/level-32.png) | ![](screenshots/funnel/level-40.png) |
+| the Hidden Bus popup | the Stats panel | |
+| ![](screenshots/funnel/popup-hidden-bus.png) | ![](screenshots/funnel/stats-panel.png) | |
 
 ## Speed, sound, animation
 
@@ -617,9 +780,12 @@ height.
 node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
 node tests/blockers.test.js   # 43 checks: every blocker, the checker rules for them, the demo levels (bots + cheering)
 node tests/layout.test.js     # yard clearance sweep (both yard presets) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
-node tests/shared.test.js     # 72 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
-node tests/browser.test.js    # 90 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
+node tests/browser.test.js    # 93 checks: game + editor in Chromium (needs `npm i playwright`)
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
+node tests/funnel.test.js     # 41 checks: the 40 funnel levels against the design table, the bots (greedy wins all, playtime, levels 1-5
+                              #   fail-free), two ramps on one spot, and the 40-level file from file:// at 390x844: tutorials, popups,
+                              #   the hint, previous / next, auto-advance, stats + CSV + reset, 1x / 2x, the front bus outline and size
 ```
 
 The first three need only Node and no dependencies; they load `shared/core.js`.

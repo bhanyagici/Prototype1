@@ -2741,7 +2741,8 @@ function groundH(x, z){
   h += (1 - can)*into*(0.25 + 1.7*beyond*(0.6 + 0.4*fbm(x*0.3, z*0.3)) + 0.7*smooth(7, 10, ax));
   // the exit tunnel's hill: a mesa cut flat through the portal, so the arch sits in its rock face
   const E = G.ex, rx = x - E.x, rz = z - E.z, along = rx*E.dx + rz*E.dz, across = Math.abs(-rx*E.dz + rz*E.dx);
-  const hill = (1 - smooth(2.6, 3.8, across))*smooth(-0.75, -0.3, along)*(1 - smooth(6, 8, along));
+  // (a road that ends heading down toward the yard: the hill stops short of the yard plateau)
+  const hill = (1 - smooth(2.6, 3.8, across))*smooth(-0.75, -0.3, along)*(1 - smooth(6, 8, along))*(1 - smooth(-1.75, -1.15, z));
   if (hill > 0) h = Math.max(h, lerp(h, E.y + 1.45 + 0.6*smooth(1.2, 3.6, along) + 0.25*fbm(x*0.9, z*0.9) - 0.3*smooth(1.9, 3.5, across), hill));
   // mound behind the return tunnel
   h += 1.5*Math.exp(-((x - GT.side*(Math.abs(GT.x) + 1.7))**2/2.2 + (z - GT.z + 0.7)**2/3.0))*smooth(yardExtent(L.Y)*C.DISP.K - 0.4, yardExtent(L.Y)*C.DISP.K + 0.6, ax);
@@ -2866,7 +2867,11 @@ function stoneTunnel(){
   { const RR = Rout + 0.03, len = D + 0.25 - DEP + 0.04, g1 = new THREE.CylinderGeometry(RR, RR, len, 20, 1, true, -Math.PI/2, Math.PI).rotateX(-Math.PI/2).translate(0, LEG, -DEP + 0.04 - len/2);
     const side = new THREE.PlaneGeometry(len, LEG + 0.35), sl = side.clone().rotateY(-Math.PI/2).translate(-RR, (LEG - 0.35)/2, -DEP + 0.04 - len/2), sr = side.rotateY(Math.PI/2).translate(RR, (LEG - 0.35)/2, -DEP + 0.04 - len/2);
     const roof = mergeParts([g1, sl, sr].map(g => ({geo:g, m:M(), color:(x, y, z, nx, ny) => col('#a8977f').lerp(col('#8fb562'), smooth(0.45, 0.75, ny)).lerp(col('#97876f'), hash(Math.floor(x*3), Math.floor(z*3))*0.25)})));
-    const rm = new THREE.Mesh(roof, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, flatShading:true})); rm.castShadow = rm.receiveShadow = true; grp.add(rm); }
+    const rm = new THREE.Mesh(roof, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, flatShading:true})); rm.castShadow = rm.receiveShadow = true; grp.add(rm);
+    // its far end closed (a road ending toward the camera shows the shell's back end above a lower hill)
+    const zEnd = -DEP + 0.04 - len, endCap = mergeParts([new THREE.CircleGeometry(RR, 20, 0, Math.PI).translate(0, LEG, zEnd), new THREE.PlaneGeometry(2*RR, LEG + 0.35).translate(0, (LEG - 0.35)/2, zEnd)]
+      .map(g => ({geo:g, m:M(), color:() => col('#9c8a72')})));
+    const em = new THREE.Mesh(endCap, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, side:THREE.DoubleSide})); em.receiveShadow = true; grp.add(em); }
   // two warm lamps on the arch shoulders
   const lamps = [-1, 1].map(sx => {
     const lampMat = new THREE.MeshBasicMaterial({color:'#ffe08a'});

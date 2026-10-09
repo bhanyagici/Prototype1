@@ -80,6 +80,72 @@
     color:#e9f1ff;font:600 22px/1.35 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;pointer-events:none}
   #botTag{left:34px;top:132px;display:none;padding:8px 18px;border-radius:20px;background:#ff4f7b;color:#fff;
     font-size:28px;font-weight:900;box-shadow:0 4px 0 #b02750}
+  /* ---- level pack (window.ME_SHARE.nav): previous / next, "Level x / n", stats ---- */
+  #app:not(.nav) .rbtn.nav{display:none}
+  #app.nav .rbtn{box-sizing:border-box;width:84px;height:84px;top:36px;z-index:21}   /* above the win / fail / done panels */
+  #app.nav #levelPill{z-index:21} #introPanel,#statsPanel{z-index:30}
+  #app.nav .rbtn svg{width:44px;height:44px}
+  #app.nav #btnSettings{right:20px} #app.nav #btnSpeed{right:110px;font-size:34px} #app.nav #btnRestart{right:200px} #app.nav #btnStats{right:290px}
+  #app.nav #btnPrev{left:20px} #app.nav #btnNextLv{left:430px}
+  #app.nav #levelPill{box-sizing:border-box;left:112px;width:310px;max-width:310px;height:84px;padding:0 14px;justify-content:center;font-size:40px}
+  .rbtn.dis{filter:grayscale(1) brightness(.85);opacity:.55;pointer-events:none}
+  #btnNext .bar{display:none;height:8px;margin:10px -40px -6px;border-radius:4px;background:rgba(255,255,255,.35);overflow:hidden}
+  #btnNext .bar i{display:block;height:100%;width:0;background:#fff}
+  #btnNext.auto .bar{display:block}
+  #btnNext.auto .bar i{animation:fill var(--auto,3.5s) linear forwards}
+  @keyframes fill{to{width:100%}}
+  .card.wide{width:820px;padding:40px 34px 44px}
+  .card.wide h1{font-size:58px}
+  #statsBody{max-height:1100px;overflow-y:auto;margin:0 0 26px;border-radius:22px;background:rgba(10,30,80,.28);touch-action:pan-y}
+  #statsBody table{width:100%;border-collapse:collapse;font-size:27px;font-weight:800}
+  #statsBody th{position:sticky;top:0;background:#1d5fc0;padding:12px 8px;font-size:24px;text-transform:uppercase;letter-spacing:.5px}
+  #statsBody td{padding:9px 8px;border-top:2px solid rgba(255,255,255,.14)}
+  #statsBody td.fs{font-size:22px;font-weight:700;text-align:left;opacity:.9;word-break:break-word}
+  #statsBody tr.cur td{background:rgba(255,207,58,.28)}
+  #statsBody tr.tot td{border-top:4px solid #ffcf3a;background:rgba(0,0,0,.18)}
+  #statsBody .none{opacity:.45}
+  .card .row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .card .row button{font-size:30px;padding:14px 28px;border-width:5px;box-shadow:0 6px 0 #23801a}
+  .card .row button + button{margin-top:0}
+  #btnStatsReset{background:linear-gradient(#ff8a65,#e0483a);box-shadow:0 6px 0 #9c2a20}
+  #btnStatsClose{background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 6px 0 #1559b0}
+  /* ---- tutorials: a pointing hand, a tip, a short hint; intro popups for new blockers ---- */
+  #hand{left:0;top:0;width:130px;height:160px;display:none;pointer-events:none;z-index:8}
+  #hand.show{display:block}
+  #hand svg{width:130px;height:160px;transform-origin:39px 6px;animation:tapHand 1.1s ease-in-out infinite;filter:drop-shadow(0 6px 4px rgba(0,0,0,.35))}
+  #hand::before{content:'';position:absolute;left:9px;top:-24px;width:60px;height:60px;border-radius:50%;border:6px solid #fff;opacity:0;animation:ripple 1.1s ease-out infinite}
+  @keyframes tapHand{0%,100%{transform:translate(10px,22px)}45%{transform:translate(0,0) scale(.92)}60%{transform:translate(0,0) scale(.92)}}
+  @keyframes ripple{0%,40%{transform:scale(.3);opacity:0}50%{opacity:.95}100%{transform:scale(1.5);opacity:0}}
+  #tip,#hint{left:60px;right:60px;top:150px;padding:20px 30px;border-radius:30px;text-align:center;font-size:38px;font-weight:900;line-height:1.2;
+    color:#24345e;background:#fff;border:6px solid #ffcf3a;box-shadow:0 8px 0 #c48410,0 14px 24px rgba(0,0,0,.3);display:none;pointer-events:none;z-index:8}
+  #tip.show,#hint.show{display:block;animation:pop .45s cubic-bezier(.3,1.7,.45,1)}
+  #hint{font-size:34px;background:#24345e;color:#fff}
+  #hint b{color:#ffcf3a}
+  .card.intro{width:660px;padding:44px 40px 50px}
+  .card.intro h1{font-size:60px;margin-bottom:18px}
+  .card.intro p{font-size:34px;margin:22px 0 34px}
+  #introArt{width:420px;height:210px;margin:0 auto;border-radius:26px;background:#dff1ff;border:5px solid #fff;overflow:hidden;box-shadow:inset 0 -6px 0 rgba(0,0,0,.08)}
+  #introArt svg{width:100%;height:100%;display:block}
+  #introArt svg *{transform-box:fill-box}
+  /* intro pictures (3.2 s loops) */
+  .ia-hbA{animation:iaHbA 3.2s ease-in-out infinite} .ia-hbB{animation:iaHbB 3.2s ease-in-out infinite}
+  .ia-hbBody{animation:iaHbBody 3.2s step-end infinite} .ia-hbQ{animation:iaHbQ 3.2s step-end infinite} .ia-hbS{transform-origin:center;animation:iaHbS 3.2s ease-out infinite}
+  @keyframes iaHbA{0%,22%{transform:none;opacity:1}46%{transform:translateY(-130px);opacity:0}99%{transform:translateY(-130px);opacity:0}100%{transform:none;opacity:0}}
+  @keyframes iaHbB{0%,40%{transform:none}62%,96%{transform:translateY(-94px)}100%{transform:none}}
+  @keyframes iaHbBody{0%{fill:#9aa3b3}64%{fill:#ff9f2e}97%{fill:#9aa3b3}}
+  @keyframes iaHbQ{0%{opacity:1}64%{opacity:0}97%{opacity:1}}
+  @keyframes iaHbS{0%,62%{transform:scale(0);opacity:0}72%{transform:scale(1.25);opacity:1}90%,100%{transform:scale(.8);opacity:0}}
+  .ia-cn{animation:iaCn 3.2s ease-in-out infinite} .ia-tap{transform-origin:center;animation:iaTap 3.2s ease-out infinite}
+  @keyframes iaCn{0%,24%{transform:none;opacity:1}62%{transform:translateY(-150px);opacity:1}70%{transform:translateY(-170px);opacity:0}80%{transform:translateY(40px);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes iaTap{0%,6%{transform:scale(.3);opacity:0}12%{opacity:1}24%,100%{transform:scale(1.4);opacity:0}}
+  .ia-tm{opacity:0;animation:iaTm 3.3s ease-in-out infinite} .ia-tm2{animation-delay:1.1s} .ia-tm3{animation-delay:2.2s}
+  @keyframes iaTm{0%{transform:none;opacity:0}8%{opacity:1}30%,45%{transform:translateY(-94px);opacity:1}62%{transform:translateY(-170px);opacity:0}100%{transform:translateY(-170px);opacity:0}}
+  .ia-tn{opacity:0;animation:iaTn 3.3s step-end infinite} .ia-tn2{animation-delay:1.1s} .ia-tn3{animation-delay:2.2s}
+  @keyframes iaTn{0%{opacity:1}33.3%{opacity:0}}
+  .ia-key{animation:iaKey 3.2s ease-in-out infinite} .ia-sh{transform-origin:100% 100%;animation:iaSh 3.2s ease-in-out infinite} .ia-box{animation:iaBox 3.2s ease-in-out infinite}
+  @keyframes iaKey{0%,10%{transform:none;opacity:1}28%{transform:translate(95px,-70px) rotate(-20deg)}46%{transform:translate(185px,8px) rotate(0)}54%{transform:translate(185px,8px);opacity:0}100%{transform:translate(185px,8px);opacity:0}}
+  @keyframes iaSh{0%,48%{transform:none}56%,100%{transform:rotate(-38deg)}}
+  @keyframes iaBox{0%,58%{opacity:1;transform:none}72%,92%{opacity:0;transform:translateY(-16px)}100%{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -87,6 +153,9 @@
   <canvas id="gl"></canvas>
   <div class="ui" id="levelPill">Level 2</div>
   <div class="ui" id="levelStep"></div>
+  <div class="ui rbtn spring nav" id="btnPrev" title="Previous level"><svg viewBox="0 0 48 48"><path d="M29 9L14 24l15 15" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="ui rbtn spring nav" id="btnNextLv" title="Next level"><svg viewBox="0 0 48 48"><path d="M19 9l15 15-15 15" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="ui rbtn spring nav" id="btnStats" title="Stats"><svg viewBox="0 0 48 48"><rect x="7" y="25" width="9" height="16" rx="2.5" fill="#fff"/><rect x="20" y="15" width="9" height="26" rx="2.5" fill="#fff"/><rect x="33" y="7" width="9" height="34" rx="2.5" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnRestart" title="Restart"><svg viewBox="0 0 48 48"><path d="M24 9a15 15 0 1 1-13.6 8.7" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M5 9l6.5 10.5L20 11z" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnSpeed" title="Game speed">1x</div>
   <div class="ui rbtn spring" id="btnSettings" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div>
@@ -99,8 +168,13 @@
   <div class="ui" id="counter"><svg viewBox="0 0 64 50"><rect x="5" y="3" width="54" height="36" rx="9" fill="#fff"/><rect x="11" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="35" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="5" y="28" width="54" height="4" fill="#cfd8ee"/><circle cx="17" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/><circle cx="47" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/></svg><span id="cnt">0/5</span></div>
   <div class="ui" id="dbg"></div>
   <div class="ui" id="botTag">BOT</div>
-  <div class="panel" id="winPanel"><div class="card"><h1>Level Complete</h1><p>Every passenger is on board!</p><button id="btnNext" class="spring" style="display:none">Next level</button><button id="btnReplay" class="spring">Replay</button></div></div>
+  <div class="panel" id="winPanel"><div class="card"><h1>Level Complete</h1><p>Every passenger is on board!</p><button id="btnNext" class="spring" style="display:none"><span id="btnNextTxt">Next level</span><span class="bar"><i></i></span></button><button id="btnReplay" class="spring">Replay</button></div></div>
   <div class="panel" id="donePanel"><div class="card"><h1>All levels complete</h1><p id="doneText">Every level in this pack is done!</p><button id="btnAgain" class="spring">Play again</button></div></div>
+  <div class="ui" id="hand"><svg viewBox="0 0 130 160"><defs><g id="handShape"><rect x="26" y="6" width="26" height="86" rx="13"/><rect x="50" y="48" width="24" height="58" rx="12"/><rect x="72" y="56" width="22" height="54" rx="11"/><rect x="92" y="66" width="20" height="48" rx="10"/><rect x="24" y="80" width="88" height="70" rx="28"/><ellipse cx="24" cy="106" rx="12" ry="26" transform="rotate(-32 24 106)"/></g></defs><use href="#handShape" fill="#24345e" stroke="#24345e" stroke-width="11" stroke-linejoin="round"/><use href="#handShape" fill="#fff"/><path d="M60 64v24M82 72v22M101 80v18" stroke="#c9d3e8" stroke-width="4" stroke-linecap="round"/></svg></div>
+  <div class="ui" id="tip"></div>
+  <div class="ui" id="hint"></div>
+  <div class="panel" id="introPanel"><div class="card intro"><h1 id="introTitle"></h1><div id="introArt"></div><p id="introText"></p><button id="btnIntroOk" class="spring">OK</button></div></div>
+  <div class="panel" id="statsPanel"><div class="card wide"><h1>Stats</h1><div id="statsBody"></div><div class="row"><button id="btnCsv" class="spring">Export CSV</button><button id="btnStatsReset" class="spring">Reset stats</button><button id="btnStatsClose" class="spring">Close</button></div></div></div>
   <div class="panel" id="failPanel"><div class="card fail"><h1>Out of Space</h1><p>A returning bus had nowhere to park.</p><button id="btnRetry" class="spring">Retry</button></div></div>
 </div>
 
@@ -1226,6 +1300,7 @@ function normalizeLevel(lv){
   const out = {format:2, name: lv.name || 'Untitled level', seed: lv.seed, road, ramps:[], lanes:[]};
   if (lv.id != null && String(lv.id).trim()) out.id = String(lv.id).trim();
   if (lv.yard === 'classic') out.yard = 'classic';     // omitted = the default compact yard
+  if (lv.meta && typeof lv.meta === 'object' && !Array.isArray(lv.meta)) out.meta = clone(lv.meta);   // design notes: role, tutorial, popup, hint
   lv.ramps.forEach((r, k) => {
     const cols = (r.columns || []).map(col => (col || []).map(c => cellStr(parseCell(c))));
     if (!cols.length) return;
@@ -1237,6 +1312,8 @@ function normalizeLevel(lv){
     if (loose) nr.front = [+r.front[0], +r.front[1]];
     else if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else nr.at = null;
     if (r.tilt != null && isFinite(+r.tilt)) nr.tilt = +r.tilt;
+    if (r.spread != null && isFinite(+r.spread) && +r.spread !== 0) nr.spread = clamp(+r.spread, -0.5, 1.5);
+    if (r.push != null && isFinite(+r.push) && +r.push > 0) nr.push = +r.push;      // front node this much further from the road
     const shp = Array.isArray(r.shape) && r.shape.length ? r.shape : place.shape;
     if (shp) nr.shape = shp.map(p => [+p[0], +p[1]]);
     const int = v => Math.round(+v || 0);
@@ -1313,12 +1390,18 @@ function buildRamp(ROAD, rd, src, Y){
     p.x = rd.front[0]; p.z = rd.front[1]; p.dx = 0; p.dz = -1; s = Infinity;
   }
   const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
-  const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42, halfW = cols*RAMP_SP/2 + 0.16;
+  const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
+  // `spread` fans the columns out (> 0) or draws them together (< 0) toward the back: the lateral spacing grows
+  // linearly from RAMP_SP at the front row to RAMP_SP*(1 + spread) at the back row (and on to the far edge)
+  const spread = rd.spread || 0, depth = Math.max(RAMP_SP, (rows - 1)*RAMP_SP);
+  const widthK = sv => 1 + spread*Math.max(0, (sv - 0.34)/depth);
+  const halfWAt = sv => cols*RAMP_SP*widthK(sv)/2 + 0.16;
+  const halfW0 = halfWAt(0), halfW = Math.max(halfW0, halfWAt(length));
   // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees,
   // pushed out so its lower corner just meets the road edge
   const tilt = rd.tilt != null ? rd.tilt*Math.PI/180 : null, wx = nx >= 0 ? 1 : -1;
   const tdx = tilt != null ? wx*Math.cos(tilt) : 0, tdz = tilt != null ? -Math.sin(tilt) : 0;
-  const off = rd.front ? 0 : ROAD_HALF + 0.06 + (tilt != null ? halfW*Math.abs(tdx*nz - tdz*nx) : 0);
+  const off = rd.front ? 0 : ROAD_HALF + 0.06 + (rd.push || 0) + (tilt != null ? halfW0*Math.abs(tdx*nz - tdz*nx) : 0);
   const ax = p.x + nx*off, az = p.z + nz*off, y = p.y - ((Y || YARD).RAMP_DROP || 0);
   const c = [[ax,y,az]];
   if (rd.shape && rd.shape.length) rd.shape.forEach(q => c.push([q[0], y, q[1]]));
@@ -1338,8 +1421,8 @@ function buildRamp(ROAD, rd, src, Y){
   for (let col=0; col<cols; col++){
     const colSlots = [];
     for (let r=0; r<rows; r++){
-      const o = {}; pathAt(spl, 0.34 + r*RAMP_SP, o, 0);
-      const lat = (col - (cols-1)/2)*RAMP_SP;       // left normal of the ramp heading
+      const sv = 0.34 + r*RAMP_SP, o = {}; pathAt(spl, sv, o, 0);
+      const lat = (col - (cols-1)/2)*RAMP_SP*widthK(sv);   // left normal of the ramp heading
       colSlots.push({x:o.x + o.dz*lat, y, z:o.z - o.dx*lat, fx:-o.dx, fz:-o.dz});
     }
     slots.push(colSlots);
@@ -1347,7 +1430,7 @@ function buildRamp(ROAD, rd, src, Y){
   const colOrder = slots.map((_, i) => i).sort((a,b) =>
     Math.hypot(slots[a][0].x-p.x, slots[a][0].z-p.z) - Math.hypot(slots[b][0].x-p.x, slots[b][0].z-p.z));
   return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW, slots, colOrder, snapped:!rd.front};
+          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:!rd.front};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -1746,7 +1829,9 @@ function stepTrips(g, dt){
     /* physical spacing to anything ahead (other trips, buses just merged onto the road) */
     let room = Infinity;
     for (let j=0;j<i;j++) room = Math.min(room, clearAhead(b, T[j]));   // later trips always yield to us
-    for (let j=g.road.length-1;j>=0;j--){ const r = g.road[j]; if (r.rs > 5) break; room = Math.min(room, clearAhead(b, r)); }
+    for (let j=g.road.length-1;j>=0;j--){ const r = g.road[j]; if (r.rs > 5) break;
+      if (b.group && r.group === b.group) continue;   // its own group waits for it at the merge gap (along the road)
+      room = Math.min(room, clearAhead(b, r)); }
     sMax = Math.min(sMax, tr.s + room);
     if (tr.kind === 'toRoad'){                    // the route continues as the main road: keep the gap to its last bus
       const last = g.road[g.road.length-1];
@@ -1877,25 +1962,28 @@ function stepRoad(g, dt){
     }
     const lead = i > 0 ? R[i-1] : null;
     const sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
-    const RAMPS = g.L.RAMPS, k = b.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity;
+    const RAMPS = g.L.RAMPS, k0 = b.nextRamp, bk0 = k0 < RAMPS.length ? RAMPS[k0].s : Infinity;
     let stopS = Infinity;
-    if (bk - b.rs < 4 && bk >= b.rs - 1e-6 && frontMatch(g, k, b.color)) stopS = bk;
+    for (let k = k0; k < RAMPS.length && RAMPS[k].s <= bk0 + 1e-6; k++)    // the next boarding point (two ramps can share it)
+      if (bk0 - b.rs < 4 && bk0 >= b.rs - 1e-6 && frontMatch(g, k, b.color)){ stopS = bk0; break; }
     let vt = Math.min(BUS_SPEED, Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
                       Math.sqrt(2*HARD_BRAKE*Math.max(0, sLimit - b.rs)));
     b.v = vt > b.v ? Math.min(vt, b.v + ACCEL*dt) : vt;
-    let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS);
-    if (ns >= bk - 1e-6 && b.rs <= bk + 1e-6){         // reached a boarding point: a key opens its box, then check the front row
+    let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS), boarded = false;
+    while (b.nextRamp < RAMPS.length && ns >= RAMPS[b.nextRamp].s - 1e-6){   // reached a boarding point: a key opens its box, then check the front row
+      const k = b.nextRamp, bk = RAMPS[k].s;
       keyPass(g, b, k);
       if (frontMatch(g, k, b.color)){
-        b.rs = bk; b.v = 0; placeOnRoad(g, b);
+        b.rs = Math.max(b.rs, bk); b.v = 0; placeOnRoad(g, b);
         b.board = {k, queue:[], next:g.t, roundAt:g.t, chain:0, done:false};
         emit(g, 'boardStart', {bus:b.id, ramp:k});
         startRound(g, b);
-        continue;
+        boarded = true; break;
       }
       dropCheer(g, b, m => m.ramp !== k, 'drove past their ramp');
       b.nextRamp++;
     }
+    if (boarded) continue;
     b.rs = ns;
     if (b.rs >= g.L.ROAD.end){
       R.splice(i, 1); i--;
@@ -1925,24 +2013,27 @@ function stepGroup(g, grp, i, dt){
   const nextId = grp.members[grp.members.indexOf(tail.id) + 1];
   if (nextId != null && g.buses[nextId].state === 'toRoad'){ const nb = g.buses[nextId]; limit(tail.len/2 + nb.len/2 + ROAD_GAP + 1e-6 - tail.rs, SOFT_BRAKE); }   // just past the merge gap
   for (const m of ms){ if (isFull(m) || m.rs >= END) continue;
-    const k = m.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity;
-    if (bk - m.rs < 4 && bk >= m.rs - 1e-6 && frontMatch(g, k, m.color)) limit(bk - m.rs, SOFT_BRAKE); }
+    const bk = m.nextRamp < RAMPS.length ? RAMPS[m.nextRamp].s : Infinity;
+    for (let k = m.nextRamp; k < RAMPS.length && RAMPS[k].s <= bk + 1e-6; k++)
+      if (bk - m.rs < 4 && bk >= m.rs - 1e-6 && frontMatch(g, k, m.color)){ limit(bk - m.rs, SOFT_BRAKE); break; } }
   const v0 = head.v, v = vt > v0 ? Math.min(vt, v0 + ACCEL*dt) : vt, d = Math.min(v*dt, allow);
   for (const m of ms){
     m.v = v;
-    const k = m.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity, ns = m.rs + d;
-    if (ns >= bk - 1e-6 && m.rs <= bk + 1e-6){
+    const ns = m.rs + d; let boarded = false;
+    while (m.nextRamp < RAMPS.length && ns >= RAMPS[m.nextRamp].s - 1e-6){   // two ramps can share a spot: check each
+      const k = m.nextRamp, bk = RAMPS[k].s;
       keyPass(g, m, k);
       if (!isFull(m) && frontMatch(g, k, m.color)){
-        m.rs = bk; placeOnRoad(g, m);
+        m.rs = Math.max(m.rs, bk); placeOnRoad(g, m);
         m.board = {k, queue:[], next:g.t, roundAt:g.t, chain:0, done:false};
         emit(g, 'boardStart', {bus:m.id, ramp:k});
         startRound(g, m);
-        continue;
+        boarded = true; break;
       }
       if (!isFull(m)) dropCheer(g, m, x => x.ramp !== k, 'drove past their ramp');
       m.nextRamp++;
     }
+    if (boarded) continue;
     m.rs = ns; placeOnRoad(g, m);
   }
   if (ms.some(m => m.board)) ms.forEach(m => { m.v = 0; });
@@ -2125,21 +2216,50 @@ function roadWarnings(L){
   return W;
 }
 function rampSamples(r){ const out = [], o = {}; for (let s = 0.35; s <= r.length + 0.1; s += 0.25){ pathAt(r.spline, s, o, 0); out.push({x:o.x, z:o.z}); } return out; }
+/* a ramp's platform as drawn: the polygon between its left and right edges (its width follows halfWAt) */
+function rampOutline(r){
+  const L_ = [], R_ = [], o = {}, n = Math.max(2, Math.ceil(r.length/0.15));
+  for (let i = 0; i <= n; i++){ const sv = r.length*i/n; pathAt(r.spline, sv, o, 0); const hw = r.halfWAt ? r.halfWAt(sv) : r.halfW;
+    L_.push([o.x + o.dz*hw, o.z - o.dx*hw]); R_.push([o.x - o.dz*hw, o.z + o.dx*hw]); }
+  return L_.concat(R_.reverse());
+}
+function inPoly(P, x, z){ let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++){ const a = P[i], b = P[j];
+  if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0])*(z - a[1])/(b[1] - a[1]) + a[0]) c = !c; } return c; }
+function segDist(px, pz, a, b){ const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx*dx + dz*dz || 1e-9, t = clamp(((px - a[0])*dx + (pz - a[1])*dz)/l2, 0, 1);
+  return Math.hypot(px - a[0] - t*dx, pz - a[1] - t*dz); }
+function polyDist(P, x, z){ if (inPoly(P, x, z)) return 0; let d = 1e9; for (let i = 0; i < P.length; i++) d = Math.min(d, segDist(x, z, P[i], P[(i + 1) % P.length])); return d; }
+function segCross(a, b, c, d){ const o = (p, q, r) => (q[0] - p[0])*(r[1] - p[1]) - (q[1] - p[1])*(r[0] - p[0]);
+  return o(a, b, c)*o(a, b, d) < 0 && o(c, d, a)*o(c, d, b) < 0; }
+function polysOverlap(A, B, gap){
+  for (const p of A) if (polyDist(B, p[0], p[1]) < gap) return p;
+  for (const p of B) if (polyDist(A, p[0], p[1]) < gap) return p;
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < B.length; j++) if (segCross(A[i], A[(i + 1) % A.length], B[j], B[(j + 1) % B.length])) return A[i];
+  return null;
+}
+/* the exit tunnel's arch and hill on the ground: 2.9 wide, from just before the road's end to 2.7 beyond it */
+function exitFootprint(E){ const l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l, nx = -dz, nz = dx, w = 1.45;
+  return [[-0.4, -w], [2.7, -w], [2.7, w], [-0.4, w]].map(([f, u]) => [E.x + dx*f + nx*u, E.z + dz*f + nz*u]); }
 function rampWarnings(L){
-  const W = [], R = L.ROAD, rs = L.RAMPS.map(rampSamples), road = [];
-  for (let i=0;i<R.n;i+=3) if (R.cum[i] <= R.portalS + 1) road.push({x:R.P[i*3], y:R.P[i*3+1], z:R.P[i*3+2], s:R.cum[i]});
+  const W = [], R = L.ROAD, polys = L.RAMPS.map(rampOutline), road = [];
+  for (let i=0;i<R.n;i+=2) if (R.cum[i] <= R.portalS + 1) road.push({x:R.P[i*3], y:R.P[i*3+1], z:R.P[i*3+2], s:R.cum[i]});
   L.RAMPS.forEach((r, k) => {
     const label = 'Ramp ' + (r.src + 1);
+    // the platform (its real outline) must keep clear of the road deck everywhere but its own boarding point
     let hit = null;
-    for (const q of rs[k]){ for (const p of road){
-      if (Math.abs(p.s - r.s) < 1.2) continue;      // the boarding point itself touches the road
-      if (Math.hypot(q.x-p.x, q.z-p.z) < r.halfW + ROAD_HALF - 0.1){ hit = q; break; } } if (hit) break; }
+    for (const p of road){ if (Math.abs(p.s - r.s) < 0.3) continue;
+      if (polyDist(polys[k], p.x, p.z) < ROAD_HALF - 0.1){ hit = p; break; } }
     if (hit) W.push({kind:'ramp-road', msg: label + ' overlaps the road', x:hit.x, z:hit.z, ramp:r.src});
     for (let j=k+1;j<L.RAMPS.length;j++){
-      const o = L.RAMPS[j]; let h2 = null;
-      for (const q of rs[k]){ for (const p of rs[j]) if (Math.hypot(q.x-p.x, q.z-p.z) < r.halfW + o.halfW - 0.05){ h2 = q; break; } if (h2) break; }
-      if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2.x, z:h2.z, ramp:r.src});
+      const o = L.RAMPS[j], h2 = polysOverlap(polys[k], polys[j], 0.05);
+      if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2[0], z:h2[1], ramp:r.src});
     }
+    // a bend tighter than the ramp is wide folds its inner side: two stickman cells would overlap
+    let fold = null; const cells = r.slots.flat();
+    for (let a = 0; a < cells.length && !fold; a++) for (let b = a + 1; b < cells.length; b++)
+      if (Math.hypot(cells[a].x - cells[b].x, cells[a].z - cells[b].z) < RAMP_SP*0.5){ fold = cells[a]; break; }
+    if (fold) W.push({kind:'ramp-fold', msg: label + ' bends too sharply for its width (stickmen would overlap)', x:fold.x, z:fold.z, ramp:r.src});
+    const ex = exitFootprint(L.exit), he = polysOverlap(polys[k], ex, 0.1);
+    if (he) W.push({kind:'ramp-exit', msg: label + ' runs into the exit tunnel', x:he[0], z:he[1], ramp:r.src});
     let out = null;
     for (const cs of r.slots){ for (const q of cs) if (!inTarget(q.x, q.y + 0.8, q.z) || !inTarget(q.x, q.y, q.z)){ out = q; break; } if (out) break; }
     if (out) W.push({kind:'zone-ramp', msg: label + ' leaves the target zone', x:out.x, z:out.z, ramp:r.src});
@@ -2313,6 +2433,7 @@ const DEFAULT_LAYOUT = buildLayout(LEVEL_DATA);
 const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT_LAYOUT.TUNNEL;   // built-in level, for tests
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
+  rampOutline, polyDist, inPoly, polysOverlap,
   RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
@@ -2399,6 +2520,10 @@ const params = new URLSearchParams(location.search);
 const SHARE = window.ME_SHARE || null, EMBED = (params.has('embed') || !!window.ME_EMBED) && parent !== window;
 const PLAYLIST = SHARE && Array.isArray(SHARE.levels) && SHARE.levels.length ? SHARE.levels : null;
 let playIdx = 0;
+/* a pack with nav (tools/build-funnel.js): previous / next buttons, "Level x / n" in the title pill, a win moves on
+   by itself after a short countdown; with stats: per level the completion time, the fails and when each happened */
+const NAV = !!(SHARE && SHARE.nav && PLAYLIST), STATS_ON = !!(SHARE && SHARE.stats && PLAYLIST);
+if (NAV) app.classList.add('nav');
 
 /* ================================ RENDERER ================================ */
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
@@ -2502,8 +2627,8 @@ function extrude(samples, profile, caps, smoothCos = 2){
   for (let j=0;j<np;j++){
     const p = profile[j], q = profile[(j+1) % np], c = col(p[2]), base = pos.length/3, n0 = vn(j, 0), n1 = vn(j, 1);
     for (let i=0;i<n;i++){
-      const s = samples[i], [rx,rz] = frames[i], sh = s[4] != null ? s[4] : 1;
-      pos.push(s[0]+rx*p[0], s[1]+p[1], s[2]+rz*p[0], s[0]+rx*q[0], s[1]+q[1], s[2]+rz*q[0]);
+      const s = samples[i], [rx,rz] = frames[i], sh = s[4] != null ? s[4] : 1, ku = s[5] != null ? s[5] : 1;   // s[5]: width factor
+      pos.push(s[0]+rx*p[0]*ku, s[1]+p[1], s[2]+rz*p[0]*ku, s[0]+rx*q[0]*ku, s[1]+q[1], s[2]+rz*q[0]*ku);
       nor.push(rx*n0[0], n0[1], rz*n0[0], rx*n1[0], n1[1], rz*n1[0]);
       colr.push(c.r*sh,c.g*sh,c.b*sh, c.r*sh,c.g*sh,c.b*sh);
       if (i < n-1){ const a = base+i*2; idx.push(a, a+1, a+3, a, a+3, a+2); }
@@ -2513,7 +2638,8 @@ function extrude(samples, profile, caps, smoothCos = 2){
     const s = samples[i], [rx,rz] = frames[i], a = samples[Math.max(0,i-1)], b = samples[Math.min(n-1,i+1)];
     let tx = b[0]-a[0], tz = b[2]-a[2]; const l = Math.hypot(tx,tz) || 1; tx = tx/l*sign; tz = tz/l*sign;
     const base = pos.length/3, c = col(caps.color || '#e7e9ec');
-    profile.forEach(p => { pos.push(s[0]+rx*p[0], s[1]+p[1], s[2]+rz*p[0]); nor.push(tx,0,tz); colr.push(c.r,c.g,c.b); });
+    const ku = s[5] != null ? s[5] : 1;
+    profile.forEach(p => { pos.push(s[0]+rx*p[0]*ku, s[1]+p[1], s[2]+rz*p[0]*ku); nor.push(tx,0,tz); colr.push(c.r,c.g,c.b); });
     for (let j=1;j<profile.length-1;j++) sign > 0 ? idx.push(base, base+j, base+j+1) : idx.push(base, base+j+1, base+j);
   }
   const g = new THREE.BufferGeometry();
@@ -2614,7 +2740,8 @@ function groundH(x, z){
   h += (1 - can)*into*(0.25 + 1.7*beyond*(0.6 + 0.4*fbm(x*0.3, z*0.3)) + 0.7*smooth(7, 10, ax));
   // the exit tunnel's hill: a mesa cut flat through the portal, so the arch sits in its rock face
   const E = G.ex, rx = x - E.x, rz = z - E.z, along = rx*E.dx + rz*E.dz, across = Math.abs(-rx*E.dz + rz*E.dx);
-  const hill = (1 - smooth(2.6, 3.8, across))*smooth(-0.75, -0.3, along)*(1 - smooth(6, 8, along));
+  // (a road that ends heading down toward the yard: the hill stops short of the yard plateau)
+  const hill = (1 - smooth(2.6, 3.8, across))*smooth(-0.75, -0.3, along)*(1 - smooth(6, 8, along))*(1 - smooth(-1.75, -1.15, z));
   if (hill > 0) h = Math.max(h, lerp(h, E.y + 1.45 + 0.6*smooth(1.2, 3.6, along) + 0.25*fbm(x*0.9, z*0.9) - 0.3*smooth(1.9, 3.5, across), hill));
   // mound behind the return tunnel
   h += 1.5*Math.exp(-((x - GT.side*(Math.abs(GT.x) + 1.7))**2/2.2 + (z - GT.z + 0.7)**2/3.0))*smooth(yardExtent(L.Y)*C.DISP.K - 0.4, yardExtent(L.Y)*C.DISP.K + 0.6, ax);
@@ -2739,7 +2866,11 @@ function stoneTunnel(){
   { const RR = Rout + 0.03, len = D + 0.25 - DEP + 0.04, g1 = new THREE.CylinderGeometry(RR, RR, len, 20, 1, true, -Math.PI/2, Math.PI).rotateX(-Math.PI/2).translate(0, LEG, -DEP + 0.04 - len/2);
     const side = new THREE.PlaneGeometry(len, LEG + 0.35), sl = side.clone().rotateY(-Math.PI/2).translate(-RR, (LEG - 0.35)/2, -DEP + 0.04 - len/2), sr = side.rotateY(Math.PI/2).translate(RR, (LEG - 0.35)/2, -DEP + 0.04 - len/2);
     const roof = mergeParts([g1, sl, sr].map(g => ({geo:g, m:M(), color:(x, y, z, nx, ny) => col('#a8977f').lerp(col('#8fb562'), smooth(0.45, 0.75, ny)).lerp(col('#97876f'), hash(Math.floor(x*3), Math.floor(z*3))*0.25)})));
-    const rm = new THREE.Mesh(roof, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, flatShading:true})); rm.castShadow = rm.receiveShadow = true; grp.add(rm); }
+    const rm = new THREE.Mesh(roof, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, flatShading:true})); rm.castShadow = rm.receiveShadow = true; grp.add(rm);
+    // its far end closed (a road ending toward the camera shows the shell's back end above a lower hill)
+    const zEnd = -DEP + 0.04 - len, endCap = mergeParts([new THREE.CircleGeometry(RR, 20, 0, Math.PI).translate(0, LEG, zEnd), new THREE.PlaneGeometry(2*RR, LEG + 0.35).translate(0, (LEG - 0.35)/2, zEnd)]
+      .map(g => ({geo:g, m:M(), color:() => col('#9c8a72')})));
+    const em = new THREE.Mesh(endCap, new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.95, side:THREE.DoubleSide})); em.receiveShadow = true; grp.add(em); }
   // two warm lamps on the arch shoulders
   const lamps = [-1, 1].map(sx => {
     const lampMat = new THREE.MeshBasicMaterial({color:'#ffe08a'});
@@ -2798,16 +2929,16 @@ function buildWorld(L){
     const railMat = new THREE.MeshStandardMaterial({color:'#f6f7f9', roughness:0.45});
     const posts = [], rampGeos = [], RAIL = [[-0.03,-0.03,'#eef0f3'],[-0.03,0.03,'#ffffff'],[0.03,0.03,'#ffffff'],[0.03,-0.03,'#e4e7eb']];
     L.RAMPS.forEach(r => {
-      const S = r.spline, samples = [], hw = r.halfW, ru = hw - 0.06;
+      const S = r.spline, samples = [], hw = r.halfW0 || r.halfW, ru = hw - 0.06, kw = sv => r.halfWAt ? r.halfWAt(sv)/hw : 1;
       for (let i=0;i<S.n;i++) if (S.cum[i] <= r.length + 1e-6) samples.push([S.P[i*3], r.y, S.P[i*3+2], S.cum[i]]);
       const o = {}; C.pathAt(S, r.length, o, 0); samples.push([o.x, r.y, o.z, r.length]);
       const caps = [[samples.length-1, 1]]; caps.color = CONC;
-      rampGeos.push(extrude(samples, [[-hw,-0.22,'#cfd3d8'],[-hw,0.035,'#f1f2f4'],[-hw+0.07,0.035,'#f1f2f4'],[-hw+0.07,0.0,'#dfe2e6'],
+      rampGeos.push(extrude(samples.map(q => [q[0], q[1], q[2], q[3], null, kw(q[3])]), [[-hw,-0.22,'#cfd3d8'],[-hw,0.035,'#f1f2f4'],[-hw+0.07,0.035,'#f1f2f4'],[-hw+0.07,0.0,'#dfe2e6'],
                                       [hw-0.07,0.0,'#dfe2e6'],[hw-0.07,0.035,'#f1f2f4'],[hw,0.035,'#f1f2f4'],[hw,-0.22,'#c3c7cc']], caps));
-      for (let c = 1; c < r.cols; c++){ const u = (c - r.cols/2)*C.RAMP_SP;
-        rampGeos.push(extrude(samples.map(s => [s[0], s[1], s[2]]).slice(2), [[u-0.01,0.004,'#d3d7dc'],[u+0.01,0.004,'#d3d7dc']])); }
+      for (let c = 1; c < r.cols; c++){ const u = (c - r.cols/2)*C.RAMP_SP, wk = sv => r.widthK ? r.widthK(sv) : 1;
+        rampGeos.push(extrude(samples.map(s => [s[0], s[1], s[2], s[3], null, wk(s[3])]).slice(2), [[u-0.01,0.004,'#d3d7dc'],[u+0.01,0.004,'#d3d7dc']])); }
       const side = (u) => samples.map((s, i) => { const a = samples[Math.max(0,i-1)], b = samples[Math.min(samples.length-1,i+1)];
-        let tx = b[0]-a[0], tz = b[2]-a[2]; const l = Math.hypot(tx,tz) || 1; return [s[0] + (-tz/l)*u, s[1], s[2] + (tx/l)*u, s[3]]; });
+        let tx = b[0]-a[0], tz = b[2]-a[2]; const l = Math.hypot(tx,tz) || 1, uu = u*kw(s[3]); return [s[0] + (-tz/l)*uu, s[1], s[2] + (tx/l)*uu, s[3]]; });
       for (const u of [-ru, ru]){
         const line = side(u).filter(p => p[3] > 0.1);
         rampGeos.push(extrude(line.map(p => [p[0], p[1] + 0.32, p[2]]), RAIL));
@@ -3420,6 +3551,7 @@ function resetGame(){
   fx.forEach(f => f(Infinity)); fx.length = 0;
   buildBlockers();
   $('winPanel').classList.remove('show'); $('failPanel').classList.remove('show');
+  cancelAuto(); startTutorial(LEVEL.meta && LEVEL.meta.tutorial);
   updateScene(0);
 }
 /* level priority: an exported level list > ?level=<bundled id> > a share file's level > built-in LEVEL_DATA
@@ -3431,12 +3563,23 @@ function initialLevel(){
 }
 function playlistUI(){
   const on = !!PLAYLIST && levelSource === 'export';
-  $('levelStep').style.display = on && PLAYLIST.length > 1 ? 'block' : 'none';
+  $('levelStep').style.display = on && PLAYLIST.length > 1 && !NAV ? 'block' : 'none';
   if (on) $('levelStep').textContent = `Level ${playIdx + 1} / ${PLAYLIST.length}`;
   $('btnNext').style.display = on ? '' : 'none';
-  if (on) $('btnNext').textContent = playIdx + 1 < PLAYLIST.length ? 'Next level' : 'Finish';
+  if (on) $('btnNextTxt').textContent = playIdx + 1 < PLAYLIST.length ? 'Next level' : 'Finish';
+  if (NAV){
+    if (on){ $('levelPill').textContent = `Level ${playIdx + 1} / ${PLAYLIST.length}`; fitPill(); }
+    $('btnPrev').classList.toggle('dis', !on || playIdx === 0);
+    $('btnNextLv').classList.toggle('dis', !on || playIdx + 1 >= PLAYLIST.length);
+  }
+}
+function goLevel(i){                                  // previous / next in a pack: straight to that level
+  if (!PLAYLIST || i < 0 || i >= PLAYLIST.length) return;
+  cancelAuto(); ['winPanel', 'failPanel', 'donePanel', 'statsPanel'].forEach(id => $(id).classList.remove('show'));
+  playIdx = i; loadLevel(PLAYLIST[i], 'export');
 }
 function nextLevel(){
+  cancelAuto();
   $('winPanel').classList.remove('show');
   if (playIdx + 1 < PLAYLIST.length){ playIdx++; loadLevel(PLAYLIST[playIdx], 'export'); }
   else { $('doneText').textContent = `All ${PLAYLIST.length} level${PLAYLIST.length > 1 ? 's are' : ' is'} done!`; $('donePanel').classList.add('show'); sfx.win(); }
@@ -3450,6 +3593,7 @@ function loadLevel(level, source, opts){
   $('levelPill').textContent = LEVEL.name || 'Level'; fitPill();
   $('levelSrc').textContent = {editor:'Level from the editor', builtin:'Built-in level', preset:'Bundled level', export:'Exported level'}[source] || source;
   playlistUI();
+  levelIntro();
   logLevel(LEVEL, source);
   if (parent !== window) parent.postMessage({type:'game-status', source, name:LEVEL.name, men:game.men.length, buses:game.buses.length, serial:levelSerial}, '*');
   return true;
@@ -3499,12 +3643,12 @@ function handleEvents(){
       case 'land': { MV[e.man].landT = e.t; v.bobV -= 0.42; sfx.pop(e.chain); break; }
       case 'boardStart': v.boardRamp = e.ramp; break;
       case 'jump': startExit(v, e); sfx.horn(); break;
-      case 'win': { const J = views[e.bus] && views[e.bus].jump, tc = J ? J.tc : EXIT.side + EXIT.chute;    // after the last parachute opens
+      case 'win': { statWin(e.t); const J = views[e.bus] && views[e.bus].jump, tc = J ? J.tc : EXIT.side + EXIT.chute;    // after the last parachute opens
         winAt = e.t + tc + 0.42 + C.WIN_PANEL_DELAY; winSoundAt = e.t + tc + 0.45; break; }
       case 'tunnelIn': sfx.echo(); WD.lamps.top.pulseT = e.t; break;
       case 'tunnelOut': WD.lamps.ret.pulseT = e.t; break;
       case 'rampEmpty': { const b = WD.badges[e.ramp]; b.visible = true; b.userData.t0 = e.t; b.userData.sparkled = false; break; }
-      case 'crash': startCrash(e); break;
+      case 'crash': statFail(e.t); startCrash(e); break;
       case 'release': { const mv = MV[e.man], T = game.ramps[e.ramp].tunnels[e.tunnel], i = game.ramps[e.ramp].cols[e.col].indexOf(e.man);
         mv.disp = mv.from = T.row; mv.to = Math.max(0, i); mv.t0 = e.t + 0.04; mv.popT = e.t; break; }
       case 'tunnelGone': blockerGone(e); break;
@@ -3837,7 +3981,8 @@ function updateScene(vdt){
   const txt = `${game.counter}/${C.ROAD_CAPACITY}`, cnt = $('cnt');
   if (cnt.textContent !== txt){ cnt.textContent = txt; cnt.classList.remove('bump'); void cnt.offsetWidth; cnt.classList.add('bump'); }
   $('counter').classList.toggle('full', game.counter >= C.ROAD_CAPACITY);
-  if (t >= winAt && !$('winPanel').classList.contains('show')) $('winPanel').classList.add('show');
+  tutorialTick();
+  if (t >= winAt && !$('winPanel').classList.contains('show')){ $('winPanel').classList.add('show'); startAuto(); }
   if (t >= failAt && !$('failPanel').classList.contains('show')) $('failPanel').classList.add('show');
   if (t >= winSoundAt){ winSoundAt = Infinity; sfx.win(); }
   if (DEBUG) updateDebug();
@@ -3855,6 +4000,165 @@ function updateDebug(){
     `counter ${game.counter}/${C.ROAD_CAPACITY}   free bays ${[0,1,2,3,4].filter(k => game.bays[k] < 0 && game.bayRes[k] < 0).map(k => k + 1).join(',') || '-'}\n` +
     `front rows: ` + C.COLORS.filter(c => fc[c]).map(c => c + ' ' + fc[c]).join(', ') + `\n` +
     `boarded ${game.landed}/${game.men.length}   t ${game.t.toFixed(1)}s   speed ${timeScale}x` + (botOn ? '   BOT' : '');
+}
+
+
+/* ------------------------------ level pack ------------------------------
+   Saved data never breaks the game: storage may be missing (private mode, file:// rules) - then it lives in memory */
+const store = {
+  mem: {},
+  get(k, d){ try { const v = localStorage.getItem(k); return v != null ? JSON.parse(v) : d; } catch (e) { return k in this.mem ? this.mem[k] : d; } },
+  set(k, v){ this.mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k){ delete this.mem[k]; try { localStorage.removeItem(k); } catch (e) {} }
+};
+const AUTO_MS = 3500;
+let autoTimer = 0;
+function startAuto(){                                 // a won level in a pack with nav goes on to the next one by itself
+  if (!NAV || levelSource !== 'export') return;
+  const b = $('btnNext'); b.style.setProperty('--auto', AUTO_MS/1000 + 's'); b.classList.remove('auto'); void b.offsetWidth; b.classList.add('auto');
+  clearTimeout(autoTimer); autoTimer = setTimeout(() => { autoTimer = 0; if ($('winPanel').classList.contains('show')) nextLevel(); }, AUTO_MS);
+}
+function cancelAuto(){ clearTimeout(autoTimer); autoTimer = 0; $('btnNext').classList.remove('auto'); }
+
+/* stats, per level id: {n, time (game seconds of the first win), wins, fails: [game second of each fail]} */
+const STATS_KEY = 'me-stats:' + ((SHARE && (SHARE.statsKey || SHARE.title)) || 'pack');
+let STATS = STATS_ON ? store.get(STATS_KEY, {}) : {};
+const statId = () => LEVEL.id || '#' + (playIdx + 1);
+function statRec(){ const id = statId(); return STATS[id] || (STATS[id] = {n:playIdx + 1, time:null, wins:0, fails:[]}); }
+const counts = () => STATS_ON && !botOn && levelSource === 'export';      // the bot's games are not a player's
+function statWin(t){ if (!counts()) return; const r = statRec(); r.wins++; if (r.time == null) r.time = +t.toFixed(1); store.set(STATS_KEY, STATS); }
+function statFail(t){ if (!counts()) return; const r = statRec(); r.fails.push(+t.toFixed(1)); store.set(STATS_KEY, STATS); }
+function statRows(){
+  return PLAYLIST.map((lv, i) => { const id = lv.id || '#' + (i + 1), r = STATS[id]; return {n:i + 1, id, name:lv.name || 'Level', r}; });
+}
+function openStats(){
+  const rows = statRows(), done = rows.filter(x => x.r && x.r.time != null), fails = rows.reduce((a, x) => a + (x.r ? x.r.fails.length : 0), 0);
+  const tot = done.reduce((a, x) => a + x.r.time, 0);
+  $('statsBody').innerHTML = `<table><tr><th>Level</th><th>Time (s)</th><th>Fails</th><th>Fail at (s)</th></tr>` +
+    rows.map(x => `<tr class="${x.n === playIdx + 1 ? 'cur' : ''}"><td>${x.n}</td>` +
+      (x.r ? `<td>${x.r.time != null ? x.r.time.toFixed(1) : '<span class="none">-</span>'}</td><td>${x.r.fails.length}</td><td class="fs">${x.r.fails.map(v => v.toFixed(1)).join(', ') || '<span class="none">-</span>'}</td>`
+           : `<td class="none">-</td><td class="none">-</td><td class="fs none">-</td>`) + `</tr>`).join('') +
+    `<tr class="tot"><td>${done.length}/${rows.length}</td><td>${tot.toFixed(1)}</td><td>${fails}</td><td class="fs">game seconds (1x clock)</td></tr></table>`;
+  resetArm = 0; $('btnStatsReset').textContent = 'Reset stats';
+  $('statsPanel').classList.add('show');
+  const cur = $('statsBody').querySelector('tr.cur'); if (cur) cur.scrollIntoView({block:'center'});
+}
+function statsCsv(){
+  const q = v => /[",;\n]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+  return ['level,id,name,completion_s,fails,fail_seconds,wins'].concat(statRows().map(x => [x.n, x.id, x.name, x.r && x.r.time != null ? x.r.time.toFixed(1) : '',
+    x.r ? x.r.fails.length : 0, x.r ? x.r.fails.map(v => v.toFixed(1)).join(';') : '', x.r ? x.r.wins : 0].map(q).join(','))).join('\n') + '\n';
+}
+function exportCsv(){
+  const a = document.createElement('a'), url = URL.createObjectURL(new Blob([statsCsv()], {type:'text/csv'}));
+  a.href = url; a.download = 'match-express-stats.csv'; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+let resetArm = 0;
+function resetStats(){                                // two taps: the first one asks (until the panel closes)
+  if (!resetArm){ resetArm = 1; $('btnStatsReset').textContent = 'Tap again to reset'; return; }
+  resetArm = 0; STATS = {}; store.del(STATS_KEY); openStats();
+}
+
+/* intro popups: the first time a level brings a new blocker (once per player), with a small looping picture */
+const INTRO = {
+  hidden: {title:'Hidden Bus', text:'A bus with a question mark shows its colour when it reaches the front of its lane.', art:
+    `<svg viewBox="0 0 420 210"><rect x="170" y="-10" width="80" height="230" rx="12" fill="#c4ccd8"/><g class="ia-hbA"><rect x="182" y="22" width="56" height="76" rx="14" fill="#3a8dff" stroke="#fff" stroke-width="5"/><rect x="192" y="34" width="36" height="16" rx="4" fill="#24345e"/></g>
+     <g class="ia-hbB"><rect class="ia-hbBody" x="182" y="116" width="56" height="76" rx="14" fill="#9aa3b3" stroke="#fff" stroke-width="5"/><rect x="192" y="128" width="36" height="16" rx="4" fill="#24345e"/><text class="ia-hbQ" x="210" y="182" text-anchor="middle" font-size="40" font-weight="900" fill="#fff">?</text>
+     <g class="ia-hbS"><path d="M150 120l5 12 12 5-12 5-5 12-5-12-12-5 12-5z" fill="#ffd34d"/><path d="M272 150l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#ffd34d"/></g></g></svg>`},
+  connected: {title:'Connected Buses', text:'Linked buses leave together, and coming back they need a free bay each.', art:
+    `<svg viewBox="0 0 420 210"><rect x="104" y="-10" width="80" height="230" rx="12" fill="#c4ccd8"/><rect x="236" y="-10" width="80" height="230" rx="12" fill="#c4ccd8"/>
+     <g class="ia-cn"><rect x="116" y="100" width="56" height="76" rx="14" fill="#ff5a5a" stroke="#fff" stroke-width="5"/><rect x="248" y="100" width="56" height="76" rx="14" fill="#3fc35b" stroke="#fff" stroke-width="5"/>
+     <rect x="126" y="112" width="36" height="16" rx="4" fill="#24345e"/><rect x="258" y="112" width="36" height="16" rx="4" fill="#24345e"/>
+     <path d="M172 140h76" stroke="#24345e" stroke-width="12" stroke-linecap="round"/><path d="M172 140h76" stroke="#ffd34d" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 8"/></g>
+     <circle class="ia-tap" cx="144" cy="150" r="22" fill="none" stroke="#fff" stroke-width="6"/></svg>`},
+  tunnel: {title:'Colorful Tunnel', text:'A tunnel holds more stickmen of its colour and sends them out one by one into the empty cell in front of it.', art:
+    `<svg viewBox="0 0 420 210"><rect x="60" y="0" width="300" height="34" fill="#9aa3b3"/><rect x="60" y="14" width="300" height="5" fill="#fff" opacity=".7"/>
+     <rect x="176" y="48" width="68" height="56" rx="10" fill="#fff" opacity=".85"/><path d="M168 200v-52a42 42 0 0 1 84 0v52z" fill="#a46bff" stroke="#fff" stroke-width="5"/><path d="M186 200v-46a24 24 0 0 1 48 0v46z" fill="#3b2366"/>
+     <g class="ia-tm ia-tm1"><circle cx="210" cy="170" r="13" fill="#a46bff" stroke="#fff" stroke-width="3"/></g><g class="ia-tm ia-tm2"><circle cx="210" cy="170" r="13" fill="#a46bff" stroke="#fff" stroke-width="3"/></g><g class="ia-tm ia-tm3"><circle cx="210" cy="170" r="13" fill="#a46bff" stroke="#fff" stroke-width="3"/></g>
+     <circle cx="262" cy="128" r="21" fill="#fff" stroke="#a46bff" stroke-width="5"/>
+     <g font-size="28" font-weight="900" fill="#3b2366" text-anchor="middle"><text class="ia-tn ia-tn1" x="262" y="138">3</text><text class="ia-tn ia-tn2" x="262" y="138">2</text><text class="ia-tn ia-tn3" x="262" y="138">1</text></g></svg>`},
+  lock: {title:'Lock & Key', text:'The bus with the key opens the locked box when it drives past that ramp.', art:
+    `<svg viewBox="0 0 420 210"><rect x="30" y="118" width="150" height="40" rx="10" fill="#c4ccd8"/><rect x="62" y="106" width="86" height="58" rx="14" fill="#3fc35b" stroke="#fff" stroke-width="5"/><rect x="74" y="116" width="62" height="14" rx="4" fill="#24345e"/>
+     <g fill="#a46bff" stroke="#fff" stroke-width="3"><circle cx="270" cy="70" r="12"/><circle cx="306" cy="70" r="12"/><circle cx="342" cy="70" r="12"/><circle cx="270" cy="110" r="12"/><circle cx="306" cy="110" r="12"/><circle cx="342" cy="110" r="12"/></g>
+     <g class="ia-box"><rect x="246" y="46" width="120" height="90" rx="12" fill="#c98a4b" stroke="#fff" stroke-width="5"/><path d="M246 76h120M246 106h120" stroke="#9c6430" stroke-width="5"/>
+     <path class="ia-sh" d="M294 98v-14a12 12 0 0 1 24 0v14" fill="none" stroke="#5b6476" stroke-width="7"/><rect x="288" y="94" width="36" height="30" rx="6" fill="#ffcf3a" stroke="#9c6430" stroke-width="3"/></g>
+     <g class="ia-key"><circle cx="105" cy="92" r="11" fill="none" stroke="#ffcf3a" stroke-width="7"/><path d="M116 92h26M134 92v9M141 92v7" stroke="#ffcf3a" stroke-width="7" stroke-linecap="round"/></g></svg>`}
+};
+const HINTS = {triple: 'Buses can be linked in <b>threes</b> too: all three leave together.'};
+const SEEN_KEY = 'me-intro-seen';
+let introOpen = false, hintTimer = 0, introKind = null;
+const held = () => introOpen || $('statsPanel').classList.contains('show');
+function levelIntro(){
+  const m = LEVEL.meta || {};
+  clearTimeout(hintTimer); $('hint').classList.remove('show');
+  if (m.popup && INTRO[m.popup] && !store.get(SEEN_KEY, []).includes(m.popup)) showIntro(m.popup);
+  if (m.hint && HINTS[m.hint]){ $('hint').innerHTML = HINTS[m.hint]; hintTimer = setTimeout(() => { $('hint').classList.add('show');
+    hintTimer = setTimeout(() => $('hint').classList.remove('show'), 5500); }, 700); }
+}
+function showIntro(kind){
+  const I = INTRO[kind]; introKind = kind; introOpen = true;
+  $('introTitle').textContent = I.title; $('introText').textContent = I.text; $('introArt').innerHTML = I.art;
+  $('introPanel').dataset.kind = kind; $('introPanel').classList.add('show');
+}
+function closeIntro(){
+  if (!introOpen) return;
+  const seen = store.get(SEEN_KEY, []); if (!seen.includes(introKind)) seen.push(introKind); store.set(SEEN_KEY, seen);
+  introOpen = false; $('introPanel').classList.remove('show');
+}
+
+/* tutorials (level meta.tutorial): a pointing hand and a short tip lead the first sends; while a step waits for one
+   bus, taps on the others do nothing (tapFilter) */
+let TUT = null;
+const TUTORIALS = {'first-sends': tutFirstSends, 'bay-resend': tutBayResend};
+const colorWord = c => c;
+function startTutorial(kind){ tapFilter = null; showTip(null); TUT = kind && TUTORIALS[kind] ? {kind, step:0, t0:0, bus:-1, hand:-1} : null; if (!TUT) handAt(-1); }
+function endTutorial(){ TUT = null; tapFilter = null; showTip(null); handAt(-1); }
+function step(T, n, text, hand, allow){ T.step = n; T.t0 = game.t; T.hand = hand; tapFilter = allow; showTip(text); }
+function showTip(text){ const el = $('tip'); if (!text){ el.classList.remove('show'); el.dataset.text = ''; return; }
+  if (el.dataset.text === text) return; el.dataset.text = text; el.textContent = text; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
+function handAt(id){ const el = $('hand'); if (id < 0 || !game || !game.buses[id]){ el.classList.remove('show'); return; }
+  const [x0, y0, x1, y1] = busScreenBox(game.buses[id]); el.style.transform = `translate(${((x0 + x1)/2 - 39).toFixed(1)}px,${((y0 + y1)/2 - 6).toFixed(1)}px)`;
+  el.classList.add('show'); }
+function tutorialTick(){
+  if (!TUT) return;
+  if (game.result){ endTutorial(); return; }
+  TUTORIALS[TUT.kind](TUT);
+  if (TUT) handAt(TUT.hand);
+}
+const laneFront = l => game.lanes[l] && game.lanes[l].length ? game.buses[game.lanes[l][0]] : null;
+function tutorialBus(match){                          // the level names the lane (meta.tutorialLane), else the best match
+  const l = LEVEL.meta && LEVEL.meta.tutorialLane;
+  if (l != null && laneFront(l)) return laneFront(l);
+  const fc = C.frontColors(game); let best = null;
+  for (let k = 0; k < 3; k++){ const b = laneFront(k); if (b && (match ? fc[b.color] > 0 && (!best || fc[b.color] > fc[best.color]) : !best)) best = b; }
+  return best;
+}
+function tutFirstSends(T){
+  const only = id => b => b.id === id;
+  switch (T.step){
+    case 0: { const b = tutorialBus(true); if (!b){ endTutorial(); break; } T.bus = b.id; step(T, 1, 'Tap the bus whose colour matches the front row!', b.id, only(b.id)); break; }
+    case 1: if (game.buses[T.bus].state !== 'lane') step(T, 2, 'Watch the stickmen board!', -1, () => false); break;
+    case 2: if (game.buses[T.bus].state === 'jump') step(T, 3, 'A full bus leaves with a parachute!', -1, () => false); break;
+    case 3: if (game.t - T.t0 > 2.4){ const fc = C.frontColors(game); let b = null;
+        for (let k = 0; k < 3; k++){ const x = laneFront(k); if (x && fc[x.color] > 0) b = x; }
+        if (!b){ endTutorial(); break; } T.bus = b.id; step(T, 4, `Now the ${colorWord(b.color)} ones: tap the ${colorWord(b.color)} bus!`, b.id, only(b.id)); } break;
+    case 4: if (game.buses[T.bus].state !== 'lane') step(T, 5, 'Fill every bus to win!', -1, null); break;
+    case 5: if (game.t - T.t0 > 3) endTutorial(); break;
+  }
+}
+function tutBayResend(T){
+  const b = T.bus >= 0 ? game.buses[T.bus] : null;
+  switch (T.step){
+    case 0: { const x = tutorialBus(false); if (!x){ endTutorial(); break; } T.bus = x.id; step(T, 1, `Send the ${colorWord(x.color)} bus!`, x.id, y => y.id === x.id); break; }
+    case 1: if (b.state !== 'lane') step(T, 2, `It takes every ${colorWord(b.color)} stickman it can reach. Keep sending!`, -1, null); break;
+    case 2: if (b.state === 'jump') endTutorial(); else if (b.state === 'bay') step(T, 3, 'Not full? It comes back and waits in a bay.', -1, null); break;
+    case 3: if (b.state !== 'bay'){ endTutorial(); break; }
+      if (game.t - T.t0 > 2.5 && C.frontColors(game)[b.color] > 0 && C.canRoad(game))
+        step(T, 4, `${colorWord(b.color)[0].toUpperCase() + colorWord(b.color).slice(1)} is at the front again: tap the parked bus to send it back!`, b.id, y => y.id === b.id);
+      break;
+    case 4: if (b.state !== 'bay') step(T, 5, 'Parked buses can always be sent again.', -1, null); break;
+    case 5: if (game.t - T.t0 > 3) endTutorial(); break;
+  }
 }
 
 /* -------------------------------- input -------------------------------- */
@@ -3883,13 +4187,21 @@ app.addEventListener('pointerdown', e => {
   if (e.target.closest('.rbtn') || e.target.closest('.panel') || e.target.closest('#settings')) return;
   $('settings').classList.remove('open');
   const r = app.getBoundingClientRect(), px = (e.clientX - r.left)/r.width*DW, py = (e.clientY - r.top)/r.height*DH;
-  const a = pick(px, py); if (a) doAction(a);
+  const a = pick(px, py); if (a && tapAllowed(busOfAction(a))) doAction(a);
 });
+const busOfAction = a => game.buses[a.kind === 'lane' ? game.lanes[a.idx][0] : game.bays[a.idx]];
 function setBot(on){ botOn = on; botT = 0; $('botTag').style.display = botOn ? 'block' : 'none'; }
 function setSpeed(s){ timeScale = s; $('btnSpeed').textContent = s + 'x'; $('btnSpeed').classList.toggle('on', s > 1); }
 $('btnRestart').addEventListener('click', () => { audio(); resetGame(); });
-$('btnReplay').addEventListener('click', () => { audio(); resetGame(); });
+$('btnReplay').addEventListener('click', () => { audio(); cancelAuto(); resetGame(); });
 $('btnNext').addEventListener('click', () => { audio(); nextLevel(); });
+$('btnPrev').addEventListener('click', () => { audio(); goLevel(playIdx - 1); });
+$('btnNextLv').addEventListener('click', () => { audio(); goLevel(playIdx + 1); });
+$('btnStats').addEventListener('click', () => { audio(); openStats(); });
+$('btnStatsClose').addEventListener('click', () => { audio(); $('statsPanel').classList.remove('show'); });
+$('btnCsv').addEventListener('click', () => { audio(); exportCsv(); });
+$('btnStatsReset').addEventListener('click', () => { audio(); resetStats(); });
+$('btnIntroOk').addEventListener('click', () => { audio(); closeIntro(); });
 $('btnAgain').addEventListener('click', () => { audio(); $('donePanel').classList.remove('show'); playIdx = 0; loadLevel(PLAYLIST[0], 'export'); });
 $('btnRetry').addEventListener('click', () => { audio(); resetGame(); });
 $('btnSpeed').addEventListener('click', () => { audio(); setSpeed(timeScale > 1 ? 1 : 2); });
@@ -3937,8 +4249,8 @@ function effectiveScale(){
 let last = performance.now(), acc = 0, frozen = false;
 function pump(dt){                                    // advance by `dt` real seconds through the time scale
   const gdt = dt*effectiveScale();
-  if (!frozen){ acc += gdt; let n = 0; while (acc >= FIXED && n < 14){ tick(); acc -= FIXED; n++; } if (n === 14) acc = 0; }
-  updateScene(frozen ? 0 : gdt);
+  if (!frozen && !held()){ acc += gdt; let n = 0; while (acc >= FIXED && n < 14){ tick(); acc -= FIXED; n++; } if (n === 14) acc = 0; }
+  updateScene(frozen || held() ? 0 : gdt);
   updateHum();
 }
 function frame(now){
@@ -3963,7 +4275,12 @@ window.__me = {
   get serial(){ return levelSerial; }, get cheering(){ return cheer.size; }, cheerSet(){ return [...cheer.keys()]; }, EXIT, ROAD_HALF:C.ROAD_HALF, camera, scene, renderer, get CAM(){ return CAM; }, applyCamera, pump, setSpeed, setMuted, loadLevel,
   advance(sec){ const n = Math.round(sec/FIXED); for (let i=0;i<n;i++){ tick(); if (i % 4 === 0) updateScene(FIXED*4); } updateScene(FIXED); },
   tapLane(l){ return C.tapLane(game, l); }, tapBay(k){ return C.tapBay(game, k); }, pick, screenOf, busScreenBox,
-  get playIdx(){ return playIdx; }, get playlist(){ return PLAYLIST; }, get embed(){ return EMBED; }, nextLevel,
+  get playIdx(){ return playIdx; }, get playlist(){ return PLAYLIST; }, get embed(){ return EMBED; }, nextLevel, goLevel,
+  /* a player's tap (the tutorial's filter applies, as for the pointer); tutorial, popup and stats state */
+  tap(a){ return a && tapAllowed(busOfAction(a)) ? doAction(a) : false; },
+  get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
+  get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
+  stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS,
   setBot, setDebug(v){ DEBUG = v; WD.dbgGroup.visible = v; $('dbg').style.display = v ? 'block' : 'none'; },
   freeze(v){ frozen = v; }, restart: () => resetGame(), render(){ updateScene(0); renderer.render(scene, camera); },
   /* on-screen sizes in CSS px at the current viewport: standing stickmen (feet to top of head) and buses by capacity */
