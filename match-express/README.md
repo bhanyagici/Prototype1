@@ -33,20 +33,25 @@ You asked for 62% and 72%. The static row and queue boundary moved to 77% so the
 queue shows three 8-seat buses per lane; the zones are the same for every level.
 - **Camera:** pitched at 52° and chosen so the largest bundled level, Crowded Rush
   Curve, fills the target zone. Stickmen are about 17.4 px tall.
-- **Drawn yard:** the yard and queue are *drawn* smaller than the simulation lays them
-  out. `C.dispPoint` / `C.dispScale` map a simulated position to where it is drawn;
-  the simulation itself is unchanged. In detail:
-  - the bays, the yard roads and the parked buses are drawn at 0.8 (bays 20% smaller);
+- **Drawn yard:** the yard and queue are *drawn* in a slightly squeezed form of the
+  simulation's layout. `C.dispPoint` / `C.dispScale` map a simulated position to where
+  it is drawn; the simulation itself is unchanged. In detail:
+  - every bus is drawn at **road size** from the front of its queue lane, through the
+    yard, onto the road and in the bays, so a sent bus never shrinks;
+  - the bay row is drawn at road size, so a 12-seat bus fits its bay (2.56 long in a
+    2.82 bay); to keep the screen zones, only the strips above the bays (entry) and
+    below them (collector) are squeezed vertically, to 0.6;
   - the margin between the collector road and the queue is squeezed, and the
     collector has no curb strip on the queue side;
-  - in each lane only the front bus is full size; the buses behind it are drawn at 0.85
-    with tighter gaps, and they grow smoothly as they reach the front;
-  - buses shrink smoothly as they enter the yard and grow as they leave it;
+  - in each lane the **front bus** is road size and 10% larger than the buses behind
+    it (drawn at 1/1.1 with tighter gaps); they grow smoothly as they reach the front;
+  - the front bus of each lane has a soft white outline with a glow, showing it can
+    be tapped; the buses behind it have none;
   - the return tunnel still picks its side by itself, inside the drawn yard.
 - **Queue:** with every lane full of 8-seat buses, 3 per lane are fully visible
   (4 four-seat buses, 2 twelve-seat ones), checked by `tests/layout.test.js`.
-- **Bus sizes:** an 8-seat bus is about 55 px long at the front of the queue and about
-  41 px in a bay.
+- **Bus sizes:** an 8-seat bus is about 51 px long at the front of the queue, on the
+  road and in a bay.
 
 The level checker reports anything outside the target zone (`zone-road`, `zone-ramp`,
 `zone-exit`, with positions). The editor draws the zone as a yellow frame.

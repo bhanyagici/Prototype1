@@ -142,13 +142,21 @@ console.log('compact layout (built-in level)');
   let roadOk = true; for (let i = 0; i < L.ROAD.n; i += 4) if (L.ROAD.cum[i] <= L.ROAD.portalS){ const [u, v] = pr(L.ROAD.P[i*3], L.ROAD.P[i*3+1], L.ROAD.P[i*3+2]); if (!inX(u) || v < 120) roadOk = false; }
   let rampOk = true; L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => { const [u, v] = pr(q.x, q.y + 0.8, q.z); if (u < 10 || u > 890 || v < 120) rampOk = false; })));
   chk(yardOk && laneOk && roadOk && rampOk, 'camera framing: side lanes, front queue buses, road and every ramp stickman are on screen');
-  // the drawn yard: bays inside the static row, an 8-seat bus there at 0.8 of its front-of-queue size
-  const H = 1950, len8 = C.busLen(8), shown = (x, z, len) => { const s = C.dispScale(z), [a, b] = [C.dispPoint(x, z - s*len/2), C.dispPoint(x, z + s*len/2)];
-    return (pr(b[0], 0, b[1])[1] - pr(a[0], 0, a[1])[1])*k; };
+  // the drawn yard: bays inside the static row; every bus at road size from the front of its lane to the road
+  // and in the bays (a sent bus never shrinks); only buses behind a lane's front bus are smaller (front +10%)
+  const H = 1950, bl = C.busLen, CAPS = [4, 6, 8, 12];
   const bayTop = pr(0, 0, C.dispZ(C.Z_BAY_TOP))[1]/H, bayBot = pr(0, 0, C.dispZ(C.Z_BAY_BOT))[1]/H;
   chk(bayTop > C.SCREEN.TARGET_BOT && bayBot < C.SCREEN.STATIC_BOT, 'bays are drawn inside the static row', (bayTop*100).toFixed(1) + '% - ' + (bayBot*100).toFixed(1) + '%');
-  const inBay = Math.min(...L.Y.BAY_X.map(x => shown(x, C.parkZ(len8), len8))), front = shown(0, C.laneSlotZ(len8), len8);
-  chk(Math.abs(C.dispScale(C.parkZ(len8)) - 0.8) < 1e-9 && C.dispScale(C.laneSlotZ(len8)) === 1 && inBay > 30, 'parked buses are drawn at 0.8 (front of the queue at full size)', inBay.toFixed(1) + ' px vs ' + front.toFixed(1) + ' px');
+  const fronts = CAPS.map(c => C.dispScale(C.laneSlotZ(bl(c)))), behind = [];
+  for (const a of CAPS) for (const b of CAPS) behind.push(C.dispScale(C.laneSlotZ(bl(a)) + bl(a)/2 + C.LANE_GAP + bl(b)/2));
+  chk(fronts.every(s => s === 1) && behind.every(s => Math.abs(s*1.1 - 1) < 1e-9), 'the front bus of a lane is drawn at road size, every bus behind it 10% smaller',
+      'front ' + fronts.join('/') + ', behind ' + Math.min(...behind).toFixed(4) + '-' + Math.max(...behind).toFixed(4));
+  let pathMin = 9; for (let z = C.laneSlotZ(bl(12)); z >= C.Z_ROAD0 - 2; z -= 0.01) pathMin = Math.min(pathMin, C.dispScale(z));
+  chk(pathMin === 1, 'a sent bus never shrinks: road size all the way from the front slot through the yard to the road', 'smallest scale on the way ' + pathMin);
+  const bayLen = C.dispZ(C.Z_BAY_BOT) - C.dispZ(C.Z_BAY_TOP), bayW = 1.12*C.dispSx(C.Z_BAY_TOP), k12 = C.dispScale(C.parkZ(bl(12)));
+  const z12 = C.parkZ(bl(12)), drawn12 = C.dispZ(z12 + bl(12)/2) - C.dispZ(z12 - bl(12)/2);
+  chk(k12 === 1 && CAPS.every(c => C.dispScale(C.parkZ(bl(c))) === 1) && drawn12 <= bayLen - 0.15 && C.BUS_W*k12 <= bayW - 0.1,
+      'parked buses are drawn at road size and a 12-seat bus fits inside its bay outline', `bus ${bl(12).toFixed(2)} x ${C.BUS_W} in a ${bayLen.toFixed(2)} x ${bayW.toFixed(2)} bay`);
 }
 
 console.log('linked buses');

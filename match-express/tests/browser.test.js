@@ -83,7 +83,21 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       const m = await p.evaluate(() => { __me.freeze(true); __me.render(); return __me.measure(); });
       chk(m.men.n === 192 && m.men.min >= 16, 'on 390 x 844 (fixed camera) every standing stickman is at least 16 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
-      chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long (bays at 0.8)', m.bay8.toFixed(1) + ' px');
+      chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long (bays at road size)', m.bay8.toFixed(1) + ' px');
+      // the front bus of each lane: 10% larger than the buses behind, with the white tap outline; a sent bus never shrinks
+      { const q = await p.evaluate(() => { __me.freeze(false); __me.pump(0.5); const g = __me.game, V = __me.views;
+          return [0, 1, 2].map(l => g.lanes[l].slice(0, 3).map(id => ({s:V[id].root.scale.x, ring:V[id].ring.visible && V[id].ring.material.opacity > 0.5}))); });
+        chk(q.every(ln => ln[0].ring && Math.abs(ln[0].s - 1) < 1e-6 && ln.slice(1).every(b => !b.ring && Math.abs(b.s*1.1 - 1) < 1e-3)),
+          'each lane\'s front bus has the white outline and is 10% larger; the buses behind have none', JSON.stringify(q[0]));
+        const tr = await p.evaluate(() => { const g = __me.game, id = g.lanes[0][0], next = g.lanes[0][1], v = __me.views[id]; let minS = 9, maxS = 0, onRoad = false;
+          __me.tapLane(0);
+          for (let i = 0; i < 600 && !onRoad; i++){ __me.pump(1/60); minS = Math.min(minS, v.root.scale.x); maxS = Math.max(maxS, v.root.scale.x); onRoad = g.buses[id].state === 'road'; }
+          for (let i = 0; i < 60; i++) __me.pump(1/60);
+          const nv = __me.views[next]; return {minS, maxS, onRoad, ringGone:!v.ring.visible, next:{front:g.lanes[0][0] === next, s:nv.root.scale.x, ring:nv.ring.visible}}; });
+        chk(tr.onRoad && tr.minS === 1 && tr.maxS === 1 && tr.ringGone, 'a sent bus keeps its front-bus size (road size) every frame from the lane to the road; its outline goes',
+          `scale ${tr.minS}-${tr.maxS}, on the road ${tr.onRoad}, outline gone ${tr.ringGone}`);
+        chk(tr.next.front && Math.abs(tr.next.s - 1) < 1e-6 && tr.next.ring, 'the bus behind moves up, grows to front size and gets the outline', JSON.stringify(tr.next));
+        await p.evaluate(() => { __me.restart(); __me.freeze(true); __me.render(); }); }
       // cheering from the moment a bus is sent: exactly the stickmen the core predicts, who then board it on that lap
       const ch = await p.evaluate(() => { __me.setBot(true); const g = __me.game, open = new Map(), laps = []; let warmUp = 0;
         for (let i = 0; i < 9000 && laps.length < 12; i++){ __me.advance(1/30);

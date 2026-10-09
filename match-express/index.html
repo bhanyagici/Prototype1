@@ -312,7 +312,7 @@ function disposeTree(root){
     ms.forEach(m => { if (m.userData.shared) return; if (m.map && !m.map.userData.keep) m.map.dispose(); m.dispose(); });
   });
 }
-/* the yard and queue are drawn smaller than the simulation lays them out (see C.dispPoint) */
+/* the yard and queue are drawn in a squeezed form of the simulation's layout (see C.dispPoint) */
 function drawnTunnel(T){ const [x, z] = C.dispPoint(T.x, T.z); return Object.assign({}, T, {x, z, k:C.dispScale(T.z)}); }
 function warpGeo(g){                                // sim-space geometry -> where it is drawn
   const P = g.attributes.position;
@@ -374,7 +374,8 @@ function buildGround(add, L){
   mesh.receiveShadow = true; add(mesh);
 }
 /* painted asphalt: entry road, side lanes, collector (toward the return tunnel), static row, queue lanes.
-   Painted where the yard is DRAWN (C.dispPoint): 0.8 scale, a squeezed margin above the queue. */
+   Painted where the yard is DRAWN (C.dispPoint): the bay row at road size, the strips above and below it
+   squeezed vertically, a squeezed margin above the queue. */
 const YZ0 = -0.8, YZ1 = 15.0, PPU = 96;
 const yardTexCache = {};
 function yardExtent(Y){ return Y.X_SIDE + 1.7; }
@@ -710,6 +711,27 @@ const busShadowTex = canvasTex(128, 256, (x, w, h) => { x.filter = 'blur(11px)';
 const blobTex = canvasTex(64, 64, (x) => { const g = x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(0.45,'rgba(0,0,0,.6)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0,0,64,64); }, true);
 let wheelIM = null;
 
+/* the tap outline of a lane's front bus: a white rounded frame just outside the rim with a soft glow,
+   on a transparent plane at rim height (one texture per bus size, so corners and line stay round) */
+const RING_PAD = 0.3, RING_PPU = 110, ringTexCache = {};
+function ringTex(cap){
+  if (ringTexCache[cap]) return ringTexCache[cap];
+  const Lb = C.busLen(cap), W = C.BUS_W, w = Math.round((W + 2*RING_PAD)*RING_PPU), h = Math.round((Lb + 2*RING_PAD)*RING_PPU);
+  return (ringTexCache[cap] = canvasTex(w, h, (x) => {
+    const o = (RING_PAD - 0.005)*RING_PPU, r = 0.24*RING_PPU, rect = () => { x.beginPath(); x.roundRect(o, o, w - 2*o, h - 2*o, r); };
+    x.strokeStyle = '#ffffff'; x.shadowColor = 'rgba(255,255,255,0.95)';
+    x.lineWidth = 0.06*RING_PPU; x.shadowBlur = 0.2*RING_PPU; rect(); x.stroke(); x.stroke();     // the glow, twice for strength
+    x.shadowBlur = 0; x.lineWidth = 0.075*RING_PPU; rect(); x.stroke();                           // the crisp line
+  }, true));
+}
+function updateTapRing(v, t, vdt){
+  const b = v.b, on = b.state === 'lane' && game.lanes[b.lane][0] === b.id && !game.result && tapAllowed(b);
+  v.ringA += ((on ? 1 : 0) - v.ringA)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
+  v.ring.visible = v.ringA > 0.01;
+  v.ring.material.opacity = v.ringA*(0.86 + 0.14*Math.sin(t*3.2));
+}
+let tapFilter = null;                               // a tutorial may allow only some buses to be tapped
+const tapAllowed = b => !tapFilter || tapFilter(b);
 class BusView {
   constructor(b){
     this.b = b; this.root = new THREE.Group(); this.slope = new THREE.Group(); this.body = new THREE.Group();
@@ -726,6 +748,10 @@ class BusView {
     this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(C.BUS_W + 0.42, b.len + 0.42).rotateX(-Math.PI/2),
       new THREE.MeshBasicMaterial({map:busShadowTex, color:'#000', transparent:true, opacity:0.42, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2}));
     this.shadow.position.y = 0.014; this.shadow.renderOrder = 1; this.slope.add(this.shadow);
+    // the front bus of a queue lane: a soft white outline with a glow around the rim (it can be tapped)
+    this.ring = new THREE.Mesh(new THREE.PlaneGeometry(C.BUS_W + 2*RING_PAD, b.len + 2*RING_PAD).rotateX(-Math.PI/2),
+      new THREE.MeshBasicMaterial({map:ringTex(b.cap), transparent:true, opacity:0, depthWrite:false}));
+    this.ring.position.y = 0.745; this.ring.renderOrder = 3; this.ring.visible = false; this.slope.add(this.ring); this.ringA = 0;
     this.q = null;
     if (!b.revealed){ this.q = new THREE.Sprite(new THREE.SpriteMaterial({map:qTex, depthWrite:false})); this.q.position.set(0, 1.25, 0); this.q.scale.set(0.62, 0.62, 1); this.root.add(this.q); }
     this.keyS = null;                               // a bus carrying a key shows it until the key flies to its lock
@@ -740,7 +766,7 @@ class BusView {
   }
   reveal(){ this.mesh.geometry = busGeo(this.b.cap, this.b.color); if (this.q){ this.root.remove(this.q); this.q.material.dispose(); this.q = null; } }
   dispose(){ scene.remove(this.root); [this.mat, this.headMat, this.brakeMat].forEach(m => m.dispose());
-    this.shadow.geometry.dispose(); this.shadow.material.dispose();
+    this.shadow.geometry.dispose(); this.shadow.material.dispose(); this.ring.geometry.dispose(); this.ring.material.dispose();
     this.root.traverse(o => { if (o.isSprite) o.material.dispose(); }); }
 }
 
@@ -1305,7 +1331,8 @@ function updateBus(v, t, vdt){
   }
   v.root.visible = true;
   v.root.position.copy(v.p); v.root.rotation.y = v.h;
-  v.root.scale.setScalar(C.dispScale(b.z));         // parked and queued buses are drawn smaller
+  v.root.scale.setScalar(C.dispScale(b.z));         // road size, except the buses behind a lane's front bus
+  updateTapRing(v, t, vdt);
   v.slope.rotation.x += (-Math.atan(b.slope) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
   if (vdt > 0){
     const fwd = v.pv.x*Math.sin(v.h) + v.pv.z*Math.cos(v.h), spd = Math.max(0, fwd);

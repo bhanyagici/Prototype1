@@ -990,21 +990,26 @@ const laneSlotZ = len => Z_LANE_TOP + 0.12 + len/2;
    fills the target zone with stickmen about 17 px tall. */
 const SCREEN = {w:900, h:1950, BAR:0.07, TARGET_TOP:0.07, TARGET_BOT:0.61, STATIC_BOT:0.77, MARGIN:12*900/390};
 const SCREEN_CAM = {fov:30, pos:[0, 41.769, 28.354], look:[0, 0, -4.28], w:SCREEN.w, h:SCREEN.h};
-/* The yard and queue are DRAWN smaller than the simulation lays them out (the simulation is untouched):
-   a sim point (x, z) is shown at (x*dispSx(z), dispZ(z)) and a bus there at dispScale(z).
-   - main road above the yard: unchanged; it eases into the yard scale over its last stretch;
-   - yard (entry road, bays, collector road): uniformly K = 0.8;
-   - collector road -> queue: the margin is squeezed (no curb strip);
-   - queue: the front slot at full size, the buses behind at QS = 0.85 with tighter gaps. */
-const DISP = {K:0.8, QS:0.85, QZ:0.8, MARGIN:0.3, zA:Z_ROAD0, zB:-0.7, zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.4, qB:2.0, pA:2.4, pB:3.0};
+/* The yard and queue are DRAWN in a slightly squeezed form of the simulation's layout (the simulation is
+   untouched): a sim point (x, z) is shown at (x*dispSx(z), dispZ(z)) and a bus there at dispScale(z).
+   Every bus is drawn at ROAD SIZE (1) from the front of its queue lane to the road and in the bays,
+   so a sent bus never shrinks; only the buses waiting behind a lane's front bus are drawn at QS = 1/1.1
+   (the front bus is 10% larger).  The bay row is drawn at road size too, so a 12-seat bus fits its bay;
+   to keep the screen zones, only the strips above it (entry) and below it (collector) are squeezed
+   vertically (KE, KC), and the margin between the collector road and the queue is squeezed further. */
+const DISP = {K:1, KE:0.6, KC:0.6, QS:1/1.1, QZ:0.84, MARGIN:0.3, T:0.25, zA:Z_ROAD0, zB:-0.7, zE:Z_BAY_TOP - 0.25, zF:Z_BAY_BOT + 0.25,
+  zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.3, qB:1.85, pA:2.4, pB:3.0};
 const smooth01 = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
 function dispSlope(z){                              // d(shown z)/d(sim z)
   const D = DISP;
   if (z <= D.zA) return 1;
-  if (z < D.zB) return 1 + (D.K - 1)*smooth01(D.zA, D.zB, z);
-  if (z <= D.zC) return D.K;
+  if (z <= D.zE - D.T) return 1 + (D.KE - 1)*smooth01(D.zA, D.zB, z);     // main road end -> entry strip
+  if (z <= D.zE) return D.KE + (1 - D.KE)*smooth01(D.zE - D.T, D.zE, z);
+  if (z <= D.zF) return 1;                                                // the bay row at road size
+  if (z <= D.zF + D.T) return 1 + (D.KC - 1)*smooth01(D.zF, D.zF + D.T, z);
+  if (z <= D.zC) return D.KC;                                             // collector strip
   if (z < D.zL) return D.MARGIN;
-  return 1 + (D.QZ - 1)*smooth01(D.pA, D.pB, z - D.zL);
+  return 1 + (D.QZ - 1)*smooth01(D.pA, D.pB, z - D.zL);                   // queue: tighter gaps behind the front
 }
 const DISP_STEP = 0.005, DISP_TAB = (() => { const t = [DISP.zA], n = Math.ceil((60 - DISP.zA)/DISP_STEP);
   for (let i = 0; i < n; i++) t.push(t[i] + dispSlope(DISP.zA + (i + 0.5)*DISP_STEP)*DISP_STEP); return t; })();
@@ -1014,12 +1019,10 @@ function dispZ(z){
   if (i >= DISP_TAB.length - 1) return DISP_TAB[DISP_TAB.length - 1] + (z - DISP.zA - (DISP_TAB.length - 1)*DISP_STEP)*DISP.QZ;
   return DISP_TAB[i] + (DISP_TAB[i+1] - DISP_TAB[i])*(f - i);
 }
-function dispSx(z){ return z <= DISP.zA ? 1 : 1 + (DISP.K - 1)*smooth01(DISP.zA, DISP.zB, z); }
+function dispSx(z){ return DISP.K; }
 function dispScale(z){                              // size a bus (or anything) is drawn at
-  const D = DISP;
-  if (z <= D.zB) return dispSx(z);
-  if (z <= D.zC) return D.K;
-  if (z < D.zL) return D.K + (1 - D.K)*smooth01(D.zC, D.zL, z);
+  const D = DISP;                                   // road size, except behind the front slot of a queue lane
+  if (z < D.zL) return 1;
   return 1 + (D.QS - 1)*smooth01(D.qA, D.qB, z - D.zL);
 }
 function dispPoint(x, z){ return [x*dispSx(z), dispZ(z)]; }
