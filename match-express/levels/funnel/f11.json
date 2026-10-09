@@ -1,0 +1,55 @@
+{
+  "format": 2,
+  "id": "f11",
+  "name": "Level 11",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0.13, "z": -3.54, "y": 0.12},
+      {"x": 0.65, "z": -4.55, "y": 0.19},
+      {"x": 1.22, "z": -5.49, "y": 0.25},
+      {"x": 1.4, "z": -6.56, "y": 0.31},
+      {"x": 1.19, "z": -7.64, "y": 0.37},
+      {"x": 0.61, "z": -8.57, "y": 0.43},
+      {"x": -0.27, "z": -9.22, "y": 0.49},
+      {"x": -1.32, "z": -9.52, "y": 0.55},
+      {"x": -2.41, "z": -9.42, "y": 0.61},
+      {"x": -3.39, "z": -8.93, "y": 0.67},
+      {"x": -4.14, "z": -8.13, "y": 0.73},
+      {"x": -4.54, "z": -7.11, "y": 0.79},
+      {"x": -4.55, "z": -6.02, "y": 0.85},
+      {"x": -4.17, "z": -4.99, "y": 0.91},
+      {"x": -3.49, "z": -4.12, "y": 0.97}
+    ]
+  },
+  "ramps": [
+    {"rows": 7, "columns": [["red", "red", "green", "green", "blue", "yellow", "yellow"], ["red", "red", "red", "green", "blue", "blue", "yellow"], ["red", "red", "green", "green", "blue", "blue", "yellow"], ["blue", "blue", "green", "green", "green", "yellow", "yellow"], ["red", "red", "green", "green", "green", "yellow", "yellow"], ["red", "red", "green", "green", "yellow", "yellow", "yellow"]], "at": 5.518, "side": -1, "push": 0.26, "shape": [[-0.34, -6.53], [-1.03, -6.49], [-1.7, -6.37], [-2.35, -6.16], [-2.97, -5.87]]},
+    {"rows": 7, "columns": [["red", "red", "green", "green", "blue", "yellow", "yellow"], ["red", "red", "green", "green", "yellow", "yellow", "yellow"], ["red", "blue", "blue", "green", "green", "yellow", "yellow"], ["red", "red", "green", "green", "blue", "yellow", "yellow"], ["red", "blue", "blue", "green", "blue", "yellow", "yellow"], ["red", "blue", "blue", "green", "green", "yellow", "yellow"]], "at": 12.094, "side": 1, "push": 0.1, "shape": [[-4.29, -10.22], [-4.83, -10.64], [-5.42, -11], [-6.04, -11.28], [-6.7, -11.48]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "cap": 6},
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 12},
+      {"color": "yellow", "cap": 6}
+    ],
+    [
+      {"color": "red", "cap": 8},
+      {"color": "green", "cap": 8},
+      {"color": "green", "cap": 8},
+      {"color": "yellow", "cap": 6}
+    ],
+    [
+      {"color": "yellow", "cap": 6},
+      {"color": "green", "cap": 8},
+      {"color": "blue", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "road": "wide loop",
+    "ramps": "curved arc ramps inside the loop"
+  }
+}

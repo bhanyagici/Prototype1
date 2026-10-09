@@ -1,0 +1,3082 @@
+{
+ "levels": {
+  "f01": {
+   "id": "f01",
+   "n": 1,
+   "role": "Tutorial",
+   "diff": 1,
+   "band": [
+    0.7,
+    1
+   ],
+   "h": 0.15,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 13.3,
+   "greedySends": 2,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "ramps": [
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 8
+    },
+    {
+     "color": "blue",
+     "men": 8
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 2,
+    "12": 0
+   },
+   "nBuses": 2,
+   "men": 16,
+   "road": "short road, one gentle curve",
+   "rampIdea": "one diagonal ramp",
+   "blockers": "-",
+   "tutorial": "first-sends",
+   "popup": null,
+   "hint": null,
+   "roadLen": 6.6
+  },
+  "f02": {
+   "id": "f02",
+   "n": 2,
+   "role": "Teach",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "h": 0.15,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 17.7,
+   "greedySends": 4,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "ramps": [
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 8
+    },
+    {
+     "color": "yellow",
+     "men": 8
+    },
+    {
+     "color": "blue",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 4,
+    "12": 0
+   },
+   "nBuses": 4,
+   "men": 32,
+   "road": "S-curve, ramps on both sides",
+   "rampIdea": "square bleachers on both sides",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 11.9
+  },
+  "f06": {
+   "id": "f06",
+   "n": 6,
+   "role": "Challenge",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.233,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 62.5,
+   "greedySends": 13,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 6,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 6,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 6,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "green",
+     "men": 16
+    },
+    {
+     "color": "blue",
+     "men": 20
+    }
+   ],
+   "buses": {
+    "4": 4,
+    "6": 0,
+    "8": 4,
+    "12": 2
+   },
+   "nBuses": 10,
+   "men": 72,
+   "road": "zigzag",
+   "rampIdea": "wide shallow bleachers outside the corners",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 21
+  },
+  "f03": {
+   "id": "f03",
+   "n": 3,
+   "role": "Tutorial (bay re-send)",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "h": 0.15,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 40.3,
+   "greedySends": 8,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "ramps": [
+    {
+     "cols": 5,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 5,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 8
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "blue",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 5,
+    "12": 0
+   },
+   "nBuses": 5,
+   "men": 40,
+   "road": "longer S-curve",
+   "rampIdea": "two diagonal ramps",
+   "blockers": "-",
+   "tutorial": "bay-resend",
+   "popup": null,
+   "hint": null,
+   "roadLen": 15.6
+  },
+  "f12": {
+   "id": "f12",
+   "n": 12,
+   "role": "Challenge",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.184,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 75.6,
+   "greedySends": 23,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "yellow",
+     "men": 28
+    },
+    {
+     "color": "green",
+     "men": 22
+    },
+    {
+     "color": "blue",
+     "men": 18
+    },
+    {
+     "color": "purple",
+     "men": 20
+    }
+   ],
+   "buses": {
+    "4": 10,
+    "6": 6,
+    "8": 3,
+    "12": 1
+   },
+   "nBuses": 20,
+   "men": 112,
+   "road": "straight road with a slight wave",
+   "rampIdea": "four bleachers alternating sides",
+   "blockers": "2 hidden buses",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 17.7
+  },
+  "f04": {
+   "id": "f04",
+   "n": 4,
+   "role": "Teach (bus sizes)",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.15,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 37.7,
+   "greedySends": 10,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "ramps": [
+    {
+     "cols": 4,
+     "rows": 7,
+     "kind": "diagonal (35 deg)"
+    },
+    {
+     "cols": 4,
+     "rows": 6,
+     "kind": "diagonal (35 deg)"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 12
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "green",
+     "men": 12
+    },
+    {
+     "color": "blue",
+     "men": 12
+    }
+   ],
+   "buses": {
+    "4": 5,
+    "6": 0,
+    "8": 1,
+    "12": 2
+   },
+   "nBuses": 8,
+   "men": 52,
+   "road": "long almost straight road",
+   "rampIdea": "long narrow diagonal ramps",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 12.4
+  },
+  "f05": {
+   "id": "f05",
+   "n": 5,
+   "role": "Fun",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "h": 0.15,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 33.7,
+   "greedySends": 7,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "ramps": [
+    {
+     "cols": 4,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 4,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 4,
+     "rows": 5,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 16
+    },
+    {
+     "color": "yellow",
+     "men": 20
+    },
+    {
+     "color": "green",
+     "men": 12
+    },
+    {
+     "color": "blue",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 5,
+    "12": 2
+   },
+   "nBuses": 7,
+   "men": 64,
+   "road": "first spiral",
+   "rampIdea": "bleachers before and after the spiral",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 22.6
+  },
+  "f07": {
+   "id": "f07",
+   "n": 7,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.993,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 72.4,
+   "greedySends": 16,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 16
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "green",
+     "men": 16
+    },
+    {
+     "color": "blue",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 5,
+    "6": 0,
+    "8": 4,
+    "12": 1
+   },
+   "nBuses": 10,
+   "men": 64,
+   "road": "wide hairpin",
+   "rampIdea": "one ramp inside the hairpin, one outside",
+   "blockers": "1 hidden bus",
+   "tutorial": null,
+   "popup": "hidden",
+   "hint": null,
+   "roadLen": 18.8
+  },
+  "f09": {
+   "id": "f09",
+   "n": 9,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.72,
+   "rate": 0.975,
+   "wins": 195,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 68.9,
+   "greedySends": 16,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 4,
+     "rows": 10,
+     "kind": "straight"
+    },
+    {
+     "cols": 4,
+     "rows": 9,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 18
+    },
+    {
+     "color": "yellow",
+     "men": 22
+    },
+    {
+     "color": "green",
+     "men": 14
+    },
+    {
+     "color": "blue",
+     "men": 22
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 4,
+    "8": 5,
+    "12": 1
+   },
+   "nBuses": 10,
+   "men": 76,
+   "road": "long gentle curve",
+   "rampIdea": "long narrow diagonal ramps",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 19.4
+  },
+  "f10": {
+   "id": "f10",
+   "n": 10,
+   "role": "Milestone",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "h": 1,
+   "rate": 0.77,
+   "wins": 154,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 70.9,
+   "greedySends": 19,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 22
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "green",
+     "men": 22
+    },
+    {
+     "color": "blue",
+     "men": 18
+    },
+    {
+     "color": "purple",
+     "men": 26
+    }
+   ],
+   "buses": {
+    "4": 3,
+    "6": 6,
+    "8": 1,
+    "12": 4
+   },
+   "nBuses": 14,
+   "men": 104,
+   "road": "double S",
+   "rampIdea": "bleachers in the S pockets",
+   "blockers": "3 hidden buses",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 18.2
+  },
+  "f08": {
+   "id": "f08",
+   "n": 8,
+   "role": "Practice",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 0.995,
+   "rate": 0.945,
+   "wins": 189,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 81.5,
+   "greedySends": 20,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "curved"
+    },
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "curved"
+    },
+    {
+     "cols": 7,
+     "rows": 4,
+     "kind": "curved"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 12
+    },
+    {
+     "color": "green",
+     "men": 16
+    },
+    {
+     "color": "blue",
+     "men": 20
+    },
+    {
+     "color": "purple",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 5,
+    "6": 0,
+    "8": 5,
+    "12": 2
+   },
+   "nBuses": 12,
+   "men": 84,
+   "road": "S-curve + spiral",
+   "rampIdea": "curved arc ramps",
+   "blockers": "2 hidden buses",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 24.1
+  },
+  "f11": {
+   "id": "f11",
+   "n": 11,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 1,
+   "rate": 0.73,
+   "wins": 146,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 76.7,
+   "greedySends": 21,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 6,
+     "rows": 7,
+     "kind": "curved"
+    },
+    {
+     "cols": 6,
+     "rows": 7,
+     "kind": "curved"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 24
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "blue",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 4,
+    "8": 6,
+    "12": 1
+   },
+   "nBuses": 11,
+   "men": 84,
+   "road": "wide loop",
+   "rampIdea": "curved arc ramps inside the loop",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 17.7
+  },
+  "f15": {
+   "id": "f15",
+   "n": 15,
+   "role": "Fun",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.05,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 53,
+   "greedySends": 15,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 16,
+     "rows": 4,
+     "kind": "fan"
+    },
+    {
+     "cols": 16,
+     "rows": 4,
+     "kind": "fan"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 28
+    },
+    {
+     "color": "yellow",
+     "men": 24
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "blue",
+     "men": 24
+    },
+    {
+     "color": "purple",
+     "men": 28
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 13,
+    "12": 2
+   },
+   "nBuses": 15,
+   "men": 128,
+   "road": "straight road",
+   "rampIdea": "two very wide fan ramps",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 14
+  },
+  "f13": {
+   "id": "f13",
+   "n": 13,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.948,
+   "rate": 0.64,
+   "wins": 128,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 135.9,
+   "greedySends": 29,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 18
+    },
+    {
+     "color": "yellow",
+     "men": 16
+    },
+    {
+     "color": "green",
+     "men": 22
+    },
+    {
+     "color": "blue",
+     "men": 20
+    },
+    {
+     "color": "purple",
+     "men": 20
+    }
+   ],
+   "buses": {
+    "4": 6,
+    "6": 2,
+    "8": 3,
+    "12": 3
+   },
+   "nBuses": 14,
+   "men": 96,
+   "road": "gentle S",
+   "rampIdea": "diagonal ramps",
+   "blockers": "2 connected pairs",
+   "tutorial": null,
+   "popup": "connected",
+   "hint": null,
+   "roadLen": 15.9
+  },
+  "f17": {
+   "id": "f17",
+   "n": 17,
+   "role": "Teach (no popup, short hint)",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 1,
+   "rate": 0.465,
+   "wins": 93,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 130.7,
+   "greedySends": 30,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 22
+    },
+    {
+     "color": "yellow",
+     "men": 20
+    },
+    {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "blue",
+     "men": 28
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 4,
+    "6": 4,
+    "8": 1,
+    "12": 6
+   },
+   "nBuses": 15,
+   "men": 120,
+   "road": "hairpin",
+   "rampIdea": "bleachers inside and outside the hairpin",
+   "blockers": "1 connected triple",
+   "tutorial": null,
+   "popup": null,
+   "hint": "triple",
+   "roadLen": 18.8
+  },
+  "f18": {
+   "id": "f18",
+   "n": 18,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.05,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 73.1,
+   "greedySends": 18,
+   "notes": [
+    "ramp 3: shape L did not fit, built as diag"
+   ],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "yellow",
+     "men": 26
+    },
+    {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "blue",
+     "men": 20
+    },
+    {
+     "color": "purple",
+     "men": 16
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 6,
+    "8": 5,
+    "12": 3
+   },
+   "nBuses": 14,
+   "men": 112,
+   "road": "long smooth curve",
+   "rampIdea": "L-shaped ramps",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 19.8
+  },
+  "f14": {
+   "id": "f14",
+   "n": 14,
+   "role": "Practice",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.951,
+   "rate": 0.415,
+   "wins": 83,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 142.5,
+   "greedySends": 30,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 26
+    },
+    {
+     "color": "green",
+     "men": 30
+    },
+    {
+     "color": "blue",
+     "men": 18
+    },
+    {
+     "color": "purple",
+     "men": 26
+    }
+   ],
+   "buses": {
+    "4": 3,
+    "6": 4,
+    "8": 3,
+    "12": 5
+   },
+   "nBuses": 15,
+   "men": 120,
+   "road": "spiral in the middle",
+   "rampIdea": "arc ramps around the spiral",
+   "blockers": "2 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 26
+  },
+  "f19": {
+   "id": "f19",
+   "n": 19,
+   "role": "Practice",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.872,
+   "rate": 0.42,
+   "wins": 84,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 184.7,
+   "greedySends": 28,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 9,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 9,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 28
+    },
+    {
+     "color": "orange",
+     "men": 28
+    },
+    {
+     "color": "yellow",
+     "men": 20
+    },
+    {
+     "color": "green",
+     "men": 28
+    },
+    {
+     "color": "blue",
+     "men": 22
+    },
+    {
+     "color": "purple",
+     "men": 26
+    }
+   ],
+   "buses": {
+    "4": 5,
+    "6": 2,
+    "8": 3,
+    "12": 8
+   },
+   "nBuses": 18,
+   "men": 152,
+   "road": "double spiral",
+   "rampIdea": "arc and diagonal ramps between the spirals",
+   "blockers": "2 connected pairs, 2 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 37
+  },
+  "f22": {
+   "id": "f22",
+   "n": 22,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.989,
+   "rate": 0.8,
+   "wins": 160,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 48.3,
+   "greedySends": 14,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 16,
+     "rows": 4,
+     "kind": "fan"
+    },
+    {
+     "cols": 16,
+     "rows": 4,
+     "kind": "fan"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "yellow",
+     "men": 28
+    },
+    {
+     "color": "green",
+     "men": 28
+    },
+    {
+     "color": "blue",
+     "men": 24
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 10,
+    "12": 4
+   },
+   "nBuses": 14,
+   "men": 128,
+   "road": "gentle curve",
+   "rampIdea": "wide fan ramps at an angle",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 16.8
+  },
+  "f16": {
+   "id": "f16",
+   "n": 16,
+   "role": "Challenge",
+   "diff": 7,
+   "band": [
+    0.18,
+    0.3
+   ],
+   "h": 1,
+   "rate": 0.285,
+   "wins": 57,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 145,
+   "greedySends": 31,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 6,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 6,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 6,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 6,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 22
+    },
+    {
+     "color": "orange",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 18
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 30
+    },
+    {
+     "color": "purple",
+     "men": 22
+    }
+   ],
+   "buses": {
+    "4": 11,
+    "6": 4,
+    "8": 2,
+    "12": 5
+   },
+   "nBuses": 22,
+   "men": 144,
+   "road": "zigzag + spiral",
+   "rampIdea": "diagonal ramps",
+   "blockers": "2 hidden buses, 2 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 26.1
+  },
+  "f20": {
+   "id": "f20",
+   "n": 20,
+   "role": "Milestone",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "h": 0.975,
+   "rate": 0.21,
+   "wins": 42,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 146.2,
+   "greedySends": 37,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 26
+    },
+    {
+     "color": "orange",
+     "men": 28
+    },
+    {
+     "color": "yellow",
+     "men": 26
+    },
+    {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "blue",
+     "men": 34
+    },
+    {
+     "color": "purple",
+     "men": 36
+    }
+   ],
+   "buses": {
+    "4": 7,
+    "6": 6,
+    "8": 5,
+    "12": 6
+   },
+   "nBuses": 24,
+   "men": 176,
+   "road": "long winding road",
+   "rampIdea": "wide diagonal ramps in the bends",
+   "blockers": "2 hidden buses, 2 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 25.1
+  },
+  "f24": {
+   "id": "f24",
+   "n": 24,
+   "role": "Fun",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 0.364,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 105.6,
+   "greedySends": 26,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 8,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 32
+    },
+    {
+     "color": "orange",
+     "men": 32
+    },
+    {
+     "color": "yellow",
+     "men": 28
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 36
+    },
+    {
+     "color": "purple",
+     "men": 32
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 9,
+    "12": 10
+   },
+   "nBuses": 19,
+   "men": 192,
+   "road": "straight road with a wave",
+   "rampIdea": "four small ramps and one big ramp near the end",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 18.3
+  },
+  "f21": {
+   "id": "f21",
+   "n": 21,
+   "role": "Teach (combo, no popup)",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 1,
+   "rate": 0.4,
+   "wins": 80,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 122.2,
+   "greedySends": 34,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "wedge"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 26
+    },
+    {
+     "color": "orange",
+     "men": 20
+    },
+    {
+     "color": "yellow",
+     "men": 26
+    },
+    {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "blue",
+     "men": 20
+    },
+    {
+     "color": "purple",
+     "men": 22
+    }
+   ],
+   "buses": {
+    "4": 9,
+    "6": 6,
+    "8": 4,
+    "12": 3
+   },
+   "nBuses": 22,
+   "men": 140,
+   "road": "S-curve",
+   "rampIdea": "two square ramps and a wedge",
+   "blockers": "2 hidden buses, 2 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 15.2
+  },
+  "f26": {
+   "id": "f26",
+   "n": 26,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 1,
+   "rate": 0.7,
+   "wins": 140,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 115.7,
+   "greedySends": 28,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 22
+    },
+    {
+     "color": "orange",
+     "men": 26
+    },
+    {
+     "color": "yellow",
+     "men": 22
+    },
+    {
+     "color": "green",
+     "men": 22
+    },
+    {
+     "color": "blue",
+     "men": 28
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 4,
+    "8": 9,
+    "12": 4
+   },
+   "nBuses": 17,
+   "men": 144,
+   "road": "gentle curve",
+   "rampIdea": "diagonal ramps",
+   "blockers": "tunnel (green, 8)",
+   "tutorial": null,
+   "popup": "tunnel",
+   "hint": null,
+   "roadLen": 14.7
+  },
+  "f27": {
+   "id": "f27",
+   "n": 27,
+   "role": "Practice",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 1,
+   "rate": 0.65,
+   "wins": 130,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 118.4,
+   "greedySends": 36,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 11,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 32
+    },
+    {
+     "color": "orange",
+     "men": 28
+    },
+    {
+     "color": "yellow",
+     "men": 34
+    },
+    {
+     "color": "green",
+     "men": 20
+    },
+    {
+     "color": "blue",
+     "men": 26
+    },
+    {
+     "color": "purple",
+     "men": 36
+    }
+   ],
+   "buses": {
+    "4": 5,
+    "6": 6,
+    "8": 6,
+    "12": 6
+   },
+   "nBuses": 23,
+   "men": 176,
+   "road": "S-curve",
+   "rampIdea": "long wide bleachers",
+   "blockers": "tunnel (purple, 8), tunnel (blue, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 16.6
+  },
+  "f28": {
+   "id": "f28",
+   "n": 28,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.611,
+   "rate": 0.865,
+   "wins": 173,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 65.5,
+   "greedySends": 18,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "curved"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 20
+    },
+    {
+     "color": "orange",
+     "men": 32
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "blue",
+     "men": 20
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 7,
+    "12": 8
+   },
+   "nBuses": 15,
+   "men": 152,
+   "road": "wide loop",
+   "rampIdea": "arc ramps inside the loop",
+   "blockers": "tunnel (yellow, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 17.7
+  },
+  "f23": {
+   "id": "f23",
+   "n": 23,
+   "role": "Challenge",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "h": 0.92,
+   "rate": 0.375,
+   "wins": 75,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 136.8,
+   "greedySends": 37,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 7,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 7,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 28
+    },
+    {
+     "color": "orange",
+     "men": 18
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 28
+    },
+    {
+     "color": "purple",
+     "men": 30
+    }
+   ],
+   "buses": {
+    "4": 13,
+    "6": 4,
+    "8": 4,
+    "12": 5
+   },
+   "nBuses": 26,
+   "men": 168,
+   "road": "zigzag",
+   "rampIdea": "deep bleachers outside the corners",
+   "blockers": "2 hidden buses, 3 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 21
+  },
+  "f31": {
+   "id": "f31",
+   "n": 31,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "h": 0.942,
+   "rate": 0.84,
+   "wins": 168,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 73.2,
+   "greedySends": 19,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 20,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 20,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "orange",
+     "men": 32
+    },
+    {
+     "color": "yellow",
+     "men": 20
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 28
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 5,
+    "12": 10
+   },
+   "nBuses": 15,
+   "men": 160,
+   "road": "gentle almost straight road",
+   "rampIdea": "two very wide bleachers",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 15.7
+  },
+  "f29": {
+   "id": "f29",
+   "n": 29,
+   "role": "Challenge",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "h": 0.944,
+   "rate": 0.295,
+   "wins": 59,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 131.4,
+   "greedySends": 39,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 13,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 13,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 13,
+     "rows": 4,
+     "kind": "straight"
+    },
+    {
+     "cols": 13,
+     "rows": 4,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 28
+    },
+    {
+     "color": "orange",
+     "men": 30
+    },
+    {
+     "color": "yellow",
+     "men": 24
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "cyan",
+     "men": 28
+    },
+    {
+     "color": "blue",
+     "men": 34
+    },
+    {
+     "color": "purple",
+     "men": 32
+    }
+   ],
+   "buses": {
+    "4": 7,
+    "6": 8,
+    "8": 6,
+    "12": 7
+   },
+   "nBuses": 28,
+   "men": 208,
+   "road": "double S",
+   "rampIdea": "very wide bleachers",
+   "blockers": "3 connected pairs, tunnel (orange, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 18.9
+  },
+  "f32": {
+   "id": "f32",
+   "n": 32,
+   "role": "Teach + POPUP",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 1,
+   "rate": 0.455,
+   "wins": 91,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 134.8,
+   "greedySends": 32,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "curved"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 32
+    },
+    {
+     "color": "orange",
+     "men": 26
+    },
+    {
+     "color": "yellow",
+     "men": 28
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "blue",
+     "men": 34
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 6,
+    "8": 6,
+    "12": 7
+   },
+   "nBuses": 19,
+   "men": 168,
+   "road": "gentle curve",
+   "rampIdea": "L-shaped ramps",
+   "blockers": "lock & key",
+   "tutorial": null,
+   "popup": "lock",
+   "hint": null,
+   "roadLen": 15.1
+  },
+  "f30": {
+   "id": "f30",
+   "n": 30,
+   "role": "Milestone",
+   "diff": 9,
+   "band": [
+    0.08,
+    0.15
+   ],
+   "h": 0.887,
+   "rate": 0.15,
+   "wins": 30,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 176.4,
+   "greedySends": 42,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 40
+    },
+    {
+     "color": "orange",
+     "men": 42
+    },
+    {
+     "color": "yellow",
+     "men": 30
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "cyan",
+     "men": 24
+    },
+    {
+     "color": "blue",
+     "men": 40
+    },
+    {
+     "color": "purple",
+     "men": 40
+    }
+   ],
+   "buses": {
+    "4": 12,
+    "6": 6,
+    "8": 9,
+    "12": 7
+   },
+   "nBuses": 34,
+   "men": 240,
+   "road": "long road with a spiral",
+   "rampIdea": "five ramps, mixed shapes",
+   "blockers": "2 hidden buses, 2 connected triples, tunnel (yellow, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 30.9
+  },
+  "f34": {
+   "id": "f34",
+   "n": 34,
+   "role": "Fun",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 0.991,
+   "rate": 0.88,
+   "wins": 176,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 119.5,
+   "greedySends": 32,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 5,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 32
+    },
+    {
+     "color": "orange",
+     "men": 36
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 36
+    },
+    {
+     "color": "cyan",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 36
+    },
+    {
+     "color": "purple",
+     "men": 28
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 14,
+    "12": 10
+   },
+   "nBuses": 24,
+   "men": 232,
+   "road": "gentle wave",
+   "rampIdea": "five ramps",
+   "blockers": "tunnel (blue, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 18.3
+  },
+  "f33": {
+   "id": "f33",
+   "n": 33,
+   "role": "Practice",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.986,
+   "rate": 0.34,
+   "wins": 68,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 147.7,
+   "greedySends": 37,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 10,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 10,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 10,
+     "rows": 5,
+     "kind": "straight"
+    },
+    {
+     "cols": 10,
+     "rows": 5,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "orange",
+     "men": 34
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "cyan",
+     "men": 28
+    },
+    {
+     "color": "blue",
+     "men": 32
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 4,
+    "6": 6,
+    "8": 8,
+    "12": 7
+   },
+   "nBuses": 25,
+   "men": 200,
+   "road": "zigzag",
+   "rampIdea": "wide diagonal ramps",
+   "blockers": "lock & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 20.3
+  },
+  "f36": {
+   "id": "f36",
+   "n": 36,
+   "role": "Relax",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "h": 1,
+   "rate": 0.52,
+   "wins": 104,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 105,
+   "greedySends": 32,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 10,
+     "rows": 6,
+     "kind": "wedge"
+    },
+    {
+     "cols": 10,
+     "rows": 6,
+     "kind": "wedge"
+    },
+    {
+     "cols": 8,
+     "rows": 8,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 34
+    },
+    {
+     "color": "orange",
+     "men": 34
+    },
+    {
+     "color": "yellow",
+     "men": 30
+    },
+    {
+     "color": "green",
+     "men": 30
+    },
+    {
+     "color": "blue",
+     "men": 32
+    },
+    {
+     "color": "purple",
+     "men": 24
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 4,
+    "8": 11,
+    "12": 6
+   },
+   "nBuses": 21,
+   "men": 184,
+   "road": "wide loop",
+   "rampIdea": "two wedges and a big square ramp",
+   "blockers": "lock & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 18.3
+  },
+  "f37": {
+   "id": "f37",
+   "n": 37,
+   "role": "Practice",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "h": 1,
+   "rate": 0.375,
+   "wins": 75,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 247.6,
+   "greedySends": 54,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 8,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 40
+    },
+    {
+     "color": "orange",
+     "men": 34
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 34
+    },
+    {
+     "color": "cyan",
+     "men": 50
+    },
+    {
+     "color": "blue",
+     "men": 34
+    },
+    {
+     "color": "purple",
+     "men": 32
+    }
+   ],
+   "buses": {
+    "4": 12,
+    "6": 8,
+    "8": 5,
+    "12": 10
+   },
+   "nBuses": 35,
+   "men": 256,
+   "road": "double spiral",
+   "rampIdea": "mixed shapes",
+   "blockers": "2 hidden buses, tunnel (cyan, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 37.8
+  },
+  "f25": {
+   "id": "f25",
+   "n": 25,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "h": 0.664,
+   "rate": 0.205,
+   "wins": 41,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 169.5,
+   "greedySends": 39,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 24
+    },
+    {
+     "color": "orange",
+     "men": 24
+    },
+    {
+     "color": "yellow",
+     "men": 30
+    },
+    {
+     "color": "green",
+     "men": 22
+    },
+    {
+     "color": "cyan",
+     "men": 28
+    },
+    {
+     "color": "blue",
+     "men": 32
+    },
+    {
+     "color": "purple",
+     "men": 32
+    }
+   ],
+   "buses": {
+    "4": 12,
+    "6": 10,
+    "8": 3,
+    "12": 5
+   },
+   "nBuses": 30,
+   "men": 192,
+   "road": "spiral + hairpin",
+   "rampIdea": "arc ramps",
+   "blockers": "2 hidden buses, 2 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 27.9
+  },
+  "f39": {
+   "id": "f39",
+   "n": 39,
+   "role": "Fun",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "h": 0.836,
+   "rate": 0.665,
+   "wins": 133,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 114.8,
+   "greedySends": 33,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 11,
+     "rows": 6,
+     "kind": "fan"
+    },
+    {
+     "cols": 11,
+     "rows": 6,
+     "kind": "fan"
+    },
+    {
+     "cols": 11,
+     "rows": 6,
+     "kind": "fan"
+    },
+    {
+     "cols": 11,
+     "rows": 6,
+     "kind": "fan"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 40
+    },
+    {
+     "color": "orange",
+     "men": 32
+    },
+    {
+     "color": "yellow",
+     "men": 36
+    },
+    {
+     "color": "green",
+     "men": 44
+    },
+    {
+     "color": "cyan",
+     "men": 36
+    },
+    {
+     "color": "blue",
+     "men": 40
+    },
+    {
+     "color": "purple",
+     "men": 36
+    }
+   ],
+   "buses": {
+    "4": 0,
+    "6": 0,
+    "8": 15,
+    "12": 12
+   },
+   "nBuses": 27,
+   "men": 264,
+   "road": "big curves",
+   "rampIdea": "wide fans in the curves",
+   "blockers": "tunnel (red, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 20.6
+  },
+  "f38": {
+   "id": "f38",
+   "n": 38,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "h": 0.74,
+   "rate": 0.205,
+   "wins": 41,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 210.7,
+   "greedySends": 59,
+   "notes": [],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 7,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 42
+    },
+    {
+     "color": "orange",
+     "men": 32
+    },
+    {
+     "color": "yellow",
+     "men": 32
+    },
+    {
+     "color": "green",
+     "men": 30
+    },
+    {
+     "color": "cyan",
+     "men": 32
+    },
+    {
+     "color": "blue",
+     "men": 42
+    },
+    {
+     "color": "purple",
+     "men": 38
+    },
+    {
+     "color": "pink",
+     "men": 32
+    }
+   ],
+   "buses": {
+    "4": 16,
+    "6": 16,
+    "8": 6,
+    "12": 6
+   },
+   "nBuses": 44,
+   "men": 280,
+   "road": "long winding road",
+   "rampIdea": "five deep ramps",
+   "blockers": "5 connected pairs, tunnel (red, 8), lock & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 26
+  },
+  "f35": {
+   "id": "f35",
+   "n": 35,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "h": 0.988,
+   "rate": 0.215,
+   "wins": 43,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 137.8,
+   "greedySends": 36,
+   "notes": [
+    "ramp 1: 10x6 did not fit, built as 12x5"
+   ],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 12,
+     "rows": 5,
+     "kind": "curved"
+    },
+    {
+     "cols": 10,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 10,
+     "rows": 6,
+     "kind": "curved"
+    },
+    {
+     "cols": 10,
+     "rows": 6,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 40
+    },
+    {
+     "color": "orange",
+     "men": 24
+    },
+    {
+     "color": "yellow",
+     "men": 34
+    },
+    {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "cyan",
+     "men": 36
+    },
+    {
+     "color": "blue",
+     "men": 42
+    },
+    {
+     "color": "purple",
+     "men": 40
+    }
+   ],
+   "buses": {
+    "4": 10,
+    "6": 6,
+    "8": 4,
+    "12": 11
+   },
+   "nBuses": 31,
+   "men": 240,
+   "road": "spiral + hairpin",
+   "rampIdea": "arc ramps",
+   "blockers": "3 connected pairs, lock & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 27.9
+  },
+  "f40": {
+   "id": "f40",
+   "n": 40,
+   "role": "Finale",
+   "diff": 9,
+   "band": [
+    0.08,
+    0.15
+   ],
+   "h": 0.752,
+   "rate": 0.145,
+   "wins": 29,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 232.7,
+   "greedySends": 52,
+   "notes": [
+    "ramp 3: shape perp did not fit, built as diag",
+    "ramp 6: 8x6 did not fit, built as 4x12"
+   ],
+   "failFree": null,
+   "ramps": [
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 8,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 6,
+     "kind": "straight"
+    },
+    {
+     "cols": 8,
+     "rows": 8,
+     "kind": "straight"
+    },
+    {
+     "cols": 4,
+     "rows": 12,
+     "kind": "straight"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "men": 42
+    },
+    {
+     "color": "orange",
+     "men": 28
+    },
+    {
+     "color": "yellow",
+     "men": 28
+    },
+    {
+     "color": "green",
+     "men": 32
+    },
+    {
+     "color": "cyan",
+     "men": 48
+    },
+    {
+     "color": "blue",
+     "men": 50
+    },
+    {
+     "color": "purple",
+     "men": 48
+    },
+    {
+     "color": "pink",
+     "men": 44
+    }
+   ],
+   "buses": {
+    "4": 17,
+    "6": 10,
+    "8": 9,
+    "12": 10
+   },
+   "nBuses": 46,
+   "men": 320,
+   "road": "longest road, two spirals",
+   "rampIdea": "six ramps, two big ones",
+   "blockers": "2 hidden buses, 2 connected pairs, 2 connected triples, tunnel (pink, 8), lock & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "roadLen": 38.1
+  }
+ },
+ "generated": "2026-10-09",
+ "totalGreedy1x": 4375.9
+}

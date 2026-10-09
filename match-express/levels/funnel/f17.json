@@ -1,0 +1,62 @@
+{
+  "format": 2,
+  "id": "f17",
+  "name": "Level 17",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0.01, "z": -2.45, "y": 0.06},
+      {"x": 0.33, "z": -3.54, "y": 0.13},
+      {"x": 0.79, "z": -4.53, "y": 0.19},
+      {"x": 1.13, "z": -5.62, "y": 0.25},
+      {"x": 1.14, "z": -6.76, "y": 0.31},
+      {"x": 1.14, "z": -7.86, "y": 0.37},
+      {"x": 1.09, "z": -8.96, "y": 0.43},
+      {"x": 0.65, "z": -9.96, "y": 0.49},
+      {"x": -0.16, "z": -10.69, "y": 0.55},
+      {"x": -1.21, "z": -11.03, "y": 0.61},
+      {"x": -2.29, "z": -10.9, "y": 0.67},
+      {"x": -3.23, "z": -10.34, "y": 0.73},
+      {"x": -3.86, "z": -9.44, "y": 0.79},
+      {"x": -4.06, "z": -8.36, "y": 0.85},
+      {"x": -4.06, "z": -7.26, "y": 0.91},
+      {"x": -4.06, "z": -6.16, "y": 0.97},
+      {"x": -4.06, "z": -5.21, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 5, "columns": [["red", "red", "blue", "green", "green"], ["yellow", "blue", "blue", "green", "green"], ["yellow", "yellow", "blue", "purple", "purple"], ["red", "red", "blue", "green", "green"], ["red", "red", "blue", "blue", "green"], ["red", "red", "purple", "purple", "green"], ["red", "red", "blue", "purple", "green"], ["red", "blue", "purple", "purple", "green"]], "at": 5.629, "side": -1, "push": 0.04, "shape": [[-1.05, -6.69], [-2.4, -6.68]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "blue", "blue", "green"], ["red", "yellow", "blue", "purple", "purple"], ["yellow", "yellow", "blue", "blue", "green"], ["yellow", "blue", "blue", "purple", "green"], ["yellow", "yellow", "yellow", "green", "green"], ["yellow", "blue", "purple", "purple", "green"], ["red", "blue", "purple", "green", "green"], ["red", "blue", "blue", "purple", "purple"]], "at": 9.382, "side": 1, "push": 0.45, "shape": [[2.44, -11.82], [3.61, -12.5]]},
+    {"rows": 5, "columns": [["red", "yellow", "yellow", "purple", "purple"], ["red", "blue", "purple", "green", "green"], ["red", "yellow", "yellow", "green", "green"], ["red", "yellow", "blue", "purple", "green"], ["red", "blue", "blue", "blue", "green"], ["red", "red", "blue", "purple", "green"], ["red", "blue", "purple", "purple", "green"], ["yellow", "yellow", "blue", "purple", "purple"]], "at": 13.513, "side": 1, "push": 0.04, "shape": [[-4.87, -11.8], [-5.82, -12.75]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "cap": 4},
+      {"color": "green", "cap": 4},
+      {"color": "yellow", "cap": 8},
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 6},
+      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 4}
+    ],
+    [
+      {"color": "red", "cap": 12, "link": "G1"},
+      {"color": "red", "cap": 6, "link": "G1"},
+      {"color": "purple", "cap": 12},
+      {"color": "purple", "cap": 12}
+    ],
+    [
+      {"color": "green", "cap": 6},
+      {"color": "red", "cap": 4, "link": "G1"},
+      {"color": "blue", "cap": 6},
+      {"color": "green", "cap": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Teach (no popup, short hint)",
+    "diff": 4,
+    "road": "hairpin",
+    "ramps": "bleachers inside and outside the hairpin",
+    "hint": "triple"
+  }
+}

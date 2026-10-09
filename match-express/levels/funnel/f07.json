@@ -1,0 +1,56 @@
+{
+  "format": 2,
+  "id": "f07",
+  "name": "Level 7",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": -0.01, "z": -2.45, "y": 0.06},
+      {"x": -0.33, "z": -3.54, "y": 0.13},
+      {"x": -0.79, "z": -4.53, "y": 0.19},
+      {"x": -1.13, "z": -5.62, "y": 0.25},
+      {"x": -1.14, "z": -6.76, "y": 0.31},
+      {"x": -1.14, "z": -7.86, "y": 0.37},
+      {"x": -1.09, "z": -8.96, "y": 0.43},
+      {"x": -0.65, "z": -9.96, "y": 0.49},
+      {"x": 0.16, "z": -10.69, "y": 0.55},
+      {"x": 1.21, "z": -11.03, "y": 0.61},
+      {"x": 2.29, "z": -10.9, "y": 0.67},
+      {"x": 3.23, "z": -10.34, "y": 0.73},
+      {"x": 3.86, "z": -9.44, "y": 0.79},
+      {"x": 4.06, "z": -8.36, "y": 0.85},
+      {"x": 4.06, "z": -7.26, "y": 0.91},
+      {"x": 4.06, "z": -6.16, "y": 0.97},
+      {"x": 4.06, "z": -5.21, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["blue", "blue", "red", "red"], ["blue", "blue", "red", "yellow"], ["blue", "red", "yellow", "yellow"], ["green", "green", "red", "red"], ["green", "green", "red", "red"], ["blue", "green", "yellow", "yellow"], ["blue", "blue", "red", "red"], ["blue", "red", "yellow", "yellow"]], "at": 6.005, "side": 1, "push": 0.04, "shape": [[0.87, -7.1], [2.04, -7.11]]},
+    {"rows": 4, "columns": [["green", "green", "green", "yellow"], ["blue", "green", "yellow", "yellow"], ["blue", "green", "red", "yellow"], ["green", "red", "red", "yellow"], ["blue", "green", "green", "yellow"], ["blue", "blue", "yellow", "yellow"], ["blue", "blue", "red", "red"], ["green", "green", "green", "yellow"]], "at": 13.738, "side": -1, "push": 0.04, "shape": [[5.01, -11.37], [5.91, -12.12]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 12},
+      {"color": "green", "cap": 4},
+      {"color": "red", "cap": 4}
+    ],
+    [
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 8, "hidden": true},
+      {"color": "red", "cap": 4}
+    ],
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "road": "wide hairpin",
+    "ramps": "one ramp inside the hairpin, one outside",
+    "popup": "hidden"
+  }
+}

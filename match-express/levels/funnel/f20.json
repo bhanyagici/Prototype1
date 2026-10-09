@@ -1,0 +1,76 @@
+{
+  "format": 2,
+  "id": "f20",
+  "name": "Level 20",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": -0.01, "z": -2.45, "y": 0.06},
+      {"x": -0.47, "z": -3.48, "y": 0.13},
+      {"x": -1.44, "z": -4.06, "y": 0.19},
+      {"x": -2.5, "z": -4.5, "y": 0.25},
+      {"x": -3.2, "z": -5.39, "y": 0.31},
+      {"x": -3.23, "z": -6.52, "y": 0.38},
+      {"x": -2.58, "z": -7.44, "y": 0.44},
+      {"x": -1.54, "z": -7.9, "y": 0.5},
+      {"x": -0.46, "z": -8.31, "y": 0.56},
+      {"x": 0.36, "z": -9.09, "y": 0.63},
+      {"x": 0.54, "z": -10.2, "y": 0.69},
+      {"x": 0.03, "z": -11.21, "y": 0.75},
+      {"x": -0.97, "z": -11.75, "y": 0.81},
+      {"x": -2.01, "z": -12.13, "y": 0.87},
+      {"x": -2.94, "z": -12.77, "y": 0.93},
+      {"x": -3.31, "z": -13.83, "y": 1},
+      {"x": -2.97, "z": -14.91, "y": 1},
+      {"x": -2.05, "z": -15.58, "y": 1},
+      {"x": -1.02, "z": -15.95, "y": 1},
+      {"x": -0.01, "z": -16.47, "y": 1},
+      {"x": 0.53, "z": -17.47, "y": 1},
+      {"x": 0.56, "z": -18.61, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["yellow", "blue", "purple", "purple"], ["orange", "orange", "purple", "purple"], ["orange", "orange", "purple", "green"], ["red", "blue", "purple", "purple"], ["yellow", "blue", "blue", "yellow"], ["red", "red", "yellow", "green"], ["yellow", "blue", "purple", "purple"], ["red", "red", "purple", "green"], ["green", "blue", "blue", "yellow"], ["red", "red", "purple", "purple"], ["orange", "blue", "blue", "yellow"]], "at": 2.771, "side": 1, "push": 0.11, "shape": [[0.23, -5.55], [0.85, -6.54]]},
+    {"rows": 4, "columns": [["red", "green", "green", "yellow"], ["orange", "orange", "purple", "purple"], ["red", "blue", "purple", "green"], ["red", "blue", "blue", "yellow"], ["red", "red", "purple", "green"], ["red", "red", "blue", "green"], ["red", "red", "purple", "green"], ["orange", "orange", "purple", "green"], ["orange", "blue", "blue", "green"], ["orange", "green", "green", "green"], ["orange", "blue", "purple", "purple"]], "at": 8.456, "side": -1, "push": 0.11, "shape": [[-3, -9.58], [-3.42, -10.67]]},
+    {"rows": 4, "columns": [["red", "green", "purple", "yellow"], ["yellow", "blue", "blue", "green"], ["red", "red", "purple", "yellow"], ["yellow", "yellow", "yellow", "yellow"], ["orange", "orange", "purple", "purple"], ["yellow", "yellow", "blue", "green"], ["orange", "blue", "blue", "yellow"], ["orange", "orange", "purple", "green"], ["red", "blue", "purple", "purple"], ["orange", "blue", "blue", "yellow"], ["red", "red", "purple", "purple"]], "at": 14.587, "side": 1, "push": 0.11, "shape": [[0.18, -13.52], [0.67, -14.58]]},
+    {"rows": 4, "columns": [["red", "blue", "purple", "purple"], ["orange", "blue", "blue", "green"], ["orange", "orange", "blue", "green"], ["orange", "blue", "blue", "green"], ["red", "blue", "blue", "green"], ["orange", "orange", "purple", "yellow"], ["yellow", "yellow", "purple", "purple"], ["orange", "orange", "yellow", "yellow"], ["red", "red", "purple", "purple"], ["orange", "orange", "blue", "yellow"], ["green", "green", "blue", "green"]], "at": 20.969, "side": -1, "push": 1.27, "shape": [[-3.31, -18.38], [-4.25, -19.08]]}
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "cap": 4},
+      {"color": "purple", "cap": 12},
+      {"color": "yellow", "cap": 4},
+      {"color": "orange", "cap": 4},
+      {"color": "yellow", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 6},
+      {"color": "green", "cap": 12}
+    ],
+    [
+      {"color": "orange", "cap": 6},
+      {"color": "orange", "cap": 6, "hidden": true},
+      {"color": "red", "cap": 8, "link": "G1"},
+      {"color": "red", "cap": 6, "link": "G1"},
+      {"color": "blue", "cap": 4, "link": "G2"},
+      {"color": "blue", "cap": 12, "link": "G2"},
+      {"color": "blue", "cap": 6, "link": "G2"},
+      {"color": "purple", "cap": 8}
+    ],
+    [
+      {"color": "purple", "cap": 4},
+      {"color": "purple", "cap": 8, "hidden": true},
+      {"color": "orange", "cap": 12},
+      {"color": "red", "cap": 12, "link": "G1"},
+      {"color": "green", "cap": 8},
+      {"color": "blue", "cap": 4},
+      {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Milestone",
+    "diff": 8,
+    "road": "long winding road",
+    "ramps": "wide diagonal ramps in the bends"
+  }
+}

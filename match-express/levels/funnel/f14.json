@@ -1,0 +1,58 @@
+{
+  "format": 2,
+  "id": "f14",
+  "name": "Level 14",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.45, "y": 0.06},
+      {"x": -0.22, "z": -3.57, "y": 0.13},
+      {"x": -0.61, "z": -4.65, "y": 0.19},
+      {"x": -1, "z": -5.74, "y": 0.25},
+      {"x": -1.17, "z": -6.87, "y": 0.32},
+      {"x": -1.17, "z": -8.12, "y": 0.38, "spiral": {"r": 1.2, "side": 1}},
+      {"x": -3.09, "z": -8.35, "y": 1.94},
+      {"x": -3.84, "z": -9.15, "y": 1.77},
+      {"x": -4.1, "z": -10.22, "y": 1.59},
+      {"x": -4.1, "z": -11.32, "y": 1.41},
+      {"x": -4.15, "z": -12.46, "y": 1.22},
+      {"x": -4.48, "z": -13.56, "y": 1.15},
+      {"x": -4.86, "z": -14.59, "y": 1.21},
+      {"x": -5.03, "z": -15.06, "y": 1.24}
+    ]
+  },
+  "ramps": [
+    {"rows": 5, "columns": [["green", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "blue"], ["purple", "red", "red", "yellow", "yellow"], ["green", "green", "yellow", "blue", "blue"], ["green", "red", "red", "yellow", "blue"], ["green", "red", "green", "green", "blue"], ["purple", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "blue"]], "at": 3.9, "side": 1, "push": 0.04, "shape": [[0.53, -5.53], [1.06, -5.64], [1.59, -5.7], [2.13, -5.71], [2.67, -5.68]]},
+    {"rows": 5, "columns": [["purple", "red", "red", "yellow", "blue"], ["purple", "purple", "yellow", "yellow", "blue"], ["green", "green", "yellow", "yellow", "blue"], ["purple", "purple", "green", "green", "blue"], ["purple", "purple", "red", "red", "yellow"], ["green", "green", "green", "green", "blue"], ["purple", "red", "red", "red", "blue"], ["green", "green", "yellow", "yellow", "blue"]], "at": 5.4, "side": -1, "push": 0.72, "shape": [[-3.12, -6.09], [-3.62, -5.87], [-4.12, -5.68], [-4.64, -5.52], [-5.16, -5.39]]},
+    {"rows": 5, "columns": [["purple", "purple", "yellow", "yellow", "yellow"], ["green", "green", "green", "green", "blue"], ["purple", "purple", "red", "red", "blue"], ["purple", "red", "red", "red", "blue"], ["purple", "purple", "red", "yellow", "blue"], ["green", "green", "yellow", "yellow", "yellow"], ["purple", "purple", "green", "green", "blue"], ["green", "red", "green", "green", "yellow"]], "at": 22.299, "side": 1, "push": 0.64, "shape": [[-2.18, -11.78], [-1.72, -12.07], [-1.29, -12.39], [-0.89, -12.75], [-0.53, -13.15]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "yellow", "cap": 6},
+      {"color": "purple", "cap": 12},
+      {"color": "red", "cap": 12},
+      {"color": "red", "cap": 4},
+      {"color": "yellow", "cap": 8}
+    ],
+    [
+      {"color": "green", "cap": 4},
+      {"color": "green", "cap": 12, "link": "G1"},
+      {"color": "red", "cap": 4}
+    ],
+    [
+      {"color": "blue", "cap": 6},
+      {"color": "purple", "cap": 6, "link": "G1"},
+      {"color": "purple", "cap": 8},
+      {"color": "yellow", "cap": 12},
+      {"color": "green", "cap": 6, "link": "G2"},
+      {"color": "green", "cap": 8, "link": "G2"}
+    ]
+  ],
+  "meta": {
+    "role": "Practice",
+    "diff": 5,
+    "road": "spiral in the middle",
+    "ramps": "arc ramps around the spiral"
+  }
+}

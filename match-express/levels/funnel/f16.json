@@ -1,0 +1,67 @@
+{
+  "format": 2,
+  "id": "f16",
+  "name": "Level 16",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0.01, "z": -2.45, "y": 0.06},
+      {"x": 0.58, "z": -3.41, "y": 0.12},
+      {"x": 1.52, "z": -4.07, "y": 0.19},
+      {"x": 2.44, "z": -4.75, "y": 0.25},
+      {"x": 2.83, "z": -5.79, "y": 0.31},
+      {"x": 2.83, "z": -6.54, "y": 0.35, "spiral": {"r": 1.1, "side": 1}},
+      {"x": 0.91, "z": -6.88, "y": 1.91},
+      {"x": 0.27, "z": -7.82, "y": 1.73},
+      {"x": 0.17, "z": -8.95, "y": 1.55},
+      {"x": 0.01, "z": -10.07, "y": 1.36},
+      {"x": -0.81, "z": -10.85, "y": 1.17},
+      {"x": -1.72, "z": -11.48, "y": 1.12},
+      {"x": -2.52, "z": -12.27, "y": 1.18},
+      {"x": -2.66, "z": -13.39, "y": 1.24},
+      {"x": -2.66, "z": -14.09, "y": 1.28}
+    ]
+  },
+  "ramps": [
+    {"rows": 6, "columns": [["green", "green", "red", "yellow", "purple", "orange"], ["green", "blue", "blue", "yellow", "yellow", "orange"], ["green", "blue", "blue", "red", "red", "purple"], ["green", "green", "red", "red", "purple", "purple"], ["green", "blue", "blue", "red", "red", "orange"], ["orange", "green", "red", "yellow", "yellow", "orange"]], "at": 4.337, "side": 1, "push": 0.6, "shape": [[4.58, -2.91], [6, -2.32]]},
+    {"rows": 6, "columns": [["green", "green", "blue", "yellow", "yellow", "orange"], ["green", "blue", "red", "red", "yellow", "purple"], ["orange", "orange", "blue", "blue", "purple", "purple"], ["green", "blue", "blue", "red", "yellow", "yellow"], ["green", "green", "blue", "yellow", "purple", "purple"], ["orange", "orange", "blue", "red", "purple", "purple"]], "at": 2.641, "side": -1, "push": 0.26, "shape": [[-0.86, -5.57], [-1.95, -6.64]]},
+    {"rows": 6, "columns": [["green", "green", "blue", "blue", "purple", "purple"], ["green", "blue", "blue", "yellow", "yellow", "orange"], ["green", "green", "blue", "yellow", "yellow", "orange"], ["green", "blue", "blue", "red", "red", "orange"], ["green", "green", "blue", "red", "purple", "purple"], ["green", "green", "red", "yellow", "yellow", "orange"]], "at": 20.619, "side": 1, "push": 0.26, "shape": [[2.56, -10.57], [3.99, -11.13]]},
+    {"rows": 6, "columns": [["orange", "blue", "blue", "yellow", "purple", "orange"], ["orange", "green", "red", "red", "purple", "orange"], ["green", "green", "blue", "red", "red", "purple"], ["green", "green", "blue", "blue", "purple", "purple"], ["green", "green", "blue", "blue", "purple", "purple"], ["orange", "green", "blue", "red", "red", "orange"]], "at": 23.002, "side": -1, "push": 0.36, "shape": [[-2.81, -9.01], [-3.36, -7.58]]}
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "cap": 6},
+      {"color": "yellow", "cap": 4, "hidden": true},
+      {"color": "green", "cap": 4, "link": "G2"},
+      {"color": "green", "cap": 4},
+      {"color": "green", "cap": 12},
+      {"color": "green", "cap": 4},
+      {"color": "blue", "cap": 4},
+      {"color": "yellow", "cap": 4}
+    ],
+    [
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 6},
+      {"color": "orange", "cap": 4, "link": "G2"},
+      {"color": "blue", "cap": 6, "link": "G1"},
+      {"color": "red", "cap": 4},
+      {"color": "red", "cap": 6},
+      {"color": "red", "cap": 12},
+      {"color": "yellow", "cap": 4},
+      {"color": "purple", "cap": 12}
+    ],
+    [
+      {"color": "orange", "cap": 4},
+      {"color": "green", "cap": 8, "hidden": true},
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 8, "link": "G1"},
+      {"color": "orange", "cap": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Challenge",
+    "diff": 7,
+    "road": "zigzag + spiral",
+    "ramps": "diagonal ramps"
+  }
+}

@@ -1118,6 +1118,7 @@ function normalizeLevel(lv){
   const out = {format:2, name: lv.name || 'Untitled level', seed: lv.seed, road, ramps:[], lanes:[]};
   if (lv.id != null && String(lv.id).trim()) out.id = String(lv.id).trim();
   if (lv.yard === 'classic') out.yard = 'classic';     // omitted = the default compact yard
+  if (lv.meta && typeof lv.meta === 'object' && !Array.isArray(lv.meta)) out.meta = clone(lv.meta);   // design notes: role, tutorial, popup, hint
   lv.ramps.forEach((r, k) => {
     const cols = (r.columns || []).map(col => (col || []).map(c => cellStr(parseCell(c))));
     if (!cols.length) return;
@@ -1129,6 +1130,8 @@ function normalizeLevel(lv){
     if (loose) nr.front = [+r.front[0], +r.front[1]];
     else if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else nr.at = null;
     if (r.tilt != null && isFinite(+r.tilt)) nr.tilt = +r.tilt;
+    if (r.spread != null && isFinite(+r.spread) && +r.spread !== 0) nr.spread = clamp(+r.spread, -0.5, 1.5);
+    if (r.push != null && isFinite(+r.push) && +r.push > 0) nr.push = +r.push;      // front node this much further from the road
     const shp = Array.isArray(r.shape) && r.shape.length ? r.shape : place.shape;
     if (shp) nr.shape = shp.map(p => [+p[0], +p[1]]);
     const int = v => Math.round(+v || 0);
@@ -1205,12 +1208,18 @@ function buildRamp(ROAD, rd, src, Y){
     p.x = rd.front[0]; p.z = rd.front[1]; p.dx = 0; p.dz = -1; s = Infinity;
   }
   const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
-  const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42, halfW = cols*RAMP_SP/2 + 0.16;
+  const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
+  // `spread` fans the columns out (> 0) or draws them together (< 0) toward the back: the lateral spacing grows
+  // linearly from RAMP_SP at the front row to RAMP_SP*(1 + spread) at the back row (and on to the far edge)
+  const spread = rd.spread || 0, depth = Math.max(RAMP_SP, (rows - 1)*RAMP_SP);
+  const widthK = sv => 1 + spread*Math.max(0, (sv - 0.34)/depth);
+  const halfWAt = sv => cols*RAMP_SP*widthK(sv)/2 + 0.16;
+  const halfW0 = halfWAt(0), halfW = Math.max(halfW0, halfWAt(length));
   // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees,
   // pushed out so its lower corner just meets the road edge
   const tilt = rd.tilt != null ? rd.tilt*Math.PI/180 : null, wx = nx >= 0 ? 1 : -1;
   const tdx = tilt != null ? wx*Math.cos(tilt) : 0, tdz = tilt != null ? -Math.sin(tilt) : 0;
-  const off = rd.front ? 0 : ROAD_HALF + 0.06 + (tilt != null ? halfW*Math.abs(tdx*nz - tdz*nx) : 0);
+  const off = rd.front ? 0 : ROAD_HALF + 0.06 + (rd.push || 0) + (tilt != null ? halfW0*Math.abs(tdx*nz - tdz*nx) : 0);
   const ax = p.x + nx*off, az = p.z + nz*off, y = p.y - ((Y || YARD).RAMP_DROP || 0);
   const c = [[ax,y,az]];
   if (rd.shape && rd.shape.length) rd.shape.forEach(q => c.push([q[0], y, q[1]]));
@@ -1230,8 +1239,8 @@ function buildRamp(ROAD, rd, src, Y){
   for (let col=0; col<cols; col++){
     const colSlots = [];
     for (let r=0; r<rows; r++){
-      const o = {}; pathAt(spl, 0.34 + r*RAMP_SP, o, 0);
-      const lat = (col - (cols-1)/2)*RAMP_SP;       // left normal of the ramp heading
+      const sv = 0.34 + r*RAMP_SP, o = {}; pathAt(spl, sv, o, 0);
+      const lat = (col - (cols-1)/2)*RAMP_SP*widthK(sv);   // left normal of the ramp heading
       colSlots.push({x:o.x + o.dz*lat, y, z:o.z - o.dx*lat, fx:-o.dx, fz:-o.dz});
     }
     slots.push(colSlots);
@@ -1239,7 +1248,7 @@ function buildRamp(ROAD, rd, src, Y){
   const colOrder = slots.map((_, i) => i).sort((a,b) =>
     Math.hypot(slots[a][0].x-p.x, slots[a][0].z-p.z) - Math.hypot(slots[b][0].x-p.x, slots[b][0].z-p.z));
   return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW, slots, colOrder, snapped:!rd.front};
+          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:!rd.front};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -1638,7 +1647,9 @@ function stepTrips(g, dt){
     /* physical spacing to anything ahead (other trips, buses just merged onto the road) */
     let room = Infinity;
     for (let j=0;j<i;j++) room = Math.min(room, clearAhead(b, T[j]));   // later trips always yield to us
-    for (let j=g.road.length-1;j>=0;j--){ const r = g.road[j]; if (r.rs > 5) break; room = Math.min(room, clearAhead(b, r)); }
+    for (let j=g.road.length-1;j>=0;j--){ const r = g.road[j]; if (r.rs > 5) break;
+      if (b.group && r.group === b.group) continue;   // its own group waits for it at the merge gap (along the road)
+      room = Math.min(room, clearAhead(b, r)); }
     sMax = Math.min(sMax, tr.s + room);
     if (tr.kind === 'toRoad'){                    // the route continues as the main road: keep the gap to its last bus
       const last = g.road[g.road.length-1];
@@ -1769,25 +1780,28 @@ function stepRoad(g, dt){
     }
     const lead = i > 0 ? R[i-1] : null;
     const sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
-    const RAMPS = g.L.RAMPS, k = b.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity;
+    const RAMPS = g.L.RAMPS, k0 = b.nextRamp, bk0 = k0 < RAMPS.length ? RAMPS[k0].s : Infinity;
     let stopS = Infinity;
-    if (bk - b.rs < 4 && bk >= b.rs - 1e-6 && frontMatch(g, k, b.color)) stopS = bk;
+    for (let k = k0; k < RAMPS.length && RAMPS[k].s <= bk0 + 1e-6; k++)    // the next boarding point (two ramps can share it)
+      if (bk0 - b.rs < 4 && bk0 >= b.rs - 1e-6 && frontMatch(g, k, b.color)){ stopS = bk0; break; }
     let vt = Math.min(BUS_SPEED, Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
                       Math.sqrt(2*HARD_BRAKE*Math.max(0, sLimit - b.rs)));
     b.v = vt > b.v ? Math.min(vt, b.v + ACCEL*dt) : vt;
-    let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS);
-    if (ns >= bk - 1e-6 && b.rs <= bk + 1e-6){         // reached a boarding point: a key opens its box, then check the front row
+    let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS), boarded = false;
+    while (b.nextRamp < RAMPS.length && ns >= RAMPS[b.nextRamp].s - 1e-6){   // reached a boarding point: a key opens its box, then check the front row
+      const k = b.nextRamp, bk = RAMPS[k].s;
       keyPass(g, b, k);
       if (frontMatch(g, k, b.color)){
-        b.rs = bk; b.v = 0; placeOnRoad(g, b);
+        b.rs = Math.max(b.rs, bk); b.v = 0; placeOnRoad(g, b);
         b.board = {k, queue:[], next:g.t, roundAt:g.t, chain:0, done:false};
         emit(g, 'boardStart', {bus:b.id, ramp:k});
         startRound(g, b);
-        continue;
+        boarded = true; break;
       }
       dropCheer(g, b, m => m.ramp !== k, 'drove past their ramp');
       b.nextRamp++;
     }
+    if (boarded) continue;
     b.rs = ns;
     if (b.rs >= g.L.ROAD.end){
       R.splice(i, 1); i--;
@@ -1817,24 +1831,27 @@ function stepGroup(g, grp, i, dt){
   const nextId = grp.members[grp.members.indexOf(tail.id) + 1];
   if (nextId != null && g.buses[nextId].state === 'toRoad'){ const nb = g.buses[nextId]; limit(tail.len/2 + nb.len/2 + ROAD_GAP + 1e-6 - tail.rs, SOFT_BRAKE); }   // just past the merge gap
   for (const m of ms){ if (isFull(m) || m.rs >= END) continue;
-    const k = m.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity;
-    if (bk - m.rs < 4 && bk >= m.rs - 1e-6 && frontMatch(g, k, m.color)) limit(bk - m.rs, SOFT_BRAKE); }
+    const bk = m.nextRamp < RAMPS.length ? RAMPS[m.nextRamp].s : Infinity;
+    for (let k = m.nextRamp; k < RAMPS.length && RAMPS[k].s <= bk + 1e-6; k++)
+      if (bk - m.rs < 4 && bk >= m.rs - 1e-6 && frontMatch(g, k, m.color)){ limit(bk - m.rs, SOFT_BRAKE); break; } }
   const v0 = head.v, v = vt > v0 ? Math.min(vt, v0 + ACCEL*dt) : vt, d = Math.min(v*dt, allow);
   for (const m of ms){
     m.v = v;
-    const k = m.nextRamp, bk = k < RAMPS.length ? RAMPS[k].s : Infinity, ns = m.rs + d;
-    if (ns >= bk - 1e-6 && m.rs <= bk + 1e-6){
+    const ns = m.rs + d; let boarded = false;
+    while (m.nextRamp < RAMPS.length && ns >= RAMPS[m.nextRamp].s - 1e-6){   // two ramps can share a spot: check each
+      const k = m.nextRamp, bk = RAMPS[k].s;
       keyPass(g, m, k);
       if (!isFull(m) && frontMatch(g, k, m.color)){
-        m.rs = bk; placeOnRoad(g, m);
+        m.rs = Math.max(m.rs, bk); placeOnRoad(g, m);
         m.board = {k, queue:[], next:g.t, roundAt:g.t, chain:0, done:false};
         emit(g, 'boardStart', {bus:m.id, ramp:k});
         startRound(g, m);
-        continue;
+        boarded = true; break;
       }
       if (!isFull(m)) dropCheer(g, m, x => x.ramp !== k, 'drove past their ramp');
       m.nextRamp++;
     }
+    if (boarded) continue;
     m.rs = ns; placeOnRoad(g, m);
   }
   if (ms.some(m => m.board)) ms.forEach(m => { m.v = 0; });
@@ -2017,21 +2034,50 @@ function roadWarnings(L){
   return W;
 }
 function rampSamples(r){ const out = [], o = {}; for (let s = 0.35; s <= r.length + 0.1; s += 0.25){ pathAt(r.spline, s, o, 0); out.push({x:o.x, z:o.z}); } return out; }
+/* a ramp's platform as drawn: the polygon between its left and right edges (its width follows halfWAt) */
+function rampOutline(r){
+  const L_ = [], R_ = [], o = {}, n = Math.max(2, Math.ceil(r.length/0.15));
+  for (let i = 0; i <= n; i++){ const sv = r.length*i/n; pathAt(r.spline, sv, o, 0); const hw = r.halfWAt ? r.halfWAt(sv) : r.halfW;
+    L_.push([o.x + o.dz*hw, o.z - o.dx*hw]); R_.push([o.x - o.dz*hw, o.z + o.dx*hw]); }
+  return L_.concat(R_.reverse());
+}
+function inPoly(P, x, z){ let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++){ const a = P[i], b = P[j];
+  if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0])*(z - a[1])/(b[1] - a[1]) + a[0]) c = !c; } return c; }
+function segDist(px, pz, a, b){ const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx*dx + dz*dz || 1e-9, t = clamp(((px - a[0])*dx + (pz - a[1])*dz)/l2, 0, 1);
+  return Math.hypot(px - a[0] - t*dx, pz - a[1] - t*dz); }
+function polyDist(P, x, z){ if (inPoly(P, x, z)) return 0; let d = 1e9; for (let i = 0; i < P.length; i++) d = Math.min(d, segDist(x, z, P[i], P[(i + 1) % P.length])); return d; }
+function segCross(a, b, c, d){ const o = (p, q, r) => (q[0] - p[0])*(r[1] - p[1]) - (q[1] - p[1])*(r[0] - p[0]);
+  return o(a, b, c)*o(a, b, d) < 0 && o(c, d, a)*o(c, d, b) < 0; }
+function polysOverlap(A, B, gap){
+  for (const p of A) if (polyDist(B, p[0], p[1]) < gap) return p;
+  for (const p of B) if (polyDist(A, p[0], p[1]) < gap) return p;
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < B.length; j++) if (segCross(A[i], A[(i + 1) % A.length], B[j], B[(j + 1) % B.length])) return A[i];
+  return null;
+}
+/* the exit tunnel's arch and hill on the ground: 2.9 wide, from just before the road's end to 2.7 beyond it */
+function exitFootprint(E){ const l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l, nx = -dz, nz = dx, w = 1.45;
+  return [[-0.4, -w], [2.7, -w], [2.7, w], [-0.4, w]].map(([f, u]) => [E.x + dx*f + nx*u, E.z + dz*f + nz*u]); }
 function rampWarnings(L){
-  const W = [], R = L.ROAD, rs = L.RAMPS.map(rampSamples), road = [];
-  for (let i=0;i<R.n;i+=3) if (R.cum[i] <= R.portalS + 1) road.push({x:R.P[i*3], y:R.P[i*3+1], z:R.P[i*3+2], s:R.cum[i]});
+  const W = [], R = L.ROAD, polys = L.RAMPS.map(rampOutline), road = [];
+  for (let i=0;i<R.n;i+=2) if (R.cum[i] <= R.portalS + 1) road.push({x:R.P[i*3], y:R.P[i*3+1], z:R.P[i*3+2], s:R.cum[i]});
   L.RAMPS.forEach((r, k) => {
     const label = 'Ramp ' + (r.src + 1);
+    // the platform (its real outline) must keep clear of the road deck everywhere but its own boarding point
     let hit = null;
-    for (const q of rs[k]){ for (const p of road){
-      if (Math.abs(p.s - r.s) < 1.2) continue;      // the boarding point itself touches the road
-      if (Math.hypot(q.x-p.x, q.z-p.z) < r.halfW + ROAD_HALF - 0.1){ hit = q; break; } } if (hit) break; }
+    for (const p of road){ if (Math.abs(p.s - r.s) < 0.3) continue;
+      if (polyDist(polys[k], p.x, p.z) < ROAD_HALF - 0.1){ hit = p; break; } }
     if (hit) W.push({kind:'ramp-road', msg: label + ' overlaps the road', x:hit.x, z:hit.z, ramp:r.src});
     for (let j=k+1;j<L.RAMPS.length;j++){
-      const o = L.RAMPS[j]; let h2 = null;
-      for (const q of rs[k]){ for (const p of rs[j]) if (Math.hypot(q.x-p.x, q.z-p.z) < r.halfW + o.halfW - 0.05){ h2 = q; break; } if (h2) break; }
-      if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2.x, z:h2.z, ramp:r.src});
+      const o = L.RAMPS[j], h2 = polysOverlap(polys[k], polys[j], 0.05);
+      if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2[0], z:h2[1], ramp:r.src});
     }
+    // a bend tighter than the ramp is wide folds its inner side: two stickman cells would overlap
+    let fold = null; const cells = r.slots.flat();
+    for (let a = 0; a < cells.length && !fold; a++) for (let b = a + 1; b < cells.length; b++)
+      if (Math.hypot(cells[a].x - cells[b].x, cells[a].z - cells[b].z) < RAMP_SP*0.5){ fold = cells[a]; break; }
+    if (fold) W.push({kind:'ramp-fold', msg: label + ' bends too sharply for its width (stickmen would overlap)', x:fold.x, z:fold.z, ramp:r.src});
+    const ex = exitFootprint(L.exit), he = polysOverlap(polys[k], ex, 0.1);
+    if (he) W.push({kind:'ramp-exit', msg: label + ' runs into the exit tunnel', x:he[0], z:he[1], ramp:r.src});
     let out = null;
     for (const cs of r.slots){ for (const q of cs) if (!inTarget(q.x, q.y + 0.8, q.z) || !inTarget(q.x, q.y, q.z)){ out = q; break; } if (out) break; }
     if (out) W.push({kind:'zone-ramp', msg: label + ' leaves the target zone', x:out.x, z:out.z, ramp:r.src});
@@ -2205,6 +2251,7 @@ const DEFAULT_LAYOUT = buildLayout(LEVEL_DATA);
 const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT_LAYOUT.TUNNEL;   // built-in level, for tests
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
+  rampOutline, polyDist, inPoly, polysOverlap,
   RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,

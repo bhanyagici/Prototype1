@@ -1,0 +1,66 @@
+{
+  "format": 2,
+  "id": "f12",
+  "name": "Level 12",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": -0.01, "z": -3.5, "y": 0.12},
+      {"x": -0.18, "z": -4.59, "y": 0.18},
+      {"x": -0.46, "z": -5.66, "y": 0.24},
+      {"x": -0.74, "z": -6.72, "y": 0.3},
+      {"x": -0.86, "z": -7.82, "y": 0.36},
+      {"x": -0.73, "z": -8.92, "y": 0.42},
+      {"x": -0.45, "z": -9.98, "y": 0.48},
+      {"x": -0.16, "z": -11.05, "y": 0.55},
+      {"x": 0, "z": -12.14, "y": 0.61},
+      {"x": -0.09, "z": -13.24, "y": 0.67},
+      {"x": -0.36, "z": -14.31, "y": 0.73},
+      {"x": -0.64, "z": -15.37, "y": 0.79},
+      {"x": -0.84, "z": -16.46, "y": 0.85},
+      {"x": -0.86, "z": -17.56, "y": 0.91},
+      {"x": -0.86, "z": -18.66, "y": 0.97}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "blue"], ["green", "green", "green", "green"], ["yellow", "yellow", "yellow", "yellow"], ["yellow", "green", "green", "green"], ["green", "purple", "green", "red"], ["purple", "purple", "purple", "purple"], ["red", "green", "green", "blue"]], "at": 2.475, "side": -1, "push": 0.04, "shape": [[-2.03, -3.52], [-3.19, -3.38]]},
+    {"rows": 4, "columns": [["blue", "blue", "blue", "blue"], ["purple", "purple", "purple", "red"], ["purple", "purple", "purple", "red"], ["red", "red", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red"], ["red", "red", "red", "blue"]], "at": 5.563, "side": 1, "push": 0.04, "shape": [[1.23, -7.12], [2.38, -7.33]]},
+    {"rows": 4, "columns": [["red", "red", "red", "red"], ["red", "red", "red", "yellow"], ["red", "red", "red", "red"], ["green", "green", "green", "green"], ["yellow", "yellow", "yellow", "blue"], ["blue", "blue", "blue", "blue"], ["purple", "purple", "purple", "purple"]], "at": 10.005, "side": -1, "push": 0.04, "shape": [[-2.12, -11.52], [-3.26, -11.75]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "red"], ["blue", "blue", "blue", "blue"], ["red", "yellow", "yellow", "yellow"], ["purple", "purple", "purple", "purple"], ["purple", "green", "green", "green"], ["yellow", "yellow", "yellow", "red"], ["green", "green", "green", "green"]], "at": 14.494, "side": 1, "push": 0.04, "shape": [[1.29, -15.94], [2.44, -16.19]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "cap": 4},
+      {"color": "green", "cap": 4, "hidden": true},
+      {"color": "green", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "blue", "cap": 6},
+      {"color": "green", "cap": 4}
+    ],
+    [
+      {"color": "red", "cap": 6},
+      {"color": "purple", "cap": 8},
+      {"color": "yellow", "cap": 6},
+      {"color": "yellow", "cap": 6, "hidden": true},
+      {"color": "yellow", "cap": 4},
+      {"color": "red", "cap": 6}
+    ],
+    [
+      {"color": "red", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 12},
+      {"color": "green", "cap": 4},
+      {"color": "purple", "cap": 4},
+      {"color": "purple", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "role": "Challenge",
+    "diff": 5,
+    "road": "straight road with a slight wave",
+    "ramps": "four bleachers alternating sides"
+  }
+}

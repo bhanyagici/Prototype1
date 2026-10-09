@@ -1,0 +1,57 @@
+{
+  "format": 2,
+  "id": "f31",
+  "name": "Level 31",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0, "z": -3.5, "y": 0.12},
+      {"x": 0, "z": -4.6, "y": 0.18},
+      {"x": 0.01, "z": -5.75, "y": 0.24},
+      {"x": 0.13, "z": -6.89, "y": 0.31},
+      {"x": 0.33, "z": -8.02, "y": 0.37},
+      {"x": 0.52, "z": -9.1, "y": 0.43},
+      {"x": 0.71, "z": -10.19, "y": 0.49},
+      {"x": 0.9, "z": -11.32, "y": 0.56},
+      {"x": 1, "z": -12.46, "y": 0.62},
+      {"x": 1, "z": -13.61, "y": 0.68},
+      {"x": 1, "z": -14.71, "y": 0.74},
+      {"x": 1, "z": -15.81, "y": 0.8},
+      {"x": 1, "z": -16.91, "y": 0.86}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["yellow", "yellow", "orange", "orange"], ["green", "green", "orange", "orange"], ["blue", "blue", "orange", "orange"], ["yellow", "yellow", "red", "red"], ["purple", "purple", "purple", "blue"], ["purple", "purple", "orange", "orange"], ["green", "green", "red", "red"], ["purple", "purple", "orange", "orange"], ["purple", "purple", "red", "red"], ["blue", "blue", "orange", "orange"], ["blue", "green", "green", "green"], ["purple", "purple", "red", "red"], ["purple", "purple", "purple", "blue"], ["green", "green", "green", "orange"], ["yellow", "yellow", "yellow", "blue"], ["blue", "blue", "blue", "orange"], ["purple", "red", "red", "red"], ["blue", "red", "orange", "orange"], ["green", "green", "red", "red"], ["green", "green", "green", "orange"]], "at": 5.028, "side": -1, "push": 0.04, "shape": [[-1.94, -6.53], [-3.1, -6.66]]},
+    {"rows": 4, "columns": [["purple", "yellow", "yellow", "yellow"], ["green", "yellow", "orange", "orange"], ["purple", "purple", "green", "green"], ["purple", "green", "green", "blue"], ["blue", "blue", "orange", "orange"], ["purple", "purple", "orange", "orange"], ["yellow", "green", "green", "blue"], ["green", "green", "green", "blue"], ["green", "green", "red", "blue"], ["blue", "blue", "red", "red"], ["purple", "purple", "red", "orange"], ["blue", "blue", "blue", "orange"], ["yellow", "yellow", "orange", "orange"], ["blue", "blue", "red", "red"], ["green", "green", "orange", "orange"], ["yellow", "yellow", "yellow", "orange"], ["yellow", "green", "green", "green"], ["yellow", "yellow", "orange", "orange"], ["blue", "blue", "red", "red"], ["purple", "red", "red", "blue"]], "at": 10.998, "side": 1, "push": 0.04, "shape": [[2.99, -12.07], [4.16, -12]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "cap": 12},
+      {"color": "orange", "cap": 12},
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 12},
+      {"color": "purple", "cap": 12}
+    ],
+    [
+      {"color": "blue", "cap": 8},
+      {"color": "green", "cap": 12},
+      {"color": "green", "cap": 12},
+      {"color": "red", "cap": 12},
+      {"color": "yellow", "cap": 12},
+      {"color": "yellow", "cap": 8}
+    ],
+    [
+      {"color": "orange", "cap": 12},
+      {"color": "green", "cap": 8},
+      {"color": "orange", "cap": 8},
+      {"color": "blue", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "road": "gentle almost straight road",
+    "ramps": "two very wide bleachers"
+  }
+}

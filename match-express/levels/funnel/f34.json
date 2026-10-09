@@ -1,0 +1,154 @@
+{
+  "format": 2,
+  "id": "f34",
+  "name": "Level 34",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": -0.01, "z": -3.55, "y": 0.12},
+      {"x": -0.2, "z": -4.68, "y": 0.19},
+      {"x": -0.58, "z": -5.76, "y": 0.25},
+      {"x": -0.96, "z": -6.84, "y": 0.31},
+      {"x": -1.15, "z": -7.97, "y": 0.38},
+      {"x": -1.07, "z": -9.12, "y": 0.44},
+      {"x": -0.74, "z": -10.21, "y": 0.5},
+      {"x": -0.36, "z": -11.25, "y": 0.56},
+      {"x": -0.06, "z": -12.35, "y": 0.63},
+      {"x": -0.01, "z": -13.5, "y": 0.69},
+      {"x": -0.23, "z": -14.62, "y": 0.75},
+      {"x": -0.62, "z": -15.7, "y": 0.81},
+      {"x": -0.99, "z": -16.79, "y": 0.88},
+      {"x": -1.15, "z": -17.92, "y": 0.94},
+      {"x": -1.15, "z": -19.07, "y": 1}
+    ]
+  },
+  "ramps": [
+    {
+      "rows": 6,
+      "columns": [
+        ["purple", "purple", "purple", "blue", "blue", "yellow"],
+        ["purple", "purple", "purple", "purple", "purple", "purple"],
+        ["yellow", null, null, "yellow", "yellow", "yellow"],
+        ["red", "red", "red", "red", "orange", null],
+        ["green", "green", "blue", "orange", "orange", null],
+        ["blue", "blue", "blue", "blue", "blue", "yellow"],
+        ["yellow", "yellow", "blue", "blue", "blue", null],
+        ["green", "green", "green", "orange", "orange", null]
+      ],
+      "at": 2.196,
+      "side": 1,
+      "push": 0.04,
+      "shape": [[2.36, -3.66], [3.88, -3.77]],
+      "tunnels": [
+        {"col": 2, "row": 1, "w": 1, "h": 2, "color": "blue", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["cyan", "cyan", "cyan", "orange", "orange", "orange"],
+        ["yellow", "yellow", "blue", "blue", "blue", "blue"],
+        ["red", "blue", "blue", "blue", "orange", "orange"],
+        ["green", "green", "green", "orange", "orange", "orange"],
+        ["yellow", "yellow", "yellow", "yellow", "yellow", "yellow"],
+        ["cyan", "cyan", "cyan", "purple", "purple", "purple"],
+        ["yellow", "yellow", "yellow", "yellow", "yellow", "yellow"],
+        ["green", "green", "green", "green", "green", "yellow"]
+      ],
+      "at": 5.489,
+      "side": -1,
+      "push": 0.04,
+      "shape": [[-3.16, -5.92], [-4.62, -5.45]]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["cyan", "cyan", "cyan", "purple", "purple", "purple"],
+        ["red", "red", "red", "purple", "purple", "purple"],
+        ["green", "green", "green", "orange", "orange", "orange"],
+        ["cyan", "cyan", "cyan", "orange", "orange", "orange"],
+        ["cyan", "cyan", "cyan", "cyan", "cyan", "purple"],
+        ["yellow", "yellow", "yellow", "yellow", "yellow", "yellow"],
+        ["green", "green", "green", "green", "green", "yellow"],
+        ["cyan", "cyan", "cyan", "orange", "orange", "orange"]
+      ],
+      "at": 9.149,
+      "side": 1,
+      "push": 0.04,
+      "shape": [[1.51, -9.46], [2.96, -8.97]]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["red", "red", "red", "red", "red", "yellow"],
+        ["red", "blue", "blue", "blue", "purple", "purple"],
+        ["cyan", "cyan", "cyan", "cyan", "cyan", "yellow"],
+        ["green", "green", "green", "green", "purple", "purple"],
+        ["cyan", "cyan", "cyan", "cyan", "orange", "orange"],
+        ["purple", "purple", "purple", "purple", "orange", "orange"],
+        ["blue", "blue", "blue", "orange", "orange", "orange"],
+        ["cyan", "cyan", "cyan", "orange", "orange", "orange"]
+      ],
+      "at": 14.443,
+      "side": -1,
+      "push": 0.04,
+      "shape": [[-2.69, -14.46], [-4.11, -13.9]]
+    },
+    {
+      "rows": 5,
+      "columns": [
+        ["green", "blue", "blue", "blue", "orange"],
+        ["red", "red", "red", "red", "red"],
+        ["red", "red", "blue", "blue", "blue"],
+        ["red", "red", "red", "red", "purple"],
+        ["green", "green", "green", "green", "green"],
+        ["red", "red", "red", "orange", "orange"],
+        ["red", "red", "red", "red", "orange"],
+        ["green", "green", "green", "green", "green"]
+      ],
+      "at": 15.737,
+      "side": 1,
+      "push": 0.32,
+      "shape": [[1.49, -17.04], [2.83, -17.21]]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "cap": 12},
+      {"color": "orange", "cap": 8},
+      {"color": "cyan", "cap": 8},
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 8},
+      {"color": "yellow", "cap": 12},
+      {"color": "purple", "cap": 8}
+    ],
+    [
+      {"color": "yellow", "cap": 12},
+      {"color": "purple", "cap": 12},
+      {"color": "red", "cap": 12},
+      {"color": "yellow", "cap": 8},
+      {"color": "cyan", "cap": 12},
+      {"color": "green", "cap": 12},
+      {"color": "blue", "cap": 8},
+      {"color": "blue", "cap": 8}
+    ],
+    [
+      {"color": "orange", "cap": 8},
+      {"color": "orange", "cap": 8},
+      {"color": "green", "cap": 8},
+      {"color": "cyan", "cap": 12},
+      {"color": "green", "cap": 8},
+      {"color": "green", "cap": 8},
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "road": "gentle wave",
+    "ramps": "five ramps"
+  }
+}

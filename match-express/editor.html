@@ -464,11 +464,7 @@ new ResizeObserver(resize).observe(cv);
 const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
 const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];
 const rampOf = src => L.RAMPS.find(r => r.src === src);
-function rampOutline(r){
-  const o = {}, hw = r.halfW, a = [], b = [];
-  for (let s = 0; s <= r.length + 1e-6; s += 0.15){ C.pathAt(r.spline, Math.min(s, r.length), o, 0); a.push([o.x - o.dz*hw, o.z + o.dx*hw]); b.push([o.x + o.dz*hw, o.z - o.dx*hw]); }
-  return a.concat(b.reverse());
-}
+function rampOutline(r){ return C.rampOutline(r); }       // the platform as the game draws it (fan / wedge width included)
 /* the four corners of a block of cells on a ramp (for tunnels, boxes and rubber-band selection) */
 function cellQuad(r, col, row, w, h){
   const sl = r.slots, hp = C.RAMP_SP/2, c0 = sl[col][row], c1 = sl[col + w - 1][row + h - 1];
@@ -772,9 +768,11 @@ function rampAction(a, i){
   if (a === 'snap'){ const r = rampOf(i), sn = snapFront(r.x, r.z) || snapFront(...(() => { const nr = nearestRoadS(r.x, r.z); return [nr.x, nr.z]; })());
     moveFront({ramp:i, snap:sn, x:r.x, z:r.z}, false); return; }
   edit(n => { const r = n.ramps[i];
-    if (a === 'c+' && r.columns.length < 6) r.columns.push(new Array(r.rows).fill(null));
+    if (a === 'c+' && r.columns.length < 20) r.columns.push(new Array(r.rows).fill(null));
     if (a === 'c-' && r.columns.length > 1){ r.columns.pop(); ['tunnels', 'boxes'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.col + o.w <= r.columns.length); }); }
     if (a === 'r+' && r.rows < 15){ r.rows++; r.columns.forEach(c => c.push(null)); }
+    if (a === 'sp+' || a === 'sp-'){ const v = Math.round(((r.spread || 0) + (a === 'sp+' ? 0.1 : -0.1))*10)/10;   // fan (+) / wedge (-)
+      if (v >= -0.5 && v <= 1.5){ if (v) r.spread = v; else delete r.spread; } }
     if (a === 'r-' && r.rows > 1){ r.rows--; r.columns.forEach(c => c.pop()); ['tunnels', 'boxes'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.row + o.h <= r.rows); }); }
     if (a === 'flip'){ const lr = rampOf(i); if (lr.snapped){ r.at = lr.s; delete r.cp; } r.side = -lr.side; delete r.shape; r.tilt = C.RAMP_TILT; }
     if (a === 'node+'){ const lr = rampOf(i), c = lr.ctrl, p = c[c.length - 1], q = c[c.length - 2] || c[0], dx = p[0] - q[0], dz = p[1] - q[1], l = Math.hypot(dx, dz) || 1;
@@ -951,7 +949,7 @@ function inspRamp(el){
   const i = sel.ramp, rd = lvl.ramps[i], lr = rampOf(i);
   const c = h(`<div class="card"><h2>${icon('ramp')} Ramp ${i + 1}</h2>
     <div class="row"><label>Road</label>${lr.snapped ? `<span class="pill ok">snapped</span><span class="hint">boarding point at ${lr.s.toFixed(1)}</span>` : `<span class="pill bad">not on the road</span><button data-a="snap">${icon('node')} Snap to road</button>`}</div>
-    ${stepper('Columns', lr.cols, 'c')}${stepper('Rows', lr.rows, 'r')}
+    ${stepper('Columns', lr.cols, 'c')}${stepper('Rows', lr.rows, 'r')}${stepper('Spread', (lr.spread > 0 ? '+' : '') + (lr.spread || 0).toFixed(1), 'sp')}
     <div class="row"><label>Side</label><button data-a="flip">Flip (${lr.side > 0 ? 'right' : 'left'})</button></div>
     <div class="row"><label>Nodes</label><span>${lr.ctrl.length}</span><button data-a="node+" title="Add a node at the far end">${icon('plus')}</button><button data-a="node-" title="Remove the last node">−</button></div>
     <div class="row"><button data-a="fill">${icon('shuffle')} Fill random</button><button data-a="clear">Clear</button><button data-a="del" class="danger">${icon('trash')} Delete</button></div>

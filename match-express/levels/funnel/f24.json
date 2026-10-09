@@ -1,0 +1,66 @@
+{
+  "format": 2,
+  "id": "f24",
+  "name": "Level 24",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0.01, "z": -3.55, "y": 0.12},
+      {"x": 0.2, "z": -4.68, "y": 0.19},
+      {"x": 0.58, "z": -5.76, "y": 0.25},
+      {"x": 0.96, "z": -6.84, "y": 0.31},
+      {"x": 1.15, "z": -7.97, "y": 0.38},
+      {"x": 1.07, "z": -9.12, "y": 0.44},
+      {"x": 0.74, "z": -10.21, "y": 0.5},
+      {"x": 0.36, "z": -11.25, "y": 0.56},
+      {"x": 0.06, "z": -12.35, "y": 0.63},
+      {"x": 0.01, "z": -13.5, "y": 0.69},
+      {"x": 0.23, "z": -14.62, "y": 0.75},
+      {"x": 0.62, "z": -15.7, "y": 0.81},
+      {"x": 0.99, "z": -16.79, "y": 0.88},
+      {"x": 1.15, "z": -17.92, "y": 0.94},
+      {"x": 1.15, "z": -19.07, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "yellow"], ["green", "green", "green", "green"], ["red", "red", "red", "red"], ["red", "red", "red", "red"], ["blue", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue"], ["orange", "orange", "orange", "orange"], ["yellow", "yellow", "yellow", "yellow"]], "at": 2.196, "side": -1, "push": 0.45, "shape": [[-2.35, -3.96], [-3.45, -4.35]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "green"], ["red", "red", "red", "red"], ["orange", "orange", "orange", "red"], ["blue", "blue", "blue", "blue"], ["purple", "purple", "purple", "purple"], ["red", "red", "red", "red"], ["purple", "purple", "purple", "purple"], ["green", "green", "green", "green"]], "at": 5.489, "side": 1, "push": 0.45, "shape": [[3.26, -6.2], [4.43, -6.15]]},
+    {"rows": 4, "columns": [["blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow"], ["green", "green", "green", "green"], ["blue", "red", "red", "red"], ["orange", "orange", "orange", "orange"], ["green", "green", "green", "green"], ["green", "green", "green", "green"], ["green", "green", "green", "green"]], "at": 8.783, "side": -1, "push": 0.45, "shape": [[-1.49, -9.38], [-2.66, -9.29]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "yellow"], ["purple", "purple", "purple", "purple"], ["orange", "orange", "orange", "orange"], ["purple", "purple", "purple", "purple"], ["yellow", "yellow", "yellow", "yellow"], ["red", "red", "red", "red"], ["green", "green", "green", "green"], ["blue", "blue", "blue", "blue"]], "at": 11.345, "side": 1, "push": 1.07, "shape": [[2.66, -13.52], [3.42, -14.41]]},
+    {"rows": 8, "columns": [["orange", "orange", "orange", "orange", "orange", "purple", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "yellow", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue", "purple", "purple", "purple", "purple"], ["purple", "purple", "purple", "purple", "red", "red", "red", "red"], ["orange", "orange", "orange", "purple", "purple", "purple", "purple", "purple"], ["orange", "orange", "orange", "orange", "orange", "orange", "blue", "blue"], ["orange", "orange", "orange", "red", "red", "red", "red", "blue"], ["blue", "blue", "blue", "green", "green", "green", "purple", "purple"]], "at": 15.137, "side": -1, "push": 0.04, "shape": [[-1.84, -16.93], [-3.61, -17.59]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "cap": 12},
+      {"color": "orange", "cap": 12},
+      {"color": "orange", "cap": 8},
+      {"color": "green", "cap": 12},
+      {"color": "red", "cap": 12},
+      {"color": "blue", "cap": 8}
+    ],
+    [
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 8},
+      {"color": "green", "cap": 8},
+      {"color": "yellow", "cap": 8},
+      {"color": "yellow", "cap": 12},
+      {"color": "orange", "cap": 12}
+    ],
+    [
+      {"color": "green", "cap": 12},
+      {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 8},
+      {"color": "purple", "cap": 12},
+      {"color": "purple", "cap": 8},
+      {"color": "purple", "cap": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "road": "straight road with a wave",
+    "ramps": "four small ramps and one big ramp near the end"
+  }
+}

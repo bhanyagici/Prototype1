@@ -1,0 +1,65 @@
+{
+  "format": 2,
+  "id": "f21",
+  "name": "Level 21",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": -0.12, "z": -3.53, "y": 0.12},
+      {"x": -0.69, "z": -4.5, "y": 0.18},
+      {"x": -1.56, "z": -5.25, "y": 0.25},
+      {"x": -2.38, "z": -5.99, "y": 0.31},
+      {"x": -2.86, "z": -6.97, "y": 0.37},
+      {"x": -2.88, "z": -8.07, "y": 0.43},
+      {"x": -2.44, "z": -9.07, "y": 0.49},
+      {"x": -1.64, "z": -9.82, "y": 0.55},
+      {"x": -0.76, "z": -10.56, "y": 0.61},
+      {"x": -0.15, "z": -11.51, "y": 0.68},
+      {"x": 0, "z": -12.64, "y": 0.74},
+      {"x": 0, "z": -13.74, "y": 0.8},
+      {"x": 0, "z": -14.39, "y": 0.83}
+    ]
+  },
+  "ramps": [
+    {"rows": 6, "columns": [["green", "green", "orange", "purple", "blue", "blue"], ["yellow", "yellow", "orange", "orange", "red", "red"], ["green", "green", "orange", "orange", "blue", "blue"], ["green", "yellow", "yellow", "purple", "purple", "red"], ["yellow", "yellow", "orange", "purple", "purple", "red"], ["red", "red", "orange", "orange", "blue", "red"], ["red", "red", "yellow", "purple", "red", "red"], ["green", "yellow", "yellow", "purple", "blue", "blue"]], "at": 3.048, "side": 1, "push": 0.04, "shape": [[1.45, -5.59], [2.71, -6.47]]},
+    {"rows": 6, "columns": [["green", "green", "orange", "orange", "red", "red"], ["green", "yellow", "purple", "purple", "red", "red"], ["yellow", "yellow", "purple", "blue", "blue", "red"], ["green", "green", "orange", "purple", "blue", "blue"], ["green", "yellow", "yellow", "blue", "blue", "red"], ["green", "green", "orange", "blue", "red", "red"], ["red", "red", "yellow", "blue", "blue", "red"], ["green", "green", "orange", "orange", "red", "red"]], "at": 8.382, "side": -1, "push": 0.04, "shape": [[-4.89, -9.52], [-6.29, -10.13]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "purple", "blue"], ["green", "yellow", "orange", "purple"], ["yellow", "yellow", "orange", "blue"], ["green", "green", "purple", "purple"], ["green", "green", "purple", "blue"], ["green", "green", "orange", "purple"], ["yellow", "yellow", "purple", "purple"], ["yellow", "yellow", "orange", "purple"], ["red", "red", "purple", "blue"], ["green", "yellow", "yellow", "purple"], ["green", "green", "orange", "orange"]], "at": 12.497, "side": 1, "push": 0.41, "shape": [[2.23, -11.24], [3.39, -11.13]], "spread": -0.25}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 4, "hidden": true},
+      {"color": "red", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 8},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 6},
+      {"color": "red", "cap": 6}
+    ],
+    [
+      {"color": "red", "cap": 4},
+      {"color": "orange", "cap": 8, "link": "G1", "hidden": true},
+      {"color": "orange", "cap": 12, "link": "G1"},
+      {"color": "purple", "cap": 6}
+    ],
+    [
+      {"color": "blue", "cap": 4},
+      {"color": "purple", "cap": 4},
+      {"color": "green", "cap": 12, "link": "G2"},
+      {"color": "green", "cap": 6, "link": "G2"},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 8},
+      {"color": "purple", "cap": 8},
+      {"color": "red", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "red", "cap": 6}
+    ]
+  ],
+  "meta": {
+    "role": "Teach (combo, no popup)",
+    "diff": 5,
+    "road": "S-curve",
+    "ramps": "two square ramps and a wedge"
+  }
+}

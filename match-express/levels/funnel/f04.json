@@ -1,0 +1,47 @@
+{
+  "format": 2,
+  "id": "f04",
+  "name": "Level 4",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0, "z": -3.55, "y": 0.12},
+      {"x": -0.13, "z": -4.69, "y": 0.19},
+      {"x": -0.32, "z": -5.77, "y": 0.25},
+      {"x": -0.51, "z": -6.86, "y": 0.31},
+      {"x": -0.7, "z": -7.99, "y": 0.37},
+      {"x": -0.76, "z": -9.13, "y": 0.43},
+      {"x": -0.66, "z": -10.27, "y": 0.5},
+      {"x": -0.46, "z": -11.41, "y": 0.56},
+      {"x": -0.27, "z": -12.49, "y": 0.62},
+      {"x": -0.08, "z": -13.57, "y": 0.68}
+    ]
+  },
+  "ramps": [
+    {"rows": 7, "columns": [["red", "red", "red", "red", "red", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "blue"], ["yellow", "yellow", "yellow", "yellow", "yellow", "red", "red"], ["yellow", "red", "red", "red", "red", "blue", "blue"]], "at": 2.481, "side": 1, "tilt": 35},
+    {"rows": 6, "columns": [["green", "green", "green", "green", "green", "green"], ["blue", "blue", "blue", "blue", "red", "blue"], ["yellow", "yellow", "yellow", "yellow", "blue", "blue"], ["green", "green", "green", "green", "green", "green"]], "at": 6.202, "side": -1, "tilt": 35}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "red", "cap": 12},
+      {"color": "green", "cap": 4}
+    ],
+    [
+      {"color": "blue", "cap": 4},
+      {"color": "blue", "cap": 8},
+      {"color": "green", "cap": 4}
+    ],
+    [
+      {"color": "yellow", "cap": 12},
+      {"color": "green", "cap": 4}
+    ]
+  ],
+  "meta": {
+    "role": "Teach (bus sizes)",
+    "diff": 3,
+    "road": "long almost straight road",
+    "ramps": "long narrow diagonal ramps"
+  }
+}
