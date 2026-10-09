@@ -157,9 +157,12 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     await p.close();
     const p2 = await open(7);
     chk(await p2.evaluate(() => __me.intro === null), 'a popup already seen stays away after a reload (saved)');
-    await p2.evaluate(() => { __me.goLevel(16); __me.freeze(false); }); await p2.waitForTimeout(1600);
-    const h = await p2.evaluate(() => ({on:document.getElementById('hint').classList.contains('show'), text:document.getElementById('hint').textContent, held:__me.held, t:__me.game.t}));
-    chk(h.on && /threes/.test(h.text) && !h.held && h.t > 0, 'level 17: a short hint about triple connected buses that does not stop the game', JSON.stringify(h));
+    await p2.evaluate(() => { __me.goLevel(16); __me.freeze(false); });
+    await p2.waitForFunction(() => document.getElementById('hint').classList.contains('show'), null, {timeout:8000}).catch(() => {});
+    const h0 = await p2.evaluate(() => ({on:document.getElementById('hint').classList.contains('show'), text:document.getElementById('hint').textContent, held:__me.held}));
+    await p2.waitForFunction(() => __me.game.t > 0.3, null, {timeout:8000}).catch(() => {});
+    const h = Object.assign(h0, {t:await p2.evaluate(() => __me.game.t)});
+    chk(h.on && /threes/.test(h.text) && !h.held && h.t > 0.3, 'level 17: a short hint about triple connected buses that does not stop the game', JSON.stringify(h));
     await p2.close(); }
   // ---- previous / next, a win moves on, stats (completion time, fails, CSV, reset), 1x / 2x
   { const p = await open(40);
