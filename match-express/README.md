@@ -24,6 +24,47 @@ Screenshots at 390 × 844:
 - [a long bus in Snake mode in a spiral](screenshots/snake-spiral-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## High-up update
+
+Gameplay rules are unchanged: the core simulation, sending, boarding, bays, blockers, the
+bots and the checker are the same as before. Everything below is drawn on top of it.
+
+### The board stands high up
+- **A plateau:** the whole board (road, spirals, ramps with their stickmen, the yard, the
+  bays and the queue) stands on top of a tall plateau. The ground lies 6 units below it.
+- **Its outline follows the level:** the road (raised stretches too), the ramps, the yard,
+  the queue and both tunnels, each with a 1.05 margin. Gaps narrower than about 4.4
+  between them are closed, and a little noise keeps the edge irregular, like rock.
+- **The sides:** steep rock walls in the theme's stone. Soft horizontal strata, darker
+  toward the foot, a slightly lighter rounded lip at the top.
+- **The ground below:** the theme's lower ground with soft fields and winding paths, and
+  tiny details that differ per theme:
+  - meadow: round trees, bushes, sheep, rocks, little farm houses;
+  - desert: low dunes, an oasis with palms, adobe houses, cacti, rocks;
+  - blossom: cherry trees, a pagoda, a pond, cottages, flower bushes;
+  - town: little houses, street trees, tiny cars.
+
+  They are placed only where they can be seen: inside the screen and not hidden behind
+  the board. A light haze over the low ground makes it read as far away, in both camera
+  modes.
+- **Ramps** stand on the board, level with the road beside them. Next to a raised
+  stretch of road (a spiral) the ramp is raised as high, on pillars. A ramp is never
+  lower than the road beside it.
+- **The parachute exit:** a full bus slides off the road and hops as before. Its
+  parachute then carries it on to the board's edge (about 0.9 s after the hop) and over
+  it, and it floats down along the rock wall toward the ground. In the last 0.3 s it
+  shrinks into the distance. The timing is unchanged (`PARACHUTE_DURATION` 2.6 s).
+- **Small props on the board:** at most 5 per level. They stand on the board's free corners
+  and along its edges, at least 0.8 from anything of the level and at least 1.7 beyond
+  the road's edge. They are never on or between the road and the ramps.
+  - meadow: bench, bush, lamp post, flower pot, sign;
+  - desert: sign, potted cactus, bench, rocks, lamp post;
+  - blossom: bench, flower pot, stone lantern, bush, sign;
+  - town: bench, lamp post, flower pot, sign, bush.
+
+  They use muted colours, so the buses and stickmen stay the most saturated things on
+  screen.
+
 ## Showcase update
 
 Gameplay rules are unchanged throughout: sending, boarding, bays, blockers, the bots and the
@@ -44,7 +85,8 @@ checker's rules are the same as before. The 40-level funnel was not retuned or r
   to the ground and keeps clear of every other stretch of road. The checker's
   `exit-road` warning now flags any road under or beside its base.
 - **Decoration:** only along the very top edge, a small themed strip that is partly
-  cut off by the screen edge.
+  cut off by the screen edge. (Replaced in the High-up update by the ground far below
+  and a few small props on the board.)
 - **Themes** (settings ⚙ → *Theme*, or `index.html?theme=<id>`):
 
 | id | ground | strip along the top |
