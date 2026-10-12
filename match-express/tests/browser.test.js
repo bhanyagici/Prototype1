@@ -48,15 +48,18 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         chk(seen.join(' ') === '1/5 2/5 3/5 4/5 5/5', 'each tap on a queue bus sends it to the road; the counter sign counts it at once', seen.join(' '));
         chk(st6.cnt === '5/5' && st6.front && st6.shook && !st6.parked && !st6.result, 'at 5/5 a tapped queue bus shakes and stays: no bay, no fail', JSON.stringify(st6));
         await p.evaluate(() => __me.restart()); }
-      // 2x speed through one global time scale
+      // speeds 1x, 1.25x, 1.5x, 1.75x, 2x through one global time scale: the button steps through them and shows the current one
       const r1 = await p.evaluate(() => { __me.setSpeed(1); const t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60); return __me.game.t - t0; });
-      await p.click('#btnSpeed');
-      const st = await p.evaluate(() => ({txt: document.getElementById('btnSpeed').textContent, on: document.getElementById('btnSpeed').classList.contains('on'), ts: __me.timeScale}));
-      const r2 = await p.evaluate(() => { const t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60); return __me.game.t - t0; });
-      chk(st.txt === '2x' && st.on && st.ts === 2, 'the 2x button toggles to a highlighted "2x"');
-      chk(Math.abs(r2 - 2*r1) < 0.02, 'at 2x the whole game advances twice as fast for the same real time', `${r1.toFixed(3)}s -> ${r2.toFixed(3)}s`);
-      await p.click('#btnSpeed');
-      chk(await p.evaluate(() => document.getElementById('btnSpeed').textContent === '1x' && __me.timeScale === 1), 'pressing again shows "1x" and returns to normal speed');
+      const steps = [];
+      for (let k = 0; k < 5; k++){
+        await p.click('#btnSpeed');
+        steps.push(await p.evaluate(() => { const b = document.getElementById('btnSpeed'), t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60);
+          return {txt:b.textContent, on:b.classList.contains('on'), ts:__me.timeScale, dt:__me.game.t - t0, saved:window.MESync.loadPrefs().speed}; }));
+      }
+      chk(steps.map(x => x.txt).join(' ') === '1.25x 1.5x 1.75x 2x 1x' && steps.every(x => x.on === (x.ts > 1) && x.saved === x.ts),
+        'the speed button steps 1x -> 1.25x -> 1.5x -> 1.75x -> 2x -> 1x, shows the current speed (highlighted above 1x) and remembers it', steps.map(x => x.txt).join(' '));
+      chk(steps.every(x => Math.abs(x.dt - x.ts*r1) < 0.02), 'at each speed the whole game advances that much faster for the same real time',
+        steps.map(x => `${x.txt} ${x.dt.toFixed(3)}s`).join(', ') + ` (1x ${r1.toFixed(3)}s)`);
       // 2x also speeds animation timers (a parachute's flight is keyed to game time)
       const anim = await p.evaluate(() => { __me.setSpeed(2); const v = __me.views[0], t0 = __me.game.t; for (let i=0;i<60;i++) __me.pump(1/60); const d = __me.game.t - t0; __me.setSpeed(1); return d; });
       chk(Math.abs(anim - 2) < 0.05, 'one real second at 2x is two seconds of game and animation time', anim.toFixed(2));
@@ -160,6 +163,43 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         return {ramp:v.boardRamp + 1, out:J.out, clear:worst}; });
       chk(ov && ov.clear > 1.5, 'a bus filled under an overpass slides out from under it before hopping (no road above the hop or the parachute)',
           ov && `ramp ${ov.ramp}: slides ${ov.out.toFixed(2)}, nearest raised road ${ov.clear.toFixed(2)} away`);
+      await ctx.close(); }
+
+    /* ---------------- Snake bus movement ---------------- */
+    console.log('bus movement: Rigid / Snake');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      chk(await p.evaluate(() => __me.move === 'rigid'), 'buses are Rigid by default');
+      await p.click('#btnSettings'); await p.click('#btnMove');
+      chk(await p.evaluate(() => __me.move === 'snake' && window.MESync.loadPrefs().move === 'snake' && /Snake/.test(document.getElementById('btnMove').textContent)), 'the settings switch them to Snake (remembered)');
+      // a 12-seat bus driven along the whole road (nobody boards it), through the spiral, out of the exit tunnel and back
+      // to a bay: every frame of its body stays on the road, and in the yard on its route as drawn
+      const r = await p.evaluate(() => {
+        const C = window.MECore, lv = JSON.parse(JSON.stringify(C.LEVEL_DATA));
+        lv.lanes = [[{color:'red', cap:12}], [], []]; lv.ramps.forEach(r => r.columns = r.columns.map(c => c.map(() => 'blue')));
+        __me.loadLevel(lv, 'export'); __me.freeze(false);
+        const g = __me.game, R = __me.layout.ROAD, sp = R.spirals[0], id = g.lanes[0][0];
+        const dRoad = (x, y, z, s) => { let m = 1e9; for (let i = 0; i < R.n; i++){ if (Math.abs(R.cum[i] - s) > 3) continue; m = Math.min(m, Math.hypot(R.P[i*3] - x, R.P[i*3+2] - z) + 0.5*Math.abs(R.P[i*3+1] - y)); } return m; };
+        __me.tapLane(0); let worstRoad = 0, worstYard = 0, nRoad = 0, nYard = 0, maxBend = 0, spiral = 0, straightBay = null, rigidQueue = true;
+        for (let i = 0; i < 60*60; i++){
+          __me.pump(1/60); const bb = g.buses[id], fr = __me.snakeFrames(id);
+          if (bb.state === 'road' && bb.rs > bb.len && bb.rs < R.portalS - 1 && fr.bent && fr.f > 0.99){
+            fr.pts.forEach(q => { worstRoad = Math.max(worstRoad, dRoad(q[0], q[1], q[2], bb.rs)); nRoad++; });
+            const a = fr.pts[0], m = fr.pts[4], z = fr.pts[8]; maxBend = Math.max(maxBend, Math.hypot(m[0] - (a[0] + z[0])/2, m[2] - (a[2] + z[2])/2));
+            if (bb.rs > sp.s0 && bb.rs < sp.s1) spiral++; }
+          if ((bb.state === 'toRoad' || bb.state === 'return') && bb.trip && bb.trip.s > bb.len && bb.trip.s < bb.trip.path.len - bb.len && fr.bent && fr.f > 0.99){
+            const P = bb.trip.path, o = {}, pts = []; for (let s = 0; s <= P.len; s += 0.03){ C.pathAt(P, s, o, 0); pts.push(C.dispPoint(o.x, o.z)); }
+            fr.pts.forEach(q => { let m = 1e9; for (const t of pts) m = Math.min(m, Math.hypot(t[0] - q[0], t[1] - q[2])); worstYard = Math.max(worstYard, m); nYard++; }); }
+          g.lanes.flat().forEach(q => { const f2 = __me.snakeFrames(q); if (f2.bent) rigidQueue = false; });
+          if (bb.state === 'bay'){ for (let k = 0; k < 60; k++) __me.pump(1/60); straightBay = !__me.snakeFrames(id).bent; break; }
+        }
+        return {worstRoad, worstYard, nRoad, nYard, maxBend, spiral, straightBay, rigidQueue};
+      });
+      chk(r.nRoad > 500 && r.worstRoad < 0.15 && r.spiral > 20, 'Snake: on the road every segment of a 12-seat bus stays on the road, through the spiral too',
+        `${r.nRoad} segment samples, worst ${r.worstRoad.toFixed(3)} off the centre line, ${r.spiral} frames in the spiral`);
+      chk(r.maxBend > 0.5, 'Snake: in a curve the body bends (its middle off the line between its ends)', r.maxBend.toFixed(2));
+      chk(r.nYard > 100 && r.worstYard < 0.1, 'Snake: on the entry and collector roads each segment stays on the route', `${r.nYard} samples, worst ${r.worstYard.toFixed(3)}`);
+      chk(r.straightBay === true && r.rigidQueue, 'Snake: straight in the queue and once parked in a bay');
       await ctx.close(); }
 
     /* ---------------- editor: layout, preview, independence ---------------- */

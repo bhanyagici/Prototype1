@@ -2,7 +2,7 @@
 // and the 40-level pack (tools/build-funnel.js -> dist/match-express-funnel-40.html) opened from file:// at 390x844:
 // level 1 and level 3 tutorials (the hand, blocked taps), the intro popups (first appearance only, they hold the game),
 // the level 17 hint, previous / next and "Level x / 40", a win moving on by itself, the stats panel (completion time,
-// fails and their second, Export CSV, Reset stats), 1x / 2x and the front bus outline and size.
+// fails and their second, Export CSV, Reset stats), the speeds 1x-2x and the front bus outline and size.
 //   node tests/funnel.test.js        (the browser part needs playwright; same CHROMIUM env as browser.test.js)
 const fs = require('fs'), path = require('path'), {pathToFileURL} = require('url');
 const C = require('./core.js')(), SPECS = require('../tools/funnel/specs.js');
@@ -168,15 +168,15 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     const h = Object.assign(h0, {t:await p2.evaluate(() => __me.game.t)});
     chk(h.on && /threes/.test(h.text) && !h.held && h.t > 0.3, 'level 17: a short hint about triple connected buses that does not stop the game', JSON.stringify(h));
     await p2.close(); }
-  // ---- previous / next, a win moves on, stats (completion time, fails, CSV, reset), 1x / 2x
+  // ---- previous / next, a win moves on, stats (completion time, fails, CSV, reset), speeds
   { const p = await open(40);
     await p.evaluate(() => { if (__me.intro) __me.closeIntro(); });
     await p.click('#btnPrev'); await p.evaluate(() => { if (__me.intro) __me.closeIntro(); });
     const a = await p.evaluate(() => [__me.playIdx, document.getElementById('levelPill').textContent]);
     await p.click('#btnNextLv'); const c = await p.evaluate(() => [__me.playIdx, document.getElementById('levelPill').textContent, document.getElementById('btnNextLv').classList.contains('dis')]);
     chk(a[1] === 'Level 39 / 40' && c[1] === 'Level 40 / 40' && c[2], 'Previous and Next move one level; Next is off on level 40', JSON.stringify([a, c]));
-    await p.click('#btnSpeed'); const sp = await p.evaluate(() => [__me.timeScale, document.getElementById('btnSpeed').textContent]); await p.click('#btnSpeed');
-    chk(sp[0] === 2 && sp[1] === '2x' && await p.evaluate(() => __me.timeScale === 1), 'the 1x / 2x button switches the speed');
+    const sp = []; for (let k = 0; k < 5; k++){ await p.click('#btnSpeed'); sp.push(await p.evaluate(() => __me.timeScale + ':' + document.getElementById('btnSpeed').textContent)); }
+    chk(sp.join(' ') === '1.25:1.25x 1.5:1.5x 1.75:1.75x 2:2x 1:1x' && await p.evaluate(() => __me.timeScale === 1), 'the speed button steps 1x, 1.25x, 1.5x, 1.75x, 2x and back to 1x', sp.join(' '));
     // a fail (random play), a retry, then a win (greedy play)
     let r, k = 0;
     do { r = await p.evaluate(seed => { let s = seed; const rng = () => (s = (s*16807) % 2147483647)/2147483647;
