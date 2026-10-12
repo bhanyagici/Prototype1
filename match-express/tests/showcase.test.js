@@ -2,7 +2,7 @@
 // The levels (levels/showcase): each in its category, balanced, free of warnings, inside the target zone and won by
 // the greedy bot; the Basics at their four difficulties; spirals in at least 70% of them.  Then the single file (tools/build-showcase.js ->
 // dist/match-express-showcase.html) opened from file:// at 390 x 844: the start menu (categories, groups, a card per
-// level with its picture, name and tags), the settings panel from the menu and in play (theme, Rigid / Snake, speed,
+// level with its picture, name and tags), the settings panel from the menu and in play (theme, Rigid / Snake, camera, speed,
 // sound, remembered after a reload), playing a card, previous / next inside its category, back to the menu (the last
 // card marked), restart, the booster bar and the stats panel, with nothing fetched from the network.
 //   node tests/showcase.test.js   (the browser part needs playwright; same CHROMIUM env as browser.test.js)
@@ -72,13 +72,14 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   console.log('settings from the menu, remembered');
   await p.click('#menuSet');
   chk(await p.evaluate(() => document.getElementById('setPanel').classList.contains('show')), 'the menu\'s gear opens the settings panel');
-  await p.click('#segTheme button[data-v="desert"]'); await p.click('#segMove button[data-v="snake"]'); await p.click('#segSpeed button[data-v="1.5"]'); await p.click('#segSound button[data-v="off"]');
-  const s1 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, speed:__me.timeScale, muted:__me.muted, on:[...document.querySelectorAll('#setPanel .seg button.on')].map(b => b.dataset.v)}));
-  chk(s1.theme === 'desert' && s1.move === 'snake' && s1.speed === 1.5 && s1.muted && s1.on.join() === 'desert,snake,1.5,off', 'theme, bus movement (Rigid / Snake), speed (1x-2x) and sound: set and shown', JSON.stringify(s1));
+  await p.click('#segTheme button[data-v="desert"]'); await p.click('#segMove button[data-v="snake"]'); await p.click('#segCam button[data-v="ortho"]'); await p.click('#segSpeed button[data-v="1.5"]'); await p.click('#segSound button[data-v="off"]');
+  const s1 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, view:__me.view, speed:__me.timeScale, muted:__me.muted, on:[...document.querySelectorAll('#setPanel .seg button.on')].map(b => b.dataset.v)}));
+  chk(s1.theme === 'desert' && s1.move === 'snake' && s1.view === 'ortho' && s1.speed === 1.5 && s1.muted && s1.on.join() === 'desert,snake,ortho,1.5,off',
+    'theme, bus movement (Rigid / Snake), camera (Perspective / Orthographic), speed (1x-2x) and sound: set and shown', JSON.stringify(s1));
   await p.click('#btnSetClose');
   await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:120000});
-  const s2 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, speed:__me.timeScale, muted:__me.muted, menu:document.getElementById('menuPanel').classList.contains('show')}));
-  chk(s2.theme === 'desert' && s2.move === 'snake' && s2.speed === 1.5 && s2.muted && s2.menu, 'after a reload the menu comes back with the last settings', JSON.stringify(s2));
+  const s2 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, view:__me.view, speed:__me.timeScale, muted:__me.muted, menu:document.getElementById('menuPanel').classList.contains('show')}));
+  chk(s2.theme === 'desert' && s2.move === 'snake' && s2.view === 'ortho' && s2.speed === 1.5 && s2.muted && s2.menu, 'after a reload the menu comes back with the last settings', JSON.stringify(s2));
   console.log('playing a card');
   await p.click('#menuList .mcard[data-id="road-hairpin"]');
   const g1 = await p.evaluate(() => ({menu:document.getElementById('menuPanel').classList.contains('show'), name:__me.LEVEL.name, pill:document.getElementById('levelPill').textContent,

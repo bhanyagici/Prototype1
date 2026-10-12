@@ -58,6 +58,13 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       }
       chk(steps.map(x => x.txt).join(' ') === '1.25x 1.5x 1.75x 2x 1x' && steps.every(x => x.on === (x.ts > 1) && x.saved === x.ts),
         'the speed button steps 1x -> 1.25x -> 1.5x -> 1.75x -> 2x -> 1x, shows the current speed (highlighted above 1x) and remembers it', steps.map(x => x.txt).join(' '));
+      // the camera setting: Perspective / Orthographic from the settings, remembered; the level is redrawn in place
+      const cam = await p.evaluate(() => { const g = __me.game, t0 = g.t; document.getElementById('btnCam').click(); __me.pump(1/60); __me.render();
+        const a = {ortho:__me.camera.isOrthographicCamera, view:__me.view, txt:document.getElementById('btnCam').textContent, saved:window.MESync.loadPrefs().view, same:__me.game === g};
+        document.getElementById('btnCam').click(); __me.pump(1/60); __me.render();
+        return Object.assign(a, {back:!__me.camera.isOrthographicCamera && __me.view === 'persp' && window.MESync.loadPrefs().view === 'persp', t:g.t >= t0}); });
+      chk(cam.ortho && cam.view === 'ortho' && cam.txt === 'Camera: Orthographic' && cam.saved === 'ortho' && cam.same && cam.back,
+        'the camera setting switches Perspective <-> Orthographic in place (the same game) and remembers it', JSON.stringify(cam));
       chk(steps.every(x => Math.abs(x.dt - x.ts*r1) < 0.02), 'at each speed the whole game advances that much faster for the same real time',
         steps.map(x => `${x.txt} ${x.dt.toFixed(3)}s`).join(', ') + ` (1x ${r1.toFixed(3)}s)`);
       // 2x also speeds animation timers (a parachute's flight is keyed to game time)
@@ -457,7 +464,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         const w = await pp.evaluate(() => ({res:__me.game.result, name:__me.LEVEL.name, win:document.getElementById('winPanel').classList.contains('show'), next:document.getElementById('btnNext').textContent}));
         names.push(w.name + ':' + w.res + ':' + w.next);
         if (!w.win) break;
-        await pp.click('#btnNext');
+        await pp.click('#btnNext', {timeout:90000});           // software rendering (swiftshader) draws a frame in about 1.5 s
       }
       chk(names.join(' | ') === `Demo: Hidden Buses:win:Next level | Demo: Colourful Tunnels:win:Next level | ${lvl900}:win:Finish`, 'winning offers the next level, in order; the last one offers Finish', names.join(' | '));
       chk(await pp.evaluate(() => document.getElementById('donePanel').classList.contains('show') && /All levels complete/.test(document.getElementById('donePanel').textContent)), 'after the last level: the "All levels complete" screen');

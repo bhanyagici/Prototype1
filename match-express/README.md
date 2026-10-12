@@ -87,6 +87,55 @@ bots and the checker are the same as before. Everything below is drawn on top of
   `tests/ramps.test.js` checks that every ramp lies flush on the road edge.
   `tests/showcase.test.js` checks the 70% spiral share.
 
+### Camera: Perspective or Orthographic
+A game setting: ⚙ → *Camera*, the showcase's settings panel, the editor's preview (the
+*Perspective / Orthographic* switch above the phone), or `index.html?cam=ortho`. It is
+remembered with the other settings (`match-express:prefs`, key `view`) and is purely
+visual: the simulation is the same.
+
+**The two cameras (three.js world, y up; the board's floor is y = 0 and +z points toward
+the bottom of the screen):**
+
+| | Perspective (default) | Orthographic |
+|---|---|---|
+| projection | perspective, vertical field of view **30°** | orthographic, half height (Unity *orthographic size*) **16.5588**, half width 7.6425 |
+| position | (0, 41.769, 28.354) | (0, 41.769, 27.522) |
+| looks at | (0, 0, -4.28) | (0, 0, -5.112) |
+| angle | pitched down **52.00°** (yaw 0, roll 0) | the same **52.00°** |
+| distance to the look point | 53.006 | 53.006 |
+| screen | 900 × 1950 design pixels (9 : 19.5), near 1, far 240 | the same |
+
+- **In Unity** (left-handed, +z forward): flip z.
+  - Perspective: position (0, 41.769, -28.354), rotation (52, 0, 0), field of view 30
+    (vertical).
+  - Orthographic: position (0, 41.769, -27.522), rotation (52, 0, 0), orthographic size
+    16.5588.
+- **The same screen zones in both views:**
+  - The orthographic camera is sized and centred so the target zone's ground spans the
+    same screen rows, 7% to 61% of the height (z -23.184 to -0.489 on y = 0).
+  - The perspective view's target zone is a trapezoid on the ground. It lies inside the
+    orthographic one, a rectangle 2 × 7.6425 wide, so every level fits in both views.
+  - Below the target zone, the orthographic view draws the yard, the bays and the queue
+    to cover the same rows as in perspective: each drawn ground row moves to its
+    perspective row (`C.orthoRowZ`). The yard and its buses are also widened by
+    `ORTHO_M` = 1.2412, the perspective view's magnification there. This blends in over
+    the entry strip between the road and the bays.
+- **Sizes:**
+  - A bus in a bay or in the queue is as wide on screen in both views (100% and 96.5%).
+  - Stickmen on the ramps are 82% to 101% of their perspective size. The orthographic
+    view has one scale, 58.88 px per unit, over the whole target zone, while
+    perspective ranges from 56 px at the top to 72 px at the bottom.
+- **Height still reads in orthographic:** the rock walls facing the camera, the haze
+  over the ground below, the tiny details down there, and a parachute bus floating
+  down past the edge.
+- **Tested:** `tests/camera.test.js` checks all 77 levels in both views:
+  - the road, the ramps and the exit tunnel lie in the target zone;
+  - the bays lie in the static row;
+  - three 8-seat buses per lane show above the queue tunnel;
+  - the sizes above.
+
+  `tests/browser.test.js` switches the camera in play.
+
 ## Showcase update
 
 Gameplay rules are unchanged throughout: sending, boarding, bays, blockers, the bots and the
@@ -1054,6 +1103,7 @@ node tests/layout.test.js     # yard clearance sweep (both yard presets, 2-5 lan
 node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, sending, sides), connected buses across 4-5 lanes,
                               #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
+node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
 node tests/ramps.test.js      # 6 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
                               #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so
 node tests/browser.test.js    # 101 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,

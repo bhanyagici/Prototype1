@@ -893,7 +893,7 @@ const BUS_DRAW = 0.9;
 const DISP = {K:0.85, KX:0.85, KB:0.84, KE:0.25, KC:0.32, QS:1/1.1, QZ:0.76, MARGIN:0.06, T:0.25, zA:Z_ROAD0, zB:-0.7, zE:Z_BAY_TOP - 0.25, zF:Z_BAY_BOT + 0.25,
   zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.3, qB:1.85, pA:1.4, pB:1.9};
 const smooth01 = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
-function dispSlope(z){                              // d(shown z)/d(sim z)
+function baseSlope(z){                              // d(shown z)/d(sim z), perspective view
   const D = DISP;
   if (z <= D.zA) return 1;
   if (z <= D.zE - D.T) return 1 + (D.KE - 1)*smooth01(D.zA, D.zB, z);     // main road end -> entry strip
@@ -905,22 +905,57 @@ function dispSlope(z){                              // d(shown z)/d(sim z)
   return 1 + (D.QZ - 1)*smooth01(D.pA, D.pB, z - D.zL);                   // queue: tighter gaps behind the front
 }
 const DISP_STEP = 0.005, DISP_TAB = (() => { const t = [DISP.zA], n = Math.ceil((60 - DISP.zA)/DISP_STEP);
-  for (let i = 0; i < n; i++) t.push(t[i] + dispSlope(DISP.zA + (i + 0.5)*DISP_STEP)*DISP_STEP); return t; })();
-function dispZ(z){
+  for (let i = 0; i < n; i++) t.push(t[i] + baseSlope(DISP.zA + (i + 0.5)*DISP_STEP)*DISP_STEP); return t; })();
+function baseZ(z){
   if (z <= DISP.zA) return z;
   const f = (z - DISP.zA)/DISP_STEP, i = Math.floor(f);
   if (i >= DISP_TAB.length - 1) return DISP_TAB[DISP_TAB.length - 1] + (z - DISP.zA - (DISP_TAB.length - 1)*DISP_STEP)*DISP.QZ;
   return DISP_TAB[i] + (DISP_TAB[i+1] - DISP_TAB[i])*(f - i);
 }
-function dispSx(z){ return 1 + (DISP.KX - 1)*smooth01(DISP.zA, DISP.zB, z); }   // the road keeps its width, the yard is narrower
-function dispScale(z){                              // relative size a bus is drawn at (times BUS_DRAW)
-  const D = DISP;                                   // 1, except behind the front slot of a queue lane
+function baseSx(z){ return 1 + (DISP.KX - 1)*smooth01(DISP.zA, DISP.zB, z); }   // the road keeps its width, the yard is narrower
+function baseScale(z){
+  const D = DISP;
   if (z < D.zL) return 1;
   return 1 + (D.QS - 1)*smooth01(D.qA, D.qB, z - D.zL);
 }
+
+/* ======================= THE ORTHOGRAPHIC VIEW =======================
+   A game setting (camera: Perspective, the default, or Orthographic).  It is purely visual.  The orthographic camera
+   looks in the same direction as SCREEN_CAM; its size and centre put the target zone's ground (y = 0) on the same
+   screen rows (TARGET_TOP to TARGET_BOT), so the road, the spirals and the ramps of every level fit the target zone in
+   both views (the zone's perspective trapezoid lies inside the orthographic rectangle).
+   Below the target zone (the yard, the bays, the queue) the orthographic view draws the yard so it covers the same
+   screen rows as in perspective: every drawn ground row is moved to the row it has in perspective (orthoRowZ) and
+   the yard is widened, with its buses, by ORTHO_M (the perspective view's magnification there), blending in over the
+   entry strip (DISP.zA to DISP.zE).  Bays, buses and lanes so stay as wide on screen as in perspective. */
+const ORTHO_CAM = (() => {
+  const P = SCREEN_CAM.pos, Lk = SCREEN_CAM.look, f = norm3([Lk[0]-P[0], Lk[1]-P[1], Lk[2]-P[2]]);
+  const r = norm3([-f[2], 0, f[0]]), u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]];
+  const rowZ = v => { let lo = -80, hi = 40; for (let i = 0; i < 80; i++){ const m = (lo + hi)/2; if (project(0, 0, m, SCREEN_CAM)[1] < v) lo = m; else hi = m; } return (lo + hi)/2; };
+  const vT = SCREEN.TARGET_TOP*SCREEN.h, vB = SCREEN.TARGET_BOT*SCREEN.h, zT = rowZ(vT), zB = rowZ(vB);
+  const k = (vB - vT)/((zT - zB)*u[2]);                       // screen pixels per world unit
+  const zc = zT - (SCREEN.h/2 - vT)/(u[2]*k), D = Math.hypot(P[0]-Lk[0], P[1]-Lk[1], P[2]-Lk[2]);
+  const look = [0, 0, zc], pos = [look[0] - f[0]*D, look[1] - f[1]*D, look[2] - f[2]*D];
+  return {ortho:true, pos, look, k, halfW:SCREEN.w/2/k, halfH:SCREEN.h/2/k, w:SCREEN.w, h:SCREEN.h, f, r, u, fov:SCREEN_CAM.fov,
+          pitch:Math.asin(-f[1])*180/Math.PI, zTop:zT, zBot:zB};
+})();
+let VIEW = 'persp';
+function setView(m){ VIEW = m === 'ortho' ? 'ortho' : 'persp'; return VIEW; }
+function viewCam(){ return VIEW === 'ortho' ? ORTHO_CAM : SCREEN_CAM; }
+/* the ground z that the orthographic view shows on the same screen row as ground z0 in perspective */
+function orthoRowZ(z0){ const v = project(0, 0, z0, SCREEN_CAM)[1], O = ORTHO_CAM; return O.look[2] + (O.h/2 - v)/(O.k*O.u[2]); }
+const ORTHO_M = (() => { const z = baseZ(Z_BAY_TOP + 1.4); return (project(1, 0, z, SCREEN_CAM)[0] - project(0, 0, z, SCREEN_CAM)[0])/ORTHO_CAM.k; })();
+const orthoBlend = z => VIEW === 'ortho' ? smooth01(DISP.zA, DISP.zE, z) : 0;
+const orthoGrow = z => 1 + orthoBlend(z)*(ORTHO_M - 1);
+
+/* the display mapping as used by the game: the perspective one above, or its orthographic form */
+function dispZ(z){ const z0 = baseZ(z), b = orthoBlend(z); return b ? z0 + b*(orthoRowZ(z0) - z0) : z0; }
+function dispSlope(z){ return VIEW === 'ortho' && z > DISP.zA ? (dispZ(z + 1e-3) - dispZ(z - 1e-3))/2e-3 : baseSlope(z); }
+function dispSx(z){ return baseSx(z)*orthoGrow(z); }
+function dispScale(z){ return baseScale(z)*orthoGrow(z); }   // relative size a bus is drawn at (times BUS_DRAW)
 function dispPoint(x, z){ return [x*dispSx(z), dispZ(z)]; }
 /* a bay as drawn: the outline of a parked 12-seat bus (drawn BUS_DRAW of its size) with a small even margin */
-function drawnBay(bx){ const L12 = busLen(12), [x, z] = dispPoint(bx, parkZ(L12)); return {x, z, hl:BUS_DRAW*L12/2 + 0.06, hw:BUS_DRAW*BUS_W/2 + 0.07}; }
+function drawnBay(bx){ const L12 = busLen(12), z0 = parkZ(L12), [x, z] = dispPoint(bx, z0), g = orthoGrow(z0); return {x, z, hl:BUS_DRAW*L12/2*g + 0.06, hw:BUS_DRAW*BUS_W/2*g + 0.07}; }
 function dispDir(dx, dz, z){ const a = dx*dispSx(z), b = dz*dispSlope(z), l = Math.hypot(a, b) || 1; return [a/l, b/l]; }
 
 const RAMP_SP = 0.36;                               // stickman spacing along and across a ramp
@@ -1936,6 +1971,8 @@ const CAM = SCREEN_CAM;
 function project(x, y, z, cam){                    // world -> game screen pixels (900 x 1950 design space)
   const CAM = cam || SCREEN_CAM, P = CAM.pos, f = norm3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]);
   const r = norm3([-f[2], 0, f[0]]), u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]];
+  if (CAM.ortho){ const d = [x-CAM.look[0], y-CAM.look[1], z-CAM.look[2]];
+    return [CAM.w/2 + (d[0]*r[0]+d[1]*r[1]+d[2]*r[2])*CAM.k, CAM.h/2 - (d[0]*u[0]+d[1]*u[1]+d[2]*u[2])*CAM.k]; }
   const d = [x-P[0], y-P[1], z-P[2]], zc = d[0]*f[0]+d[1]*f[1]+d[2]*f[2];
   const t = Math.tan(CAM.fov*Math.PI/360), xs = (d[0]*r[0]+d[1]*r[1]+d[2]*r[2])/(zc*t*CAM.w/CAM.h), ys = (d[0]*u[0]+d[1]*u[1]+d[2]*u[2])/(zc*t);
   return [(xs+1)/2*CAM.w, (1-ys)/2*CAM.h];
@@ -2204,7 +2241,8 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
+  get VIEW(){ return VIEW; }, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
