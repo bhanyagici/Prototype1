@@ -16,12 +16,17 @@
 
 ![390x844 screenshot](screenshot-390.png)
 
-**Showcase:** `dist/match-express-showcase.html` is one file with every feature to try (see *Showcase update*).
-Screenshots at 390 × 844:
+**Showcase:** `dist/match-express-showcase.html` is one file with every feature to try (see *High-up
+update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Screenshots at 390 × 844
+(`node tools/shoot-showcase.js`):
 - [the menu](screenshots/showcase-menu-390.png) and [the settings panel](screenshots/showcase-settings-390.png);
-- one level per theme: [meadow](screenshots/theme-meadow-390.png), [desert](screenshots/theme-desert-390.png),
-  [blossom](screenshots/theme-blossom-390.png), [town](screenshots/theme-town-390.png);
+- one level per theme, each on its plateau: [meadow](screenshots/theme-meadow-390.png),
+  [desert](screenshots/theme-desert-390.png), [blossom](screenshots/theme-blossom-390.png),
+  [town](screenshots/theme-town-390.png);
+- a spiral level in [Perspective](screenshots/spiral-persp-390.png) and in
+  [Orthographic](screenshots/spiral-ortho-390.png);
 - [a 12-seat articulated bus bending in a spiral](screenshots/articulated-spiral-390.png);
+- [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
 ## High-up update
@@ -1124,12 +1129,12 @@ node tests/shared.test.js     # 74 checks: level format, layout builder, warning
 node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
 node tests/ramps.test.js      # 6 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
                               #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 105 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/browser.test.js    # 106 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, articulated buses (every axle on the road's centre line and on the yard's routes,
                               #   every wheel on the road, rigid sections, straight in the queue and the bays, the same game as Rigid)
-node tests/showcase.test.js   # 23 checks: the 27 showcase levels (categories, labels, greedy wins, the zone) and the showcase file from
+node tests/showcase.test.js   # 24 checks: the 27 showcase levels (categories, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
                               #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
-node tests/editor.test.js     # 62 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
+node tests/editor.test.js     # 63 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
                               #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
 node tests/funnel.test.js     # 44 checks: the 40 funnel levels against the design table (lane counts included), the bots (greedy wins all, playtime, levels 1-5

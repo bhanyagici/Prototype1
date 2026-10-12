@@ -4874,7 +4874,7 @@ window.__me = {
       const p = new THREE.Vector3().setFromMatrixPosition(m.premultiply(v.body.matrixWorld)); return [p.x, p.y, p.z]; };
     return {art:v.art, bent:v.bent, f:v.snk, k:v.root.scale.x, sections:v.art ? A.secs.map(s => ({front:at(0, 0, s.fa), rear:at(0, 0, s.ra), wb:s.fa - s.ra})) : null,
       wheels:v.wheels.map(w => at(w[0], 0, w[2]))}; },
-  artLayout(cap){ return artLayout(cap); },
+  artLayout(cap){ return artLayout(cap); }, inView(x, y, z){ camera.updateMatrixWorld(); return inView(x, y, z, 0.08, 0.9); },
   setBot, setDebug(v){ DEBUG = v; WD.dbgGroup.visible = v; $('dbg').style.display = v ? 'block' : 'none'; },
   freeze(v){ frozen = v; }, restart: () => resetGame(), render(){ updateScene(0); renderer.render(scene, camera); },
   /* on-screen sizes in CSS px at the current viewport: standing stickmen (feet to top of head) and buses by capacity */

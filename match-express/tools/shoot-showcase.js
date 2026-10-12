@@ -5,7 +5,7 @@
 //   screenshots/theme-<id>-390.png           one level per theme (meadow, desert, blossom, town), a few seconds in
 //   screenshots/spiral-persp-390.png         a spiral level in the Perspective camera
 //   screenshots/spiral-ortho-390.png         the same moment in the Orthographic camera
-//   screenshots/parachute-edge-390.png       a full bus's parachute carrying it down over the board's edge
+//   screenshots/parachute-edge-390.png       a full bus's parachute carrying it down past the board's edge
 //   screenshots/articulated-spiral-390.png   a 12-seat articulated bus bending in a spiral
 //   screenshots/five-lanes-bar-390.png       a 5-lane level with the queue tunnel and the booster bar
 //   node tools/shoot-showcase.js             (needs playwright; CHROMIUM=/path/to/chrome as for the tests)
@@ -30,20 +30,22 @@ const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'screenshots'), F
     await play(id, theme, 'rigid', 14); await shot(`theme-${theme}-390.png`); }
   // a spiral level in both cameras (the same moment: the play is deterministic)
   for (const cam of ['persp', 'ortho']){ await play('road-double-spiral', 'meadow', 'rigid', 12, cam); await shot(`spiral-${cam}-390.png`); }
-  // a full bus's parachute over the board's edge: the first exit whose drop is in view, 1.5 s under the parachute
-  const chute = await p.evaluate(() => { const C = window.MECore, i = __me.playlist.findIndex(l => l.id === 'basics-easy');
-    __me.setTheme('meadow'); __me.setView('persp'); __me.setMove('rigid'); __me.openMenu(); __me.goLevel(i); __me.closeMenu(); __me.freeze(false);
-    const g = __me.game, seen = new Set(), cam = __me.camera;
-    for (let k = 0; k < 30*600 && !g.result; k++){
-      if (k % 6 === 0){ const a = C.greedyPick(g); if (a) __me.tap(a); } __me.advance(1/30);
-      const v = __me.views.find(w => w.b.state === 'jump' && w.jump && !seen.has(w.b.id)); if (!v) continue; seen.add(v.b.id);
-      const J = v.jump; if (J.edge > 90) continue;
-      // where it will be: past the edge and well below the board, on screen
-      const d = J.out + 0.5 + J.da*J.ke + 0.5*J.ke*J.ke + Math.min(1.1, (J.da + J.ke)/3.5), x = J.x + J.ex*d, z = J.z + J.ez*d + 0.45*(J.ke + 1);
-      cam.updateMatrixWorld(); const q = new cam.position.constructor(x, J.y - 1.5, z).project(cam);
-      if (Math.abs(q.x) > 0.75 || q.y < -0.6 || q.y > 0.8) continue;
-      while (g.t - J.t0 < J.t3 + 1.5) __me.advance(1/60);
-      __me.freeze(true); __me.render(); return {bus:v.b.id, y:+v.root.position.y.toFixed(2)}; }
+  // a full bus's parachute over the board's edge: a first run finds an exit whose bus, 1.9 s under its parachute, is
+  // below the board's edge and in view (not hidden behind the board); the play is deterministic, so a second run stops there
+  const chute = await p.evaluate(() => { const C = window.MECore;
+    const run = (id, stopAt) => { const i = __me.playlist.findIndex(l => l.id === id);
+      __me.setTheme('meadow'); __me.setView('persp'); __me.setMove('rigid'); __me.openMenu(); __me.goLevel(i); __me.closeMenu(); __me.freeze(true);
+      const g = __me.game;
+      for (let k = 0; k < 30*600 && !g.result; k++){
+        if (k % 6 === 0){ const a = C.greedyPick(g); if (a) __me.tap(a); } __me.advance(1/30);
+        if (stopAt != null){ if (k >= stopAt) return k; continue; }
+        for (const v of __me.views){ const J = v.jump; if (!J || v.b.state !== 'jump') continue; const u = g.t - J.t0;
+          if (u < J.t3 + 1.9 || u > J.t3 + 1.9 + 1/30) continue;
+          const p = v.root.position; if (p.y < 0.12 - 1.2 && __me.inView(p.x, p.y + 0.4, p.z) && __me.inView(p.x, p.y + 2.0, p.z)) return k; } }
+      return null; };
+    for (const id of ['basics-easy', 'road-spiral', 'ramp-straight', 'road-s-curve', 'lanes-2', 'road-hairpin']){
+      const k = run(id); if (k == null) continue;
+      run(id, k); __me.render(); return {id, k}; }
     return null; });
   if (chute) await shot('parachute-edge-390.png'); else { console.error('no parachute exit in view'); process.exitCode = 1; }
   // a 12-seat articulated bus in a spiral: driven into the single spiral's loop
