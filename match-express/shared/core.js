@@ -32,47 +32,32 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
     // "spiral" turns the next stretch into a loop that crosses over itself; "tail" is the point
     // inside the tunnel (optional, otherwise 2.1 units along the last tangent).
     "points": [
-      {"x": 0, "z": -1.3, "y": 0}, {"x": 0, "z": -2, "y": 0}, {"x": 0, "z": -3.05, "y": 0.05},
-      {"x": 0, "z": -4.1, "y": 0.1}, {"x": 0, "z": -5.15, "y": 0.15}, {"x": 0, "z": -6.2, "y": 0.2},
-      {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-      {"x": 0.6, "z": -7.44, "y": 1.58}, {"x": 1.41, "z": -7.39, "y": 1.61}, {"x": 2.07, "z": -7.88, "y": 1.64},
-      {"x": 2.27, "z": -9.14, "y": 1.65}, {"x": 1.8, "z": -10.04, "y": 1.67}
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -3.3, "y": 0.05},
+      {"x": 0, "z": -5.3, "y": 0.1},
+      {"x": 0, "z": -7.3, "y": 0.15},
+      {"x": 0, "z": -9.3, "y": 0.2},
+      {"x": 0, "z": -11, "y": 0.25},
+      {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+      {"x": 0.66, "z": -11.98, "y": 1.58},
+      {"x": 1.55, "z": -11.93, "y": 1.6},
+      {"x": 2.28, "z": -12.47, "y": 1.62},
+      {"x": 2.6, "z": -13.8, "y": 1.62},
+      {"x": 2.6, "z": -15.6, "y": 1.35},
+      {"x": 2, "z": -17.4, "y": 1.05},
+      {"x": 0.75, "z": -18.7, "y": 0.85},
+      {"x": -0.2, "z": -19.75, "y": 0.7}
     ]
   },
   "ramps": [
-    {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "columns": [   // ramp 1 (bottom left), front -> back
-      ["red", "red", "orange", "orange", "pink", "pink", "green", "green", "yellow", "purple"],
-      ["purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "purple", "blue", "blue"],
-      ["red", "red", "pink", "pink", "pink", "orange", "orange", "red", "red", "red"],
-      ["orange", "orange", "orange", "orange", "green", "green", "green", "orange", "orange", "yellow"]
-    ]},
-    {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "columns": [   // ramp 2 (lower right), front -> back
-      ["pink", "pink", "pink", "pink", "red", "red", "purple", "red", "red"],
-      ["red", "red", "green", "green", "yellow", "yellow", "purple", "purple", "purple"],
-      ["orange", "blue", "blue", "blue", "cyan", "cyan", "yellow", "yellow", "green"],
-      ["green", "orange", "orange", "pink", "pink", "pink", "green", "red", "red"]
-    ]},
-    {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "columns": [   // ramp 3 (middle left), front -> back
-      ["green", "green", "yellow", "yellow", "purple", "purple", "yellow", "green", "green", "blue"],
-      ["orange", "orange", "orange", "orange", "purple", "purple", "yellow", "green", "green", "orange"],
-      ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"],
-      ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"]
-    ]},
-    {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "columns": [   // ramp 4 (upper right), front -> back
-      ["yellow", "pink", "pink", "pink", "pink", "yellow", "yellow", "yellow", "cyan"],
-      ["pink", "pink", "pink", "pink", "yellow", "yellow", "red", "red", "cyan"],
-      ["cyan", "cyan", "cyan", "blue", "green", "yellow", "yellow", "yellow", "yellow"],
-      ["green", "red", "red", "red", "red", "purple", "purple", "orange", "orange"]
-    ]},
-    {"cp": 5, "side": -1, "shape": [[-2.74, -6.47], [-5.11, -6.81]], "columns": [   // ramp 5 (top left), front -> back
-      ["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"],
-      ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"],
-      ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"],
-      ["pink", "blue", "blue", "blue", "green", "blue", "cyan", "blue", "blue", "blue"]
-    ]}
+    {"side": -1, "columns": [["red", "red", "orange", "orange", "pink", "pink", "green", "green", "yellow", "purple"], ["purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "purple", "blue", "blue"], ["red", "red", "pink", "pink", "pink", "orange", "orange", "red", "red", "red"], ["orange", "orange", "orange", "orange", "green", "green", "green", "orange", "orange", "yellow"]], "at": 2.2},
+    {"side": 1, "columns": [["pink", "pink", "pink", "pink", "red", "red", "purple", "red", "red"], ["red", "red", "green", "green", "yellow", "yellow", "purple", "purple", "purple"], ["orange", "blue", "blue", "blue", "cyan", "cyan", "yellow", "yellow", "green"], ["green", "orange", "orange", "pink", "pink", "pink", "green", "red", "red"]], "at": 3.96},
+    {"side": -1, "columns": [["green", "green", "yellow", "yellow", "purple", "purple", "yellow", "green", "green", "blue"], ["orange", "orange", "orange", "orange", "purple", "purple", "yellow", "green", "green", "orange"], ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"], ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"]], "at": 6.54},
+    {"side": 1, "columns": [["yellow", "pink", "pink", "pink", "pink", "yellow", "yellow", "yellow", "cyan"], ["pink", "pink", "pink", "pink", "yellow", "yellow", "red", "red", "cyan"], ["cyan", "cyan", "cyan", "blue", "green", "yellow", "yellow", "yellow", "yellow"], ["green", "red", "red", "red", "red", "purple", "purple", "orange", "orange"]], "at": 7.81},
+    {"side": -1, "columns": [["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"], ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"], ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"], ["pink", "blue", "blue", "blue", "green", "blue", "cyan", "blue", "blue", "blue"]], "at": 27.73}
   ],
   "lanes": [
-    [   // lane 1, front first
+    [
       {"color": "red", "cap": 4},
       {"color": "pink", "cap": 12},
       {"color": "orange", "cap": 6},
@@ -83,7 +68,7 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
       {"color": "blue", "cap": 4},
       {"color": "cyan", "cap": 8}
     ],
-    [   // lane 2, front first
+    [
       {"color": "blue", "cap": 4},
       {"color": "cyan", "cap": 8},
       {"color": "purple", "cap": 6},
@@ -94,7 +79,7 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
       {"color": "orange", "cap": 6},
       {"color": "green", "cap": 12}
     ],
-    [   // lane 3, front first
+    [
       {"color": "purple", "cap": 4},
       {"color": "yellow", "cap": 12},
       {"color": "red", "cap": 8},
@@ -134,62 +119,10 @@ const PRESETS = /*PRESETS_BEGIN*/{
       "tail": [0, 1.85, -17.1]
     },
     "ramps": [
-      {
-        "cp": 2,
-        "side": 1,
-        "tilt": 35,
-        "rows": 15,
-        "columns": [
-          ["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"],
-          ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"],
-          ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"],
-          ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"],
-          ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"],
-          ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]
-        ]
-      },
-      {
-        "cp": 4,
-        "side": -1,
-        "tilt": 35,
-        "rows": 15,
-        "columns": [
-          ["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"],
-          ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"],
-          ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"],
-          ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"],
-          ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"],
-          ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]
-        ]
-      },
-      {
-        "cp": 10,
-        "side": 1,
-        "tilt": 35,
-        "rows": 15,
-        "columns": [
-          ["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"],
-          ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"],
-          ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"],
-          ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"],
-          ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"],
-          ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]
-        ]
-      },
-      {
-        "cp": 12,
-        "side": -1,
-        "tilt": 35,
-        "rows": 15,
-        "columns": [
-          ["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"],
-          ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"],
-          ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"],
-          ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"],
-          ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"],
-          ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]
-        ]
-      }
+      {"side": 1, "tilt": 35, "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]], "at": 1.617},
+      {"cp": 4, "side": -1, "tilt": 35, "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]]},
+      {"side": 1, "tilt": 35, "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]], "at": 20.632},
+      {"side": -1, "tilt": 35, "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]], "at": 20.91}
     ],
     "lanes": [
       [
@@ -272,66 +205,10 @@ const PRESETS = /*PRESETS_BEGIN*/{
       "tail": [0, 1.85, -17.1]
     },
     "ramps": [
-      {
-        "at": 1.856,
-        "side": 1,
-        "tilt": 35,
-        "shape": [[4.55, -4.81], [5.84, -7.11]],
-        "rows": 15,
-        "columns": [
-          ["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"],
-          ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"],
-          ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"],
-          ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"],
-          ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"],
-          ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]
-        ]
-      },
-      {
-        "at": 3.9248845776089056,
-        "side": -1,
-        "tilt": 35,
-        "shape": [[-3.7, -6.72], [-5.71, -9.51]],
-        "rows": 15,
-        "columns": [
-          ["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"],
-          ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"],
-          ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"],
-          ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"],
-          ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"],
-          ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]
-        ]
-      },
-      {
-        "at": 19.332386640671782,
-        "side": 1,
-        "tilt": 35,
-        "shape": [[4.67, -11.11], [6.26, -13.81]],
-        "rows": 15,
-        "columns": [
-          ["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"],
-          ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"],
-          ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"],
-          ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"],
-          ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"],
-          ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]
-        ]
-      },
-      {
-        "at": 21.210127635680642,
-        "side": -1,
-        "tilt": 35,
-        "shape": [[-3.77, -13.6], [-6.24, -16.16]],
-        "rows": 15,
-        "columns": [
-          ["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"],
-          ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"],
-          ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"],
-          ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"],
-          ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"],
-          ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]
-        ]
-      }
+      {"at": 1.856, "side": 1, "tilt": 35, "shape": [[4.55, -4.81], [5.84, -7.11]], "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]]},
+      {"at": 3.9248845776089056, "side": -1, "tilt": 35, "shape": [[-3.7, -6.72], [-5.71, -9.51]], "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]]},
+      {"at": 19.432, "side": 1, "tilt": 35, "shape": [[4.72, -11.18], [6.31, -13.88]], "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]]},
+      {"at": 21.210127635680642, "side": -1, "tilt": 35, "shape": [[-3.77, -13.6], [-6.24, -16.16]], "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]]}
     ],
     "lanes": [
       [
@@ -397,24 +274,27 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
-      {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "rows": 6, "columns": [["yellow", "red", "yellow", "blue", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red", "red", "red"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "yellow", "yellow", "red", "red", "red"]]},
-      {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "rows": 6, "columns": [["blue", "blue", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "red", "blue", "red"], ["yellow", "red", "red", "blue", "blue", "yellow"], ["yellow", "yellow", "yellow", "blue", "red", "red"]]},
-      {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "rows": 6, "columns": [["blue", "blue", "green", "green", "green", "red"], ["green", "yellow", "red", "red", "yellow", "green"], ["yellow", "yellow", "yellow", "green", "green", "green"], ["red", "blue", "blue", "red", "red", "yellow"]]},
-      {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]]}
+      {"side": -1, "rows": 6, "columns": [["yellow", "red", "yellow", "blue", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red", "red", "red"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "yellow", "yellow", "red", "red", "red"]], "cp": 1},
+      {"side": 1, "rows": 6, "columns": [["blue", "blue", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "red", "blue", "red"], ["yellow", "red", "red", "blue", "blue", "yellow"], ["yellow", "yellow", "yellow", "blue", "red", "red"]], "cp": 2},
+      {"side": 1, "rows": 6, "columns": [["blue", "blue", "green", "green", "green", "red"], ["green", "yellow", "red", "red", "yellow", "green"], ["yellow", "yellow", "yellow", "green", "green", "green"], ["red", "blue", "blue", "red", "red", "yellow"]], "cp": 4},
+      {"side": -1, "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "cp": 12}
     ],
     "lanes": [
       [
@@ -446,24 +326,27 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
-      {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "rows": 6, "columns": [["green", "blue", "blue", "blue", "green", "red"], ["blue", "blue", "yellow", "yellow", "red", "red"], ["green", "green", "yellow", "yellow", "yellow", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"]]},
-      {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "rows": 6, "columns": [["green", "yellow", "yellow", "yellow", "green", "green"], ["red", "green", "blue", "blue", "blue", "red"], ["green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "yellow", "green", "green", "blue"]]},
-      {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "rows": 6, "columns": [["green", "red", "red", "red", "green", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "blue", "red", "red", "green", "blue"]]},
-      {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "rows": 6, "columns": [["red", "red", "blue", "blue", "yellow", "red"], ["yellow", "blue", "blue", "yellow", "yellow", "red"], ["yellow", "blue", "green", "green", "green", "red"], ["green", "green", "blue", "yellow", "red", "red"]]}
+      {"side": -1, "rows": 6, "columns": [["green", "blue", "blue", "blue", "green", "red"], ["blue", "blue", "yellow", "yellow", "red", "red"], ["green", "green", "yellow", "yellow", "yellow", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"]], "at": 3.06},
+      {"side": 1, "rows": 6, "columns": [["green", "yellow", "yellow", "yellow", "green", "green"], ["red", "green", "blue", "blue", "blue", "red"], ["green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "yellow", "green", "green", "blue"]], "at": 3},
+      {"side": 1, "rows": 6, "columns": [["green", "red", "red", "red", "green", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "blue", "red", "red", "green", "blue"]], "at": 7.66},
+      {"side": -1, "rows": 6, "columns": [["red", "red", "blue", "blue", "yellow", "red"], ["yellow", "blue", "blue", "yellow", "yellow", "red"], ["yellow", "blue", "green", "green", "green", "red"], ["green", "green", "blue", "yellow", "red", "red"]], "at": 27.73}
     ],
     "lanes": [
       [
@@ -498,36 +381,36 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
       {
-        "cp": 1,
         "side": -1,
-        "shape": [[-2.74, -2.27], [-5.11, -2.61]],
         "rows": 6,
         "columns": [
           ["red", "red", "blue", "blue", "yellow", "yellow"],
           ["green", "green", "green", "red", "red", "red"],
           ["red", "red", "yellow", "yellow", "yellow", "green"],
           ["red", "red", "red", "yellow", "red", "yellow"]
-        ]
+        ],
+        "cp": 1
       },
       {
-        "cp": 2,
         "side": 1,
-        "shape": [[2.58, -3.3], [4.76, -3.61]],
         "rows": 6,
         "columns": [
           ["yellow", "blue", "red", "red", "red", "green"],
@@ -537,12 +420,11 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "tunnels": [
           {"col": 1, "row": 2, "w": 1, "h": 2, "color": "red", "count": 6}
-        ]
+        ],
+        "cp": 2
       },
       {
-        "cp": 3,
-        "side": -1,
-        "shape": [[-2.74, -4.37], [-5.11, -4.71]],
+        "side": 1,
         "rows": 6,
         "columns": [
           ["blue", "blue", "blue", "red", "red", "yellow"],
@@ -552,19 +434,19 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "tunnels": [
           {"col": 1, "row": 1, "w": 2, "h": 1, "color": "blue", "count": 8}
-        ]
+        ],
+        "cp": 4
       },
       {
-        "cp": 4,
-        "side": 1,
-        "shape": [[2.58, -5.4], [4.76, -5.71]],
+        "side": -1,
         "rows": 6,
         "columns": [
           ["green", "blue", "blue", "green", "green", "green"],
           ["yellow", "blue", "blue", "green", "green", "green"],
           ["blue", "blue", "yellow", "yellow", "yellow", "green"],
           ["green", "green", "yellow", "green", "green", "green"]
-        ]
+        ],
+        "cp": 12
       }
     ],
     "lanes": [
@@ -602,24 +484,27 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
-      {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "rows": 6, "columns": [["red", "red", "?red", "?blue", "?blue", "?blue"], ["red", "?red", "red", "?green", "?green", "yellow"], ["red", "?blue", "?yellow", "?yellow", "?blue", "green"], ["yellow", "?yellow", "?yellow", "?blue", "?blue", "?yellow"]]},
-      {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "rows": 6, "columns": [["yellow", "?yellow", "yellow", "red", "?yellow", "?yellow"], ["yellow", "yellow", "yellow", "?blue", "?blue", "green"], ["green", "green", "green", "?yellow", "?green", "?green"], ["blue", "?red", "red", "?red", "green", "yellow"]]},
-      {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "rows": 6, "columns": [["red", "?blue", "?blue", "?red", "?yellow", "yellow"], ["red", "?green", "?green", "red", "yellow", "?green"], ["red", "?red", "?blue", "?yellow", "blue", "blue"], ["green", "?red", "red", "?yellow", "?yellow", "yellow"]]},
-      {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "rows": 6, "columns": [["blue", "?blue", "?green", "?red", "?red", "?blue"], ["red", "?green", "?green", "?green", "?blue", "?blue"], ["blue", "?blue", "blue", "green", "?green", "green"], ["green", "green", "green", "?blue", "?red", "?red"]]}
+      {"side": -1, "rows": 6, "columns": [["red", "red", "?red", "?blue", "?blue", "?blue"], ["red", "?red", "red", "?green", "?green", "yellow"], ["red", "?blue", "?yellow", "?yellow", "?blue", "green"], ["yellow", "?yellow", "?yellow", "?blue", "?blue", "?yellow"]], "cp": 1},
+      {"side": 1, "rows": 6, "columns": [["yellow", "?yellow", "yellow", "red", "?yellow", "?yellow"], ["yellow", "yellow", "yellow", "?blue", "?blue", "green"], ["green", "green", "green", "?yellow", "?green", "?green"], ["blue", "?red", "red", "?red", "green", "yellow"]], "cp": 2},
+      {"side": 1, "rows": 6, "columns": [["red", "?blue", "?blue", "?red", "?yellow", "yellow"], ["red", "?green", "?green", "red", "yellow", "?green"], ["red", "?red", "?blue", "?yellow", "blue", "blue"], ["green", "?red", "red", "?yellow", "?yellow", "yellow"]], "cp": 4},
+      {"side": -1, "rows": 6, "columns": [["blue", "?blue", "?green", "?red", "?red", "?blue"], ["red", "?green", "?green", "?green", "?blue", "?blue"], ["blue", "?blue", "blue", "green", "?green", "green"], ["green", "green", "green", "?blue", "?red", "?red"]], "cp": 12}
     ],
     "lanes": [
       [
@@ -651,48 +536,47 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
       {
-        "cp": 1,
         "side": -1,
-        "shape": [[-2.74, -2.27], [-5.11, -2.61]],
         "rows": 6,
         "columns": [
           ["blue", "blue", "yellow", "blue", "blue", "blue"],
           ["red", "red", "yellow", "red", "red", "yellow"],
           ["red", "red", "red", "yellow", "green", "yellow"],
           ["yellow", "yellow", "blue", "blue", "blue", "yellow"]
-        ]
+        ],
+        "cp": 1
       },
       {
-        "cp": 2,
         "side": 1,
-        "shape": [[2.58, -3.3], [4.76, -3.61]],
         "rows": 6,
         "columns": [
           ["green", "green", "yellow", "yellow", "yellow", "red"],
           ["blue", "blue", "blue", "red", "red", "red"],
           ["yellow", "blue", "blue", "yellow", "red", "red"],
           ["yellow", "blue", "green", "green", "red", "red"]
-        ]
+        ],
+        "cp": 2
       },
       {
-        "cp": 3,
-        "side": -1,
-        "shape": [[-2.74, -4.37], [-5.11, -4.71]],
+        "side": 1,
         "rows": 6,
         "columns": [
           ["yellow", "green", "green", "red", "red", "green"],
@@ -702,19 +586,19 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "boxes": [
           {"col": 0, "row": 0, "w": 2, "h": 2, "lock": "K1"}
-        ]
+        ],
+        "cp": 4
       },
       {
-        "cp": 4,
-        "side": 1,
-        "shape": [[2.58, -5.4], [4.76, -5.71]],
+        "side": -1,
         "rows": 6,
         "columns": [
           ["yellow", "yellow", "yellow", "green", "green", "green"],
           ["yellow", "green", "green", "yellow", "yellow", "blue"],
           ["green", "green", "yellow", "blue", "blue", "blue"],
           ["green", "green", "green", "blue", "blue", "green"]
-        ]
+        ],
+        "cp": 12
       }
     ],
     "lanes": [
@@ -750,36 +634,36 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
       {
-        "cp": 1,
         "side": -1,
-        "shape": [[-2.74, -2.27], [-5.11, -2.61]],
         "rows": 6,
         "columns": [
           ["green", "yellow", "yellow", "yellow", "blue", "blue"],
           ["red", "red", "yellow", "blue", "blue", "red"],
           ["red", "red", "red", "blue", "green", "green"],
           ["green", "green", "blue", "blue", "blue", "red"]
-        ]
+        ],
+        "cp": 1
       },
       {
-        "cp": 2,
         "side": 1,
-        "shape": [[2.58, -3.3], [4.76, -3.61]],
         "rows": 6,
         "columns": [
           ["yellow", "yellow", "red", "red", "green", "green"],
@@ -789,31 +673,30 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "boxes": [
           {"col": 2, "row": 1, "w": 2, "h": 2, "count": 3}
-        ]
+        ],
+        "cp": 2
       },
       {
-        "cp": 3,
-        "side": -1,
-        "shape": [[-2.74, -4.37], [-5.11, -4.71]],
+        "side": 1,
         "rows": 6,
         "columns": [
           ["yellow", "yellow", "red", "red", "red", "green"],
           ["green", "green", "green", "blue", "blue", "blue"],
           ["yellow", "yellow", "green", "blue", "yellow", "yellow"],
           ["green", "blue", "blue", "red", "red", "red"]
-        ]
+        ],
+        "cp": 4
       },
       {
-        "cp": 4,
-        "side": 1,
-        "shape": [[2.58, -5.4], [4.76, -5.71]],
+        "side": -1,
         "rows": 6,
         "columns": [
           ["red", "red", "red", "yellow", "blue", "blue"],
           ["green", "red", "blue", "blue", "green", "green"],
           ["green", "yellow", "yellow", "yellow", "blue", "blue"],
           ["yellow", "yellow", "yellow", "red", "yellow", "blue"]
-        ]
+        ],
+        "cp": 12
       }
     ],
     "lanes": [
@@ -849,36 +732,36 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "road": {
       "points": [
         {"x": 0, "z": -1.3, "y": 0},
-        {"x": 0, "z": -2, "y": 0},
-        {"x": 0, "z": -3.05, "y": 0.05},
-        {"x": 0, "z": -4.1, "y": 0.1},
-        {"x": 0, "z": -5.15, "y": 0.15},
-        {"x": 0, "z": -6.2, "y": 0.2},
-        {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
-        {"x": 0.6, "z": -7.44, "y": 1.58},
-        {"x": 1.41, "z": -7.39, "y": 1.61},
-        {"x": 2.07, "z": -7.88, "y": 1.64},
-        {"x": 2.27, "z": -9.14, "y": 1.65},
-        {"x": 1.8, "z": -10.04, "y": 1.67}
+        {"x": 0, "z": -3.3, "y": 0.05},
+        {"x": 0, "z": -5.3, "y": 0.1},
+        {"x": 0, "z": -7.3, "y": 0.15},
+        {"x": 0, "z": -9.3, "y": 0.2},
+        {"x": 0, "z": -11, "y": 0.25},
+        {"x": 0, "z": -12.6, "y": 0.3, "spiral": {"r": 1.1, "side": -1, "yCross": 1.55}},
+        {"x": 0.66, "z": -11.98, "y": 1.58},
+        {"x": 1.55, "z": -11.93, "y": 1.6},
+        {"x": 2.28, "z": -12.47, "y": 1.62},
+        {"x": 2.6, "z": -13.8, "y": 1.62},
+        {"x": 2.6, "z": -15.6, "y": 1.35},
+        {"x": 2, "z": -17.4, "y": 1.05},
+        {"x": 0.75, "z": -18.7, "y": 0.85},
+        {"x": -0.2, "z": -19.75, "y": 0.7}
       ]
     },
     "ramps": [
       {
-        "cp": 1,
         "side": -1,
-        "shape": [[-2.74, -2.27], [-5.11, -2.61]],
         "rows": 6,
         "columns": [
           ["green", "green", "green", "red", "red", "green"],
           ["yellow", "yellow", "red", "red", "red", "purple"],
           ["green", "green", "purple", "purple", "red", "red"],
           ["blue", "purple", "red", "purple", "green", "red"]
-        ]
+        ],
+        "cp": 1
       },
       {
-        "cp": 2,
         "side": 1,
-        "shape": [[2.58, -3.3], [4.76, -3.61]],
         "rows": 6,
         "columns": [
           ["green", "red", "red", "red", "blue", "blue"],
@@ -888,24 +771,22 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "boxes": [
           {"col": 0, "row": 1, "w": 2, "h": 2, "lock": "K"}
-        ]
+        ],
+        "cp": 2
       },
       {
-        "cp": 3,
-        "side": -1,
-        "shape": [[-2.74, -4.37], [-5.11, -4.71]],
+        "side": 1,
         "rows": 6,
         "columns": [
           ["blue", "?red", "red", "red", "?green", "green"],
           ["yellow", "?yellow", "red", "blue", "?blue", "green"],
           ["purple", "?purple", "red", "yellow", "?blue", "?blue"],
           ["green", "?purple", "blue", "?blue", "?blue", "yellow"]
-        ]
+        ],
+        "cp": 4
       },
       {
-        "cp": 4,
-        "side": 1,
-        "shape": [[2.58, -5.4], [4.76, -5.71]],
+        "side": -1,
         "rows": 6,
         "columns": [
           ["purple", "purple", "purple", "yellow", "yellow", "yellow"],
@@ -915,7 +796,8 @@ const PRESETS = /*PRESETS_BEGIN*/{
         ],
         "tunnels": [
           {"col": 2, "row": 2, "w": 1, "h": 2, "color": "green", "count": 6}
-        ]
+        ],
+        "cp": 12
       }
     ],
     "lanes": [
@@ -1101,7 +983,7 @@ function filletPath(raw, r){
 }
 
 /* ============================ LEVEL FORMAT ============================ */
-const DEFAULT_RAMP_PLACE = LEVEL_DATA.ramps.map(r => r.shape ? {cp:r.cp, side:r.side, shape:r.shape} : {cp:r.cp, side:r.side});
+const DEFAULT_RAMP_PLACE = LEVEL_DATA.ramps.map(r => Object.assign(r.at != null ? {at:r.at} : {cp:r.cp}, {side:r.side}, r.shape ? {shape:r.shape} : {}));
 const clone = o => JSON.parse(JSON.stringify(o));
 /* "red" | "?red" (hidden) | null (empty)  ->  {color, hidden} | null */
 function parseCell(c){
@@ -1132,7 +1014,7 @@ function normalizeLevel(lv){
     const place = (r.at != null || r.cp != null || loose) ? {} : (DEFAULT_RAMP_PLACE[k] || {at: null});
     const nr = {side: r.side || place.side || (k % 2 ? -1 : 1), rows, columns: cols};
     if (loose) nr.front = [+r.front[0], +r.front[1]];
-    else if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else nr.at = null;
+    else if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else if (place.at != null) nr.at = place.at; else nr.at = null;
     if (r.tilt != null && isFinite(+r.tilt)) nr.tilt = +r.tilt;
     if (r.spread != null && isFinite(+r.spread) && +r.spread !== 0) nr.spread = clamp(+r.spread, -0.5, 1.5);
     if (r.push != null && isFinite(+r.push) && +r.push > 0) nr.push = +r.push;      // front node this much further from the road
@@ -1205,14 +1087,39 @@ function buildRoad(road){
   path.cps = cps;
   return path;
 }
+/* the road's edge on one side of the road around s, as a curve measured by its own arc length: E(u) is the edge
+   point u along it (u > 0 toward side x direction of travel, so a ramp's columns run the same way as before) */
+const lerpN = (a, b, t) => a + (b - a)*t;
+function roadEdge(ROAD, s, side, reach){
+  const o = {}, step = 0.04, n = Math.ceil(reach*1.8/step) + 2, pts = [], at = t => {
+    if (t < 0){ pathAt(ROAD, 0, o, 0); return [o.x + o.dx*t - o.dz*side*ROAD_HALF, o.z + o.dz*t + o.dx*side*ROAD_HALF]; }
+    if (t > ROAD.len){ pathAt(ROAD, ROAD.len, o, 0); const e = t - ROAD.len; return [o.x + o.dx*e - o.dz*side*ROAD_HALF, o.z + o.dz*e + o.dx*side*ROAD_HALF]; }
+    pathAt(ROAD, t, o, 0); return [o.x - o.dz*side*ROAD_HALF, o.z + o.dx*side*ROAD_HALF]; };
+  const fwd = [[0, at(s)]], back = [];
+  for (let k = 1; k <= n; k++){ const q = at(s + k*step), w = fwd[fwd.length - 1]; fwd.push([w[0] + Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q]); }
+  for (let k = 1; k <= n; k++){ const q = at(s - k*step), w = back.length ? back[back.length - 1] : fwd[0]; back.push([w[0] - Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q]); }
+  const list = back.reverse().concat(fwd);                      // ascending signed arc length along the direction of travel
+  const E = u => { const a = u*side; let lo = 0, hi = list.length - 1;
+    if (a <= list[0][0]) return list[0][1]; if (a >= list[hi][0]) return list[hi][1];
+    while (hi - lo > 1){ const m = (lo + hi) >> 1; if (list[m][0] <= a) lo = m; else hi = m; }
+    const f = (a - list[lo][0])/((list[hi][0] - list[lo][0]) || 1); return [lerpN(list[lo][1][0], list[hi][1][0], f), lerpN(list[lo][1][1], list[hi][1][1], f)]; };
+  return E;
+}
+/* A ramp: a grid of stickmen beside the road, its front edge always lying exactly on the road's edge - straight on a
+   straight road, following the curve on a curved one.  Its body follows a spline from the middle of that front edge
+   (straight out, tilted, or bent by `shape`); across the ramp every row keeps the front edge's own shape, turned with
+   the spline.  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
 function buildRamp(ROAD, rd, src, Y){
   let s = rd.at != null ? rd.at : rd.cp != null ? ROAD.pointS[clamp(rd.cp, 0, ROAD.pointS.length-1)] : ROAD.portalS*(0.2 + 0.15*src);
-  s = clamp(s, 0.6, ROAD.portalS - 0.6);
-  const p = {}; pathAt(ROAD, s, p, 0); const side = rd.side || 1;
-  if (rd.front){                                    // front node not on the road: the ramp starts there and no bus can reach it
-    let best = 1e9; for (let i = 0; i < ROAD.n; i++){ const d = Math.hypot(ROAD.P[i*3] - rd.front[0], ROAD.P[i*3+2] - rd.front[1]); if (d < best){ best = d; p.y = ROAD.P[i*3+1]; } }
-    p.x = rd.front[0]; p.z = rd.front[1]; p.dx = 0; p.dz = -1; s = Infinity;
+  let side = rd.side || 1;
+  if (rd.front){
+    let best = 1e9, bi = 0; for (let i = 0; i < ROAD.n; i++){ if (ROAD.cum[i] > ROAD.portalS) break;
+      const d = Math.hypot(ROAD.P[i*3] - rd.front[0], ROAD.P[i*3+2] - rd.front[1]); if (d < best){ best = d; bi = i; } }
+    s = ROAD.cum[bi]; const q = {}; pathAt(ROAD, s, q, 0);
+    side = ((rd.front[0] - q.x)*(-q.dz) + (rd.front[1] - q.z)*q.dx) >= 0 ? 1 : -1;
   }
+  s = clamp(s, 0.6, ROAD.portalS - 0.6);
+  const p = {}; pathAt(ROAD, s, p, 0);
   const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
   const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
   // `spread` fans the columns out (> 0) or draws them together (< 0) toward the back: the lateral spacing grows
@@ -1221,16 +1128,15 @@ function buildRamp(ROAD, rd, src, Y){
   const widthK = sv => 1 + spread*Math.max(0, (sv - 0.34)/depth);
   const halfWAt = sv => cols*RAMP_SP*widthK(sv)/2 + 0.16;
   const halfW0 = halfWAt(0), halfW = Math.max(halfW0, halfWAt(length));
-  // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees,
-  // pushed out so its lower corner just meets the road edge
+  const E = roadEdge(ROAD, s, side, halfW + 0.3), A = E(0);
+  // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees
   const tilt = rd.tilt != null ? rd.tilt*Math.PI/180 : null, wx = nx >= 0 ? 1 : -1;
   const tdx = tilt != null ? wx*Math.cos(tilt) : 0, tdz = tilt != null ? -Math.sin(tilt) : 0;
-  const off = rd.front ? 0 : ROAD_HALF + 0.06 + (rd.push || 0) + (tilt != null ? halfW0*Math.abs(tdx*nz - tdz*nx) : 0);
-  const ax = p.x + nx*off, az = p.z + nz*off, y = p.y - ((Y || YARD).RAMP_DROP || 0);
-  const c = [[ax,y,az]];
+  const y = p.y - ((Y || YARD).RAMP_DROP || 0);
+  const c = [[A[0], y, A[1]]];
   if (rd.shape && rd.shape.length) rd.shape.forEach(q => c.push([q[0], y, q[1]]));
   else if (tilt != null)                            // straight platform
-    c.push([ax + tdx*length*0.5, y, az + tdz*length*0.5], [ax + tdx*(length + 0.45), y, az + tdz*(length + 0.45)]);
+    c.push([A[0] + tdx*length*0.5, y, A[1] + tdz*length*0.5], [A[0] + tdx*(length + 0.45), y, A[1] + tdz*(length + 0.45)]);
   else {                                            // default shape: leave the road square-on, bend toward "up"
     const dir = a => [side*Math.cos(a), -Math.sin(a)];
     const a0 = Math.atan2(-nz, nx*side), a1 = 0.86;
@@ -1241,20 +1147,33 @@ function buildRamp(ROAD, rd, src, Y){
     const q = c[c.length-1], w = c[c.length-2], l = Math.hypot(q[0]-w[0], q[2]-w[2]) || 1, ext = length + 0.4 - spl.len;
     c[c.length-1] = [q[0] + (q[0]-w[0])/l*ext, y, q[2] + (q[2]-w[2])/l*ext]; spl = makePath(catmullRom(c, 24).pts);
   }
+  // across the ramp: the front edge's shape (the road edge, u along it), turned with the spline as it bends
+  const o0 = {}; pathAt(spl, 0, o0, 0); const th0 = Math.atan2(o0.dz, o0.dx);
+  const across = (sv, u) => { const o = {}; pathAt(spl, sv, o, 0); const e = E(u), dx = e[0] - A[0], dz = e[1] - A[1];
+    const a = Math.atan2(o.dz, o.dx) - th0, ca = Math.cos(a), sa = Math.sin(a);
+    return {x:o.x + dx*ca - dz*sa, z:o.z + dx*sa + dz*ca, o}; };
   const slots = [];
   for (let col=0; col<cols; col++){
     const colSlots = [];
     for (let r=0; r<rows; r++){
-      const sv = 0.34 + r*RAMP_SP, o = {}; pathAt(spl, sv, o, 0);
-      const lat = (col - (cols-1)/2)*RAMP_SP*widthK(sv);   // left normal of the ramp heading
-      colSlots.push({x:o.x + o.dz*lat, y, z:o.z - o.dx*lat, fx:-o.dx, fz:-o.dz});
+      const sv = 0.34 + r*RAMP_SP, q = across(sv, (col - (cols-1)/2)*RAMP_SP*widthK(sv));
+      colSlots.push({x:q.x, y, z:q.z, fx:-q.o.dx, fz:-q.o.dz});
     }
     slots.push(colSlots);
   }
-  const colOrder = slots.map((_, i) => i).sort((a,b) =>
-    Math.hypot(slots[a][0].x-p.x, slots[a][0].z-p.z) - Math.hypot(slots[b][0].x-p.x, slots[b][0].z-p.z));
+  // the outline: the front edge along the road edge, the sides and the back following the body
+  const front = [], right = [], back = [], left = [], NU = Math.max(4, Math.ceil(halfW0*2/0.12)), NS = Math.max(4, Math.ceil(length/0.15));
+  for (let k = 0; k <= NU; k++){ const u = -halfW0 + 2*halfW0*k/NU, e = E(u); front.push([e[0], e[1]]); }
+  for (let k = 1; k <= NS; k++){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, hw); right.push([q.x, q.z]); }
+  for (let k = 1; k < NU; k++){ const hw = halfWAt(length), u = hw - 2*hw*k/NU, q = across(length, u); back.push([q.x, q.z]); }
+  for (let k = NS; k >= 1; k--){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, -hw); left.push([q.x, q.z]); }
+  const outline = front.concat(right, back, left);
+  // columns nearest the boarding point first; of two as near as each other (either side of the middle of a front edge
+  // flush on the road) the one the bus passes first
+  const dq = c => Math.round(Math.hypot(slots[c][0].x-p.x, slots[c][0].z-p.z)*1e3);
+  const colOrder = slots.map((_, i) => i).sort((a,b) => dq(a) - dq(b) || (a - b)*side);
   return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:!rd.front};
+          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:true, front, outline, across, edge:E};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -2048,12 +1967,7 @@ function roadWarnings(L){
 }
 function rampSamples(r){ const out = [], o = {}; for (let s = 0.35; s <= r.length + 0.1; s += 0.25){ pathAt(r.spline, s, o, 0); out.push({x:o.x, z:o.z}); } return out; }
 /* a ramp's platform as drawn: the polygon between its left and right edges (its width follows halfWAt) */
-function rampOutline(r){
-  const L_ = [], R_ = [], o = {}, n = Math.max(2, Math.ceil(r.length/0.15));
-  for (let i = 0; i <= n; i++){ const sv = r.length*i/n; pathAt(r.spline, sv, o, 0); const hw = r.halfWAt ? r.halfWAt(sv) : r.halfW;
-    L_.push([o.x + o.dz*hw, o.z - o.dx*hw]); R_.push([o.x - o.dz*hw, o.z + o.dx*hw]); }
-  return L_.concat(R_.reverse());
-}
+function rampOutline(r){ return r.outline.map(q => q.slice()); }
 function inPoly(P, x, z){ let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++){ const a = P[i], b = P[j];
   if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0])*(z - a[1])/(b[1] - a[1]) + a[0]) c = !c; } return c; }
 function segDist(px, pz, a, b){ const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx*dx + dz*dz || 1e-9, t = clamp(((px - a[0])*dx + (pz - a[1])*dz)/l2, 0, 1);
@@ -2097,11 +2011,11 @@ function rampWarnings(L){
     if (!r.snapped) W.push({kind:'ramp-unsnapped', msg: label + ': its front node is not on the road (no bus can reach it)', x:r.x, z:r.z, ramp:r.src});
     else if (inSpiral(R, r.s, 0.8)) W.push({kind:'ramp-spiral', msg: label + ': boarding point is on a spiral overpass', x:r.x, z:r.z, ramp:r.src});
   });
-  // the exit tunnel and its hill sit on open ground: no earlier stretch of road may run through them at a similar height
-  // (one passing well below, as under a spiral's overpass, is fine)
+  // the exit tunnel stands on a stone base down to the ground: no earlier stretch of road may run through or under it
+  // (only one passing well above it, as a spiral's overpass, is fine)
   { const ex = exitFootprint(L.exit); let hit = null;
-    for (const p of road){ if (p.s > R.portalS - 2.6) break; if (Math.abs(p.y - L.exit.y) > 1.3) continue;
-      if (polyDist(ex, p.x, p.z) < ROAD_HALF - 0.2){ hit = p; break; } }
+    for (const p of road){ if (p.s > R.portalS - 2.6) break; if (p.y > L.exit.y + 2.4) continue;
+      if (polyDist(ex, p.x, p.z) < ROAD_HALF + 0.15){ hit = p; break; } }
     if (hit) W.push({kind:'exit-road', msg:'The exit tunnel sits on another stretch of the road', x:hit.x, z:hit.z}); }
   return W;
 }

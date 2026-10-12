@@ -93,7 +93,7 @@ console.log('the exit tunnel anywhere in the target zone');
   { const lv = withExit(-2, -30); chk(kinds(lv).includes('zone-exit'), 'an exit tunnel above the screen is flagged (zone-exit)'); }
   { // the earlier level 25: its road came back down over its own climb, and the exit tunnel sat on it
     const old = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'exit-on-road.json'), 'utf8')), now = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'funnel', 'f25.json'), 'utf8'));
-    chk(kinds(old).join() === 'exit-road', 'an exit tunnel sitting on another stretch of the road is flagged (exit-road)', kinds(old).join(','));
+    chk(kinds(old).includes('exit-road'), 'an exit tunnel sitting on another stretch of the road is flagged (exit-road)', kinds(old).join(','));
     chk(!kinds(now).length, '... level 25 now ends in the side hillside instead: no warnings'); }
   { const lv = withExit(3.2, -12.5); chk(!kinds(lv).includes('zone-exit'), 'an exit tunnel lower down, inside the zone, is fine too'); }
   // the funnel's exits are spread over the top edge

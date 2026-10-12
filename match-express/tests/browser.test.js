@@ -123,17 +123,19 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         const J = v.jump, L = __me.layout, r = L.RAMPS[v.boardRamp], samples = [];
         for (let i = 0; i < 40; i++){ __me.advance(1/30); samples.push({u:g.t - J.t0, x:v.root.position.x, y:v.root.position.y, z:v.root.position.z}); }
         const hx = Math.sin(J.h), hz = Math.cos(J.h), out = s => (s.x - J.x)*J.ex + (s.z - J.z)*J.ez, along = s => (s.x - J.x)*hx + (s.z - J.z)*hz;
-        const side = samples.filter(s => s.u <= J.t1), atEdge = side[side.length - 1], firstUp = samples.find(s => s.y > J.y + 0.02);
+        const side = samples.filter(s => s.u <= J.t1), atEdge = side[side.length - 1], firstUp = samples.find(s => s.u > J.t1 && s.y > atEdge.y + 0.02);
         const rampSide = (r.x - J.x)*J.ex + (r.z - J.z)*J.ez;                  // the ramp's boarding point relative to the exit direction
         const awayFromRamp = (() => { const o = {}; window.MECore.pathAt(L.ROAD, r.s, o, 0); const nx = -o.dz*r.side, nz = o.dx*r.side; return nx*J.ex + nz*J.ez; })();
-        return {maxAlong:Math.max(...side.map(s => Math.abs(along(s)))), flat:Math.max(...side.map(s => Math.abs(s.y - J.y))), outAtEdge:out(atEdge),
+        return {maxAlong:Math.max(...side.map(s => Math.abs(along(s)))), flat:Math.max(...side.map(s => Math.abs(s.y - J.y))) - J.lift - Math.max(0, __me.GD - J.y), outAtEdge:out(atEdge),
                 outAtHop:firstUp ? out(firstUp) : null, awayFromRamp, need:__me.ROAD_HALF + window.MECore.BUS_W/2}; });
-      chk(ex && ex.maxAlong < 0.02 && ex.flat < 0.01, 'a full bus first drives straight sideways (perpendicular to the road) without lifting', ex && `drift along road ${ex.maxAlong.toFixed(3)}`);
+      chk(ex && ex.maxAlong < 0.02 && ex.flat < 0.01, 'a full bus first drives straight sideways (perpendicular to the road), only rising out of the road\'s groove (or over a crowd)',
+          ex && `drift along road ${ex.maxAlong.toFixed(3)}, other lift ${ex.flat.toFixed(3)}`);
       chk(ex && ex.awayFromRamp < -0.99, 'it leaves on the side away from the ramp it boarded at');
       chk(ex && ex.outAtEdge >= ex.need && ex.outAtHop !== null && ex.outAtHop >= ex.need, 'the hop and parachute start only after the bus is completely off the road',
           ex && `clear at ${ex.need.toFixed(2)}, hop starts at ${ex.outAtHop && ex.outAtHop.toFixed(2)}`);
-      // a bus that fills under an overpass (ramp 5, below the U-turn after the spiral) slides further before it hops:
-      // during the hop and the first second under the parachute no raised road is overhead
+      // a bus that fills under an overpass (the old level 2: ramp 5, below the U-turn after the spiral) slides further
+      // before it hops: during the hop and the first second under the parachute no raised road is overhead
+      await p.evaluate(lv => { __me.loadLevel(lv, 'export'); if (__me.intro) __me.closeIntro(); __me.setBot(true); }, JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'level2-overpass.json'), 'utf8')));
       const ov = await p.evaluate(() => { const g = __me.game, L = __me.layout, R = L.ROAD; let v = null;
         for (let i = 0; i < 30*120 && !v; i++){ __me.advance(1/30); v = __me.views.find(w => w.b.state === 'jump' && w.jump && w.jump.out > 1.5 && g.t - w.jump.t0 < 0.05); }
         if (!v) return null;
@@ -280,15 +282,14 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     const after = await ed.evaluate(() => { const r = __ed.layout.RAMPS.find(r => r.src === 1); return {s:r.s, snapped:r.snapped}; });
     chk(Math.abs(after.s - before) > 0.6 && after.snapped, 'dragging the front node along the road moves the boarding point; it stays snapped', `${before.toFixed(2)} -> ${after.s.toFixed(2)}`);
     { const off = await ed.evaluate(() => { const r = __ed.layout.RAMPS.find(q => q.src === 1), [x0, z0] = r.ctrl[0], dx = r.ctrl[1][0] - x0, dz = r.ctrl[1][1] - z0, d = Math.hypot(dx, dz);
-        for (let t = 1.5; t < 8; t += 0.25){ const x = x0 + dx/d*t, z = z0 + dz/d*t; if (!__ed.snapFront(x, z)) return [x, z]; } return null; });   // outwards, clear of the road
+        return [x0 + dx/d*3, z0 + dz/d*3]; });   // outwards, well clear of the road
       const fp2 = await ed.evaluate(() => __ed.layout.RAMPS.find(q => q.src === 1).ctrl[0]);
       [mx, my] = await toScreen(...fp2); [tx, ty] = await toScreen(...off);
       await ed.mouse.move(mx, my); await ed.mouse.down(); await ed.mouse.move(tx, ty, {steps:8}); await ed.mouse.up();
-      const st = await ed.evaluate(() => ({snapped:__ed.layout.RAMPS.find(r => r.src === 1).snapped, warn:__ed.check.warnings.some(w => w.kind === 'ramp-unsnapped' && w.ramp === 1),
-        pill:/not on the road/.test(document.getElementById('insp').textContent), listed:/not connected|not on the road|unsnapped/i.test(document.getElementById('warnList').textContent)}));
-      chk(!st.snapped && st.warn && st.pill && st.listed, 'a front node dropped away from the road leaves the ramp unsnapped, with a warning', JSON.stringify(st));
-      await ed.locator('#insp button[data-a="snap"]').click();
-      chk(await ed.evaluate(() => __ed.layout.RAMPS.find(r => r.src === 1).snapped && !__ed.check.warnings.some(w => w.kind === 'ramp-unsnapped')), '"Snap to road" puts it back on the road'); }
+      const st = await ed.evaluate(() => { const L = __ed.layout, r = L.RAMPS.find(q => q.src === 1), o = {}; window.MECore.pathAt(L.ROAD, r.s, o, 0);
+        return {snapped:r.snapped, edge:Math.abs(Math.hypot(r.ctrl[0][0] - o.x, r.ctrl[0][1] - o.z) - window.MECore.ROAD_HALF), at:__ed.level.ramps[1].at != null && !__ed.level.ramps[1].front,
+          warn:__ed.check.warnings.some(w => w.kind === 'ramp-unsnapped')}; });
+      chk(st.snapped && st.edge < 1e-6 && st.at && !st.warn, 'a front node dropped away from the road snaps back onto the road: the front edge stays on the road edge', JSON.stringify(st)); }
     // the ramp tool adds a ramp at the clicked road side
     { const n = await ed.evaluate(() => __ed.level.ramps.length); await ed.evaluate(() => __ed.setTool('ramp'));
       const spot = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, R.pointS[3], o, 0); return [o.x - o.dz*1.2, o.z + o.dx*1.2]; });

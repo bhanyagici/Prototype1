@@ -38,10 +38,9 @@
         ["green", "green", "purple", "purple", "orange", "blue"],
         ["blue", "purple", "purple", "yellow", "yellow", "blue"]
       ],
-      "at": 34.583,
-      "side": 1,
-      "push": 0.04,
-      "shape": [[2.37, -13.23], [3.9, -13.23]]
+      "at": 16.4,
+      "side": -1,
+      "tilt": 35
     },
     {
       "rows": 6,
@@ -55,13 +54,12 @@
         ["blue", "blue", "orange", "orange", "yellow", "yellow"],
         ["green", "blue", "blue", "cyan", "orange", "orange"]
       ],
-      "at": 30.457,
-      "side": -1,
-      "push": 0.12,
-      "shape": [[0.39, -7.45], [-0.24, -6.06]],
+      "at": 34.6,
+      "side": 1,
       "tunnels": [
         {"col": 5, "row": 1, "w": 1, "h": 2, "color": "red", "count": 8}
-      ]
+      ],
+      "tilt": 35
     },
     {
       "rows": 6,
@@ -77,7 +75,6 @@
       ],
       "at": 14.713,
       "side": 1,
-      "push": 0.04,
       "shape": [
         [4.03, -4.06],
         [4.59, -3.82],
@@ -100,7 +97,6 @@
       ],
       "at": 32.496,
       "side": -1,
-      "push": 0.32,
       "shape": [[-2.49, -10.7], [-4.01, -10.52]]
     },
     {
@@ -117,7 +113,6 @@
       ],
       "at": 35.644,
       "side": -1,
-      "push": 0.04,
       "shape": [[-2.73, -14.3], [-4.62, -14.3]]
     }
   ],

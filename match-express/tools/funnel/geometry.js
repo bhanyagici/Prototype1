@@ -58,11 +58,11 @@ const rot = (n, t, deg) => { const a = deg*Math.PI/180; return [n[0]*Math.cos(a)
 const r2 = v => Math.round(v*100)/100;
 
 function rampShape(ROAD, s, side, q){
-  const {p, n, t} = frame(ROAD, s, side), len = rampLength(q.r) + 0.5, hw = halfW0(q.c), out = {at:+s.toFixed(3), side};
+  const {p, n, t} = frame(ROAD, s, side), len = rampLength(q.r) + 0.5, out = {at:+s.toFixed(3), side};
   if (q.kind === 'tilt'){ out.tilt = q.tilt || 35; return out; }
+  // the front edge lies flush on the road edge (the core lays it there); the body leaves it at angle a0
   const a0 = q.kind === 'perp' || q.kind === 'fan' ? 0 : (q.a || 0), d0 = rot(n, t, a0);
-  out.push = r2(hw*Math.abs(Math.sin(a0*Math.PI/180)) + 0.04);            // a turned front edge keeps its near corner off the road
-  const off = C.ROAD_HALF + 0.06 + out.push, A = [p.x + n[0]*off, p.z + n[1]*off], pts = [];
+  const off = C.ROAD_HALF, A = [p.x + n[0]*off, p.z + n[1]*off], pts = [];
   if (q.kind === 'arc'){ const N = 5; for (let k = 1; k <= N; k++){ const d = rot(n, t, a0 + (q.b || 40)*k/N), prev = pts.length ? pts[pts.length - 1] : A;
       pts.push([prev[0] + d[0]*len/N, prev[1] + d[1]*len/N]); } }
   else if (q.kind === 'L'){ const k1 = (q.k || 0.55)*len, d1 = rot(n, t, a0 + (q.b || 90)), c = [A[0] + d0[0]*k1, A[1] + d0[1]*k1];

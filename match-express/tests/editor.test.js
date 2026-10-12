@@ -159,8 +159,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await ed.mouse.click(box.x + 20, box.y + box.height - 20);
 
     console.log('inline warnings, level card, unsaved dot, drafts, empty states');
-    await E(() => { __ed.edit(n => { delete n.ramps[0].at; delete n.ramps[0].cp; n.ramps[0].front = [-9, 3]; }); __ed.sel = {kind:'ramp', ramp:0}; });
-    chk(await E(() => /not connected to the road/.test(document.querySelector('#insp .iwarn') && document.querySelector('#insp .iwarn').textContent)), 'a selected ramp with a problem shows the warning right in its card');
+    await E(() => { __ed.edit(n => { const o = n.ramps[2]; Object.assign(n.ramps[0], {at:__ed.layout.RAMPS.find(r => r.src === 2).s, side:__ed.layout.RAMPS.find(r => r.src === 2).side});
+      delete n.ramps[0].cp; delete n.ramps[0].shape; if (o.tilt != null) n.ramps[0].tilt = o.tilt; }); __ed.sel = {kind:'ramp', ramp:0}; });
+    chk(await E(() => /overlap/.test(document.querySelector('#insp .iwarn') && document.querySelector('#insp .iwarn').textContent)), 'a selected ramp with a problem shows the warning right in its card',
+      await E(() => __ed.check.warnings.map(w => w.kind + ':' + w.ramp).join(',')));
     await key('Control+z');
     await E(() => { __ed.sel = {kind:'level'}; });
     await ed.selectOption('#lvRole', 'Challenge'); await ed.click('#dPlus'); await ed.click('#dPlus');

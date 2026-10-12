@@ -1,0 +1,62 @@
+{
+  "format": 2,
+  "name": "Level 2 (old road)",
+  "seed": 11,
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2, "y": 0},
+      {"x": 0, "z": -3.05, "y": 0.05},
+      {"x": 0, "z": -4.1, "y": 0.1},
+      {"x": 0, "z": -5.15, "y": 0.15},
+      {"x": 0, "z": -6.2, "y": 0.2},
+      {"x": 0, "z": -8, "y": 0.3, "spiral": {"r": 1, "side": -1, "yCross": 1.55}},
+      {"x": 0.6, "z": -7.44, "y": 1.58},
+      {"x": 1.41, "z": -7.39, "y": 1.61},
+      {"x": 2.07, "z": -7.88, "y": 1.64},
+      {"x": 2.27, "z": -9.14, "y": 1.65},
+      {"x": 1.8, "z": -10.04, "y": 1.67}
+    ]
+  },
+  "ramps": [
+    {"cp": 1, "side": -1, "shape": [[-2.74, -2.27], [-5.11, -2.61]], "columns": [["red", "red", "orange", "orange", "pink", "pink", "green", "green", "yellow", "purple"], ["purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "purple", "blue", "blue"], ["red", "red", "pink", "pink", "pink", "orange", "orange", "red", "red", "red"], ["orange", "orange", "orange", "orange", "green", "green", "green", "orange", "orange", "yellow"]]},
+    {"cp": 2, "side": 1, "shape": [[2.58, -3.3], [4.76, -3.61]], "columns": [["pink", "pink", "pink", "pink", "red", "red", "purple", "red", "red"], ["red", "red", "green", "green", "yellow", "yellow", "purple", "purple", "purple"], ["orange", "blue", "blue", "blue", "cyan", "cyan", "yellow", "yellow", "green"], ["green", "orange", "orange", "pink", "pink", "pink", "green", "red", "red"]]},
+    {"cp": 3, "side": -1, "shape": [[-2.74, -4.37], [-5.11, -4.71]], "columns": [["green", "green", "yellow", "yellow", "purple", "purple", "yellow", "green", "green", "blue"], ["orange", "orange", "orange", "orange", "purple", "purple", "yellow", "green", "green", "orange"], ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"], ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"]]},
+    {"cp": 4, "side": 1, "shape": [[2.58, -5.4], [4.76, -5.71]], "columns": [["yellow", "pink", "pink", "pink", "pink", "yellow", "yellow", "yellow", "cyan"], ["pink", "pink", "pink", "pink", "yellow", "yellow", "red", "red", "cyan"], ["cyan", "cyan", "cyan", "blue", "green", "yellow", "yellow", "yellow", "yellow"], ["green", "red", "red", "red", "red", "purple", "purple", "orange", "orange"]]},
+    {"cp": 5, "side": -1, "shape": [[-2.74, -6.47], [-5.11, -6.81]], "columns": [["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"], ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"], ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"], ["pink", "blue", "blue", "blue", "green", "blue", "cyan", "blue", "blue", "blue"]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "cap": 4},
+      {"color": "pink", "cap": 12},
+      {"color": "orange", "cap": 6},
+      {"color": "green", "cap": 12, "hidden": true},
+      {"color": "purple", "cap": 8},
+      {"color": "pink", "cap": 6},
+      {"color": "yellow", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "cyan", "cap": 8}
+    ],
+    [
+      {"color": "blue", "cap": 4},
+      {"color": "cyan", "cap": 8},
+      {"color": "purple", "cap": 6},
+      {"color": "yellow", "cap": 6},
+      {"color": "pink", "cap": 6},
+      {"color": "blue", "cap": 8},
+      {"color": "orange", "cap": 8},
+      {"color": "orange", "cap": 6},
+      {"color": "green", "cap": 12}
+    ],
+    [
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "red", "cap": 8},
+      {"color": "cyan", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 12},
+      {"color": "orange", "cap": 4},
+      {"color": "purple", "cap": 6, "hidden": true}
+    ]
+  ]
+}

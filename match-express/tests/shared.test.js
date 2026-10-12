@@ -128,11 +128,14 @@ console.log('editor checks and warnings');
 console.log('compact layout (built-in level)');
 { const L = C.buildLayout(C.LEVEL_DATA), LC = C.buildLayout(CL), N = C.normalizeLevel(C.LEVEL_DATA), NC = C.normalizeLevel(CL);
   chk(L.Y.name === 'compact' && LC.Y.name === 'classic' && C.normalizeLevel({ramps:[], lanes:[]}).yard === undefined, 'levels default to the compact yard; "yard": "classic" selects the original one');
-  // columns in the order a bus takes them (nearest the road first): identical in both layouts
-  const prio = (Lx, Nx) => JSON.stringify(Lx.RAMPS.map(r => r.colOrder.map(c => Nx.ramps[r.src].columns[c])));
-  chk(prio(L, N) === prio(LC, NC) && JSON.stringify(N.lanes) === JSON.stringify(NC.lanes) && L.RAMPS.map(r => r.src).join('') === '01234',
-      'same stickmen, same buses, same ramp order and the same column priority as the classic layout');
-  chk(L.ROAD.len < LC.ROAD.len*0.6, 'the compact road is much shorter', L.ROAD.len.toFixed(1) + ' vs ' + LC.ROAD.len.toFixed(1));
+  // the same stickmen and buses as the classic level 2; ramps in the same order along the road; a bus takes the columns
+  // nearest its boarding point first (the middle of the front edge, which lies flush on the road)
+  const men = Nx => Nx.ramps.map(r => r.columns.map(c => c.join()).sort().join('|')).join('/');
+  const mid = L.RAMPS.every(r => { const m = (r.cols - 1)/2; return r.colOrder.every((c, i) => i === 0 || Math.abs(c - m) >= Math.abs(r.colOrder[i - 1] - m) - 1e-9); });
+  chk(men(N) === men(NC) && JSON.stringify(N.lanes) === JSON.stringify(NC.lanes) && L.RAMPS.map(r => r.src).join('') === '01234' && mid,
+      'same stickmen, same buses and the same ramp order as the classic layout; middle columns board first');
+  { const top = Math.min(...L.RAMPS.map(r => C.project(r.x, r.y, r.z)[1]), C.project(L.exit.x, L.exit.y + 1.9, L.exit.z)[1])/C.SCREEN.h;
+    chk(top < C.SCREEN.TARGET_TOP + 0.08 && !kinds(clone(C.LEVEL_DATA)).length, 'the road climbs through the whole target zone: its exit tunnel at the top', 'tunnel top at ' + (top*100).toFixed(1) + '% (zone from ' + C.SCREEN.TARGET_TOP*100 + '%)'); }
   const g = sim(C.LEVEL_DATA), g60 = sim(C.LEVEL_DATA, 1/60), t = C.testLevel(C.LEVEL_DATA, 200);
   chk(g.result === 'win' && g60.result === 'win' && t.label === 'Medium', 'greedy wins at 30 and 60 Hz; random bot stays Medium', `${g.sends} sends, ${g.t.toFixed(1)} s; random ${t.wins}/200`);
   // framing: everything fits the 900x1950 design screen (390x844 phone), below the top bar

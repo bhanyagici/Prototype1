@@ -256,7 +256,7 @@ const $ = id => document.getElementById(id);
 const clone = o => JSON.parse(JSON.stringify(o));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
 const KEY_DRAFT = 'match-express:editor-draft';
-const RAD = C.ROAD_HALF, SNAP = 1.5, ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
+const RAD = C.ROAD_HALF, ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
 const round = (v, d = 2) => +(+v).toFixed(d);
 
 /* ================================ ICONS ================================ */
@@ -677,9 +677,10 @@ function deletePoint(i){
   roadEdit(n => { n.road.points.splice(i, 1); }); sel = {kind:'level'}; renderAll();
 }
 function deleteRamp(i){ edit(n => { n.ramps.splice(i, 1); }); sel = {kind:'level'}; renderAll(); }
-/* where a ramp's front node lands: snapped to the road (boarding point s, side) when close enough */
+/* where a ramp's front node lands: always on the road - the nearest road point (boarding point s) and the side of the
+   road the pointer is on; the ramp's whole front edge then lies on that road edge */
 function snapFront(x, z){
-  const nr = nearestRoadS(x, z); if (nr.d > SNAP) return null;
+  const nr = nearestRoadS(x, z);
   const o = {}; C.pathAt(L.ROAD, nr.s, o, 0); const side = ((x - o.x)*(-o.dz) + (z - o.z)*o.dx) >= 0 ? 1 : -1;
   return {s:Math.min(Math.max(nr.s, 0.6), L.ROAD.portalS - 0.7), side, x:o.x, z:o.z};
 }
@@ -725,7 +726,8 @@ cv.addEventListener('pointerdown', e => {
     return; }
   if (tool === 'select' && hitExit(x, z)){ sel = {kind:'exit'}; renderAll(); drag = {kind:'exit'}; return; }   // (the road tool drags the last point)
   if (tool === 'select'){
-    const nd = hitNode(x, z, hr*1.1);
+    // a ramp's shape nodes sit on its stickmen: over a blocker, the blocker wins unless that ramp is selected
+    const nd1 = hitNode(x, z, hr*1.1), blk = nd1 && nd1.i > 0 && !(sel.kind === 'ramp' && rampList().includes(nd1.ramp)) ? hitBlocker(x, z) : null, nd = blk ? null : nd1;
     if (nd){ if (multi){ toggleSel('ramp', nd.ramp); press = null; return; }
       sel = {kind:'ramp', ramp:nd.ramp}; renderAll(); drag = nd.i === 0 ? {kind:'front', ramp:nd.ramp, x, z} : {kind:'shape', ramp:nd.ramp, k:nd.i - 1}; return; }
     const bl = hitBlocker(x, z); if (bl){ if (multi) toggleSel(bl.kind, {ramp:bl.ramp, i:bl.i}); else { sel = bl; renderAll(); } press = multi ? null : press; return; }
@@ -764,8 +766,7 @@ function moveFront(d, live){
   const src = d.ramp;
   const fn = n => { const rd = n.ramps[src], old = rampOf(src);
     if (!rd.shape) rd.shape = old.ctrl.slice(1).map(p => [round(p[0]), round(p[1])]);
-    if (d.snap){ rd.at = round(d.snap.s, 3); rd.side = d.snap.side; delete rd.cp; delete rd.front; }
-    else { rd.front = [round(d.x), round(d.z)]; delete rd.at; delete rd.cp; }
+    rd.at = round(d.snap.s, 3); rd.side = d.snap.side; delete rd.cp; delete rd.front; delete rd.push;
     const nl = C.buildLayout(clone(n)), nr = nl.RAMPS.find(q => q.src === src), dx = nr.ctrl[0][0] - old.ctrl[0][0], dz = nr.ctrl[0][1] - old.ctrl[0][1];
     rd.shape = rd.shape.map(p => [round(p[0] + dx), round(p[1] + dz)]); };
   live ? editLive(fn) : edit(fn);

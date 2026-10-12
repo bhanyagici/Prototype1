@@ -163,8 +163,11 @@ console.log('level checker');
   const cells = level({columns:[['red','red','red','red'], ['blue','blue','blue','blue'], ['blue','blue','blue','blue'], ['blue','blue','blue','blue']], tunnels:[{col:0, row:1, w:1, h:1, color:'red', count:2}]}, [[], [], []]);
   const front = level({columns:[[null,'red','red','red'], ['blue','blue','blue','blue'], ['blue','blue','blue','blue'], ['blue','blue','blue','blue']], tunnels:[{col:0, row:0, w:1, h:1, color:'red', count:2}]}, [[], [], []]);
   chk(kinds(ov).includes('blocker-overlap') && kinds(cells).includes('tunnel-cells') && kinds(front).includes('tunnel-front'), 'blockers: one per column, a tunnel on empty cells with a cell in front of it');
-  const loose = clone(C.LEVEL_DATA); delete loose.ramps[0].cp; loose.ramps[0].front = [-4, -3];
-  chk(kinds(loose).includes('ramp-unsnapped') && C.buildLayout(loose).RAMPS.find(r => r.src === 0).s === Infinity, 'a ramp whose front node is not on the road is reported (no bus reaches it)');
+  const loose = clone(C.LEVEL_DATA); delete loose.ramps[0].cp; delete loose.ramps[0].at; loose.ramps[0].front = [-4, -3];
+  { const R = C.buildLayout(loose).RAMPS.find(r => r.src === 0), o = {}; C.pathAt(C.buildLayout(loose).ROAD, R.s, o, 0);
+    const onEdge = Math.abs(Math.hypot(R.ctrl[0][0] - o.x, R.ctrl[0][1] - o.z) - C.ROAD_HALF) < 1e-6;
+    chk(!kinds(loose).includes('ramp-unsnapped') && R.snapped && isFinite(R.s) && onEdge && R.side === -1,
+      'a ramp whose front node is off the road snaps to the nearest road point, its front on the road edge', 's ' + R.s.toFixed(2)); }
 }
 
 console.log('demo levels: checker, bots and cheering');

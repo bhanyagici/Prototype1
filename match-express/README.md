@@ -16,6 +16,55 @@
 
 ![390x844 screenshot](screenshot-390.png)
 
+## Showcase update
+
+Gameplay rules are unchanged throughout: sending, boarding, bays, blockers, the bots and the
+checker's rules are the same as before. The 40-level funnel was not retuned or rebuilt.
+
+### The world: four calm themes
+- **Play area:** one calm, solid ground colour with a very fine speckle. Nothing stands
+  in it: no trees, rocks or props.
+- **Road:** still the full 3D spline, with its heights, pillars and spiral overpasses.
+  - Where it lies on the ground it is a clean **groove** sunk into the ground, with
+    soft rounded edges. The yard plaza, its necks and the queue channel are grooves too.
+  - Where it rises it is a **raised deck** exactly as wide as the road, with soft
+    rounded side walls, standing on pillars. A spiral's upper pass crosses over the
+    lower road.
+- **Ramps:** platforms with railings, posts and, when raised, pillars. The whole front
+  edge lies on the road's edge (see *Ramps and their nodes*).
+- **Tunnels:** simple rounded stone arches. The exit tunnel stands on a stone base down
+  to the ground and keeps clear of every other stretch of road. The checker's
+  `exit-road` warning now flags any road under or beside its base.
+- **Decoration:** only along the very top edge, a small themed strip that is partly
+  cut off by the screen edge.
+- **Themes** (settings ⚙ → *Theme*, or `index.html?theme=<id>`):
+
+| id | ground | strip along the top |
+|---|---|---|
+| `meadow` (default) | soft grass | stone circle, round bushes |
+| `desert` | sand | oasis, palms, cacti, bones, sandstone |
+| `blossom` | soft pink | flower pavilion, blossom trees |
+| `town` | light asphalt | café street, awnings, tables |
+
+  The theme is remembered with the other game settings.
+- **Faster to draw:** the ground keeps fine cells only where a groove's edge bends it;
+  level stretches are single quads. Triangles drawn fell from 480k to 220k.
+
+### Every level re-checked
+- **Level 2 and the seven demos** have a new road that climbs through the whole
+  target zone: a straight start with ramps on both sides, a spiral with its overpass,
+  then a winding climb to the exit tunnel at the top. The content (stickmen and buses)
+  is unchanged. Their ramps were placed so the greedy bot still wins every one.
+- **`tools/fix-ramps.js`** repaired every saved level whose ramps warned once the
+  ramps became flush (13 levels: the two Crowded Rush presets and 11 funnel levels).
+  - The usual fix slides the ramp a little along the road, its shape moving with it.
+  - If that is not enough, the ramp gets a smoother or straight shape.
+  - As a last resort it moves to the nearest free stretch of road.
+  - The tool also moved two exit tunnels clear of the road (funnel levels 11 and 28,
+    by 0.1).
+  - Content, lanes and roads are unchanged, and the greedy bot still wins everywhere.
+- Every level was checked from the top and at 390 × 844.
+
 ## Look and proportions: one fixed screen layout
 
 Every level uses the **same screen layout, zones and camera** (`SCREEN` and `SCREEN_CAM`
@@ -246,13 +295,15 @@ What the selection commands work on:
 - **Add ramp** (R), then click next to the road. A ramp appears there, on that side, as
   a straight platform at 35° (`"tilt"`).
 - A ramp is shaped by its **nodes**:
-  - The **front node** (diamond) is its boarding point. Drag it along the road. Within
-    reach of the road it snaps to it: a green ring shows where. Dropped away from the
-    road, it turns red and the ramp is **unsnapped**. Checks then warns that no bus can
-    reach it, and the ramp inspector offers *Snap to road*.
+  - The **front node** (diamond) is its boarding point. Drag it along the road; it always
+    snaps to the nearest road point, on the side of the road the pointer is on. A ramp
+    is never off the road.
+  - The ramp's whole **front edge lies flush on the road's edge**: straight along a
+    straight road, bent with it on a curve. Moving the ramp or the road keeps it that
+    way, in the game and the editor (the front follows its boarding point `at`).
   - The other nodes (squares) bend the ramp into a spline. *+* / *−* in the inspector
     add or remove one.
-- The front row always faces the road.
+- The front row always faces the road, its stickmen standing right at the road's edge.
 - The ramp inspector also sets columns and rows, flips the side, and has *Fill random*
   (runs of 1–3 per column from the colours already in the level), *Clear* and *Delete*.
 - Stickmen:
@@ -357,8 +408,9 @@ Level format 2:
   lanes: [[{ color, cap, hidden?, link?, key? }, ...], [...], [...]] }
 ```
 
-`front` (instead of `cp` / `at`) is a ramp whose front node is not on the road; no bus
-can reach it, and the checker says so. Blocker cells are counted from the front of the
+`front` (instead of `cp` / `at`, from older levels) is a ramp placed by a point: it snaps to
+the nearest road point, on that side. `push` (an old offset of the front node from the road)
+is ignored: every ramp's front edge lies on the road edge. Blocker cells are counted from the front of the
 ramp: `col` / `row` is the cell nearest the road, `w` columns wide and `h` rows deep.
 
 `tilt` (degrees) makes a straight platform leaving the road at that screen angle,
@@ -432,7 +484,7 @@ across lanes or bays.
 - count boxes between 1 and the number of buses;
 - groups of 2–3 that touch, and no two groups waiting for each other (`link-deadlock`);
 - one blocker per column, inside the ramp, a tunnel on empty cells with a cell in front;
-- ramps whose front node is off the road (`ramp-unsnapped`).
+- ramps that fold on a bend, overlap the road, another ramp or the exit tunnel (`ramp-*`).
 
 **Cheering with blockers.** At send time the prediction replays tunnels feeding their
 stickmen, and the locks a key bus is sure to open on its way. A box that opens any other
