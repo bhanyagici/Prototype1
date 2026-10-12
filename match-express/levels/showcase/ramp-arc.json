@@ -8,26 +8,26 @@
       {"x": 0, "z": -2.4, "y": 0.06},
       {"x": 0.02, "z": -3.55, "y": 0.12},
       {"x": 0.22, "z": -4.68, "y": 0.19},
-      {"x": 0.59, "z": -5.76, "y": 0.25},
-      {"x": 0.97, "z": -6.8, "y": 0.31},
-      {"x": 1.36, "z": -7.88, "y": 0.37},
-      {"x": 1.63, "z": -8.99, "y": 0.44},
-      {"x": 1.67, "z": -10.13, "y": 0.5},
-      {"x": 1.5, "z": -11.27, "y": 0.56},
-      {"x": 1.14, "z": -12.36, "y": 0.63},
-      {"x": 0.76, "z": -13.39, "y": 0.69},
-      {"x": 0.39, "z": -14.42, "y": 0.75},
-      {"x": 0.09, "z": -15.53, "y": 0.81},
-      {"x": 0, "z": -16.67, "y": 0.87},
-      {"x": 0, "z": -17.77, "y": 0.93},
-      {"x": 0, "z": -18.87, "y": 0.99}
+      {"x": 0.71, "z": -6.09, "y": 0.27, "spiral": {"r": 1.15, "side": 1}},
+      {"x": -0.89, "z": -7.12, "y": 1.82},
+      {"x": -1.04, "z": -8.19, "y": 1.67},
+      {"x": -0.69, "z": -9.23, "y": 1.49},
+      {"x": -0.36, "z": -10.33, "y": 1.3},
+      {"x": -0.25, "z": -11.47, "y": 1.11},
+      {"x": -0.35, "z": -12.61, "y": 1.03},
+      {"x": -0.67, "z": -13.71, "y": 1.1},
+      {"x": -1.05, "z": -14.75, "y": 1.16},
+      {"x": -1.41, "z": -15.84, "y": 1.22},
+      {"x": -1.58, "z": -16.97, "y": 1.28},
+      {"x": -1.59, "z": -18.12, "y": 1.35},
+      {"x": -1.59, "z": -18.72, "y": 1.35}
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 2.896, "side": -1, "shape": [[-1.15, -4.4], [-1.67, -4.55], [-2.16, -4.78], [-2.62, -5.07], [-3.03, -5.42]]},
-    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 6.516, "side": 1, "shape": [[2.48, -7.2], [2.97, -6.97], [3.42, -6.67], [3.83, -6.31], [4.18, -5.9]]},
-    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 11.585, "side": -1, "shape": [[-0.12, -12.08], [-0.64, -11.95], [-1.18, -11.89], [-1.72, -11.91], [-2.25, -12.01]]},
-    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 15.567, "side": 1, "shape": [[1.29, -16.42], [1.83, -16.39], [2.36, -16.28], [2.87, -16.1], [3.35, -15.85]]}
+    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 2.914, "side": -1, "shape": [[-1.15, -4.42], [-1.67, -4.58], [-2.16, -4.81], [-2.61, -5.1], [-3.02, -5.45]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 2.957, "side": 1, "shape": [[1.29, -3.8], [1.69, -3.44], [2.04, -3.02], [2.32, -2.56], [2.54, -2.07]]},
+    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 18.057, "side": -1, "shape": [[-2.01, -9.36], [-2.48, -9.62], [-2.91, -9.95], [-3.3, -10.33], [-3.62, -10.76]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 24.264, "side": 1, "shape": [[0.12, -15.29], [0.64, -15.42], [1.18, -15.47], [1.72, -15.45], [2.25, -15.35]]}
   ],
   "lanes": [
     [
@@ -57,10 +57,10 @@
     "category": "Layouts",
     "title": "Curved arc",
     "group": "Ramp shapes",
-    "road": "gentle",
+    "road": "gspiral",
     "h": 0.981,
     "difficulty": "Easy",
-    "random": 0.885,
-    "greedyT": 109.3
+    "random": 0.915,
+    "greedyT": 103.3
   }
 }

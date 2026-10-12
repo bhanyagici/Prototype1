@@ -378,7 +378,7 @@ function openLevel(id){
   if (isDirty() && !confirm(`Discard the unsaved changes to "${lvl.id}"?`)) return false;
   setLevel(sl.level); toast(`Opened "${id}"`); return true;
 }
-function newLevel(){
+function newLevel(){                                // the built-in level's road: one spiral, inside the target zone
   if (isDirty() && !confirm(`Discard the unsaved changes to "${lvl.id}"?`)) return;
   setLevel({format:2, id:nextId(), name:'New level', road:clone(C.LEVEL_DATA.road), ramps:[], lanes:[[], [], []]});
 }

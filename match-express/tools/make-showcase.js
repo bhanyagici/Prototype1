@@ -10,7 +10,7 @@
 // Every level must be balanced, free of warnings and won by the greedy bot.
 const fs = require('fs'), path = require('path'), {fork} = require('child_process');
 const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'levels', 'showcase');
-const {ROADS, SPECS} = require('./showcase/specs.js');
+const {ROADS, SPIRAL_ROADS, SPECS} = require('./showcase/specs.js');
 const LABEL_BAND = {'Easy':[0.46, 1], 'Medium':[0.15, 0.45], 'Hard':[0.05, 0.149], 'Very Hard':[0, 0.049]};
 
 if (process.env.SHOWCASE_WORKER){ worker(); return; }
@@ -81,7 +81,9 @@ function worker(){
   function make(spec){
     const t0 = Date.now(), target = spec.target || 'Medium', band = LABEL_BAND[target];
     // demo content keeps its stickmen and buses: if no placement on the spec's road lets the greedy bot win, other roads
-    const roads = spec.from ? [spec.road].concat(['gentle', 'scurve', 'zigzag', 'hairpin', 'winding'].filter(r => r !== spec.road)) : [spec.road];
+    // (a spiral road falls back on the other spiral roads only)
+    const others = SPIRAL_ROADS.includes(spec.road) ? SPIRAL_ROADS : ['gentle', 'scurve', 'zigzag', 'hairpin', 'winding'];
+    const roads = spec.from ? [spec.road].concat(others.filter(r => r !== spec.road)) : [spec.road];
     for (let gs = 0; gs < 8*roads.length; gs++){
       const geo = geometry(Object.assign({}, spec, {road:roads[Math.floor(gs/8)]}), gs % 8); if (!geo){ log(`${spec.id}: geometry attempt ${gs + 1}: a ramp found no place`); continue; }
       const w0 = warnings(Object.assign(clone(geo), {lanes:[[{color:'red', cap:4}], [], []]})).filter(w => /^(road|zone|ramp|exit)-/.test(w.kind));

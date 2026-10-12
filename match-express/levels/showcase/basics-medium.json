@@ -8,68 +8,68 @@
       {"x": 0, "z": -2.4, "y": 0.06},
       {"x": -0.2, "z": -3.48, "y": 0.12},
       {"x": -0.83, "z": -4.38, "y": 0.18},
-      {"x": -1.75, "z": -4.99, "y": 0.24},
-      {"x": -2.55, "z": -5.8, "y": 0.3},
-      {"x": -2.93, "z": -6.88, "y": 0.37},
-      {"x": -2.81, "z": -8.01, "y": 0.43},
-      {"x": -2.22, "z": -8.99, "y": 0.49},
-      {"x": -1.28, "z": -9.64, "y": 0.56},
-      {"x": -0.33, "z": -10.19, "y": 0.62},
-      {"x": 0.63, "z": -10.74, "y": 0.68},
-      {"x": 1.58, "z": -11.29, "y": 0.74},
-      {"x": 2.44, "z": -12.04, "y": 0.8},
-      {"x": 2.9, "z": -13.08, "y": 0.86},
-      {"x": 2.86, "z": -14.22, "y": 0.93},
-      {"x": 2.35, "z": -15.24, "y": 0.99},
-      {"x": 1.45, "z": -15.95, "y": 1},
-      {"x": 0.59, "z": -16.63, "y": 1},
-      {"x": 0.09, "z": -17.61, "y": 1},
-      {"x": 0, "z": -18.71, "y": 1},
-      {"x": 0, "z": -19.31, "y": 1}
+      {"x": -1.66, "z": -5.18, "y": 0.24},
+      {"x": -2.12, "z": -6.22, "y": 0.31},
+      {"x": -2.08, "z": -7.36, "y": 0.37},
+      {"x": -1.57, "z": -8.37, "y": 0.43},
+      {"x": -0.72, "z": -9.14, "y": 0.5},
+      {"x": -0.14, "z": -9.62, "y": 0.54, "spiral": {"r": 1.15, "side": 1}},
+      {"x": -1.02, "z": -11.31, "y": 2.09},
+      {"x": -0.61, "z": -12.32, "y": 1.93},
+      {"x": 0.21, "z": -13.05, "y": 1.75},
+      {"x": 0.83, "z": -13.97, "y": 1.57},
+      {"x": 1.01, "z": -15.05, "y": 1.39},
+      {"x": 1.01, "z": -16.15, "y": 1.29},
+      {"x": 1.01, "z": -17.25, "y": 1.35},
+      {"x": 1.01, "z": -17.95, "y": 1.35}
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["red", "red", "green", "green", "red"], ["purple", "purple", "orange", "green", "green"], ["purple", "yellow", "yellow", "green", "green"], ["purple", "purple", "green", "green", "red"], ["purple", "yellow", "yellow", "blue", "blue"], ["purple", "purple", "green", "green", "red"]], "at": 2.777, "side": 1, "shape": [[1.22, -5.19], [2.31, -5.98]]},
-    {"rows": 5, "columns": [["blue", "blue", "green", "green", "red"], ["purple", "yellow", "yellow", "yellow", "blue"], ["purple", "purple", "orange", "blue", "blue"], ["yellow", "orange", "orange", "blue", "red"], ["yellow", "yellow", "green", "green", "red"], ["blue", "blue", "green", "green", "red"]], "at": 7.405, "side": -1, "shape": [[-4.93, -8.09], [-6.21, -8.51]]},
-    {"rows": 5, "columns": [["purple", "orange", "orange", "blue", "blue"], ["purple", "purple", "orange", "blue", "blue"], ["red", "yellow", "yellow", "blue", "blue"], ["purple", "purple", "orange", "orange", "red"], ["purple", "yellow", "yellow", "blue", "blue"], ["red", "red", "orange", "blue", "red"]], "at": 12.959, "side": 1, "shape": [[1.93, -9.09], [2.37, -7.81]]},
-    {"rows": 5, "columns": [["purple", "purple", "orange", "orange", "red"], ["purple", "purple", "orange", "orange", "red"], ["red", "red", "green", "green", "red"], ["red", "red", "green", "green", "red"], ["yellow", "yellow", "orange", "red", "red"], ["purple", "purple", "green", "green", "red"]], "at": 18.05, "side": -1, "shape": [[0.73, -13.91], [-0.32, -13.07]]},
-    {"rows": 4, "columns": [["purple", "purple", "purple", "green"], ["yellow", "orange", "orange", "green"], ["purple", "purple", "green", "green"], ["yellow", "yellow", "orange", "orange"], ["red", "red", "orange", "orange"], ["red", "yellow", "orange", "blue"]], "at": 19.552, "side": 1, "shape": [[2.27, -17.72], [2.93, -18.68]]}
+    {"rows": 6, "columns": [["blue", "blue", "green", "green", "orange", "orange"], ["blue", "blue", "yellow", "red", "orange", "red"], ["blue", "yellow", "yellow", "green", "orange", "orange"], ["purple", "yellow", "green", "red", "red", "orange"], ["purple", "yellow", "yellow", "red", "orange", "orange"], ["blue", "blue", "blue", "green", "green", "orange"]], "at": 3.421, "side": 1, "shape": [[0.73, -6.04], [1.83, -7.1]]},
+    {"rows": 6, "columns": [["purple", "purple", "green", "green", "orange", "red"], ["blue", "yellow", "green", "red", "red", "orange"], ["blue", "blue", "green", "orange", "orange", "orange"], ["purple", "yellow", "yellow", "green", "orange", "red"], ["purple", "yellow", "green", "green", "orange", "red"], ["blue", "yellow", "yellow", "red", "red", "orange"]], "at": 7.922, "side": -1, "shape": [[-3.17, -9.98], [-4.19, -11.11]]},
+    {"rows": 6, "columns": [["blue", "blue", "yellow", "red", "red", "orange"], ["blue", "yellow", "yellow", "red", "red", "red"], ["purple", "purple", "green", "red", "red", "orange"], ["purple", "purple", "green", "red", "red", "orange"], ["blue", "blue", "yellow", "yellow", "orange", "orange"], ["blue", "yellow", "yellow", "orange", "orange", "orange"]], "at": 23.764, "side": 1, "shape": [[2.47, -12.33], [3.89, -11.75]]},
+    {"rows": 6, "columns": [["purple", "yellow", "green", "orange", "orange", "orange"], ["purple", "purple", "green", "orange", "orange", "red"], ["blue", "yellow", "yellow", "red", "red", "orange"], ["purple", "purple", "green", "green", "orange", "orange"], ["purple", "yellow", "green", "red", "red", "orange"], ["blue", "yellow", "green", "green", "orange", "orange"]], "at": 22.235, "side": -1, "shape": [[-2.47, -13.62], [-3.72, -14.5]]},
+    {"rows": 4, "columns": [["blue", "blue", "green", "red"], ["blue", "blue", "green", "green"], ["purple", "purple", "green", "green"], ["purple", "purple", "green", "green"], ["blue", "blue", "green", "green"], ["purple", "purple", "green", "red"]], "at": 26.596, "side": 1, "shape": [[2.92, -16.07], [4.09, -16.08]]}
   ],
   "lanes": [
     [
-      {"color": "green", "cap": 8},
       {"color": "orange", "cap": 12},
-      {"color": "orange", "cap": 6},
-      {"color": "red", "cap": 6},
-      {"color": "blue", "cap": 4},
-      {"color": "purple", "cap": 4},
-      {"color": "yellow", "cap": 8},
-      {"color": "yellow", "cap": 12}
-    ],
-    [
-      {"color": "green", "cap": 4},
-      {"color": "green", "cap": 8},
-      {"color": "purple", "cap": 12},
-      {"color": "purple", "cap": 12},
-      {"color": "blue", "cap": 4},
-      {"color": "red", "cap": 6},
-      {"color": "blue", "cap": 12},
-      {"color": "red", "cap": 4}
-    ],
-    [
-      {"color": "red", "cap": 6},
+      {"color": "orange", "cap": 12},
       {"color": "orange", "cap": 4},
+      {"color": "purple", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "green", "cap": 12},
+      {"color": "red", "cap": 12}
+    ],
+    [
+      {"color": "orange", "cap": 4},
+      {"color": "red", "cap": 6},
+      {"color": "red", "cap": 6},
+      {"color": "yellow", "cap": 8},
+      {"color": "green", "cap": 4},
+      {"color": "red", "cap": 4},
+      {"color": "orange", "cap": 4}
+    ],
+    [
+      {"color": "purple", "cap": 8},
+      {"color": "purple", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 6},
+      {"color": "yellow", "cap": 4},
       {"color": "green", "cap": 6},
-      {"color": "red", "cap": 6}
+      {"color": "green", "cap": 6},
+      {"color": "green", "cap": 4}
     ]
   ],
   "meta": {
     "category": "Basics",
     "title": "Medium",
-    "road": "scurve",
-    "h": 0.925,
+    "road": "sspiral",
+    "h": 0.963,
     "difficulty": "Medium",
-    "random": 0.44,
-    "greedyT": 114
+    "random": 0.205,
+    "greedyT": 127.5
   }
 }

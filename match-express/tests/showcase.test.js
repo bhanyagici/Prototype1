@@ -1,6 +1,6 @@
 // The showcase: node tests/showcase.test.js
 // The levels (levels/showcase): each in its category, balanced, free of warnings, inside the target zone and won by
-// the greedy bot; the Basics at their four difficulties.  Then the single file (tools/build-showcase.js ->
+// the greedy bot; the Basics at their four difficulties; spirals in at least 70% of them.  Then the single file (tools/build-showcase.js ->
 // dist/match-express-showcase.html) opened from file:// at 390 x 844: the start menu (categories, groups, a card per
 // level with its picture, name and tags), the settings panel from the menu and in play (theme, Rigid / Snake, speed,
 // sound, remembered after a reload), playing a card, previous / next inside its category, back to the menu (the last
@@ -42,7 +42,12 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   const lanes = ['lanes-2', 'lanes-3', 'lanes-4', 'lanes-5'].map(id => levels[id].lanes.length);
   chk(lanes.join() === '2,3,4,5', 'the lane-count levels have 2, 3, 4 and 5 queue lanes', lanes.join(','));
   const sp = levels['road-spiral'], dsp = levels['road-double-spiral'], ns = lv => lv.road.points.filter(p => p.spiral).length;
-  chk(ns(sp) === 1 && ns(dsp) === 2, 'the single spiral has one spiral, the double spiral two'); }
+  chk(ns(sp) === 1 && ns(dsp) === 2, 'the single spiral has one spiral, the double spiral two');
+  // spirals in most levels: at least 70% have one and several have two; a few Layouts keep a road without one
+  const withS = ids.filter(id => ns(levels[id]) >= 1), two = ids.filter(id => ns(levels[id]) >= 2), plain = ids.filter(id => !ns(levels[id]));
+  chk(withS.length >= 0.7*ids.length && two.length >= 4 && plain.length >= 3 && plain.every(id => levels[id].meta.category === 'Layouts'),
+    'at least 70% of the levels have a spiral, several two; the few without are Layouts',
+    `${withS.length}/${ids.length} with a spiral (${Math.round(100*withS.length/ids.length)}%), ${two.length} with two; without: ${plain.join(', ')}`); }
 
 (async () => {
   let chromium; try { ({chromium} = require('playwright')); } catch (e) { console.log('SKIP browser part: playwright is not installed'); return done(); }

@@ -65,6 +65,28 @@ bots and the checker are the same as before. Everything below is drawn on top of
   They use muted colours, so the buses and stickmen stay the most saturated things on
   screen.
 
+### Spirals in most levels
+- **22 of the 27 showcase levels (81%) have a spiral.** Five of them have two:
+  *Count box*, *All combined*, *Double spiral*, *Wide fan* and *4 lanes*.
+- **Seven new spiral roads** (`tools/showcase/specs.js`), each with a different loop:
+  - `spiralHi`: the loop high up;
+  - `spiralLow`: the loop right after the yard;
+  - `gspiral`: a gentle road with a loop;
+  - `sspiral`: an S-curve with a loop;
+  - `zspiral`: a zigzag with a loop;
+  - `dspiral2`: two loops, one on each side;
+  - `dspiralW`: two loops on the same side.
+- **Without a spiral**, all in Layouts, for variety: *S-curve*, *Zigzag*, *Hairpin*,
+  *Long winding road* and *Straight*.
+- **Fallback roads:** a demo-content level whose road finds no placement falls back on
+  the other spiral roads only.
+- **Difficulty:** the Basics still measure Easy, Medium, Hard and Very Hard.
+- **New levels in the editor** start on the built-in road, which has one spiral (tested).
+- **Re-checked:** every level was looked at in a top view (`index.html?top`) and at
+  390 × 844. The spiral overpasses are intact and the tunnels are clear of the road.
+  `tests/ramps.test.js` checks that every ramp lies flush on the road edge.
+  `tests/showcase.test.js` checks the 70% spiral share.
+
 ## Showcase update
 
 Gameplay rules are unchanged throughout: sending, boarding, bays, blockers, the bots and the

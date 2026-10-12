@@ -13,29 +13,25 @@
       {"x": -3.49, "z": -6.35, "y": 0.37},
       {"x": -3, "z": -7.31, "y": 0.43},
       {"x": -2.08, "z": -7.89, "y": 0.49},
-      {"x": -1.12, "z": -8.44, "y": 0.55},
-      {"x": -0.2, "z": -9.04, "y": 0.61},
-      {"x": 0.25, "z": -10.02, "y": 0.67},
-      {"x": -0.01, "z": -11.06, "y": 0.73},
-      {"x": -0.86, "z": -11.74, "y": 0.79},
-      {"x": -1.82, "z": -12.29, "y": 0.85},
-      {"x": -2.77, "z": -12.84, "y": 0.91},
-      {"x": -3.43, "z": -13.7, "y": 0.97},
-      {"x": -3.39, "z": -14.77, "y": 1},
-      {"x": -2.68, "z": -15.59, "y": 1},
-      {"x": -1.73, "z": -16.14, "y": 1},
-      {"x": -0.78, "z": -16.69, "y": 1},
-      {"x": -0.08, "z": -17.55, "y": 1},
-      {"x": 0, "z": -18.68, "y": 1},
-      {"x": 0, "z": -19.48, "y": 1}
+      {"x": -1.64, "z": -8.14, "y": 0.51, "spiral": {"r": 1.1, "side": -1}},
+      {"x": -0.35, "z": -6.75, "y": 2.07},
+      {"x": 0.73, "z": -6.79, "y": 1.91},
+      {"x": 1.73, "z": -7.35, "y": 1.72},
+      {"x": 2.31, "z": -8.29, "y": 1.54},
+      {"x": 2.34, "z": -9.43, "y": 1.35},
+      {"x": 2.34, "z": -10.53, "y": 1.27},
+      {"x": 2.34, "z": -11.63, "y": 1.34},
+      {"x": 2.34, "z": -12.73, "y": 1.35},
+      {"x": 2.34, "z": -13.83, "y": 1.35},
+      {"x": 2.34, "z": -14.93, "y": 1.35}
     ]
   },
   "ramps": [
-    {"rows": 6, "columns": [["orange", "blue", "pink", "purple", "purple", "pink"], ["orange", "orange", "pink", "purple", "cyan", "cyan"], ["blue", "red", "red", "red", "red", "cyan"], ["orange", "orange", "cyan", "purple", "cyan", "pink"], ["blue", "blue", "red", "red", "orange", "orange"], ["blue", "blue", "pink", "pink", "yellow", "pink"], ["blue", "blue", "red", "red", "orange", "orange"], ["blue", "blue", "cyan", "purple", "purple", "pink"]], "at": 2.517, "side": 1, "shape": [[0.65, -5.44], [1.55, -6.68]]},
-    {"rows": 6, "columns": [["blue", "yellow", "cyan", "cyan", "cyan", "pink"], ["green", "green", "pink", "purple", "orange", "orange"], ["green", "red", "red", "red", "red", "pink"], ["blue", "yellow", "cyan", "cyan", "orange", "green"], ["blue", "blue", "cyan", "purple", "purple", "pink"], ["green", "green", "cyan", "purple", "orange", "orange"], ["blue", "red", "purple", "purple", "orange", "pink"], ["green", "blue", "blue", "yellow", "yellow", "pink"]], "at": 7.447, "side": -1, "shape": [[-5.14, -8.24], [-6.43, -9.06]]},
-    {"rows": 6, "columns": [["blue", "yellow", "pink", "purple", "purple", "green"], ["blue", "blue", "cyan", "cyan", "orange", "green"], ["blue", "yellow", "yellow", "red", "red", "pink"], ["blue", "yellow", "yellow", "red", "red", "cyan"], ["pink", "pink", "cyan", "purple", "cyan", "cyan"], ["green", "green", "red", "purple", "purple", "green"], ["green", "green", "cyan", "cyan", "cyan", "cyan"], ["orange", "yellow", "yellow", "yellow", "yellow", "green"]], "at": 12.081, "side": 1, "shape": [[2.45, -9.43], [3.95, -9.13]]},
-    {"rows": 6, "columns": [["green", "blue", "pink", "pink", "orange", "pink"], ["green", "yellow", "yellow", "purple", "purple", "cyan"], ["blue", "red", "pink", "pink", "cyan", "cyan"], ["green", "red", "cyan", "yellow", "red", "red"], ["green", "green", "pink", "pink", "orange", "orange"], ["blue", "red", "pink", "red", "red", "pink"], ["green", "red", "red", "yellow", "yellow", "cyan"], ["pink", "pink", "pink", "purple", "purple", "green"]], "at": 17.114, "side": -1, "shape": [[-4.84, -11.7], [-6, -10.71]]},
-    {"rows": 4, "columns": [["orange", "orange", "pink", "pink"], ["orange", "blue", "red", "purple"], ["green", "red", "red", "yellow"], ["green", "green", "cyan", "yellow"], ["blue", "blue", "cyan", "purple"], ["blue", "red", "red", "purple"], ["green", "blue", "cyan", "cyan"], ["orange", "yellow", "pink", "pink"]], "at": 22.148, "side": 1, "shape": [[0.49, -15.27], [1.26, -14.38]]}
+    {"rows": 6, "columns": [["orange", "blue", "pink", "purple", "purple", "pink"], ["orange", "orange", "pink", "purple", "cyan", "cyan"], ["blue", "red", "red", "red", "red", "cyan"], ["orange", "orange", "cyan", "purple", "cyan", "pink"], ["blue", "blue", "red", "red", "orange", "orange"], ["blue", "blue", "pink", "pink", "yellow", "pink"], ["blue", "blue", "red", "red", "orange", "orange"], ["blue", "blue", "cyan", "purple", "purple", "pink"]], "at": 2.041, "side": 1, "shape": [[1.51, -4.55], [2.76, -5.43]]},
+    {"rows": 6, "columns": [["blue", "yellow", "pink", "purple", "purple", "green"], ["blue", "blue", "cyan", "cyan", "orange", "green"], ["blue", "yellow", "yellow", "red", "red", "pink"], ["blue", "yellow", "yellow", "red", "red", "cyan"], ["pink", "pink", "cyan", "purple", "cyan", "cyan"], ["green", "green", "red", "purple", "purple", "green"], ["green", "green", "cyan", "cyan", "cyan", "cyan"], ["orange", "yellow", "yellow", "yellow", "yellow", "green"]], "at": 7.515, "side": -1, "shape": [[-5.06, -8.36], [-6.31, -9.23]]},
+    {"rows": 6, "columns": [["green", "blue", "pink", "pink", "orange", "pink"], ["green", "yellow", "yellow", "purple", "purple", "cyan"], ["blue", "red", "pink", "pink", "cyan", "cyan"], ["green", "red", "cyan", "yellow", "red", "red"], ["green", "green", "pink", "pink", "orange", "orange"], ["blue", "red", "pink", "red", "red", "pink"], ["green", "red", "red", "yellow", "yellow", "cyan"], ["pink", "pink", "pink", "purple", "purple", "green"]], "at": 23.196, "side": 1, "shape": [[4.03, -6.62], [5.34, -5.83]]},
+    {"rows": 6, "columns": [["blue", "yellow", "cyan", "cyan", "cyan", "pink"], ["green", "green", "pink", "purple", "orange", "orange"], ["green", "red", "red", "red", "red", "pink"], ["blue", "yellow", "cyan", "cyan", "orange", "green"], ["blue", "blue", "cyan", "purple", "purple", "pink"], ["green", "green", "cyan", "purple", "orange", "orange"], ["blue", "red", "purple", "purple", "orange", "pink"], ["green", "blue", "blue", "yellow", "yellow", "pink"]], "at": 5.078, "side": -1, "shape": [[-4.21, -3.07], [-5.1, -1.83]]},
+    {"rows": 4, "columns": [["orange", "orange", "pink", "pink"], ["orange", "blue", "red", "purple"], ["green", "red", "red", "yellow"], ["green", "green", "cyan", "yellow"], ["blue", "blue", "cyan", "purple"], ["blue", "red", "red", "purple"], ["green", "blue", "cyan", "cyan"], ["orange", "yellow", "pink", "pink"]], "at": 26.76, "side": 1, "shape": [[4.25, -11.28], [5.42, -11.28]]}
   ],
   "lanes": [
     [
@@ -77,10 +73,10 @@
   "meta": {
     "category": "Basics",
     "title": "Very Hard",
-    "road": "zigzag",
+    "road": "zspiral",
     "h": 0.981,
     "difficulty": "Very Hard",
     "random": 0.005,
-    "greedyT": 164.2
+    "greedyT": 208.6
   }
 }

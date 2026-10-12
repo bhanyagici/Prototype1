@@ -185,6 +185,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await key('Control+n');
     chk(await E(() => /^lvl_\d{3}$/.test(__ed.level.id) && !__ed.level.ramps.length && document.getElementById('emptyView').classList.contains('show') && /No ramps yet/.test(document.getElementById('emptyView').textContent)),
       'Ctrl+N starts a new level; with no ramps the view says so, with an Add ramp button');
+    chk(await E(() => __ed.level.road.points.filter(p => p.spiral).length === 1), 'a new level starts with one spiral on its road');
     chk(await E(() => /No buses yet – Add bus/.test(document.getElementById('queueSvg').textContent)), 'an empty queue says "No buses yet – Add bus"');
     await ed.click('#evAddRamp');
     chk(await E(() => __ed.level.ramps.length === 1 && !__ed.check.warnings.some(w => w.ramp === 0) && !document.getElementById('emptyView').classList.contains('show')), 'Add ramp puts a ramp on a free stretch of road', await E(() => JSON.stringify(__ed.check.warnings.map(w => w.kind))));
