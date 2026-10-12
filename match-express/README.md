@@ -21,7 +21,7 @@ Screenshots at 390 × 844:
 - [the menu](screenshots/showcase-menu-390.png) and [the settings panel](screenshots/showcase-settings-390.png);
 - one level per theme: [meadow](screenshots/theme-meadow-390.png), [desert](screenshots/theme-desert-390.png),
   [blossom](screenshots/theme-blossom-390.png), [town](screenshots/theme-town-390.png);
-- [a long bus in Snake mode in a spiral](screenshots/snake-spiral-390.png);
+- [a 12-seat articulated bus bending in a spiral](screenshots/articulated-spiral-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
 ## High-up update
@@ -179,31 +179,49 @@ checker's rules are the same as before. The 40-level funnel was not retuned or r
 - The choice is remembered with the other game settings (`localStorage`, key
   `match-express:prefs`).
 
-### Bus movement: Rigid or Snake
-A game setting (⚙ → *Buses: Rigid / Snake*, the showcase's settings panel, or
-`index.html?move=snake`). It is purely visual: the simulation is the same.
-- **Rigid:** the whole bus turns as one piece, as before.
-- **Snake:** the body follows the curve of the road like a train of carriages. That
-  includes its seat rows, walls, floor, wheels, seated passengers and lights. A long bus
-  wraps around a spiral.
-  - **How it bends:** through 9 frames from front to back. Each frame is placed on the
-    bus's path at its own distance from the bus's centre:
-    - on the main road, the 3D spline with its heights;
-    - in the yard, the route as drawn, measured as drawn so it never looks squashed.
-  - A vertex shader carries the body along the frames. The shadow follows too.
-  - **Where:** Snake applies on the main road and on the yard's entry and collector
-    roads. In the queue, in a bay and on the parachute exit the bus is straight.
-  - It bends and straightens smoothly, over about 0.4 s.
-  - The browser test drives a 12-seat bus along the whole road and back to a bay:
-    - every frame stays within 0.15 of the road's centre line, through the spiral too;
-    - on the yard's roads, every frame stays within 0.1 of its route;
-    - the bus is straight in the queue and once parked.
+### Bus movement: Rigid or Articulated (replaces Snake)
+A game setting: ⚙ → *Buses: Rigid / Articulated*, the showcase's settings panel, or
+`index.html?move=articulated`. A saved *Snake* choice now opens as Articulated. It is
+purely visual: speeds, timings and rules are the same, and the browser test plays the
+same taps in both modes and gets the same game.
+- **Rigid:** the whole bus turns as one piece.
+- **Articulated:** like a metrobus, rigid sections joined by accordion bellows.
+  - **Sections:** 4 seats = 1 section (no joint); 6 seats = 2 (2 + 1 rows); 8 seats = 2
+    (2 + 2); 12 seats = 3 (2 + 2 + 2).
+  - **Same length:** the bus is as long as the rigid one. Its seat rows sit a little
+    closer together (0.29 instead of 0.34) so a 0.12 bellows fits at each joint.
+  - **The sections:** each has its own walls, nearly square at the joints and rounded
+    at the bus's two ends. The headlights are on the first section and the tail lights
+    on the last.
+  - **The bellows:** a slightly darker shade of the bus colour, with five folds of
+    alternating light and dark.
+  - **How it moves:** every section has a front and a rear axle, and both stay on the
+    bus's path:
+    - on the main road, the 3D spline with its spirals;
+    - in the yard, the route as drawn.
+
+    The rear axle goes at its place along the path. The front axle goes one wheelbase
+    further on, as a chord of the curve. The section is the rigid body between them.
+    Only the bellows between sections bend and stretch.
+  - **On screen:** a vertex shader carries the body through two frames per section, one
+    at each end. Seated passengers, wheels, lights and the shadow follow.
+  - **Where:** it bends on the main road and on the yard's entry and collector roads. In
+    the queue and the bays the bus stands straight. It straightens smoothly, in about
+    0.4 s, when it leaves the road on its parachute.
+  - **Tested:** the browser test drives a 12-seat bus along the whole road, through the
+    spiral and back to a bay:
+    - every axle stays on the road's centre line (worst under 0.1);
+    - every wheel stays on the road;
+    - every section keeps its wheelbase exactly;
+    - the bus bends at its joints in the curves;
+    - on the yard's roads, the axles stay on the route;
+    - it is straight in the queue and once parked.
 
 ### The showcase: `dist/match-express-showcase.html`
 One self-contained file (double-click, no server, no network) to try everything.
 - **Start menu:** level cards in categories. Each card shows the level's picture, its
   name and tags: difficulty, lanes and blockers.
-- **Settings panel** (from the menu and in play): theme, bus movement (Rigid / Snake),
+- **Settings panel** (from the menu and in play): theme, bus movement (Rigid / Articulated), camera (Perspective / Orthographic),
   speed (1x–2x) and sound on / off. The last settings are remembered (`localStorage`).
 - **In play:**
   - back to the menu (🏠), which marks the last card picked;
@@ -1106,8 +1124,9 @@ node tests/shared.test.js     # 74 checks: level format, layout builder, warning
 node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
 node tests/ramps.test.js      # 6 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
                               #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 101 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
-                              #   Snake buses (every segment on the road and on the yard's routes, straight in the queue and the bays)
+node tests/browser.test.js    # 105 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+                              #   the camera setting, articulated buses (every axle on the road's centre line and on the yard's routes,
+                              #   every wheel on the road, rigid sections, straight in the queue and the bays, the same game as Rigid)
 node tests/showcase.test.js   # 23 checks: the 27 showcase levels (categories, labels, greedy wins, the zone) and the showcase file from
                               #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
 node tests/editor.test.js     # 62 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,

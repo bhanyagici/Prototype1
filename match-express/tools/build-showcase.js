@@ -3,7 +3,7 @@
 // It opens on a start menu of level cards in categories (levels/showcase/showcase-order.json): Basics, Blockers and
 // Layouts (roads, ramp shapes, lane counts); each card shows the level's picture (levels/showcase/thumbs, made by
 // tools/shoot-showcase-thumbs.js), its name and tags (difficulty, lanes, blockers).  The game's showcase mode
-// (window.ME_SHARE.showcase) adds: the settings panel (theme, Rigid / Snake buses, speed 1x-2x, sound) from the menu
+// (window.ME_SHARE.showcase) adds: the settings panel (theme, Rigid / Articulated buses, speed 1x-2x, sound) from the menu
 // and in play, back to the menu, previous / next inside the category, restart, the booster bar and the stats panel.
 // Settings are kept in localStorage.
 //   node tools/build-showcase.js
