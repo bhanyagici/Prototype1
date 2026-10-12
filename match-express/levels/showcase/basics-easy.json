@@ -1,0 +1,59 @@
+{
+  "format": 2,
+  "id": "basics-easy",
+  "name": "Easy",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0.02, "z": -3.55, "y": 0.12},
+      {"x": 0.22, "z": -4.68, "y": 0.19},
+      {"x": 0.59, "z": -5.76, "y": 0.25},
+      {"x": 0.97, "z": -6.8, "y": 0.31},
+      {"x": 1.36, "z": -7.88, "y": 0.37},
+      {"x": 1.63, "z": -8.99, "y": 0.44},
+      {"x": 1.67, "z": -10.13, "y": 0.5},
+      {"x": 1.5, "z": -11.27, "y": 0.56},
+      {"x": 1.14, "z": -12.36, "y": 0.63},
+      {"x": 0.76, "z": -13.39, "y": 0.69},
+      {"x": 0.39, "z": -14.42, "y": 0.75},
+      {"x": 0.09, "z": -15.53, "y": 0.81},
+      {"x": 0, "z": -16.67, "y": 0.87},
+      {"x": 0, "z": -17.77, "y": 0.93},
+      {"x": 0, "z": -18.87, "y": 0.99}
+    ]
+  },
+  "ramps": [
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "blue", "red"], ["blue", "blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "blue", "blue"], ["yellow", "yellow", "yellow", "red", "red"]], "at": 3.258, "side": -1, "shape": [[-1.85, -5.02], [-3.16, -5.33]]},
+    {"rows": 5, "columns": [["red", "red", "red", "red", "red"], ["blue", "blue", "blue", "yellow", "yellow"], ["red", "red", "red", "blue", "blue"], ["blue", "blue", "blue", "red", "red"]], "at": 6.878, "side": 1, "shape": [[3.38, -7.35], [4.68, -6.96]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "yellow", "red"], ["red", "red", "red", "red", "red"], ["blue", "blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "yellow"]], "at": 11.223, "side": -1, "shape": [[-0.76, -11.48], [-2.03, -11.02]]},
+    {"rows": 5, "columns": [["blue", "blue", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue", "blue"], ["red", "red", "red", "red", "red"], ["yellow", "yellow", "yellow", "yellow", "blue"]], "at": 15.205, "side": 1, "shape": [[2.12, -16.14], [3.46, -16.25]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "blue", "cap": 8}
+    ],
+    [
+      {"color": "yellow", "cap": 8},
+      {"color": "yellow", "cap": 8},
+      {"color": "yellow", "cap": 8}
+    ],
+    [
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 8},
+      {"color": "red", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "category": "Basics",
+    "title": "Easy",
+    "road": "gentle",
+    "h": 0.15,
+    "difficulty": "Easy",
+    "random": 1,
+    "greedyT": 37
+  }
+}

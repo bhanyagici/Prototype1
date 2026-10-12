@@ -1,0 +1,73 @@
+{
+  "type": "match-express-showcase",
+  "version": 1,
+  "categories": [
+    {
+      "name": "Basics",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "basics-easy",
+            "basics-medium",
+            "basics-hard",
+            "basics-very-hard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blockers",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "blk-hidden-bus",
+            "blk-connected-pairs",
+            "blk-connected-triples",
+            "blk-colourful-tunnel",
+            "blk-hidden-stickmen",
+            "blk-lock-key",
+            "blk-count-box",
+            "blk-all"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Layouts",
+      "groups": [
+        {
+          "name": "Roads",
+          "levels": [
+            "road-s-curve",
+            "road-zigzag",
+            "road-hairpin",
+            "road-spiral",
+            "road-double-spiral",
+            "road-winding"
+          ]
+        },
+        {
+          "name": "Ramp shapes",
+          "levels": [
+            "ramp-straight",
+            "ramp-arc",
+            "ramp-l-shape",
+            "ramp-wide-fan",
+            "ramp-long-narrow"
+          ]
+        },
+        {
+          "name": "Lane counts",
+          "levels": [
+            "lanes-2",
+            "lanes-3",
+            "lanes-4",
+            "lanes-5"
+          ]
+        }
+      ]
+    }
+  ]
+}

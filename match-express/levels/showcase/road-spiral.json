@@ -1,0 +1,68 @@
+{
+  "format": 2,
+  "id": "road-spiral",
+  "name": "Single spiral",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0, "z": -3.5, "y": 0.12},
+      {"x": 0, "z": -4.6, "y": 0.18},
+      {"x": 0, "z": -5.7, "y": 0.24},
+      {"x": 0, "z": -6.9, "y": 0.31, "spiral": {"r": 1.25, "side": 1}},
+      {"x": -1.93, "z": -7.24, "y": 1.87},
+      {"x": -2.56, "z": -8.17, "y": 1.69},
+      {"x": -2.66, "z": -9.31, "y": 1.5},
+      {"x": -2.59, "z": -10.46, "y": 1.31},
+      {"x": -2.21, "z": -11.54, "y": 1.12},
+      {"x": -1.91, "z": -12.64, "y": 1.08},
+      {"x": -1.89, "z": -13.79, "y": 1.14},
+      {"x": -1.89, "z": -14.89, "y": 1.2},
+      {"x": -1.89, "z": -15.99, "y": 1.26},
+      {"x": -1.89, "z": -17.09, "y": 1.32},
+      {"x": -1.89, "z": -17.79, "y": 1.35}
+    ]
+  },
+  "ramps": [
+    {"rows": 5, "columns": [["red", "red", "blue", "blue", "green"], ["green", "green", "purple", "purple", "blue"], ["green", "red", "red", "blue", "blue"], ["yellow", "yellow", "purple", "purple", "blue"], ["green", "red", "red", "green", "green"], ["yellow", "yellow", "red", "red", "blue"]], "at": 3.445, "side": -1, "shape": [[-2.09, -4.74], [-3.44, -4.74]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "purple", "purple", "purple"], ["green", "red", "red", "purple", "purple"], ["yellow", "red", "red", "blue", "blue"], ["green", "green", "blue", "blue", "blue"], ["yellow", "red", "red", "blue", "blue"], ["yellow", "yellow", "blue", "blue", "blue"]], "at": 3.639, "side": 1, "shape": [[2.09, -4.93], [3.44, -4.93]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "blue", "red", "blue"], ["green", "green", "purple", "green", "blue"], ["yellow", "yellow", "purple", "blue", "blue"], ["red", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "purple", "purple"], ["yellow", "red", "red", "blue", "blue"]], "at": 21.247, "side": -1, "shape": [[-4.64, -10.86], [-5.97, -11.12]]},
+    {"rows": 4, "columns": [["yellow", "red", "red", "red"], ["green", "green", "purple", "blue"], ["yellow", "yellow", "purple", "purple"], ["yellow", "green", "green", "red"], ["green", "purple", "purple", "red"], ["yellow", "yellow", "blue", "blue"]], "at": 25.841, "side": 1, "shape": [[0.02, -14.92], [1.19, -14.92]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "red", "cap": 4},
+      {"color": "green", "cap": 8}
+    ],
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 6},
+      {"color": "purple", "cap": 4},
+      {"color": "blue", "cap": 6}
+    ],
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 8},
+      {"color": "red", "cap": 12},
+      {"color": "red", "cap": 6},
+      {"color": "red", "cap": 4},
+      {"color": "green", "cap": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Single spiral",
+    "group": "Roads",
+    "road": "spiral",
+    "h": 0.963,
+    "difficulty": "Easy",
+    "random": 0.915,
+    "greedyT": 89.2
+  }
+}

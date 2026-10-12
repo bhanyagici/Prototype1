@@ -16,6 +16,14 @@
 
 ![390x844 screenshot](screenshot-390.png)
 
+**Showcase:** `dist/match-express-showcase.html` is one file with every feature to try (see *Showcase update*).
+Screenshots at 390 × 844:
+- [the menu](screenshots/showcase-menu-390.png) and [the settings panel](screenshots/showcase-settings-390.png);
+- one level per theme: [meadow](screenshots/theme-meadow-390.png), [desert](screenshots/theme-desert-390.png),
+  [blossom](screenshots/theme-blossom-390.png), [town](screenshots/theme-town-390.png);
+- [a long bus in Snake mode in a spiral](screenshots/snake-spiral-390.png);
+- [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
+
 ## Showcase update
 
 Gameplay rules are unchanged throughout: sending, boarding, bays, blockers, the bots and the
@@ -49,6 +57,76 @@ checker's rules are the same as before. The 40-level funnel was not retuned or r
   The theme is remembered with the other game settings.
 - **Faster to draw:** the ground keeps fine cells only where a groove's edge bends it;
   level stretches are single quads. Triangles drawn fell from 480k to 220k.
+
+### Speed: 1x, 1.25x, 1.5x, 1.75x, 2x
+- The speed button in the top bar steps through 1x → 1.25x → 1.5x → 1.75x → 2x → 1x.
+- It shows the current speed and is highlighted above 1x.
+- One global time scale drives the fixed-step core and every animation, so the whole
+  game runs at that speed.
+- The choice is remembered with the other game settings (`localStorage`, key
+  `match-express:prefs`).
+
+### Bus movement: Rigid or Snake
+A game setting (⚙ → *Buses: Rigid / Snake*, the showcase's settings panel, or
+`index.html?move=snake`). It is purely visual: the simulation is the same.
+- **Rigid:** the whole bus turns as one piece, as before.
+- **Snake:** the body follows the curve of the road like a train of carriages. That
+  includes its seat rows, walls, floor, wheels, seated passengers and lights. A long bus
+  wraps around a spiral.
+  - **How it bends:** through 9 frames from front to back. Each frame is placed on the
+    bus's path at its own distance from the bus's centre:
+    - on the main road, the 3D spline with its heights;
+    - in the yard, the route as drawn, measured as drawn so it never looks squashed.
+  - A vertex shader carries the body along the frames. The shadow follows too.
+  - **Where:** Snake applies on the main road and on the yard's entry and collector
+    roads. In the queue, in a bay and on the parachute exit the bus is straight.
+  - It bends and straightens smoothly, over about 0.4 s.
+  - The browser test drives a 12-seat bus along the whole road and back to a bay:
+    - every frame stays within 0.15 of the road's centre line, through the spiral too;
+    - on the yard's roads, every frame stays within 0.1 of its route;
+    - the bus is straight in the queue and once parked.
+
+### The showcase: `dist/match-express-showcase.html`
+One self-contained file (double-click, no server, no network) to try everything.
+- **Start menu:** level cards in categories. Each card shows the level's picture, its
+  name and tags: difficulty, lanes and blockers.
+- **Settings panel** (from the menu and in play): theme, bus movement (Rigid / Snake),
+  speed (1x–2x) and sound on / off. The last settings are remembered (`localStorage`).
+- **In play:**
+  - back to the menu (🏠), which marks the last card picked;
+  - restart;
+  - previous / next inside the level's category;
+  - the booster bar;
+  - the stats panel: completion time, fail count and the second of each fail, per level.
+
+| category | levels |
+|---|---|
+| Basics | Easy, Medium, Hard, Very Hard |
+| Blockers | Hidden bus, Connected pairs, Connected triples, Colourful tunnel, Hidden stickmen, Lock & key box, Count box, All combined |
+| Layouts: roads | S-curve, Zigzag, Hairpin, Single spiral, Double spiral, Long winding road |
+| Layouts: ramp shapes | Straight, Curved arc, L-shape, Wide fan, Long narrow |
+| Layouts: lane counts | 2 lanes, 3 lanes, 4 lanes, 5 lanes |
+
+Every showcase level:
+- climbs through the whole target zone (its exit tunnel at the top);
+- is balanced and free of warnings;
+- is won by the greedy bot.
+
+The Basics are tuned to their labels by the random bot's win rate (200 games): Easy
+100%, Medium 44%, Hard 8.5%, Very Hard 0.5%. The other cards show their measured
+difficulty.
+
+How it is made:
+- `tools/showcase/specs.js` holds the level specs.
+- `node tools/make-showcase.js [ids]` writes `levels/showcase/<id>.json` and
+  `showcase-order.json`.
+  - Roads are turtle paths drawn to fill the zone.
+  - Ramps are placed with the funnel's geometry code, with their front edges flush.
+  - Content comes from the funnel's generator, searched until the label is right.
+  - The blocker cards keep a demo level's stickmen, blockers and buses on a new road.
+- `node tools/shoot-showcase-thumbs.js` draws each level at 390 × 844 for the card
+  pictures (`levels/showcase/thumbs/*.jpg`, about 12 KB each).
+- `node tools/build-showcase.js` builds the file, after checking every level again.
 
 ### Every level re-checked
 - **Level 2 and the seven demos** have a new road that climbs through the whole
@@ -912,16 +990,21 @@ node tests/layout.test.js     # yard clearance sweep (both yard presets, 2-5 lan
 node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, sending, sides), connected buses across 4-5 lanes,
                               #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
-node tests/browser.test.js    # 94 checks: game + editor in Chromium (needs `npm i playwright`)
+node tests/ramps.test.js      # 6 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
+                              #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so
+node tests/browser.test.js    # 101 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+                              #   Snake buses (every segment on the road and on the yard's routes, straight in the queue and the bays)
+node tests/showcase.test.js   # 23 checks: the 27 showcase levels (categories, labels, greedy wins, the zone) and the showcase file from
+                              #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
 node tests/editor.test.js     # 62 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
                               #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline
 node tests/funnel.test.js     # 44 checks: the 40 funnel levels against the design table (lane counts included), the bots (greedy wins all, playtime, levels 1-5
                               #   fail-free), two ramps on one spot, and the 40-level file from file:// at 390x844: tutorials, popups,
-                              #   the hint, previous / next, auto-advance, stats + CSV + reset, 1x / 2x, the front bus outline and size
+                              #   the hint, previous / next, auto-advance, stats + CSV + reset, the speeds, the front bus outline and size
 ```
 
-The first three need only Node and no dependencies; they load `shared/core.js`.
+The Node-only suites (rules, blockers, layout, lanes, shared, ramps) need no dependencies; they load `shared/core.js`.
 `browser.test.js` serves the folder itself. It takes these optional settings:
 - `CHROMIUM=/path/to/chrome`;
 - `THREE_MODULE=/path/to/three.module.js`, to serve three.js locally when offline;
@@ -933,11 +1016,11 @@ It ends by saving the editor screenshot.
 work. The classic layout (`tests/fixtures/level2-classic.json` with
 `"yard": "classic"`) still matches it bit for bit, through today's core: road length,
 boarding points, the greedy bot's move list and times at 30 Hz and 60 Hz, and the
-random bot's 31/200. Only geometry differs for the compact built-in level, and on it:
-- the same stickmen and buses board in the same ramp order and the same column
-  priority;
-- the greedy bot wins at 30 Hz and 60 Hz (51 sends, 188.4 s);
-- the random bot wins 35/200 (17.5%, Medium).
+random bot's 31/200. Only geometry differs for the compact built-in level. Its road now climbs through the whole target zone and its
+ramps lie flush on the road:
+- the same stickmen and buses board in the same ramp order;
+- the greedy bot wins at 30 Hz and 60 Hz;
+- the random bot stays Medium.
 
 - The shared suite covers:
   - format 1 → 2 compatibility;

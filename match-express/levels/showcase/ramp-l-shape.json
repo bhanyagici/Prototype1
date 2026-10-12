@@ -1,0 +1,67 @@
+{
+  "format": 2,
+  "id": "ramp-l-shape",
+  "name": "L-shape",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0.02, "z": -3.55, "y": 0.12},
+      {"x": 0.22, "z": -4.68, "y": 0.19},
+      {"x": 0.59, "z": -5.76, "y": 0.25},
+      {"x": 0.97, "z": -6.8, "y": 0.31},
+      {"x": 1.36, "z": -7.88, "y": 0.37},
+      {"x": 1.63, "z": -8.99, "y": 0.44},
+      {"x": 1.67, "z": -10.13, "y": 0.5},
+      {"x": 1.5, "z": -11.27, "y": 0.56},
+      {"x": 1.14, "z": -12.36, "y": 0.63},
+      {"x": 0.76, "z": -13.39, "y": 0.69},
+      {"x": 0.39, "z": -14.42, "y": 0.75},
+      {"x": 0.09, "z": -15.53, "y": 0.81},
+      {"x": 0, "z": -16.67, "y": 0.87},
+      {"x": 0, "z": -17.77, "y": 0.93},
+      {"x": 0, "z": -18.87, "y": 0.99}
+    ]
+  },
+  "ramps": [
+    {"rows": 8, "columns": [["blue", "blue", "blue", "yellow", "yellow", "green", "green", "red"], ["purple", "purple", "red", "red", "blue", "blue", "green", "green"], ["purple", "red", "red", "yellow", "yellow", "purple", "green", "red"], ["red", "red", "red", "yellow", "yellow", "yellow", "green", "green"]], "at": 2.896, "side": -1, "shape": [[-1.62, -4.06], [-2.63, -3.8], [-3.23, -3.95], [-4.35, -5.33]]},
+    {"rows": 8, "columns": [["purple", "purple", "blue", "blue", "yellow", "purple", "red", "red"], ["purple", "red", "yellow", "yellow", "blue", "blue", "green", "green"], ["blue", "blue", "yellow", "yellow", "blue", "blue", "green", "red"], ["blue", "blue", "red", "red", "blue", "blue", "green", "green"]], "at": 6.878, "side": 1, "shape": [[2.87, -7.04], [3.64, -6.35], [3.86, -5.77], [3.33, -4.07]]},
+    {"rows": 8, "columns": [["purple", "red", "yellow", "yellow", "yellow", "yellow", "green", "green"], ["blue", "blue", "blue", "blue", "yellow", "green", "green", "red"], ["blue", "red", "yellow", "yellow", "yellow", "purple", "purple", "red"], ["purple", "purple", "red", "red", "purple", "purple", "green", "red"]], "at": 11.947, "side": -1, "shape": [[-0.47, -11.87], [-1.19, -11.13], [-1.78, -10.94], [-3.46, -11.54]]},
+    {"rows": 6, "columns": [["purple", "purple", "blue", "yellow", "yellow", "purple"], ["blue", "red", "red", "yellow", "yellow", "purple"], ["blue", "blue", "yellow", "yellow", "yellow", "green"], ["purple", "red", "red", "yellow", "yellow", "yellow"]], "at": 15.929, "side": 1, "shape": [[1.57, -16.58], [2.4, -16.44], [2.88, -16.06], [3.2, -14.63]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "cap": 6},
+      {"color": "green", "cap": 12},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 4}
+    ],
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "red", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "purple", "cap": 8}
+    ],
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 6},
+      {"color": "red", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "green", "cap": 6},
+      {"color": "red", "cap": 8}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "L-shape",
+    "group": "Ramp shapes",
+    "road": "gentle",
+    "h": 0.991,
+    "difficulty": "Easy",
+    "random": 0.8,
+    "greedyT": 83
+  }
+}

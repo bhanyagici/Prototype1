@@ -1,0 +1,67 @@
+{
+  "format": 2,
+  "id": "blk-hidden-bus",
+  "name": "Hidden bus",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": -0.2, "z": -3.48, "y": 0.12},
+      {"x": -0.83, "z": -4.38, "y": 0.18},
+      {"x": -1.75, "z": -4.99, "y": 0.24},
+      {"x": -2.55, "z": -5.8, "y": 0.3},
+      {"x": -2.93, "z": -6.88, "y": 0.37},
+      {"x": -2.81, "z": -8.01, "y": 0.43},
+      {"x": -2.22, "z": -8.99, "y": 0.49},
+      {"x": -1.28, "z": -9.64, "y": 0.56},
+      {"x": -0.33, "z": -10.19, "y": 0.62},
+      {"x": 0.63, "z": -10.74, "y": 0.68},
+      {"x": 1.58, "z": -11.29, "y": 0.74},
+      {"x": 2.44, "z": -12.04, "y": 0.8},
+      {"x": 2.9, "z": -13.08, "y": 0.86},
+      {"x": 2.86, "z": -14.22, "y": 0.93},
+      {"x": 2.35, "z": -15.24, "y": 0.99},
+      {"x": 1.45, "z": -15.95, "y": 1},
+      {"x": 0.59, "z": -16.63, "y": 1},
+      {"x": 0.09, "z": -17.61, "y": 1},
+      {"x": 0, "z": -18.71, "y": 1},
+      {"x": 0, "z": -19.31, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 6, "columns": [["yellow", "red", "yellow", "blue", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red", "red", "red"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "yellow", "yellow", "red", "red", "red"]], "at": 3.306, "side": -1, "shape": [[-2.42, -2.76], [-3.49, -1.67]]},
+    {"rows": 6, "columns": [["blue", "blue", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "red", "blue", "red"], ["yellow", "red", "red", "blue", "blue", "yellow"], ["yellow", "yellow", "yellow", "blue", "red", "red"]], "at": 8.816, "side": 1, "shape": [[-0.57, -7.43], [0.63, -6.48]]},
+    {"rows": 6, "columns": [["blue", "blue", "green", "green", "green", "red"], ["green", "yellow", "red", "red", "yellow", "green"], ["yellow", "yellow", "yellow", "green", "green", "green"], ["red", "blue", "blue", "red", "red", "yellow"]], "at": 14.325, "side": -1, "shape": [[0.65, -13.43], [-0.43, -14.52]]},
+    {"rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "at": 19.835, "side": 1, "shape": [[2.29, -18.14], [3.19, -19.37]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "cap": 6},
+      {"color": "green", "cap": 6, "hidden": true},
+      {"color": "green", "cap": 6},
+      {"color": "blue", "cap": 4, "hidden": true},
+      {"color": "red", "cap": 6}
+    ],
+    [
+      {"color": "red", "cap": 6},
+      {"color": "blue", "cap": 4},
+      {"color": "green", "cap": 6, "hidden": true},
+      {"color": "yellow", "cap": 12},
+      {"color": "yellow", "cap": 12}
+    ],
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 4, "hidden": true},
+      {"color": "green", "cap": 6},
+      {"color": "red", "cap": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Blockers",
+    "title": "Hidden bus",
+    "road": "scurve",
+    "difficulty": "Easy",
+    "random": 0.59,
+    "greedyT": 106.3
+  }
+}

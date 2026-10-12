@@ -1,0 +1,73 @@
+{
+  "format": 2,
+  "id": "road-zigzag",
+  "name": "Zigzag",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": -0.01, "z": -2.45, "y": 0.06},
+      {"x": -0.5, "z": -3.44, "y": 0.12},
+      {"x": -1.47, "z": -4.05, "y": 0.19},
+      {"x": -2.42, "z": -4.6, "y": 0.25},
+      {"x": -3.26, "z": -5.29, "y": 0.31},
+      {"x": -3.49, "z": -6.35, "y": 0.37},
+      {"x": -3, "z": -7.31, "y": 0.43},
+      {"x": -2.08, "z": -7.89, "y": 0.49},
+      {"x": -1.12, "z": -8.44, "y": 0.55},
+      {"x": -0.2, "z": -9.04, "y": 0.61},
+      {"x": 0.25, "z": -10.02, "y": 0.67},
+      {"x": -0.01, "z": -11.06, "y": 0.73},
+      {"x": -0.86, "z": -11.74, "y": 0.79},
+      {"x": -1.82, "z": -12.29, "y": 0.85},
+      {"x": -2.77, "z": -12.84, "y": 0.91},
+      {"x": -3.43, "z": -13.7, "y": 0.97},
+      {"x": -3.39, "z": -14.77, "y": 1},
+      {"x": -2.68, "z": -15.59, "y": 1},
+      {"x": -1.73, "z": -16.14, "y": 1},
+      {"x": -0.78, "z": -16.69, "y": 1},
+      {"x": -0.08, "z": -17.55, "y": 1},
+      {"x": 0, "z": -18.68, "y": 1},
+      {"x": 0, "z": -19.48, "y": 1}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["purple", "purple", "yellow", "yellow"], ["red", "red", "yellow", "yellow"], ["red", "red", "yellow", "green"], ["red", "red", "yellow", "yellow"], ["purple", "green", "yellow", "green"], ["red", "green", "green", "green"]], "at": 3.524, "side": 1, "shape": [[-0.6, -5.75], [-0.01, -6.77]]},
+    {"rows": 4, "columns": [["red", "blue", "blue", "purple"], ["red", "blue", "yellow", "yellow"], ["red", "blue", "purple", "purple"], ["red", "red", "yellow", "green"], ["purple", "blue", "blue", "green"], ["purple", "purple", "yellow", "yellow"]], "at": 9.061, "side": -1, "shape": [[-2.92, -9.61], [-3.5, -10.63]]},
+    {"rows": 4, "columns": [["blue", "blue", "yellow", "purple"], ["red", "red", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow"], ["blue", "red", "red", "green"], ["purple", "blue", "blue", "green"], ["red", "blue", "blue", "green"]], "at": 14.598, "side": 1, "shape": [[-0.01, -13.46], [0.61, -14.46]]},
+    {"rows": 4, "columns": [["red", "green", "blue", "blue"], ["purple", "red", "red", "yellow"], ["blue", "blue", "yellow", "yellow"], ["purple", "purple", "yellow", "green"], ["blue", "blue", "yellow", "yellow"], ["blue", "yellow", "yellow", "green"]], "at": 20.135, "side": -1, "shape": [[-3.54, -17.32], [-4.18, -18.3]]}
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "cap": 6},
+      {"color": "green", "cap": 4},
+      {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 6}
+    ],
+    [
+      {"color": "green", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "blue", "cap": 4},
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "purple", "cap": 4}
+    ],
+    [
+      {"color": "green", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "red", "cap": 12},
+      {"color": "blue", "cap": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Zigzag",
+    "group": "Roads",
+    "road": "zigzag",
+    "h": 0.991,
+    "difficulty": "Easy",
+    "random": 0.94,
+    "greedyT": 97.1
+  }
+}

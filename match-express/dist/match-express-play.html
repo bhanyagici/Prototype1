@@ -31,7 +31,8 @@
     animation:drop .5s cubic-bezier(.34,1.6,.5,1) both}
   .rbtn svg{position:relative;width:50px;height:50px;filter:drop-shadow(0 4px 0 rgba(10,60,140,.85))}
   #btnRestart{right:232px;animation-delay:.05s} #btnSpeed{right:132px;animation-delay:.1s} #btnSettings{right:32px;animation-delay:.15s}
-  #btnSpeed{font-size:38px;font-weight:900;text-shadow:0 4px 0 #0c4a9c,0 0 2px #0c4a9c}
+  #btnSpeed{font-size:38px;font-weight:900;text-shadow:0 4px 0 #0c4a9c,0 0 2px #0c4a9c;letter-spacing:-1px}
+  #btnSpeed.long{font-size:27px;letter-spacing:-1.5px}
   #btnSpeed.on{background:radial-gradient(circle at 50% 30%,#ffe98e,#ffb21f 58%,#ea8400);text-shadow:0 4px 0 #a35a00;border-color:#fff4c2;
     box-shadow:0 8px 0 #b5650a,0 14px 22px rgba(0,0,0,.3),inset 0 -7px 0 rgba(150,70,0,.35),inset 0 4px 0 rgba(255,255,255,.45)}
   @keyframes drop{from{transform:translateY(-140px)}to{transform:none}}
@@ -122,6 +123,46 @@
   .card .row button + button{margin-top:0}
   #btnStatsReset{background:linear-gradient(#ff8a65,#e0483a);box-shadow:0 6px 0 #9c2a20}
   #btnStatsClose{background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 6px 0 #1559b0}
+  /* ---- showcase (window.ME_SHARE.showcase): a start menu of level cards by category, one settings panel ---- */
+  #app.sc .rbtn{box-sizing:border-box;width:78px;height:78px;top:38px;z-index:21}
+  #app.sc .rbtn svg{width:40px;height:40px}
+  #app.sc #btnHome{left:18px} #app.sc #btnPrev{left:102px;width:64px;height:64px;top:45px} #app.sc #btnNextLv{left:460px;width:64px;height:64px;top:45px}
+  #app.sc #levelPill{box-sizing:border-box;left:172px;width:282px;max-width:282px;height:78px;top:38px;padding:0 12px;justify-content:center;font-size:36px;z-index:21}
+  #app.sc #btnStats{right:290px} #app.sc #btnRestart{right:200px} #app.sc #btnSpeed{right:110px;font-size:30px} #app.sc #btnSettings{right:20px}
+  #app.sc #btnSpeed.long{font-size:23px}
+  #app:not(.sc) #btnHome{display:none}
+  #menuPanel{z-index:40;display:none;flex-direction:column;align-items:stretch;justify-content:flex-start;
+    background:linear-gradient(#bfe3ff,#e9f6ff 30%,#fdf7e8);overflow:hidden}
+  #menuPanel.show{display:flex}
+  #menuHead{position:relative;flex:none;padding:46px 40px 26px;text-align:center}
+  #menuHead h1{margin:0;font-size:78px;font-weight:900;color:#fff;letter-spacing:1px;
+    text-shadow:0 6px 0 #1462c8,0 10px 18px rgba(0,0,0,.25),-3px -3px 0 #1462c8,3px -3px 0 #1462c8,-3px 3px 0 #1462c8,3px 3px 0 #1462c8}
+  #menuHead p{margin:10px 0 0;font-size:30px;font-weight:800;color:#2d4a7c}
+  #menuSet{position:absolute;right:30px;top:40px;width:84px;height:84px;top:44px}
+  #menuList{flex:1;overflow-y:auto;padding:0 30px 60px;touch-action:pan-y}
+  .mcat{margin:26px 0 8px;font-size:46px;font-weight:900;color:#24345e}
+  .mgrp{margin:18px 4px 10px;font-size:30px;font-weight:900;color:#52648f;text-transform:uppercase;letter-spacing:1px}
+  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .mcard{position:relative;border-radius:30px;background:#fff;border:5px solid #ffcf3a;box-shadow:0 7px 0 #d39a1c,0 12px 20px rgba(30,50,90,.18);
+    overflow:hidden;cursor:pointer;text-align:left}
+  .mcard.last{border-color:#2584ee;box-shadow:0 7px 0 #1462c8,0 12px 20px rgba(30,50,90,.25)}
+  .mcard img{display:block;width:100%;aspect-ratio:5/6;object-fit:cover;background:#cfe0c0}
+  .mcard b{display:block;padding:12px 14px 4px;font-size:29px;font-weight:900;color:#24345e;line-height:1.1}
+  .mcard .tags{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 14px}
+  .tag{padding:4px 10px;border-radius:12px;font-size:19px;font-weight:900;color:#fff;background:#7d8bab;white-space:nowrap}
+  .tag.d1{background:#3fb24f} .tag.d2{background:#e8a91c} .tag.d3{background:#ef7b2d} .tag.d4{background:#d9433a}
+  .tag.ln{background:#2584ee} .tag.bk{background:#8b5cd6}
+  #setPanel{z-index:45}
+  #setPanel .card{width:720px;padding:40px 36px 44px}
+  #setPanel h1{margin:0 0 18px;font-size:58px}
+  .srow{margin:18px 0 0;text-align:left}
+  .srow > span{display:block;margin:0 0 10px 6px;font-size:28px;font-weight:900;opacity:.92}
+  .seg{display:flex;flex-wrap:wrap;gap:10px}
+  .seg button{flex:1;min-width:110px;margin:0;padding:14px 8px;border-radius:20px;border:4px solid rgba(255,255,255,.85);font:inherit;font-size:27px;font-weight:900;
+    color:#fff;background:rgba(10,40,100,.32);box-shadow:none;cursor:pointer}
+  .seg button.on{background:linear-gradient(#ffe36e,#ffb21f);color:#5a3500;border-color:#fff4c2;box-shadow:0 5px 0 #b5650a}
+  .seg button i{display:inline-block;width:22px;height:22px;border-radius:50%;margin-right:8px;vertical-align:-3px;border:3px solid #fff}
+  #setPanel .row{margin-top:30px}
   /* ---- tutorials: a pointing hand, a tip, a short hint; intro popups for new blockers ---- */
   #hand{left:0;top:0;width:130px;height:160px;display:none;pointer-events:none;z-index:8}
   #hand.show{display:block}
@@ -166,6 +207,7 @@
   <canvas id="gl"></canvas>
   <div class="ui" id="levelPill">Level 2</div>
   <div class="ui" id="levelStep"></div>
+  <div class="ui rbtn spring" id="btnHome" title="Back to the menu"><svg viewBox="0 0 48 48"><path d="M7 23L24 8l17 15" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22v17h9V29h6v10h9V22" fill="#fff"/></svg></div>
   <div class="ui rbtn spring nav" id="btnPrev" title="Previous level"><svg viewBox="0 0 48 48"><path d="M29 9L14 24l15 15" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   <div class="ui rbtn spring nav" id="btnNextLv" title="Next level"><svg viewBox="0 0 48 48"><path d="M19 9l15 15-15 15" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   <div class="ui rbtn spring nav" id="btnStats" title="Stats"><svg viewBox="0 0 48 48"><rect x="7" y="25" width="9" height="16" rx="2.5" fill="#fff"/><rect x="20" y="15" width="9" height="26" rx="2.5" fill="#fff"/><rect x="33" y="7" width="9" height="34" rx="2.5" fill="#fff"/></svg></div>
@@ -175,6 +217,7 @@
   <div class="ui" id="settings">
     <button id="btnMute" class="spring">Sound: On</button>
     <button id="btnTheme" class="spring">Theme</button>
+    <button id="btnMove" class="spring">Buses: Rigid</button>
     <button id="btnBuiltin" class="spring">Play Level 2</button>
     <div id="presetBtns"></div>
     <small id="levelSrc"></small>
@@ -194,6 +237,15 @@
   <div class="ui" id="hint"></div>
   <div class="panel" id="introPanel"><div class="card intro"><h1 id="introTitle"></h1><div id="introArt"></div><p id="introText"></p><button id="btnIntroOk" class="spring">OK</button></div></div>
   <div class="panel" id="statsPanel"><div class="card wide"><h1>Stats</h1><div id="statsBody"></div><div class="row"><button id="btnCsv" class="spring">Export CSV</button><button id="btnStatsReset" class="spring">Reset stats</button><button id="btnStatsClose" class="spring">Close</button></div></div></div>
+  <div class="panel" id="menuPanel"><div id="menuHead"><h1>Match Express</h1><p>Showcase: pick a level to try</p>
+    <div class="rbtn spring" id="menuSet" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div></div>
+    <div id="menuList"></div></div>
+  <div class="panel" id="setPanel"><div class="card"><h1>Settings</h1>
+    <div class="srow"><span>Theme</span><div class="seg" id="segTheme"></div></div>
+    <div class="srow"><span>Bus movement</span><div class="seg" id="segMove"><button data-v="rigid">Rigid</button><button data-v="snake">Snake</button></div></div>
+    <div class="srow"><span>Speed</span><div class="seg" id="segSpeed"></div></div>
+    <div class="srow"><span>Sound</span><div class="seg" id="segSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
+    <div class="row"><button id="btnSetStats" class="spring">Stats</button><button id="btnSetClose" class="spring">Done</button></div></div></div>
   <div class="panel" id="failPanel"><div class="card fail"><h1>Out of Space</h1><p>A returning bus had nowhere to park.</p><button id="btnRetry" class="spring">Retry</button></div></div>
 </div>
 
@@ -3098,7 +3150,7 @@ function palette(color){
 function busShell(W, Lb, pal){
   // perimeter at the wall's centre line, traversed so the profile's +u side points outward
   const hx = W/2 - 0.065, hz = Lb/2 - 0.065, r = 0.2, P = [];
-  const seg = (x0, z0, x1, z1) => { const n = Math.max(1, Math.round(Math.hypot(x1 - x0, z1 - z0)/0.45)); for (let k = 0; k < n; k++) P.push([lerp(x0, x1, k/n), lerp(z0, z1, k/n)]); };
+  const seg = (x0, z0, x1, z1) => { const n = Math.max(1, Math.round(Math.hypot(x1 - x0, z1 - z0)/0.16)); for (let k = 0; k < n; k++) P.push([lerp(x0, x1, k/n), lerp(z0, z1, k/n)]); };   // fine along the sides: a Snake bus bends
   const arc = (cx, cz, a0) => { for (let k = 0; k < 7; k++){ const a = a0 - k/7*Math.PI/2; P.push([cx + Math.cos(a)*r, cz + Math.sin(a)*r]); } };
   seg(0, hz, hx - r, hz); arc(hx - r, hz - r, Math.PI/2);
   seg(hx, hz - r, hx, -(hz - r)); arc(hx - r, -(hz - r), 0);
@@ -3120,10 +3172,9 @@ function busGeo(cap, color){                       // body only: wheels are one 
   const add = (geo, m, c) => parts.push({geo, m, color:c});
   const shell = busShell(W, Lb, pal);
   // floor of the open top
-  const fs = new THREE.Shape(), fx = W/2 - 0.1, fz = Lb/2 - 0.1, fr = 0.14;
-  fs.moveTo(-fx + fr, -fz); fs.lineTo(fx - fr, -fz); fs.quadraticCurveTo(fx, -fz, fx, -fz + fr); fs.lineTo(fx, fz - fr); fs.quadraticCurveTo(fx, fz, fx - fr, fz);
-  fs.lineTo(-fx + fr, fz); fs.quadraticCurveTo(-fx, fz, -fx, fz - fr); fs.lineTo(-fx, -fz + fr); fs.quadraticCurveTo(-fx, -fz, -fx + fr, -fz);
-  add(new THREE.ShapeGeometry(fs, 4).rotateX(-Math.PI/2), M(0, 0.435, 0), pal.floor);
+  // floor of the open top: a strip cut across every 0.16 (its corners hide under the rounded walls) so it can bend
+  const fx = W/2 - 0.1, fz = Lb/2 - 0.1;
+  add(new THREE.PlaneGeometry(2*fx, 2*fz, 1, Math.max(2, Math.round(2*fz/0.16))).rotateX(-Math.PI/2), M(0, 0.435, 0), pal.floor);
   for (let r = 0; r < cap/2; r++){ const z = Lb/2 - 0.31 - r*C.ROW_PITCH;
     for (const sx of [-1, 1]){ add(rbox(0.33, 0.08, 0.22, 0.035, 1), M(sx*0.21, 0.48, z + 0.01), pal.seat);
       add(new THREE.BoxGeometry(0.33, 0.24, 0.06), M(sx*0.21, 0.58, z - 0.115), pal.seat); } }
@@ -3186,8 +3237,10 @@ class BusView {
   constructor(b){
     this.b = b; this.root = new THREE.Group(); this.slope = new THREE.Group(); this.body = new THREE.Group();
     this.root.add(this.slope); this.slope.add(this.body); scene.add(this.root);
-    this.mat = tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0}));
+    this.U = snakeUniforms(b.len);                   // Snake mode: the body bends along its path (see SNAKE below)
+    this.mat = snakeMat(tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0})), this.U);
     this.mesh = new THREE.Mesh(busGeo(b.cap, b.revealed ? b.color : null), this.mat); this.mesh.castShadow = true; this.mesh.receiveShadow = true;
+    this.mesh.customDepthMaterial = snakeMat(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}), this.U, 'depth');
     this.headMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#fff7dc', emissive:'#ffe9a8', emissiveIntensity:0.35, roughness:0.25}));
     this.brakeMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#c4161c', emissive:'#ff2020', emissiveIntensity:0.15, roughness:0.35}));
     this.head = new THREE.Mesh(headGeo, this.headMat); this.head.position.z = b.len/2 + 0.022;
@@ -3213,11 +3266,115 @@ class BusView {
     this.pitch = 0; this.pitchV = 0; this.roll = 0; this.rollV = 0; this.bob = 0; this.bobV = 0; this.wheelAng = 0;
     this.brakeAmt = 0; this.dark = 0; this.flashT = -9; this.shakeT = -9; this.lurchT = -9; this.jump = null; this.chute = null;
     this.squeakT = -9; this.revealT = -9; this.dustT = -9; this.boardRamp = -1;
+    this.snk = 0; this.bent = false; this.skPath = null;
+    this.rest = [this.head, this.brake, ...this.hGlow, ...this.bGlow].map(o => o.position.clone());   // rigid places of the lights
   }
   reveal(){ this.mesh.geometry = busGeo(this.b.cap, this.b.color); if (this.q){ this.root.remove(this.q); this.q.material.dispose(); this.q = null; } }
-  dispose(){ scene.remove(this.root); [this.mat, this.headMat, this.brakeMat].forEach(m => m.dispose());
+  dispose(){ scene.remove(this.root); [this.mat, this.headMat, this.brakeMat, this.mesh.customDepthMaterial].forEach(m => m.dispose());
     this.shadow.geometry.dispose(); this.shadow.material.dispose(); this.ring.geometry.dispose(); this.ring.material.dispose();
     this.root.traverse(o => { if (o.isSprite) o.material.dispose(); }); }
+}
+
+/* ================================ SNAKE ===================================
+   Bus movement is a setting: Rigid (the whole bus turns as one piece) or Snake (its body - seat rows, walls,
+   floor, wheels, passengers and lights - follows the curve of the road it drives on, like a train of carriages).
+   Purely visual: the simulation is the same.  The body bends through SK_N frames from its front to its back, each
+   placed on the bus's path (the main road, or its route through the yard as drawn) at its own distance from the
+   bus's centre; a vertex shader carries the body along them.  Snake applies on the roads (the main road and the
+   yard's entry and collector roads); in the queue, a bay and the parachute exit the bus is straight, and it
+   straightens (and bends) smoothly over a fraction of a second. */
+const SK_N = 9, SNAKE_ON = new Set(['road', 'toRoad', 'return']);
+let busMove = ['rigid', 'snake'].includes(params.get('move')) ? params.get('move') : S.loadPrefs().move === 'snake' ? 'snake' : 'rigid';
+function setMove(m, save){
+  busMove = m === 'snake' ? 'snake' : 'rigid'; if (save) S.savePrefs({move:busMove});
+  if ($('btnMove')) $('btnMove').textContent = 'Buses: ' + (busMove === 'snake' ? 'Snake' : 'Rigid');
+  if (typeof onSettings === 'function') onSettings();
+}
+function snakeUniforms(len){ return {uSk:{value:Array.from({length:SK_N}, (_, k) => new THREE.Vector4(0, 0, len/2 - k*len/(SK_N - 1), 0))},
+  uSkP:{value:new Float32Array(SK_N)}, uSkOn:{value:0}, uSkHalf:{value:len/2}}; }
+const SK_GLSL = `uniform vec4 uSk[${SK_N}]; uniform float uSkP[${SK_N}]; uniform float uSkOn; uniform float uSkHalf;
+void skFrame(float z, out vec3 c, out float yaw, out float pit){
+  float u = clamp((uSkHalf - z)/(2.0*uSkHalf)*${SK_N - 1}.0, 0.0, ${SK_N - 1}.0 - 0.0001); int i = int(floor(u)); float t = u - float(i);
+  c = mix(uSk[i].xyz, uSk[i + 1].xyz, t); yaw = mix(uSk[i].w, uSk[i + 1].w, t); pit = mix(uSkP[i], uSkP[i + 1], t); }
+vec3 skRot(vec3 o, float yaw, float pit){ vec3 a = vec3(o.x, o.y*cos(pit) - o.z*sin(pit), o.y*sin(pit) + o.z*cos(pit));
+  return vec3(a.x*cos(yaw) + a.z*sin(yaw), a.y, -a.x*sin(yaw) + a.z*cos(yaw)); }
+`;
+function snakeMat(mat, U, tag){
+  const prev = mat.onBeforeCompile;
+  mat.onBeforeCompile = (sh, r) => { if (prev) prev.call(mat, sh, r); Object.assign(sh.uniforms, U);
+    sh.vertexShader = SK_GLSL + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
+        if (uSkOn > 0.5){ vec3 skc; float skY, skP; skFrame(position.z, skc, skY, skP); objectNormal = skRot(objectNormal, skY, skP); }`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        if (uSkOn > 0.5){ vec3 skc; float skY, skP; skFrame(position.z, skc, skY, skP); transformed = skc + skRot(vec3(position.x, position.y, 0.0), skY, skP); }`); };
+  mat.customProgramCacheKey = () => 'snake-' + (tag || 'body');
+  return mat;
+}
+/* the frame of the bent body at local z: its centre, yaw and pitch (the shader's interpolation, on the CPU) */
+function skAt(v, z, out){
+  const U = v.U, n = SK_N - 1, u = clamp((U.uSkHalf.value - z)/(2*U.uSkHalf.value)*n, 0, n - 1e-4), i = Math.floor(u), t = u - i, A = U.uSk.value[i], B = U.uSk.value[i + 1];
+  out.x = lerp(A.x, B.x, t); out.y = lerp(A.y, B.y, t); out.z = lerp(A.z, B.z, t); out.yaw = lerp(A.w, B.w, t); out.pit = lerp(U.uSkP.value[i], U.uSkP.value[i + 1], t); return out;
+}
+const _sk = {x:0, y:0, z:0, yaw:0, pit:0}, _skE = new THREE.Euler(0, 0, 0, 'YXZ'), _skQ = new THREE.Quaternion(), _skV = new THREE.Vector3(), _skM = new THREE.Matrix4();
+/* a point / pose given in the straight bus's own frame, carried onto the bent body (in the body's frame) */
+function skPose(v, x, y, z, rx, outM){
+  skAt(v, z, _sk); _skE.set(_sk.pit, _sk.yaw, 0, 'YXZ'); _skV.set(x, y, 0).applyEuler(_skE).add(_v2.set(_sk.x, _sk.y, _sk.z));
+  _skE.set(_sk.pit + rx, _sk.yaw, 0, 'YXZ'); _skQ.setFromEuler(_skE);
+  return outM.compose(_skV, _skQ, _one);
+}
+const _v2 = new THREE.Vector3();
+/* the bus's path as drawn: the main road (3D, at its own scale) or its trip through the yard (squeezed by the drawn
+   yard, so its arc length is measured as drawn); q(a) is the point at arc length a, extended straight past the ends */
+function skPathOf(v){
+  const b = v.b;
+  if (b.state === 'road'){ const R = L.ROAD, o = {};
+    return {key:'road', at:b.rs, q:(a, out) => { const e = a < 0 ? a : a > R.len ? a - R.len : 0; C.pathAt(R, clamp(a, 0, R.len), o, 0);
+      out.set(o.x + o.dx*e, o.y, o.z + o.dz*e); out.tx = o.dx; out.tz = o.dz; out.ty = o.slope || 0; return out; }}; }
+  if (!b.trip) return null;
+  if (!v.skPath || v.skPath.seq !== b.trip.seq){           // the trip as drawn: sampled, mapped, measured once
+    const P = b.trip.path, o = {}, pts = [], N = Math.max(2, Math.ceil(P.len/0.05));
+    for (let k = 0; k <= N; k++){ C.pathAt(P, P.len*k/N, o, 0); const [x, z] = C.dispPoint(o.x, o.z), w = pts[pts.length - 1];
+      pts.push([x, z, w ? w[2] + Math.hypot(x - w[0], z - w[1]) : 0]); }
+    v.skPath = {seq:b.trip.seq, pts, N, len:P.len};
+  }
+  const T = v.skPath, pts = T.pts, last = pts.length - 1;
+  const arcOf = s => { const f = clamp(s/T.len, 0, 1)*T.N, i = Math.min(T.N - 1, Math.floor(f)); return lerp(pts[i][2], pts[i + 1][2], f - i); };
+  return {key:'trip', at:arcOf(b.trip.s), q:(a, out) => {
+    let lo = 0, hi = last; if (a <= 0){ lo = 0; hi = 1; } else if (a >= pts[last][2]){ lo = last - 1; hi = last; }
+    else while (hi - lo > 1){ const m = (lo + hi) >> 1; if (pts[m][2] <= a) lo = m; else hi = m; }
+    const A = pts[lo], B = pts[hi], d = (B[2] - A[2]) || 1e-9, t = (a - A[2])/d, tx = (B[0] - A[0])/d, tz = (B[1] - A[1])/d;
+    out.set(A[0] + (B[0] - A[0])*t, 0, A[1] + (B[1] - A[1])*t); out.tx = tx; out.tz = tz; out.ty = 0; return out; }};
+}
+const _skA = new THREE.Vector3(), _skB = new THREE.Vector3(), _skT = new THREE.Vector3(), _skInv = new THREE.Matrix4();
+function snakeUpdate(v, vdt){
+  const b = v.b, want = busMove === 'snake' && SNAKE_ON.has(b.state) ? 1 : 0;
+  v.snk += (want - v.snk)*(vdt > 0 ? 1 - Math.exp(-vdt*7) : 1);                       // bends and straightens over ~0.4 s
+  if (v.snk < 1e-3 && !want){ v.snk = 0; if (v.bent){ v.bent = false; v.U.uSkOn.value = 0; snakeLights(v); } return; }
+  const path = skPathOf(v), U0 = v.U;
+  if (!path){                                                                          // off the roads (the parachute exit): ease straight
+    const d = vdt > 0 ? Math.exp(-vdt*7) : 0, len = v.b.len;
+    U0.uSk.value.forEach((F, i) => { const zl = len/2 - i*len/(SK_N - 1); F.set(F.x*d, F.y*d, lerp(zl, F.z, d), F.w*d); U0.uSkP.value[i] *= d; });
+    if (v.snk < 1e-3){ v.snk = 0; v.bent = false; U0.uSkOn.value = 0; }
+    snakeLights(v); return; }
+  v.root.updateMatrixWorld(true); _skInv.copy(v.body.matrixWorld).invert();
+  const k = v.root.scale.x, len = b.len, U = v.U, f = v.snk, c0 = path.q(path.at, _skA).clone();
+  for (let i = 0; i < SK_N; i++){
+    const zl = len/2 - i*len/(SK_N - 1), q = path.q(path.at + zl*k, _skB);
+    // the frame's point relative to the bus's centre on the path, placed around the bus as drawn
+    _skT.set(v.p.x + q.x - c0.x, v.p.y + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
+    const tx = q.tx, tz = q.tz, ty = q.ty;
+    _v2.set(v.p.x + q.x - c0.x + tx, v.p.y + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
+    const yaw = Math.atan2(_v2.x, _v2.z), pit = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z));
+    U.uSk.value[i].set(lerp(0, _skT.x, f), lerp(0, _skT.y, f), lerp(zl, _skT.z, f), angDiff(yaw, 0)*f); U.uSkP.value[i] = pit*f;
+  }
+  U.uSkOn.value = 1; v.bent = true; snakeLights(v);
+}
+/* head and tail lights and their glows ride on the bent body's ends */
+const _skPM = new THREE.Matrix4();
+function snakeLights(v){
+  [v.head, v.brake, ...v.hGlow, ...v.bGlow].forEach((o, i) => { const r = v.rest[i];
+    if (!v.bent){ o.position.copy(r); if (!o.isSprite) o.rotation.set(0, 0, 0); return; }
+    skPose(v, r.x, r.y, r.z, 0, _skPM); o.position.setFromMatrixPosition(_skPM); if (!o.isSprite) o.quaternion.setFromRotationMatrix(_skPM); });
 }
 
 /* ================================ STICKMEN ===============================
@@ -3604,8 +3761,21 @@ function initialLevel(){
   const pid = params.get('level') || (SHARE && SHARE.level); if (pid && C.PRESETS[pid]) return [C.PRESETS[pid], 'preset'];
   return [C.LEVEL_DATA, 'builtin'];
 }
+/* the showcase: levels grouped in categories; previous / next stay inside the level's category */
+const SC = SHARE && SHARE.showcase && PLAYLIST ? SHARE.showcase : null;
+function catRange(i){
+  if (!SC || !PLAYLIST) return [0, PLAYLIST ? PLAYLIST.length - 1 : 0];
+  const id = PLAYLIST[i] && PLAYLIST[i].id, cat = SC.categories.find(c => c.groups.some(g => g.levels.includes(id)));
+  if (!cat) return [0, PLAYLIST.length - 1];
+  const ids = cat.groups.flatMap(g => g.levels), idx = ids.map(x => PLAYLIST.findIndex(l => l.id === x)).filter(k => k >= 0);
+  return [Math.min(...idx), Math.max(...idx)];
+}
 function playlistUI(){
   const on = !!PLAYLIST && levelSource === 'export';
+  if (SC){ const [a, b] = catRange(playIdx);
+    $('btnNext').style.display = on ? '' : 'none'; if (on) $('btnNextTxt').textContent = playIdx < b ? 'Next level' : 'Back to menu';
+    $('levelPill').textContent = LEVEL.name || 'Level'; fitPill();
+    $('btnPrev').classList.toggle('dis', !on || playIdx <= a); $('btnNextLv').classList.toggle('dis', !on || playIdx >= b); return; }
   $('levelStep').style.display = on && PLAYLIST.length > 1 && !NAV ? 'block' : 'none';
   if (on) $('levelStep').textContent = `Level ${playIdx + 1} / ${PLAYLIST.length}`;
   $('btnNext').style.display = on ? '' : 'none';
@@ -3618,12 +3788,15 @@ function playlistUI(){
 }
 function goLevel(i){                                  // previous / next in a pack: straight to that level
   if (!PLAYLIST || i < 0 || i >= PLAYLIST.length) return;
+  if (SC && $('menuPanel').classList.contains('show')) closeMenu();
+  else if (SC){ const [a, b] = catRange(playIdx); if (i < a || i > b) return; }      // the showcase: inside the category
   cancelAuto(); ['winPanel', 'failPanel', 'donePanel', 'statsPanel'].forEach(id => $(id).classList.remove('show'));
   playIdx = i; loadLevel(PLAYLIST[i], 'export');
 }
 function nextLevel(){
   cancelAuto();
   $('winPanel').classList.remove('show');
+  if (SC){ if (playIdx < catRange(playIdx)[1]){ playIdx++; loadLevel(PLAYLIST[playIdx], 'export'); } else openMenu(); return; }
   if (playIdx + 1 < PLAYLIST.length){ playIdx++; loadLevel(PLAYLIST[playIdx], 'export'); }
   else { $('doneText').textContent = `All ${PLAYLIST.length} level${PLAYLIST.length > 1 ? 's are' : ' is'} done!`; $('donePanel').classList.add('show'); sfx.win(); }
 }
@@ -3747,6 +3920,7 @@ function slotPos(m, rowF){
 const seatMat = new THREE.Matrix4(), SEAT_Y = 0.28;               // seated: hips on the cushion, head and shoulders above the rim
 function seatMatrix(i, out){
   const m = game.men[i], v = views[m.bus], s = C.seatLocal(m.seat, v.b.len);
+  if (v.bent) return skPose(v, s.x, SEAT_Y, s.z, 0, out).premultiply(v.body.matrixWorld);   // on its row of a bent Snake bus
   out.makeTranslation(s.x, SEAT_Y, s.z).premultiply(v.body.matrixWorld); return out;
 }
 function manWorld(i){
@@ -3838,6 +4012,7 @@ function updateBus(v, t, vdt){
   v.hGlow.forEach(s => { s.material.opacity = flashing ? 1 : 0; });
   if (v.q) v.q.position.y = 1.25 + Math.sin(t*3 + b.id)*0.05;
   if (v.keyS){ v.keyS.visible = !!b.key && !v.keyGone; v.keyS.position.y = (v.q ? 1.85 : 1.18) + Math.sin(t*3.4 + b.id)*0.05; }
+  snakeUpdate(v, vdt);
 }
 /* A full bus first drives straight sideways (perpendicular to the road) off the edge on the side
    away from its ramp, above the neighbouring crowds; only once it is clear of the road - and out
@@ -3913,6 +4088,7 @@ function updateJump(v, t, vdt){
   }
   if (vdt > 0 && u < J.t1) v.wheelAng += 0.6*vdt/WHEEL_R;
   v.spd = 0; v.brakeMat.emissiveIntensity = 0.15; v.bGlow.forEach(s => s.material.opacity = 0);
+  if (v.bent) snakeUpdate(v, vdt);
 }
 function updateWheels(){
   let n = 0;
@@ -3920,8 +4096,9 @@ function updateWheels(){
     if (!v.root.visible) continue;
     const dk = 1 - v.dark;
     for (const w of v.wheels){
-      _e.set(v.wheelAng, 0, 0, 'XYZ'); _q.setFromEuler(_e); _v.set(w[0], w[1], w[2]);
-      _a.compose(_v, _q, _one).premultiply(v.body.matrixWorld); wheelIM.setMatrixAt(n, _a); wheelIM.setColorAt(n, _c.setScalar(dk)); n++;
+      if (v.bent) skPose(v, w[0], w[1], w[2], v.wheelAng, _a);
+      else { _e.set(v.wheelAng, 0, 0, 'XYZ'); _q.setFromEuler(_e); _v.set(w[0], w[1], w[2]); _a.compose(_v, _q, _one); }
+      _a.premultiply(v.body.matrixWorld); wheelIM.setMatrixAt(n, _a); wheelIM.setColorAt(n, _c.setScalar(dk)); n++;
     }
   }
   wheelIM.count = n; wheelIM.instanceMatrix.needsUpdate = true; if (wheelIM.instanceColor) wheelIM.instanceColor.needsUpdate = true;
@@ -4062,7 +4239,7 @@ const store = {
 const AUTO_MS = 3500;
 let autoTimer = 0;
 function startAuto(){                                 // a won level in a pack with nav goes on to the next one by itself
-  if (!NAV || levelSource !== 'export') return;
+  if (!NAV || SC || levelSource !== 'export') return;
   const b = $('btnNext'); b.style.setProperty('--auto', AUTO_MS/1000 + 's'); b.classList.remove('auto'); void b.offsetWidth; b.classList.add('auto');
   clearTimeout(autoTimer); autoTimer = setTimeout(() => { autoTimer = 0; if ($('winPanel').classList.contains('show')) nextLevel(); }, AUTO_MS);
 }
@@ -4241,7 +4418,15 @@ app.addEventListener('pointerdown', e => {
 });
 const busOfAction = a => game.buses[a.kind === 'lane' ? game.lanes[a.idx][0] : game.bays[a.idx]];
 function setBot(on){ botOn = on; botT = 0; $('botTag').style.display = botOn ? 'block' : 'none'; }
-function setSpeed(s){ timeScale = s; $('btnSpeed').textContent = s + 'x'; $('btnSpeed').classList.toggle('on', s > 1); }
+/* game speed: 1x, 1.25x, 1.5x, 1.75x or 2x (the button steps through them); the whole game and every animation run at it */
+const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
+function setSpeed(s, save){
+  if (!SPEEDS.includes(s)) s = 1;
+  timeScale = s; const b = $('btnSpeed'); b.textContent = s + 'x'; b.classList.toggle('on', s > 1); b.classList.toggle('long', String(s).length > 2);
+  b.title = 'Game speed: ' + s + 'x (tap for ' + SPEEDS[(SPEEDS.indexOf(s) + 1) % SPEEDS.length] + 'x)';
+  if (save) S.savePrefs({speed:s});
+  if (typeof onSettings === 'function') onSettings();
+}
 $('btnRestart').addEventListener('click', () => { audio(); resetGame(); });
 $('btnReplay').addEventListener('click', () => { audio(); cancelAuto(); resetGame(); });
 $('btnNext').addEventListener('click', () => { audio(); nextLevel(); });
@@ -4254,8 +4439,9 @@ $('btnStatsReset').addEventListener('click', () => { audio(); resetStats(); });
 $('btnIntroOk').addEventListener('click', () => { audio(); closeIntro(); });
 $('btnAgain').addEventListener('click', () => { audio(); $('donePanel').classList.remove('show'); playIdx = 0; loadLevel(PLAYLIST[0], 'export'); });
 $('btnRetry').addEventListener('click', () => { audio(); resetGame(); });
-$('btnSpeed').addEventListener('click', () => { audio(); setSpeed(timeScale > 1 ? 1 : 2); });
-$('btnSettings').addEventListener('click', () => { audio(); $('settings').classList.toggle('open'); });
+$('btnSpeed').addEventListener('click', () => { audio(); setSpeed(SPEEDS[(SPEEDS.indexOf(timeScale) + 1) % SPEEDS.length], true); });
+setSpeed(+S.loadPrefs().speed || 1);
+$('btnSettings').addEventListener('click', () => { audio(); if (SC) openSettings(); else $('settings').classList.toggle('open'); });
 $('btnMute').addEventListener('click', () => { audio(); setMuted(!muted); });
 $('btnBuiltin').addEventListener('click', () => { loadLevel(C.LEVEL_DATA, 'builtin'); $('settings').classList.remove('open'); });
 if (PLAYLIST){                                       // an exported pack: its own levels instead of the bundled ones
@@ -4308,16 +4494,72 @@ function frame(now){
   const dt = Math.min(0.1, (now - last)/1000); last = now;
   pump(dt);
   camera.position.set(CAM.pos[0] + (shake ? (frand() - 0.5)*shake : 0), CAM.pos[1] + (shake ? (frand() - 0.5)*shake : 0), CAM.pos[2]);
-  renderer.render(scene, TOPVIEW ? topCam : camera);
+  if (!menuOpen) renderer.render(scene, TOPVIEW ? topCam : camera);
 }
 setMuted(muted);
 applyThemeColors(); $('btnTheme').textContent = 'Theme: ' + TH.label;
 // the booster buttons are placeholders: a wobble, no effect on the game
 document.querySelectorAll('.boost').forEach(b => b.addEventListener('click', () => { audio(); sfx.thud(); b.classList.remove('wob'); void b.offsetWidth; b.classList.add('wob'); }));
+$('btnMove').addEventListener('click', () => { audio(); setMove(busMove === 'snake' ? 'rigid' : 'snake', true); });
+setMove(busMove);
 $('btnTheme').addEventListener('click', () => setTheme(THEME_IDS[(THEME_IDS.indexOf(themeId) + 1) % THEME_IDS.length]));
+/* ---------------- the showcase: start menu, settings panel ---------------- */
+const SC_LAST = 'me-showcase-last', DIFF_N = {'Easy':1, 'Medium':2, 'Hard':3, 'Very Hard':4};
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'})[c]);
+let menuOpen = false;
+function buildMenu(){
+  const last = store.get(SC_LAST, null), list = $('menuList'); list.innerHTML = '';
+  for (const cat of SC.categories){
+    const h = document.createElement('div'); h.className = 'mcat'; h.textContent = cat.name; list.append(h);
+    for (const grp of cat.groups){
+      if (grp.name){ const g = document.createElement('div'); g.className = 'mgrp'; g.textContent = grp.name; list.append(g); }
+      const grid = document.createElement('div'); grid.className = 'mgrid'; list.append(grid);
+      for (const id of grp.levels){
+        const i = PLAYLIST.findIndex(l => l.id === id); if (i < 0) continue;
+        const lv = PLAYLIST[i], c = (SC.cards && SC.cards[id]) || {}, card = document.createElement('div');
+        card.className = 'mcard spring' + (id === last ? ' last' : ''); card.dataset.id = id;
+        const tags = [];
+        if (c.diff) tags.push(`<span class="tag d${DIFF_N[c.diff] || 2}">${esc(c.diff)}</span>`);
+        tags.push(`<span class="tag ln">${lv.lanes.length} lanes</span>`);
+        (c.blockers || []).forEach(b => tags.push(`<span class="tag bk">${esc(b)}</span>`));
+        card.innerHTML = `<img alt="" src="${(SC.thumbs && SC.thumbs[id]) || ''}"><b>${esc(lv.name || id)}</b><div class="tags">${tags.join('')}</div>`;
+        card.addEventListener('click', () => { audio(); store.set(SC_LAST, id); closeMenu(); playIdx = i; loadLevel(PLAYLIST[i], 'export'); });
+        grid.append(card);
+      }
+    }
+  }
+}
+function openMenu(){
+  cancelAuto(); ['winPanel', 'failPanel', 'donePanel', 'statsPanel', 'setPanel'].forEach(id => $(id).classList.remove('show'));
+  buildMenu(); $('menuPanel').classList.add('show'); menuOpen = true;
+  const cur = $('menuList').querySelector('.mcard.last'); if (cur) cur.scrollIntoView({block:'center'});
+}
+function closeMenu(){ $('menuPanel').classList.remove('show'); menuOpen = false; }
+function openSettings(){ onSettings(); $('settings').classList.remove('open'); $('setPanel').classList.add('show'); }
+function onSettings(){                                 // the settings panel shows the current choices
+  if (!$('segTheme')) return;
+  $('segTheme').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === themeId));
+  $('segMove').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === busMove));
+  $('segSpeed').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === timeScale));
+  $('segSound').querySelectorAll('button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'off') === muted));
+}
+THEME_IDS.forEach(id => { const b = document.createElement('button'); b.dataset.v = id; b.innerHTML = `<i style="background:${THEMES[id].ground}"></i>${THEMES[id].label}`; $('segTheme').append(b); });
+SPEEDS.forEach(v => { const b = document.createElement('button'); b.dataset.v = v; b.textContent = v + 'x'; $('segSpeed').append(b); });
+$('segTheme').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setTheme(b.dataset.v); onSettings(); });
+$('segMove').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMove(b.dataset.v, true); });
+$('segSpeed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setSpeed(+b.dataset.v, true); });
+$('segSound').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMuted(b.dataset.v === 'off'); onSettings(); });
+$('btnSetClose').addEventListener('click', () => { audio(); $('setPanel').classList.remove('show'); });
+$('btnSetStats').addEventListener('click', () => { audio(); $('setPanel').classList.remove('show'); if (STATS_ON) openStats(); });
+$('menuSet').addEventListener('click', () => { audio(); openSettings(); });
+$('btnHome').addEventListener('click', () => { audio(); openMenu(); });
+if (SC){ app.classList.add('sc'); $('btnSetStats').style.display = STATS_ON ? '' : 'none'; }
+else $('btnSetStats').style.display = 'none';
+
 const [lv0, src0] = initialLevel();
 loadLevel(lv0, src0);
 fit();
+if (SC && !params.has('n')) openMenu();               // the showcase opens on its menu
 requestAnimationFrame(frame);
 // the editor's preview asks its editor for the level
 if (EMBED && !SHARE) parent.postMessage({type:'hello'}, '*');
@@ -4335,7 +4577,9 @@ window.__me = {
   get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS,
-  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD,
+  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, SPEEDS,
+  snakeFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames in the world, front to back
+    return {bent:v.bent, f:v.snk, pts:v.U.uSk.value.map(F => new THREE.Vector3(F.x, F.y, F.z).applyMatrix4(v.body.matrixWorld)).map(p => [p.x, p.y, p.z])}; },
   setBot, setDebug(v){ DEBUG = v; WD.dbgGroup.visible = v; $('dbg').style.display = v ? 'block' : 'none'; },
   freeze(v){ frozen = v; }, restart: () => resetGame(), render(){ updateScene(0); renderer.render(scene, camera); },
   /* on-screen sizes in CSS px at the current viewport: standing stickmen (feet to top of head) and buses by capacity */
