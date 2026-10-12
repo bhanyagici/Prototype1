@@ -156,10 +156,11 @@ console.log('compact layout (built-in level)');
       'front ' + fronts.join('/') + ', behind ' + Math.min(...behind).toFixed(4) + '-' + Math.max(...behind).toFixed(4));
   let pathMin = 9; for (let z = C.laneSlotZ(bl(12)); z >= C.Z_ROAD0 - 2; z -= 0.01) pathMin = Math.min(pathMin, C.dispScale(z));
   chk(pathMin === 1, 'a sent bus never shrinks: road size all the way from the front slot through the yard to the road', 'smallest scale on the way ' + pathMin);
-  const bayLen = C.dispZ(C.Z_BAY_BOT) - C.dispZ(C.Z_BAY_TOP), bayW = 1.12*C.dispSx(C.Z_BAY_TOP), k12 = C.dispScale(C.parkZ(bl(12)));
-  const z12 = C.parkZ(bl(12)), drawn12 = C.dispZ(z12 + bl(12)/2) - C.dispZ(z12 - bl(12)/2);
-  chk(k12 === 1 && CAPS.every(c => C.dispScale(C.parkZ(bl(c))) === 1) && drawn12 <= bayLen - 0.15 && C.BUS_W*k12 <= bayW - 0.1,
-      'parked buses are drawn at road size and a 12-seat bus fits inside its bay outline', `bus ${bl(12).toFixed(2)} x ${C.BUS_W} in a ${bayLen.toFixed(2)} x ${bayW.toFixed(2)} bay`);
+  // every bus is drawn 10% smaller than simulated (BUS_DRAW), the same in a bay as on the road; a 12-seat bus fits its
+  // bay's outline (the outline of a parked 12-seat bus with a margin, C.drawnBay)
+  const B0 = C.drawnBay(L.Y.BAY_X[0]), k12 = C.dispScale(C.parkZ(bl(12))), d12 = [C.BUS_DRAW*k12*bl(12), C.BUS_DRAW*k12*C.BUS_W];
+  chk(C.BUS_DRAW === 0.9 && k12 === 1 && CAPS.every(c => C.dispScale(C.parkZ(bl(c))) === 1) && d12[0] <= 2*B0.hl - 0.08 && d12[1] <= 2*B0.hw - 0.08,
+      'parked buses are drawn at the same size as on the road (90% of simulated) and a 12-seat bus fits inside its bay outline', `bus ${d12[0].toFixed(2)} x ${d12[1].toFixed(2)} in a ${(2*B0.hl).toFixed(2)} x ${(2*B0.hw).toFixed(2)} bay`);
 }
 
 console.log('linked buses');

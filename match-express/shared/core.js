@@ -872,27 +872,34 @@ const laneSlotZ = len => Z_LANE_TOP + 0.12 + len/2;
 /* ========================= FIXED SCREEN LAYOUT ========================= */
 /* Every level uses the same screen (900 x 1950 design space = 390 x 844 at 2.3x), split into zones
    (fractions of the height): top bar, TARGET zone (road, spiral, ramps, exit tunnel), STATIC row
-   (bays) and QUEUE.  One camera for every level: the largest bundled level (Crowded Rush Curve)
-   fills the target zone with stickmen about 17 px tall. */
-const SCREEN = {w:900, h:1950, BAR:0.07, TARGET_TOP:0.07, TARGET_BOT:0.61, STATIC_BOT:0.77, MARGIN:12*900/390};
+   (bays), QUEUE (its lanes come out of a wide stone tunnel) and the BOOSTER bar at the very bottom.
+   One camera for every level: the largest bundled level (Crowded Rush Curve) fills the target zone with
+   stickmen about 17 px tall.  QUEUE_BOT is where the queue tunnel's arch begins: every lane shows at least
+   three 8-seat buses fully above it. */
+const SCREEN = {w:900, h:1950, BAR:0.07, TARGET_TOP:0.07, TARGET_BOT:0.61, STATIC_BOT:0.72, QUEUE_BOT:0.905, BOOST_TOP:0.93, MARGIN:12*900/390};
 const SCREEN_CAM = {fov:30, pos:[0, 41.769, 28.354], look:[0, 0, -4.28], w:SCREEN.w, h:SCREEN.h};
-/* The yard and queue are DRAWN in a slightly squeezed form of the simulation's layout (the simulation is
-   untouched): a sim point (x, z) is shown at (x*dispSx(z), dispZ(z)) and a bus there at dispScale(z).
-   Every bus is drawn at ROAD SIZE (1) from the front of its queue lane to the road and in the bays,
-   so a sent bus never shrinks; only the buses waiting behind a lane's front bus are drawn at QS = 1/1.1
-   (the front bus is 10% larger).  The bay row is drawn at road size too, so a 12-seat bus fits its bay;
-   to keep the screen zones, only the strips above it (entry) and below it (collector) are squeezed
-   vertically (KE, KC), and the margin between the collector road and the queue is squeezed further. */
-const DISP = {K:1, KE:0.6, KC:0.6, QS:1/1.1, QZ:0.84, MARGIN:0.3, T:0.25, zA:Z_ROAD0, zB:-0.7, zE:Z_BAY_TOP - 0.25, zF:Z_BAY_BOT + 0.25,
-  zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.3, qB:1.85, pA:2.4, pB:3.0};
+/* Every bus is drawn 10% smaller than its simulated footprint (its seats, wheels and passengers with it); the
+   simulation's sizes and distances are untouched. */
+const BUS_DRAW = 0.9;
+/* The yard and queue are DRAWN in a squeezed form of the simulation's layout (the simulation is untouched): a
+   sim point (x, z) is shown at (x*dispSx(z), dispZ(z)) and a bus there at BUS_DRAW*dispScale(z).
+   - The yard and the queue are 15% narrower (KX) and the bay row 15% shorter (KB) than simulated: the bay area is
+     15% smaller and a 12-seat bus (drawn 10% smaller) still fits its bay.
+   - The strips above the bays (entry, KE) and below them (collector, KC) and the margin to the queue are squeezed
+     further, and the gaps between queued buses (QZ).
+   - Every bus is drawn at the same size (dispScale 1) from the front of its queue lane, through the yard, onto the
+     road and in the bays, so a sent bus never shrinks; only the buses waiting behind a lane's front bus are drawn at
+     QS = 1/1.1 (the front bus is 10% larger). */
+const DISP = {K:0.85, KX:0.85, KB:0.84, KE:0.25, KC:0.32, QS:1/1.1, QZ:0.76, MARGIN:0.06, T:0.25, zA:Z_ROAD0, zB:-0.7, zE:Z_BAY_TOP - 0.25, zF:Z_BAY_BOT + 0.25,
+  zC:Z_COLL + 0.55, zL:Z_LANE_TOP + 0.12, qA:1.3, qB:1.85, pA:1.4, pB:1.9};
 const smooth01 = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
 function dispSlope(z){                              // d(shown z)/d(sim z)
   const D = DISP;
   if (z <= D.zA) return 1;
   if (z <= D.zE - D.T) return 1 + (D.KE - 1)*smooth01(D.zA, D.zB, z);     // main road end -> entry strip
-  if (z <= D.zE) return D.KE + (1 - D.KE)*smooth01(D.zE - D.T, D.zE, z);
-  if (z <= D.zF) return 1;                                                // the bay row at road size
-  if (z <= D.zF + D.T) return 1 + (D.KC - 1)*smooth01(D.zF, D.zF + D.T, z);
+  if (z <= D.zE) return D.KE + (D.KB - D.KE)*smooth01(D.zE - D.T, D.zE, z);
+  if (z <= D.zF) return D.KB;                                             // the bay row
+  if (z <= D.zF + D.T) return D.KB + (D.KC - D.KB)*smooth01(D.zF, D.zF + D.T, z);
   if (z <= D.zC) return D.KC;                                             // collector strip
   if (z < D.zL) return D.MARGIN;
   return 1 + (D.QZ - 1)*smooth01(D.pA, D.pB, z - D.zL);                   // queue: tighter gaps behind the front
@@ -905,13 +912,15 @@ function dispZ(z){
   if (i >= DISP_TAB.length - 1) return DISP_TAB[DISP_TAB.length - 1] + (z - DISP.zA - (DISP_TAB.length - 1)*DISP_STEP)*DISP.QZ;
   return DISP_TAB[i] + (DISP_TAB[i+1] - DISP_TAB[i])*(f - i);
 }
-function dispSx(z){ return DISP.K; }
-function dispScale(z){                              // size a bus (or anything) is drawn at
-  const D = DISP;                                   // road size, except behind the front slot of a queue lane
+function dispSx(z){ return 1 + (DISP.KX - 1)*smooth01(DISP.zA, DISP.zB, z); }   // the road keeps its width, the yard is narrower
+function dispScale(z){                              // relative size a bus is drawn at (times BUS_DRAW)
+  const D = DISP;                                   // 1, except behind the front slot of a queue lane
   if (z < D.zL) return 1;
   return 1 + (D.QS - 1)*smooth01(D.qA, D.qB, z - D.zL);
 }
 function dispPoint(x, z){ return [x*dispSx(z), dispZ(z)]; }
+/* a bay as drawn: the outline of a parked 12-seat bus (drawn BUS_DRAW of its size) with a small even margin */
+function drawnBay(bx){ const L12 = busLen(12), [x, z] = dispPoint(bx, parkZ(L12)); return {x, z, hl:BUS_DRAW*L12/2 + 0.06, hw:BUS_DRAW*BUS_W/2 + 0.07}; }
 function dispDir(dx, dz, z){ const a = dx*dispSx(z), b = dz*dispSlope(z), l = Math.hypot(a, b) || 1; return [a/l, b/l]; }
 
 const RAMP_SP = 0.36;                               // stickman spacing along and across a ramp
@@ -1095,14 +1104,16 @@ function roadEdge(ROAD, s, side, reach){
     if (t < 0){ pathAt(ROAD, 0, o, 0); return [o.x + o.dx*t - o.dz*side*ROAD_HALF, o.z + o.dz*t + o.dx*side*ROAD_HALF]; }
     if (t > ROAD.len){ pathAt(ROAD, ROAD.len, o, 0); const e = t - ROAD.len; return [o.x + o.dx*e - o.dz*side*ROAD_HALF, o.z + o.dz*e + o.dx*side*ROAD_HALF]; }
     pathAt(ROAD, t, o, 0); return [o.x - o.dz*side*ROAD_HALF, o.z + o.dx*side*ROAD_HALF]; };
-  const fwd = [[0, at(s)]], back = [];
-  for (let k = 1; k <= n; k++){ const q = at(s + k*step), w = fwd[fwd.length - 1]; fwd.push([w[0] + Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q]); }
-  for (let k = 1; k <= n; k++){ const q = at(s - k*step), w = back.length ? back[back.length - 1] : fwd[0]; back.push([w[0] - Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q]); }
+  const fwd = [[0, at(s), s]], back = [];
+  for (let k = 1; k <= n; k++){ const q = at(s + k*step), w = fwd[fwd.length - 1]; fwd.push([w[0] + Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q, s + k*step]); }
+  for (let k = 1; k <= n; k++){ const q = at(s - k*step), w = back.length ? back[back.length - 1] : fwd[0]; back.push([w[0] - Math.hypot(q[0] - w[1][0], q[1] - w[1][1]), q, s - k*step]); }
   const list = back.reverse().concat(fwd);                      // ascending signed arc length along the direction of travel
-  const E = u => { const a = u*side; let lo = 0, hi = list.length - 1;
-    if (a <= list[0][0]) return list[0][1]; if (a >= list[hi][0]) return list[hi][1];
+  const find = a => { let lo = 0, hi = list.length - 1;
+    if (a <= list[0][0]) return [0, 0, 0]; if (a >= list[hi][0]) return [hi, hi, 0];
     while (hi - lo > 1){ const m = (lo + hi) >> 1; if (list[m][0] <= a) lo = m; else hi = m; }
-    const f = (a - list[lo][0])/((list[hi][0] - list[lo][0]) || 1); return [lerpN(list[lo][1][0], list[hi][1][0], f), lerpN(list[lo][1][1], list[hi][1][1], f)]; };
+    return [lo, hi, (a - list[lo][0])/((list[hi][0] - list[lo][0]) || 1)]; };
+  const E = u => { const [lo, hi, f] = find(u*side); return [lerpN(list[lo][1][0], list[hi][1][0], f), lerpN(list[lo][1][1], list[hi][1][1], f)]; };
+  E.sAt = u => { const [lo, hi, f] = find(u*side); return lerpN(list[lo][2], list[hi][2], f); };   // the road's arc length beside edge point u
   return E;
 }
 /* A ramp: a grid of stickmen beside the road, its front edge always lying exactly on the road's edge - straight on a
@@ -1119,8 +1130,6 @@ function buildRamp(ROAD, rd, src, Y){
     side = ((rd.front[0] - q.x)*(-q.dz) + (rd.front[1] - q.z)*q.dx) >= 0 ? 1 : -1;
   }
   s = clamp(s, 0.6, ROAD.portalS - 0.6);
-  const p = {}; pathAt(ROAD, s, p, 0);
-  const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
   const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
   // `spread` fans the columns out (> 0) or draws them together (< 0) toward the back: the lateral spacing grows
   // linearly from RAMP_SP at the front row to RAMP_SP*(1 + spread) at the back row (and on to the far edge)
@@ -1128,7 +1137,17 @@ function buildRamp(ROAD, rd, src, Y){
   const widthK = sv => 1 + spread*Math.max(0, (sv - 0.34)/depth);
   const halfWAt = sv => cols*RAMP_SP*widthK(sv)/2 + 0.16;
   const halfW0 = halfWAt(0), halfW = Math.max(halfW0, halfWAt(length));
-  const E = roadEdge(ROAD, s, side, halfW + 0.3), A = E(0);
+  // the whole front edge lies along the road, from just after its start to just before the exit tunnel: a ramp too
+  // close to either end slides along the road until it fits
+  let E = roadEdge(ROAD, s, side, halfW + 0.3);
+  for (let it = 0; it < 4; it++){
+    const a = E.sAt(-halfW0), b = E.sAt(halfW0), lo = Math.min(a, b), hi = Math.max(a, b);
+    const ds = lo < 0.15 ? 0.15 - lo : hi > ROAD.portalS - 0.3 ? ROAD.portalS - 0.3 - hi : 0;
+    if (Math.abs(ds) < 1e-4) break;
+    s = clamp(s + ds, 0.6, ROAD.portalS - 0.6); E = roadEdge(ROAD, s, side, halfW + 0.3);
+  }
+  const A = E(0), p = {}; pathAt(ROAD, s, p, 0);
+  const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
   // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees
   const tilt = rd.tilt != null ? rd.tilt*Math.PI/180 : null, wx = nx >= 0 ? 1 : -1;
   const tdx = tilt != null ? wx*Math.cos(tilt) : 0, tdz = tilt != null ? -Math.sin(tilt) : 0;
@@ -2185,7 +2204,7 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,

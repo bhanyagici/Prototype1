@@ -42,9 +42,9 @@
         ["green", "green", "yellow", "blue"],
         ["green", "orange", "orange", "purple"]
       ],
-      "at": 1.636,
+      "at": 2.203,
       "side": -1,
-      "shape": [[-1.22, -4.11], [-2.13, -4.84]]
+      "shape": [[-2.13, -4.84]]
     },
     {
       "rows": 4,

@@ -47,6 +47,19 @@
   #settings{max-height:calc(100% - 180px);overflow-y:auto}
   #demoBtns summary{cursor:pointer;margin:12px 4px 4px;font-size:24px;font-weight:800;color:#ffc531}
   #demoBtns button{font-size:24px;padding:10px}
+  /* ---- booster bar: the very bottom of the screen, three chunky rounded-square buttons (placeholders, no effect yet) ---- */
+  #boosters{box-sizing:border-box;left:0;right:0;bottom:0;height:136px;display:flex;align-items:center;justify-content:center;gap:64px;z-index:6;
+    background:linear-gradient(#34477c,#26355f 55%,#1e2a4d);border-top:6px solid #ffcf3a;border-radius:44px 44px 0 0;
+    box-shadow:0 -10px 24px rgba(0,0,0,.22),inset 0 6px 0 rgba(255,255,255,.12)}
+  .boost{position:relative;width:112px;height:104px;border-radius:32px;margin-top:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    background:linear-gradient(#7acbff,#2584ee 58%,#1a68cf);border:7px solid #ffcf3a;
+    box-shadow:0 8px 0 #c48410,0 12px 18px rgba(0,0,0,.3),inset 0 -7px 0 rgba(8,52,128,.38),inset 0 4px 0 rgba(255,255,255,.4);filter:saturate(.72) brightness(.97)}
+  .boost::before{content:'';position:absolute;left:12%;right:12%;top:7%;height:36%;border-radius:22px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.05));pointer-events:none}
+  .boost svg{position:relative;width:60px;height:60px;filter:drop-shadow(0 4px 0 rgba(10,60,140,.85))}
+  .boost i{position:absolute;right:-14px;top:-14px;width:44px;height:44px;border-radius:50%;background:#e9edf5;border:5px solid #ffcf3a;color:#55617c;
+    font:900 26px/34px inherit;font-style:normal;text-align:center;box-shadow:0 4px 0 #c48410}
+  .boost.wob{animation:wob .45s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes wob{0%{transform:rotate(0)}25%{transform:rotate(-9deg) scale(.94)}55%{transform:rotate(7deg)}100%{transform:none}}
   /* ---- counter sign ---- */
   #counter{width:112px;height:124px;border-radius:28px;background:linear-gradient(#3d5592,#27376a 60%,#1d2a54);
     border:7px solid #ffcf3a;box-shadow:0 8px 0 #c48410,0 14px 22px rgba(0,0,0,.32),inset 0 -6px 0 rgba(0,0,0,.25),inset 0 0 0 3px #17224a;
@@ -167,6 +180,11 @@
     <small id="levelSrc"></small>
   </div>
   <div class="ui" id="counter"><svg viewBox="0 0 64 50"><rect x="5" y="3" width="54" height="36" rx="9" fill="#fff"/><rect x="11" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="35" y="9" width="18" height="13" rx="3" fill="#2d3d6b"/><rect x="5" y="28" width="54" height="4" fill="#cfd8ee"/><circle cx="17" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/><circle cx="47" cy="41" r="6.5" fill="#fff" stroke="#2d3d6b" stroke-width="3"/></svg><span id="cnt">0/5</span></div>
+  <div class="ui" id="boosters" aria-label="Boosters (coming soon)">
+    <div class="boost spring" id="boost1" title="Booster (coming soon)" aria-disabled="true"><svg viewBox="0 0 48 48"><path d="M12 8v16a12 12 0 0 0 24 0V8h-8v16a4 4 0 0 1-8 0V8z" fill="#fff"/><rect x="12" y="8" width="8" height="6" fill="#ff6b6b"/><rect x="28" y="8" width="8" height="6" fill="#ff6b6b"/></svg><i>+</i></div>
+    <div class="boost spring" id="boost2" title="Booster (coming soon)" aria-disabled="true"><svg viewBox="0 0 48 48"><path d="M8 16h22l-5-5 4-4 12 11-12 11-4-4 5-5H8zM40 32H18l5 5-4 4L7 30l12-11 4 4-5 5h22z" fill="#fff"/></svg><i>+</i></div>
+    <div class="boost spring" id="boost3" title="Booster (coming soon)" aria-disabled="true"><svg viewBox="0 0 48 48"><rect x="7" y="9" width="34" height="26" rx="6" fill="#fff"/><rect x="12" y="14" width="10" height="9" rx="2" fill="#2d3d6b"/><rect x="26" y="14" width="10" height="9" rx="2" fill="#2d3d6b"/><circle cx="15" cy="38" r="5" fill="#fff"/><circle cx="33" cy="38" r="5" fill="#fff"/><path d="M39 1v9M34.5 5.5h9" stroke="#ffcf3a" stroke-width="4" stroke-linecap="round"/></svg><i>+</i></div>
+  </div>
   <div class="ui" id="dbg"></div>
   <div class="ui" id="botTag">BOT</div>
   <div class="panel" id="winPanel"><div class="card"><h1>Level Complete</h1><p>Every passenger is on board!</p><button id="btnNext" class="spring" style="display:none"><span id="btnNextTxt">Next level</span><span class="bar"><i></i></span></button><button id="btnReplay" class="spring">Replay</button></div></div>
@@ -357,7 +375,7 @@ const checkTex = canvasTex(128, 160, (x) => { x.fillStyle = '#2f9e3a'; x.beginPa
 /* Tunnel darkness: anything inside a tunnel's footprint, behind its mouth plane and short of its back end darkens per
    fragment, so a bus (with its wheels and passengers) and the road sink into the dark front first
    and come out of it rear last.  Applied to the road, bus, wheel and stickman materials. */
-const TUN_U = {uTun:{value:[new THREE.Vector4(0, 0, 0, 1), new THREE.Vector4(0, 0, 0, 1)]}, uTunY:{value:[new THREE.Vector2(-99, 0), new THREE.Vector2(-99, 0)]}};
+const TUN_U = {uTun:{value:[0, 1, 2].map(() => new THREE.Vector4(0, 0, 0, 1))}, uTunY:{value:[0, 1, 2].map(() => new THREE.Vector3(-99, 0, 1.05))}};   // exit, return, queue
 function tunnelFade(mat){
   mat.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, TUN_U);
@@ -367,11 +385,11 @@ function tunnelFade(mat){
         tw = instanceMatrix * tw;
       #endif
         vTW = (modelMatrix * tw).xyz; }`);
-    sh.fragmentShader = 'varying vec3 vTW;\nuniform vec4 uTun[2];\nuniform vec2 uTunY[2];\n' + sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
+    sh.fragmentShader = 'varying vec3 vTW;\nuniform vec4 uTun[3];\nuniform vec3 uTunY[3];\n' + sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
       { float k = 0.0;
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < 3; i++){
           vec2 d = vTW.xz - uTun[i].xy; float al = dot(d, uTun[i].zw), ac = abs(d.x*uTun[i].w - d.y*uTun[i].z);
-          float band = (1.0 - smoothstep(0.95, 1.15, ac))*step(uTunY[i].x - 0.6, vTW.y)*step(vTW.y, uTunY[i].x + 1.6)*uTunY[i].y;
+          float band = (1.0 - smoothstep(uTunY[i].z - 0.1, uTunY[i].z + 0.1, ac))*step(uTunY[i].x - 0.6, vTW.y)*step(vTW.y, uTunY[i].x + 1.6)*uTunY[i].y;
           k = max(k, band*smoothstep(-0.2, 0.45, al)*(1.0 - smoothstep(2.9, 3.2, al))); }   // the tunnel's length only (a road beyond it stays lit)
         gl_FragColor.rgb *= 1.0 - 0.97*k; }`);
   };
@@ -424,6 +442,16 @@ function disposeTree(root){
 /* the yard and queue are drawn in a squeezed form of the simulation's layout (see C.dispPoint) */
 function drawnTunnel(T){ const [x, z] = C.dispPoint(T.x, T.z); return Object.assign({}, T, {x, z, k:C.dispScale(T.z)}); }
 const smoothstep = (a, b, x) => smooth(a, b, x);
+const bayRect = bx => C.drawnBay(bx);           // a bay as drawn (around a parked 12-seat bus)
+/* the queue tunnel: a wide, low stone arch over the queue lanes right above the booster bar; its arch begins where
+   the screen's queue zone ends (SCREEN.QUEUE_BOT), so the lanes' buses above it are fully visible */
+const QT = {sy:0.72};
+function queueTunnelAt(Y){
+  const top = (TUN.LEG + TUN.Rout)*QT.sy, want = C.SCREEN.QUEUE_BOT*C.SCREEN.h; let lo = 4, hi = 14;
+  for (let i = 0; i < 40; i++){ const m = (lo + hi)/2; if (C.project(0, top, m)[1] < want) lo = m; else hi = m; }
+  const LX = Y.LANE_X, xs = Math.max(...LX.map(x => Math.abs(C.dispPoint(x, C.Z_LANE_TOP)[0])));
+  return {z:lo, w:Math.max(0, xs + C.BUS_DRAW*C.BUS_W/2 + 0.22 - TUN.Rin)};
+}
 /* the layout as DRAWN: the core's own layout (the road is a 3D spline with its climbs, pillars and overpasses), except
    that a ramp whose platform would sit below the ground stands on it */
 function displayLayout(L0){
@@ -516,8 +544,9 @@ function groundTexture(L, F){
     // markings on the yard floor: the bay slots and the queue lane dividers
     const Y = L.Y, dp = (a, b) => C.dispPoint(a, b);
     x.strokeStyle = TH.line; x.lineWidth = U(0.05); x.globalAlpha = 0.9;
-    Y.BAY_X.forEach(bx => { const [x0, z0] = dp(bx - 0.56, C.Z_BAY_TOP), [x1, z1] = dp(bx + 0.56, C.Z_BAY_BOT);
-      x.beginPath(); x.roundRect(X(x0), Z(z0), U(x1 - x0), U(z1 - z0), U(0.18)); x.stroke(); });
+    Y.BAY_X.forEach(bx => { const b = bayRect(bx); x.beginPath(); x.roundRect(X(b.x - b.hw), Z(b.z - b.hl), U(2*b.hw), U(2*b.hl), U(0.16)); x.stroke(); });
+    { const q = queueTunnelAt(Y), hw = q.w + TUN.Rout, g = x.createLinearGradient(0, Z(q.z - 0.9), 0, Z(q.z + 0.1));   // the tunnel mouth's shade on the lanes
+      g.addColorStop(0, 'rgba(20,24,32,0)'); g.addColorStop(1, 'rgba(20,24,32,0.38)'); x.globalAlpha = 1; x.fillStyle = g; x.fillRect(X(-hw), Z(q.z - 0.9), U(2*hw), U(1.0)); x.globalAlpha = 0.9; }
     const LX = Y.LANE_X; x.setLineDash([U(0.3), U(0.26)]);
     LX.slice(1).forEach((lx, i) => { const [sx, z0] = dp((LX[i] + lx)/2, C.Z_LANE_TOP); x.beginPath(); x.moveTo(X(sx), Z(z0)); x.lineTo(X(sx), Z(GZ1)); x.stroke(); });
     x.setLineDash([]); x.globalAlpha = 1;
@@ -740,17 +769,18 @@ function buildWorld(L){
   const R = L.ROAD, E = L.exit, F = grooveFeatures(L);
   buildGround(add, L, F);
   const pillars = buildRoadDeck(add, L);
-  const bayGlow = Y.BAY_X.map(bx => {
-    const zc = (C.Z_BAY_TOP + C.Z_BAY_BOT)/2, [gx, gz] = C.dispPoint(bx, zc), [, z0] = C.dispPoint(bx, C.Z_BAY_TOP + 0.05), [, z1] = C.dispPoint(bx, C.Z_BAY_BOT - 0.05);
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.08*C.DISP.K, z1 - z0).rotateX(-Math.PI/2),
+  const bayGlow = Y.BAY_X.map(bx => { const b = bayRect(bx);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(2*b.hw - 0.04, 2*b.hl - 0.04).rotateX(-Math.PI/2),
       new THREE.MeshBasicMaterial({color:'#ffffff', transparent:true, opacity:0, depthWrite:false}));
-    m.position.set(gx, 0.02, gz); add(m); return m; });
+    m.position.set(b.x, 0.02, b.z); add(m); return m; });
   const rampTops = buildRamps(add, L, pillars);
   addPillars(add, pillars);
   // tunnels: the exit tunnel at the road's end facing the road, the return tunnel on the nearer side of the yard
   const lamps = {};
   { const top = stoneTunnel({lift:E.y - GD}); top.position.set(E.x, E.y, E.z); top.rotation.y = Math.atan2(-E.dx, -E.dz); add(top); lamps.top = top.userData.lamp;
-    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.92*T.k); add(ret); lamps.ret = ret.userData.lamp; }
+    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.92*T.k); add(ret); lamps.ret = ret.userData.lamp;
+    // the queue lanes come out of a wide stone tunnel right above the booster bar
+    const q = queueTunnelAt(Y), qt = stoneTunnel({w:q.w}); qt.position.set(0, 0, q.z); qt.rotation.y = Math.PI; qt.scale.set(1, QT.sy, 1); add(qt); }
   buildStrip(add, L);
   // ramp-complete badges and debug markers
   const badges = L.RAMPS.map((r, k) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({map:checkTex, depthWrite:false}));
@@ -770,8 +800,9 @@ function buildWorld(L){
   sun.target.position.set(0, 0, -8); sun.position.set(-8, 18, -16);
   Object.assign(sun.shadow.camera, {left:-14, right:14, top:22, bottom:-22, near:2, far:60}); sun.shadow.camera.updateProjectionMatrix();
   const l = Math.hypot(E.dx, E.dz) || 1;
-  TUN_U.uTun.value[0].set(E.x, E.z, E.dx/l, E.dz/l); TUN_U.uTunY.value[0].set(E.y, 1);
-  TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.nx, -GT.nz); TUN_U.uTunY.value[1].set(0, 1);
+  TUN_U.uTun.value[0].set(E.x, E.z, E.dx/l, E.dz/l); TUN_U.uTunY.value[0].set(E.y, 1, 1.05);
+  TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.nx, -GT.nz); TUN_U.uTunY.value[1].set(0, 1, 1.05);
+  { const q = queueTunnelAt(Y); TUN_U.uTun.value[2].set(0, q.z + 0.15, 0, 1); TUN_U.uTunY.value[2].set(0, 1, q.w + TUN.Rin); }
   WD = {L, bayGlow, rampTops, badges, dbgGroup, ringIM, lamps};
 }
 
@@ -1409,7 +1440,7 @@ function updateCrash(t){
   const T = L.TUNNEL, first = c.chain[0], tx = (first ? first.b.x : sd*L.Y.BAY_X[4]) + sd*(C.BUS_W + 0.05), tz = first ? first.b.z : 2.4;
   const h0 = Math.atan2(T.nx, T.nz), hN = -Math.PI, xs = sd*(L.Y.X_SIDE + 0.25);
   v.root.visible = true; v.slope.rotation.x = 0; v.mat.color.setScalar(1);
-  const at = (w, x, y, z) => { const [dx, dz] = C.dispPoint(x, z); w.root.position.set(dx, y, dz); w.root.scale.setScalar(C.dispScale(z)); };
+  const at = (w, x, y, z) => { const [dx, dz] = C.dispPoint(x, z); w.root.position.set(dx, y, dz); w.root.scale.setScalar(C.BUS_DRAW*C.dispScale(z)); };
   if (u < 0.42){ const k = u/0.42, e = easeOut(k); at(v, lerp(T.x, xs, e), 0, lerp(T.z, tz + 0.15, e)); v.root.rotation.y = h0 + angDiff(hN, h0)*e; v.body.rotation.z = sd*0.12*Math.sin(k*Math.PI); }
   else if (u < 0.66){ const k = (u - 0.42)/0.24; at(v, lerp(xs, tx, k*k), 0, lerp(tz + 0.15, tz, k)); v.root.rotation.y = hN + 0.06*Math.sin(k*Math.PI); v.body.rotation.z = -sd*0.2*k; }
   else { const k = Math.min(1, (u - 0.66)/0.35); at(v, tx + sd*0.22*Math.sin(k*Math.PI)*(1 - k), 0, tz); v.root.rotation.y = hN; v.body.rotation.z = -sd*0.2*(1 - k); }
@@ -1487,7 +1518,7 @@ function updateBus(v, t, vdt){
   }
   v.root.visible = true;
   v.root.position.copy(v.p); v.root.rotation.y = v.h;
-  v.root.scale.setScalar(C.dispScale(b.z));         // road size, except the buses behind a lane's front bus
+  v.root.scale.setScalar(C.BUS_DRAW*C.dispScale(b.z));   // 10% smaller than simulated; the buses behind a lane's front bus smaller still
   updateTapRing(v, t, vdt);
   v.slope.rotation.x += (-Math.atan(b.slope) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
   if (vdt > 0){
@@ -1906,7 +1937,7 @@ function tutBayResend(T){
 /* -------------------------------- input -------------------------------- */
 function screenOf(x, y, z){ camera.updateMatrixWorld(); _v.set(x, y, z).project(camera); return [(_v.x + 1)/2*DW, (1 - _v.y)/2*DH]; }
 function busScreenBox(b){                          // the bus as drawn (position, heading and scale of its view)
-  const v = views[b.id], k = v.init ? v.root.scale.x : C.dispScale(b.z);
+  const v = views[b.id], k = v.init ? v.root.scale.x : C.BUS_DRAW*C.dispScale(b.z);
   const [cx, cz] = v.init ? [v.p.x, v.p.z] : C.dispPoint(b.x, b.z), dx = v.init ? Math.sin(v.h) : b.dx, dz = v.init ? Math.cos(v.h) : b.dz;
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
   for (const sx of [-0.5, 0.5]) for (const sz of [-0.5, 0.5]) for (const yy of [0, 0.8*k]){
@@ -1927,6 +1958,7 @@ function doAction(a){ return C.applyAction(game, a); }
 app.addEventListener('pointerdown', e => {
   audio();
   if (e.target.closest('.rbtn') || e.target.closest('.panel') || e.target.closest('#settings')) return;
+  if (e.target.closest('#boosters')){ $('settings').classList.remove('open'); return; }   // the bar never reaches the queue under it
   $('settings').classList.remove('open');
   const r = app.getBoundingClientRect(), px = (e.clientX - r.left)/r.width*DW, py = (e.clientY - r.top)/r.height*DH;
   const a = pick(px, py); if (a && tapAllowed(busOfAction(a))) doAction(a);
@@ -2004,6 +2036,8 @@ function frame(now){
 }
 setMuted(muted);
 applyThemeColors(); $('btnTheme').textContent = 'Theme: ' + TH.label;
+// the booster buttons are placeholders: a wobble, no effect on the game
+document.querySelectorAll('.boost').forEach(b => b.addEventListener('click', () => { audio(); sfx.thud(); b.classList.remove('wob'); void b.offsetWidth; b.classList.add('wob'); }));
 $('btnTheme').addEventListener('click', () => setTheme(THEME_IDS[(THEME_IDS.indexOf(themeId) + 1) % THEME_IDS.length]));
 const [lv0, src0] = initialLevel();
 loadLevel(lv0, src0);
@@ -2041,7 +2075,7 @@ window.__me = {
       men.push((y1 - y0)*k); });
     const bus = {}; views.forEach(v => { if (!v.root.visible) return; const L2 = v.b.len/2; v.root.updateMatrixWorld(true);
       const len = span([[0,0.4,L2],[0,0.4,-L2]], v.body.matrixWorld); (bus[v.b.cap] = bus[v.b.cap] || []).push(+len.toFixed(1)); });
-    const bay8 = L.Y.BAY_X.map(x => { const z = C.parkZ(C.busLen(8)), h = C.dispScale(z)*C.busLen(8)/2, [gx, gz] = C.dispPoint(x, z);   // as drawn
+    const bay8 = L.Y.BAY_X.map(x => { const z = C.parkZ(C.busLen(8)), h = C.BUS_DRAW*C.dispScale(z)*C.busLen(8)/2, [gx, gz] = C.dispPoint(x, z);   // as drawn
       const a = screenOf(gx, 0.4, gz - h), b = screenOf(gx, 0.4, gz + h); return (b[1] - a[1])*k; });
     return {men:{n:men.length, min:Math.min(...men), avg:men.reduce((a, b) => a + b, 0)/Math.max(1, men.length)}, bus, bay8:Math.min(...bay8)};
   }

@@ -75,32 +75,46 @@ of the height):
 |---|---|---|
 | top bar | 0 – 7% | level name, restart, speed, settings |
 | **target zone** | 7 – 61% | road, spiral, ramps and exit tunnel of every level |
-| static row | 61 – 77% | entry road, the five bays and the collector road |
-| queue | 77 – 100% | the three queue lanes |
+| static row | 61 – 72% | entry road, the five bays and the collector road |
+| queue | 72 – 90.5% | the 2–5 queue lanes, at least three 8-seat buses fully visible per lane |
+| queue tunnel | 90.5 – 93% | the wide stone arch the lanes come out of |
+| booster bar | 93 – 100% | three booster buttons (placeholders, no effect yet) |
 
-You asked for 62% and 72%. The static row and queue boundary moved to 77% so the
-queue shows three 8-seat buses per lane; the zones are the same for every level.
-- **Camera:** pitched at 52° and chosen so the largest bundled level, Crowded Rush
-  Curve, fills the target zone. Stickmen are about 17.4 px tall.
-- **Drawn yard:** the yard and queue are *drawn* in a slightly squeezed form of the
-  simulation's layout. `C.dispPoint` / `C.dispScale` map a simulated position to where
-  it is drawn; the simulation itself is unchanged. In detail:
-  - every bus is drawn at **road size** from the front of its queue lane, through the
+The target zone did not change, so every level still fits it. The room for the bar and the
+queue tunnel comes from the yard and the buses:
+- **Buses** are all drawn 10% smaller than simulated (`C.BUS_DRAW` = 0.9), everywhere: in
+  the queue, the yard, on the road and on the parachute. Their relative sizes stay the
+  same, and the simulation's sizes and distances are untouched.
+- **Bays:** the bay area is 15% smaller (`KX` and `KB` = 0.85). The bay row is 86% of its
+  old width and height, with tighter margins. A bay is the outline of a parked 12-seat
+  bus with a small margin (`C.drawnBay`): a 2.30 × 0.88 bus in a 2.42 × 1.02 bay.
+- **Strips:** the strips above the bays (entry, `KE` 0.25) and below them (collector,
+  `KC` 0.32) are squeezed further, as are the gaps between queued buses (`QZ` 0.76).
+- **Camera:** unchanged. It is pitched at 52° and chosen so the largest bundled level,
+  Crowded Rush Curve, fills the target zone.
+- **Drawn yard:** the yard and queue are *drawn* in a squeezed form of the simulation's
+  layout. `C.dispPoint` / `C.dispScale` map a simulated position to where it is drawn;
+  the simulation itself is unchanged. In detail:
+  - every bus is drawn at the same size from the front of its queue lane, through the
     yard, onto the road and in the bays, so a sent bus never shrinks;
-  - the bay row is drawn at road size, so a 12-seat bus fits its bay (2.56 long in a
-    2.82 bay); to keep the screen zones, only the strips above the bays (entry) and
-    below them (collector) are squeezed vertically, to 0.6;
-  - the margin between the collector road and the queue is squeezed, and the
-    collector has no curb strip on the queue side;
-  - in each lane the **front bus** is road size and 10% larger than the buses behind
-    it (drawn at 1/1.1 with tighter gaps); they grow smoothly as they reach the front;
-  - the front bus of each lane has a soft white outline with a glow, showing it can
-    be tapped; the buses behind it have none;
+  - in each lane the **front bus** is 10% larger than the buses behind it (drawn at
+    1/1.1 with tighter gaps); they grow smoothly as they reach the front;
   - the return tunnel still picks its side by itself, inside the drawn yard.
-- **Queue:** with every lane full of 8-seat buses, 3 per lane are fully visible
-  (4 four-seat buses, 2 twelve-seat ones), checked by `tests/layout.test.js`.
-- **Bus sizes:** an 8-seat bus is about 51 px long at the front of the queue, on the
-  road and in a bay.
+- **Queue tunnel:** a wide, low stone arch over all lanes.
+  - Its arch begins exactly at the queue zone's bottom edge (90.5%), so the buses above
+    it are fully visible.
+  - The next buses disappear under it and darken as they enter.
+  - A soft shade on the lane floor marks its mouth.
+- **Booster bar:** three chunky rounded-square buttons with placeholder icons (magnet,
+  swap, extra bus).
+  - They are inactive: a tap only wobbles the button, and never reaches the queue
+    underneath.
+- **Checked by `tests/layout.test.js`:**
+  - for 2–5 lanes, three 8-seat buses per lane are fully visible above the tunnel, and
+    no two drawn buses overlap;
+  - the zones are in order;
+  - the bay row is 15% smaller, and a 12-seat bus fits its bay;
+  - the yard routes keep clear of parked and queued buses for every lane count.
 
 The level checker reports anything outside the target zone (`zone-road`, `zone-ramp`,
 `zone-exit`, with positions). The editor draws the zone as a yellow frame.

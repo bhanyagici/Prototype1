@@ -83,20 +83,34 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       await p.goto(base + '/index.html?builtin&nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       const m = await p.evaluate(() => { __me.freeze(true); __me.render(); return __me.measure(); });
       chk(m.men.n === 192 && m.men.min >= 16, 'on 390 x 844 (fixed camera) every standing stickman is at least 16 px tall', `min ${m.men.min.toFixed(1)} px, avg ${m.men.avg.toFixed(1)} px`);
-      chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long (bays at road size)', m.bay8.toFixed(1) + ' px');
+      chk(m.bay8 >= 35, 'an 8-seat bus in a bay is drawn at least 35 px long', m.bay8.toFixed(1) + ' px');
+      // the booster bar: at the very bottom, three chunky rounded-square buttons; the queue's third buses fully above it
+      { const bb = await p.evaluate(() => { const app = document.getElementById('app').getBoundingClientRect(), k = app.height/1950, bar = document.getElementById('boosters').getBoundingClientRect();
+          const btns = [...document.querySelectorAll('#boosters .boost')].map(b => b.getBoundingClientRect()), g = __me.game;
+          const third = g.lanes.map(ln => ln[2]).filter(id => id != null).map(id => __me.busScreenBox(g.buses[id])[3]);
+          return {top:(bar.top - app.top)/k, bottom:(bar.bottom - app.top)/k, n:btns.length, inBar:btns.every(r => r.top >= bar.top - 1 && r.bottom <= bar.bottom + 1),
+            square:btns.every(r => Math.abs(r.width - r.height) < r.width*0.15 && r.width >= 40), third:Math.max(...third), queueBot:window.MECore.SCREEN.QUEUE_BOT*1950,
+            boostTop:window.MECore.SCREEN.BOOST_TOP*1950}; });
+        chk(Math.abs(bb.bottom - 1950) < 2 && Math.abs(bb.top - bb.boostTop) < 3 && bb.n === 3 && bb.inBar && bb.square,
+          'the booster bar sits at the very bottom with three chunky rounded-square buttons', JSON.stringify(bb));
+        chk(bb.third <= bb.queueBot + 1, 'every lane\'s third bus is drawn fully above the queue tunnel and the bar', `third bus bottom ${bb.third.toFixed(0)} px, tunnel arch at ${bb.queueBot.toFixed(0)} px (design px)`);
+        const before = await p.evaluate(() => JSON.stringify([__me.game.counter, __me.game.lanes, __me.game.bays]));
+        const bx = await p.locator('#boost2').boundingBox(); await p.mouse.click(bx.x + bx.width/2, bx.y + bx.height/2);
+        const after = await p.evaluate(() => { __me.pump(0.3); return JSON.stringify([__me.game.counter, __me.game.lanes, __me.game.bays]); });
+        chk(before === after, 'the boosters are inactive: a tap sends no bus and changes nothing'); }
       // the front bus of each lane: 10% larger than the buses behind; no tap outline outside a tutorial; a sent bus never shrinks
       { const q = await p.evaluate(() => { __me.freeze(false); __me.pump(0.5); const g = __me.game, V = __me.views;
           return g.lanes.map((ln, l) => ln.slice(0, 3).map(id => ({s:V[id].root.scale.x, ring:V[id].ring.visible && V[id].ring.material.opacity > 0.05}))); });
-        chk(q.every(ln => !ln[0].ring && Math.abs(ln[0].s - 1) < 1e-6 && ln.slice(1).every(b => !b.ring && Math.abs(b.s*1.1 - 1) < 1e-3)),
-          'each lane\'s front bus is 10% larger than the buses behind; no bus wears the tap outline outside a tutorial', JSON.stringify(q[0]));
+        chk(q.every(ln => !ln[0].ring && Math.abs(ln[0].s - 0.9) < 1e-6 && ln.slice(1).every(b => !b.ring && Math.abs(b.s*1.1 - 0.9) < 1e-3)),
+          'each lane\'s front bus is drawn at 90% (all buses 10% smaller), 10% larger than the buses behind; no bus wears the tap outline outside a tutorial', JSON.stringify(q[0]));
         const tr = await p.evaluate(() => { const g = __me.game, id = g.lanes[0][0], next = g.lanes[0][1], v = __me.views[id]; let minS = 9, maxS = 0, onRoad = false;
           __me.tapLane(0);
           for (let i = 0; i < 600 && !onRoad; i++){ __me.pump(1/60); minS = Math.min(minS, v.root.scale.x); maxS = Math.max(maxS, v.root.scale.x); onRoad = g.buses[id].state === 'road'; }
           for (let i = 0; i < 60; i++) __me.pump(1/60);
           const nv = __me.views[next]; return {minS, maxS, onRoad, next:{front:g.lanes[0][0] === next, s:nv.root.scale.x, ring:nv.ring.visible}}; });
-        chk(tr.onRoad && tr.minS === 1 && tr.maxS === 1, 'a sent bus keeps its front-bus size (road size) every frame from the lane to the road',
+        chk(tr.onRoad && Math.abs(tr.minS - 0.9) < 1e-9 && Math.abs(tr.maxS - 0.9) < 1e-9, 'a sent bus keeps its front-bus size (90%, as on the road) every frame from the lane to the road',
           `scale ${tr.minS}-${tr.maxS}, on the road ${tr.onRoad}`);
-        chk(tr.next.front && Math.abs(tr.next.s - 1) < 1e-6 && !tr.next.ring, 'the bus behind moves up and grows to front size (no outline)', JSON.stringify(tr.next));
+        chk(tr.next.front && Math.abs(tr.next.s - 0.9) < 1e-6 && !tr.next.ring, 'the bus behind moves up and grows to front size (no outline)', JSON.stringify(tr.next));
         await p.evaluate(() => { __me.restart(); __me.freeze(true); __me.render(); }); }
       // cheering from the moment a bus is sent: exactly the stickmen the core predicts, who then board it on that lap
       const ch = await p.evaluate(() => { __me.setBot(true); const g = __me.game, open = new Map(), laps = []; let warmUp = 0;
