@@ -243,7 +243,7 @@
     <div id="menuList"></div></div>
   <div class="panel" id="setPanel"><div class="card"><h1>Settings</h1>
     <div class="srow"><span>Theme</span><div class="seg" id="segTheme"></div></div>
-    <div class="srow"><span>Bus movement</span><div class="seg" id="segMove"><button data-v="rigid">Rigid</button><button data-v="articulated">Articulated</button></div></div>
+    <div class="srow"><span>Bus movement</span><div class="seg" id="segMove"><button data-v="rigid">Rigid</button><button data-v="jelly">Jelly</button></div></div>
     <div class="srow"><span>Camera</span><div class="seg" id="segCam"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div></div>
     <div class="srow"><span>Speed</span><div class="seg" id="segSpeed"></div></div>
     <div class="srow"><span>Sound</span><div class="seg" id="segSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
@@ -374,10 +374,10 @@ const PRESETS = /*PRESETS_BEGIN*/{
       "tail": [0, 1.85, -17.1]
     },
     "ramps": [
-      {"side": 1, "tilt": 35, "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]], "at": 1.617},
-      {"cp": 4, "side": -1, "tilt": 35, "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]]},
+      {"side": 1, "tilt": 35, "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]], "at": 1.317},
+      {"side": -1, "tilt": 35, "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]], "at": 3.825},
       {"side": 1, "tilt": 35, "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]], "at": 20.632},
-      {"side": -1, "tilt": 35, "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]], "at": 20.91}
+      {"side": -1, "tilt": 35, "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]], "at": 19.31}
     ],
     "lanes": [
       [
@@ -462,7 +462,7 @@ const PRESETS = /*PRESETS_BEGIN*/{
     "ramps": [
       {"at": 1.856, "side": 1, "tilt": 35, "shape": [[4.55, -4.81], [5.84, -7.11]], "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]]},
       {"at": 3.9248845776089056, "side": -1, "tilt": 35, "shape": [[-3.7, -6.72], [-5.71, -9.51]], "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]]},
-      {"at": 19.432, "side": 1, "tilt": 35, "shape": [[4.72, -11.18], [6.31, -13.88]], "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]]},
+      {"at": 20.332, "side": 1, "tilt": 35, "shape": [[6.9, -14.9]], "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]]},
       {"at": 21.210127635680642, "side": -1, "tilt": 35, "shape": [[-3.77, -13.6], [-6.24, -16.16]], "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]]}
     ],
     "lanes": [
@@ -1408,8 +1408,10 @@ function roadEdge(ROAD, s, side, reach){
 }
 /* A ramp: a grid of stickmen beside the road, its front edge always lying exactly on the road's edge - straight on a
    straight road, following the curve on a curved one.  Its body follows a spline from the middle of that front edge
-   (straight out, tilted, or bent by `shape`); across the ramp every row keeps the front edge's own shape, turned with
-   the spline.  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
+   (straight out, tilted, or bent by `shape`) and is a rectangle across it (square to the spline) whose front is cut to
+   fit the road: only the front edge takes the road's curve.  The rows behind it keep less and less of that curve, the
+   back row and the back edge none, so the back edge is straight with square corners and the side edges are straight
+   (along the spline).  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
 function buildRamp(ROAD, rd, src, Y){
   let s = rd.at != null ? rd.at : rd.cp != null ? ROAD.pointS[clamp(rd.cp, 0, ROAD.pointS.length-1)] : ROAD.portalS*(0.2 + 0.15*src);
   let side = rd.side || 1;
@@ -1456,10 +1458,26 @@ function buildRamp(ROAD, rd, src, Y){
     const q = c[c.length-1], w = c[c.length-2], l = Math.hypot(q[0]-w[0], q[2]-w[2]) || 1, ext = length + 0.4 - spl.len;
     c[c.length-1] = [q[0] + (q[0]-w[0])/l*ext, y, q[2] + (q[2]-w[2])/l*ext]; spl = makePath(catmullRom(c, 24).pts);
   }
-  // across the ramp: the front edge's shape (the road edge, u along it), turned with the spline as it bends
-  const o0 = {}; pathAt(spl, 0, o0, 0); const th0 = Math.atan2(o0.dz, o0.dx);
-  const across = (sv, u) => { const o = {}; pathAt(spl, sv, o, 0); const e = E(u), dx = e[0] - A[0], dz = e[1] - A[1];
-    const a = Math.atan2(o.dz, o.dx) - th0, ca = Math.cos(a), sa = Math.sin(a);
+  // across the ramp: u along its straight crosswise axis (square to the spline at the front, the same way round as
+  // the road edge); the front edge's depth there, fr(u), is how far out the road edge lies at u.  A row at depth sv
+  // keeps (1 - sv/length) of that, turned with the spline as it bends: the front edge is the road edge, the back
+  // edge a straight line
+  const o0 = {}; pathAt(spl, 0, o0, 0); const th0 = Math.atan2(o0.dz, o0.dx), n0 = [o0.dx, o0.dz];
+  const t0 = (() => { const a = E(0.05), b = E(-0.05), d = [a[0] - b[0], a[1] - b[1]], k = d[0]*n0[0] + d[1]*n0[1], v = [d[0] - n0[0]*k, d[1] - n0[1]*k], l = Math.hypot(v[0], v[1]) || 1; return [v[0]/l, v[1]/l]; })();
+  // the road edge in the ramp's frame, [u, depth] by ascending u: walked out from the middle of the front edge each
+  // way only while it keeps moving across the ramp (never on to another stretch of the road)
+  const FR = [[0, 0]];
+  { const at = t => { const e = E(t), dx = e[0] - A[0], dz = e[1] - A[1]; return [dx*t0[0] + dz*t0[1], dx*n0[0] + dz*n0[1]]; }, reach = halfW + 0.6;
+    for (const sg of [1, -1]) for (let t = 0.02, last = 0; t < reach*2; t += 0.02){ const q = at(sg*t); if (q[0]*sg <= last + 1e-6) break; last = q[0]*sg;
+      if (sg > 0) FR.push(q); else FR.unshift(q); if (last > reach) break; } }
+  // the road edge must run across the whole front (a ramp turned too far against a bend would hang off it)
+  const frontShort = FR[0][0] > -halfW0 + 1e-6 || FR[FR.length - 1][0] < halfW0 - 1e-6;
+  const fr = u => { let lo = 0, hi = FR.length - 1;
+    if (u <= FR[0][0]) return FR[0][1]; if (u >= FR[hi][0]) return FR[hi][1];
+    while (hi - lo > 1){ const m = (lo + hi) >> 1; if (FR[m][0] <= u) lo = m; else hi = m; }
+    const f = (u - FR[lo][0])/((FR[hi][0] - FR[lo][0]) || 1); return FR[lo][1] + (FR[hi][1] - FR[lo][1])*f; };
+  const across = (sv, u) => { const o = {}; pathAt(spl, sv, o, 0); const k = Math.max(0, 1 - sv/length), d = fr(u)*k;
+    const dx = t0[0]*u + n0[0]*d, dz = t0[1]*u + n0[1]*d, a = Math.atan2(o.dz, o.dx) - th0, ca = Math.cos(a), sa = Math.sin(a);
     return {x:o.x + dx*ca - dz*sa, z:o.z + dx*sa + dz*ca, o}; };
   const slots = [];
   for (let col=0; col<cols; col++){
@@ -1472,17 +1490,18 @@ function buildRamp(ROAD, rd, src, Y){
   }
   // the outline: the front edge along the road edge, the sides and the back following the body
   const front = [], right = [], back = [], left = [], NU = Math.max(4, Math.ceil(halfW0*2/0.12)), NS = Math.max(4, Math.ceil(length/0.15));
-  for (let k = 0; k <= NU; k++){ const u = -halfW0 + 2*halfW0*k/NU, e = E(u); front.push([e[0], e[1]]); }
+  for (let k = 0; k <= NU; k++){ const u = -halfW0 + 2*halfW0*k/NU, q = across(0, u); front.push([q.x, q.z]); }
   for (let k = 1; k <= NS; k++){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, hw); right.push([q.x, q.z]); }
   for (let k = 1; k < NU; k++){ const hw = halfWAt(length), u = hw - 2*hw*k/NU, q = across(length, u); back.push([q.x, q.z]); }
   for (let k = NS; k >= 1; k--){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, -hw); left.push([q.x, q.z]); }
   const outline = front.concat(right, back, left);
+  const backEdge = [right[right.length - 1]].concat(back, [left[0]]);      // corner to corner (a straight line)
   // columns nearest the boarding point first; of two as near as each other (either side of the middle of a front edge
   // flush on the road) the one the bus passes first
   const dq = c => Math.round(Math.hypot(slots[c][0].x-p.x, slots[c][0].z-p.z)*1e3);
   const colOrder = slots.map((_, i) => i).sort((a,b) => dq(a) - dq(b) || (a - b)*side);
   return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:true, front, outline, across, edge:E};
+          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:true, front, outline, backEdge, frontShort, across, edge:E};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -2305,6 +2324,7 @@ function rampWarnings(L){
     for (const p of road){ if (Math.abs(p.s - r.s) < 0.3) continue;
       if (polyDist(polys[k], p.x, p.z) < ROAD_HALF - 0.1){ hit = p; break; } }
     if (hit) W.push({kind:'ramp-road', msg: label + ' overlaps the road', x:hit.x, z:hit.z, ramp:r.src});
+    else if (r.frontShort) W.push({kind:'ramp-road', msg: label + '\'s front edge does not fit the road (turned too far against a bend)', x:r.x, z:r.z, ramp:r.src});
     for (let j=k+1;j<L.RAMPS.length;j++){
       const o = L.RAMPS[j], h2 = polysOverlap(polys[k], polys[j], 0.05);
       if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2[0], z:h2[1], ramp:r.src});
@@ -2748,9 +2768,14 @@ const checkTex = canvasTex(128, 160, (x) => { x.fillStyle = '#2f9e3a'; x.beginPa
 /* Tunnel darkness: anything inside a tunnel's footprint, behind its mouth plane and short of its back end darkens per
    fragment, so a bus (with its wheels and passengers) and the road sink into the dark front first
    and come out of it rear last.  Applied to the road, bus, wheel and stickman materials. */
-const TUN_U = {uTun:{value:[0, 1, 2].map(() => new THREE.Vector4(0, 0, 0, 1))}, uTunY:{value:[0, 1, 2].map(() => new THREE.Vector3(-99, 0, 1.05))}};   // exit, return, queue
+/* the tunnels' darkness: anything inside a tunnel (between its walls, below its vault) darkens with its depth from the
+   mouth, front first, to black about 0.9 in; a bus or a stickman is not drawn at all deeper than the tunnel's body
+   reaches (uTunY.w), so no part of it ever shows through or over the stone.  (The road inside is shaded by the
+   tunnel itself.)  Slots: the exit tunnel, the return tunnel, the queue tunnel */
+const TUN_U = {uTun:{value:[0, 1, 2].map(() => new THREE.Vector4(0, 0, 0, 1))}, uTunY:{value:[0, 1, 2].map(() => new THREE.Vector4(-99, 0, 1.05, 99))}};
 function tunnelFade(mat){
-  mat.onBeforeCompile = sh => {
+  const prev = mat.onBeforeCompile;
+  mat.onBeforeCompile = (sh, r) => { if (prev) prev.call(mat, sh, r);
     Object.assign(sh.uniforms, TUN_U);
     sh.vertexShader = 'varying vec3 vTW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
       { vec4 tw = vec4(transformed, 1.0);
@@ -2758,15 +2783,17 @@ function tunnelFade(mat){
         tw = instanceMatrix * tw;
       #endif
         vTW = (modelMatrix * tw).xyz; }`);
-    sh.fragmentShader = 'varying vec3 vTW;\nuniform vec4 uTun[3];\nuniform vec3 uTunY[3];\n' + sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
+    sh.fragmentShader = 'varying vec3 vTW;\nuniform vec4 uTun[3];\nuniform vec4 uTunY[3];\n' + sh.fragmentShader.replace('#include <dithering_fragment>', `#include <dithering_fragment>
       { float k = 0.0;
         for (int i = 0; i < 3; i++){
           vec2 d = vTW.xz - uTun[i].xy; float al = dot(d, uTun[i].zw), ac = abs(d.x*uTun[i].w - d.y*uTun[i].z);
           float band = (1.0 - smoothstep(uTunY[i].z - 0.1, uTunY[i].z + 0.1, ac))*step(uTunY[i].x - 0.6, vTW.y)*step(vTW.y, uTunY[i].x + 1.6)*uTunY[i].y;
-          k = max(k, band*smoothstep(-0.2, 0.45, al)*(1.0 - smoothstep(2.9, 3.2, al))); }   // the tunnel's length only (a road beyond it stays lit)
-        gl_FragColor.rgb *= 1.0 - 0.97*k; }`);
+          if (band > 0.5 && al > uTunY[i].w) discard;
+          k = max(k, band*smoothstep(-0.1, 0.9, al)*(1.0 - smoothstep(uTunY[i].w + 0.6, uTunY[i].w + 0.9, al))); }
+        gl_FragColor.rgb *= 1.0 - k; }`);
   };
-  mat.customProgramCacheKey = () => 'tunnel-fade';
+  const key = mat.customProgramCacheKey ? mat.customProgramCacheKey() : '';
+  mat.customProgramCacheKey = () => key + '|tunnel-fade';
   return mat;
 }
 
@@ -2818,7 +2845,9 @@ function disposeTree(root){
   });
 }
 /* the yard and queue are drawn in a squeezed form of the simulation's layout (see C.dispPoint) */
-function drawnTunnel(T){ const [x, z] = C.dispPoint(T.x, T.z); return Object.assign({}, T, {x, z, k:C.dispScale(T.z)}); }
+function drawnTunnel(T){                         // where the return tunnel is drawn: its mouth, facing along the route as drawn
+  const [x, z] = C.dispPoint(T.x, T.z), [ix, iz] = C.dispPoint(T.x - T.nx*T.depth, T.z - T.nz*T.depth), l = Math.hypot(x - ix, z - iz) || 1;
+  return Object.assign({}, T, {x, z, k:C.dispScale(T.z), dx:(x - ix)/l, dz:(z - iz)/l}); }
 const smoothstep = (a, b, x) => smooth(a, b, x);
 const bayRect = bx => C.drawnBay(bx);           // a bay as drawn (around a parked 12-seat bus)
 /* the queue tunnel: a wide, low stone arch over the queue lanes right above the booster bar; its arch begins where
@@ -2875,7 +2904,7 @@ function boardMask(L, F){
   L.RAMPS.forEach(r => poly(r.outline));
   { const E = L.exit, l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l;
     poly([[-0.8, -1.7], [3.0, -1.7], [3.0, 1.7], [-0.8, 1.7]].map(([f, u]) => [E.x + dx*f - dz*u, E.z + dz*f + dx*u])); }
-  { const T = drawnTunnel(L.TUNNEL), n = Math.hypot(T.nx, T.nz) || 1, nx = T.nx/n, nz = T.nz/n, back = TUN.D*0.92*T.k + 0.3, hw = (TUN.Rout + 0.2)*0.92*T.k;
+  { const T = drawnTunnel(L.TUNNEL), nx = T.dx, nz = T.dz, back = TUN.D*0.92*T.k + 0.3, hw = (TUN.Rout + 0.2)*0.92*T.k;
     poly([[0.5, -hw], [-back, -hw], [-back, hw], [0.5, hw]].map(([f, u]) => [T.x + nx*f - nz*u, T.z + nz*f + nx*u])); }   // the return tunnel and its body
   // grow by the margin, then close the small gaps (a dilation and an erosion by `close`)
   const d0 = edt(core, nx, nz, S), grown = d0.map(v => v <= BOARD.margin ? 1 : 0);
@@ -2908,7 +2937,7 @@ function grooveFeatures(L){
   F.push({kind:'rect', x0:-xs - 0.62, z0:zEn - 0.6, x1:xs + 0.62, z1:zCo + 0.6, r:0.95});
   F.push({kind:'line', pts:[[0, zR0 - 0.4, 0], [0, zEn], [0, zEn + 0.4]].map(p => [p[0], p[1], 0]), half:0.62});
   const T = drawnTunnel(L.TUNNEL), sd = T.side;
-  F.push({kind:'line', pts:[[sd*xs, zCo, 0], [T.x, T.z, 0], [T.x - T.nx*1.8, T.z - T.nz*1.8, 0]], half:0.6});
+  F.push({kind:'line', pts:[[sd*xs, zCo, 0], [T.x, T.z, 0], [T.x - T.dx*1.8, T.z - T.dz*1.8, 0]], half:0.6});
   // the queue lanes: one wide channel running off the bottom of the screen
   const LX = Y.LANE_X, [lx0] = dp(LX[0], C.Z_LANE_TOP), [lx1] = dp(LX[LX.length - 1], C.Z_LANE_TOP);
   F.push({kind:'rect', x0:lx0 - 0.86, z0:zCo - 0.2, x1:lx1 + 0.86, z1:GZ1 + 2, r:0.5});
@@ -3027,6 +3056,8 @@ function groundTexture(L, F){
 /* ---- a simple rounded stone tunnel: a chunky arch with soft bevelled edges, a rounded body behind it and a dark
    inside.  Local frame: mouth at the origin facing +z, the inside runs along -z; `w` widens it (the queue's) ---- */
 const TUN = {Rin:0.86, Rout:1.22, LEG:0.34, DEP:0.44, D:2.6};
+const tunnelShadeTex = canvasTex(4, 128, x => { const g = x.createLinearGradient(0, 0, 0, 128);   // alpha: black inside (top), clear at the mouth
+  g.addColorStop(0, '#fff'); g.addColorStop(0.5, '#fff'); g.addColorStop(0.85, '#888'); g.addColorStop(1, '#222'); x.fillStyle = g; x.fillRect(0, 0, 4, 128); }, true);
 function archShape(R, leg, bottom, w = 0){
   const s = new THREE.Shape(); s.moveTo(-R - w, bottom); s.lineTo(-R - w, leg); s.absarc(-w, leg, R, Math.PI, Math.PI/2, true);
   if (w) s.lineTo(w, leg + R); s.absarc(w, leg, R, Math.PI/2, 0, true); s.lineTo(R + w, bottom); s.lineTo(-R - w, bottom); return s;
@@ -3045,12 +3076,16 @@ function stoneTunnel(opt){
   { const P = bg.attributes.position; for (let i = 0; i < P.count; i++){ const f = clamp(-P.getZ(i)/D, 0, 1), y = P.getY(i);
       if (y > 0) P.setY(i, y*lerp(1, 0.55, smooth(0.2, 1, f))); } bg.computeVertexNormals(); }   // the body slopes down toward its back
   const bm = new THREE.Mesh(bg, new THREE.MeshStandardMaterial({color:stone.clone().multiplyScalar(0.94), roughness:0.92})); bm.castShadow = bm.receiveShadow = true; grp.add(bm);
-  // inside: walls and vault shaded from dim at the mouth to black, a black end
-  const DI = 1.45, inner = archShape(Rin - 0.02, LEG, -0.2, w), ig = new THREE.ExtrudeGeometry(inner, {depth:DI, bevelEnabled:false, curveSegments:20}); ig.translate(0, 0, -DI - 0.02);
-  const P = ig.attributes.position, cl = new Float32Array(P.count*3);
-  for (let i = 0; i < P.count; i++){ const k = Math.pow(1 - smooth(0.0, 1.0, -P.getZ(i)), 1.8)*0.05; cl[i*3] = k*1.08; cl[i*3 + 1] = k; cl[i*3 + 2] = k*0.88; }
+  // inside: walls, vault and floor in the stone's colour at the mouth, fading to black deeper in; a black end
+  const DI = 1.45, inner = archShape(Rin - 0.02, LEG, -0.2, w), ig = new THREE.ExtrudeGeometry(inner, {depth:DI, bevelEnabled:false, curveSegments:20, steps:10}); ig.translate(0, 0, -DI - 0.02);
+  const P = ig.attributes.position, cl = new Float32Array(P.count*3), sc = stone.clone().convertLinearToSRGB();
+  for (let i = 0; i < P.count; i++){ const k = Math.pow(1 - smooth(0.0, 1.15, -P.getZ(i)), 1.6)*0.62; cl[i*3] = sc.r*k; cl[i*3 + 1] = sc.g*k; cl[i*3 + 2] = sc.b*k; }
   ig.setAttribute('color', new THREE.BufferAttribute(cl, 3));
   grp.add(new THREE.Mesh(ig, new THREE.MeshBasicMaterial({vertexColors:true, side:THREE.BackSide})));
+  // the road runs on inside: a shade over its surface, clear at the mouth, black deeper in
+  const shade = new THREE.Mesh(new THREE.PlaneGeometry(2*(Rin - 0.04 + w), DI).rotateX(-Math.PI/2).translate(0, 0.012, -DI/2 - 0.02),
+    new THREE.MeshBasicMaterial({color:'#000', transparent:true, depthWrite:false, alphaMap:tunnelShadeTex}));
+  shade.renderOrder = 2; grp.add(shade);
   grp.userData.lamp = {lamps:[], pulseT:-9};
   return grp;
 }
@@ -3293,7 +3328,7 @@ function buildWorld(L){
   // tunnels: the exit tunnel at the road's end facing the road, the return tunnel on the nearer side of the yard
   const lamps = {};
   { const top = stoneTunnel({lift:E.y - GD}); top.position.set(E.x, E.y, E.z); top.rotation.y = Math.atan2(-E.dx, -E.dz); add(top); lamps.top = top.userData.lamp;
-    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.nx, T.nz); ret.scale.setScalar(0.92*T.k); add(ret); lamps.ret = ret.userData.lamp;
+    const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.dx, T.dz); ret.scale.setScalar(0.92*T.k); add(ret); lamps.ret = ret.userData.lamp;
     // the queue lanes come out of a wide stone tunnel right above the booster bar
     const q = queueTunnelAt(Y), qt = stoneTunnel({w:q.w}); qt.position.set(0, 0, q.z); qt.rotation.y = Math.PI; qt.scale.set(1, QT.sy, 1); add(qt); }
   buildBelow(add, L); buildBoardProps(add, L);
@@ -3315,9 +3350,9 @@ function buildWorld(L){
   sun.target.position.set(0, 0, -8); sun.position.set(-8, 18, -16);
   Object.assign(sun.shadow.camera, {left:-14, right:14, top:22, bottom:-22, near:2, far:60}); sun.shadow.camera.updateProjectionMatrix();
   const l = Math.hypot(E.dx, E.dz) || 1;
-  TUN_U.uTun.value[0].set(E.x, E.z, E.dx/l, E.dz/l); TUN_U.uTunY.value[0].set(E.y, 1, 1.05);
-  TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.nx, -GT.nz); TUN_U.uTunY.value[1].set(0, 1, 1.05);
-  { const q = queueTunnelAt(Y); TUN_U.uTun.value[2].set(0, q.z + 0.15, 0, 1); TUN_U.uTunY.value[2].set(0, 1, q.w + TUN.Rin); }
+  TUN_U.uTun.value[0].set(E.x, E.z, E.dx/l, E.dz/l); TUN_U.uTunY.value[0].set(E.y, 1, 1.05, TUN.D - 0.35);
+  TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.dx, -GT.dz); TUN_U.uTunY.value[1].set(0, 1, 1.05*0.92*GT.k, (TUN.D - 0.35)*0.92*GT.k);
+  { const q = queueTunnelAt(Y); TUN_U.uTun.value[2].set(0, q.z + 0.15, 0, 1); TUN_U.uTunY.value[2].set(0, 1, q.w + TUN.Rin, 99); }
   WD = {L, bayGlow, rampTops, badges, dbgGroup, ringIM, lamps};
 }
 
@@ -3334,16 +3369,15 @@ function palette(color){
   const sh = (dl, ds = 0) => new THREE.Color().setHSL(hsl.h, clamp(hsl.s + ds, 0, 1), clamp(hsl.l + dl, 0, 1));
   return {body:b, band:sh(-0.1, 0.02), rim:sh(0.07, -0.03), inner:sh(-0.17, -0.05), floor:sh(-0.24, -0.08), seat:sh(-0.13, -0.02), trim:sh(-0.28, -0.1)};
 }
-function busShell(W, Lb, pal, rf = 0.2, rb = 0.2){
-  // perimeter at the wall's centre line, traversed so the profile's +u side points outward; rf / rb: the corner radius
-  // at the front and at the back (an articulated bus's sections are nearly square where they meet the bellows)
-  const hx = W/2 - 0.065, hz = Lb/2 - 0.065, P = []; let r = rf;
+function busShell(W, Lb, pal){
+  // perimeter at the wall's centre line, traversed so the profile's +u side points outward, with rounded corners
+  const hx = W/2 - 0.065, hz = Lb/2 - 0.065, r = 0.2, P = [];
   const seg = (x0, z0, x1, z1) => { const n = Math.max(1, Math.round(Math.hypot(x1 - x0, z1 - z0)/0.16)); for (let k = 0; k < n; k++) P.push([lerp(x0, x1, k/n), lerp(z0, z1, k/n)]); };
   const arc = (cx, cz, a0) => { for (let k = 0; k < 7; k++){ const a = a0 - k/7*Math.PI/2; P.push([cx + Math.cos(a)*r, cz + Math.sin(a)*r]); } };
-  seg(0, hz, hx - rf, hz); arc(hx - rf, hz - rf, Math.PI/2);
-  r = rb; seg(hx, hz - rf, hx, -(hz - rb)); arc(hx - rb, -(hz - rb), 0);
-  seg(hx - rb, -hz, -(hx - rb), -hz); arc(-(hx - rb), -(hz - rb), -Math.PI/2);
-  r = rf; seg(-hx, -(hz - rb), -hx, hz - rf); arc(-(hx - rf), hz - rf, Math.PI);
+  seg(0, hz, hx - r, hz); arc(hx - r, hz - r, Math.PI/2);
+  seg(hx, hz - r, hx, -(hz - r)); arc(hx - r, -(hz - r), 0);
+  seg(hx - r, -hz, -(hx - r), -hz); arc(-(hx - r), -(hz - r), -Math.PI/2);
+  seg(-hx, -(hz - r), -hx, hz - r); arc(-(hx - r), hz - r, Math.PI);
   seg(-(hx - r), hz, 0, hz); P.push([0, hz]);
   const samples = P.map(p => [p[0], 0, p[1]]);
   // profile [u outward, v up]: inner wall up, rounded rim over the top, outer wall and lower band down, bottom back
@@ -3425,11 +3459,10 @@ class BusView {
   constructor(b){
     this.b = b; this.root = new THREE.Group(); this.slope = new THREE.Group(); this.body = new THREE.Group();
     this.root.add(this.slope); this.slope.add(this.body); scene.add(this.root);
-    this.U = artUniforms(b.len);                     // Articulated mode: rigid sections and bellows (see ARTICULATED BUSES below)
-    this.art = isArt(this); artStraight(this);
-    this.mat = artMat(tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0})), this.U);
-    this.mesh = new THREE.Mesh(this.art ? artGeo(b.cap, b.revealed ? b.color : null) : busGeo(b.cap, b.revealed ? b.color : null), this.mat); this.mesh.castShadow = true; this.mesh.receiveShadow = true;
-    this.mesh.customDepthMaterial = artMat(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}), this.U, 'depth');
+    this.U = jellyUniforms(b.len);                   // Jelly mode: the body bends with the road (see JELLY below)
+    this.mat = jellyMat(tunnelFade(new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.5, metalness:0.0})), this.U);
+    this.mesh = new THREE.Mesh(busGeo(b.cap, b.revealed ? b.color : null), this.mat); this.mesh.castShadow = true; this.mesh.receiveShadow = true;
+    this.mesh.customDepthMaterial = jellyMat(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}), this.U, 'depth');
     this.headMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#fff7dc', emissive:'#ffe9a8', emissiveIntensity:0.35, roughness:0.25}));
     this.brakeMat = tunnelFade(new THREE.MeshStandardMaterial({color:'#c4161c', emissive:'#ff2020', emissiveIntensity:0.15, roughness:0.35}));
     this.head = new THREE.Mesh(headGeo, this.headMat); this.head.position.z = b.len/2 + 0.022;
@@ -3448,7 +3481,7 @@ class BusView {
     if (!b.revealed){ this.q = new THREE.Sprite(new THREE.SpriteMaterial({map:qTex, depthWrite:false})); this.q.position.set(0, 1.25, 0); this.q.scale.set(0.62, 0.62, 1); this.root.add(this.q); }
     this.keyS = null;                               // a bus carrying a key shows it until the key flies to its lock
     if (b.key){ this.keyS = new THREE.Sprite(new THREE.SpriteMaterial({map:keyTex, depthWrite:false})); this.keyS.position.set(0, 1.18, 0); this.keyS.scale.set(0.62, 0.62, 1); this.root.add(this.keyS); }
-    this.wheels = wheelsOf(b.cap, this.art);
+    this.wheels = wheelsOf(b.cap);
     // render state: position/heading chase the core through critically damped springs (no snaps)
     this.p = new THREE.Vector3(); this.pv = new THREE.Vector3(); this.h = 0; this.init = false; this.spd = 0; this.aLong = 0; this.hPrev = undefined;
     this.pitch = 0; this.pitchV = 0; this.roll = 0; this.rollV = 0; this.bob = 0; this.bobV = 0; this.wheelAng = 0;
@@ -3457,61 +3490,46 @@ class BusView {
     this.snk = 0; this.bent = false; this.skPath = null;
     this.rest = [this.head, this.brake, ...this.hGlow, ...this.bGlow].map(o => o.position.clone());   // rigid places of the lights
   }
-  geo(){ return this.art ? artGeo(this.b.cap, this.b.revealed ? this.b.color : null) : busGeo(this.b.cap, this.b.revealed ? this.b.color : null); }
-  setArt(on){ if (on === this.art) return; this.art = on; this.mesh.geometry = this.geo(); this.wheels = wheelsOf(this.b.cap, on); artStraight(this);
-    this.snk = 0; this.bent = false; this.U.uSkOn.value = 0; artLights(this); }
+  geo(){ return busGeo(this.b.cap, this.b.revealed ? this.b.color : null); }
   reveal(){ this.mesh.geometry = this.geo(); if (this.q){ this.root.remove(this.q); this.q.material.dispose(); this.q = null; } }
   dispose(){ scene.remove(this.root); [this.mat, this.headMat, this.brakeMat, this.mesh.customDepthMaterial].forEach(m => m.dispose());
     this.shadow.geometry.dispose(); this.shadow.material.dispose(); this.ring.geometry.dispose(); this.ring.material.dispose();
     this.root.traverse(o => { if (o.isSprite) o.material.dispose(); }); }
 }
 
-/* ============================ ARTICULATED BUSES ===========================
-   Bus movement is a setting: Rigid (the whole bus turns as one piece) or Articulated (like a metrobus: rigid sections
-   joined by accordion bellows; 4 seats = 1 section, 6 and 8 seats = 2, 12 seats = 3).  Purely visual: the simulation,
-   its speeds and timings are the same.  Each section has its own front and rear wheels, both axles on the bus's path
-   (the main road in 3D, or its route through the yard as drawn) and stays rigid; only the bellows between sections
-   bend and stretch.  The body is carried by a vertex shader through frames at each section's two ends (within a
-   section the frames agree, so it stays rigid; across a joint they differ, so the bellows bend).  Articulated applies on
-   the roads (the main road and the yard's entry and collector roads); in the queue, a bay and on the parachute exit
-   the bus stands straight, and it bends and straightens smoothly over a fraction of a second. */
-const AR_N = 6, ART_ON = new Set(['road', 'toRoad', 'return']), AR_GAP = 0.12, AR_PAD = 0.02;
-const ART_ROWS = {4:[2], 6:[2, 1], 8:[2, 2], 12:[2, 2, 2]};
-let busMove = ['rigid', 'articulated', 'snake'].includes(params.get('move')) ? params.get('move') : ['articulated', 'snake'].includes(S.loadPrefs().move) ? 'articulated' : 'rigid';
-if (busMove === 'snake') busMove = 'articulated';       // the old Snake setting is now Articulated
-/* the sections of an articulated bus (same length as the rigid one): their ends, axles and seat rows (rows a little
-   closer together, so the bellows fit between sections) */
-const artCache = new Map();
-function artLayout(cap){
-  if (artCache.has(cap)) return artCache.get(cap);
-  const rows = ART_ROWS[cap] || [cap/2], n = rows.length, Lb = C.busLen(cap), nr = cap/2;
-  const pitch = n > 1 ? (Lb - 0.52 - (n - 1)*(AR_GAP + 2*AR_PAD))/nr : C.ROW_PITCH, secs = []; let z = Lb/2, r0 = 0;
-  for (let j = 0; j < n; j++){
-    const zf = z, len = (j === 0 ? 0.26 : AR_PAD) + rows[j]*pitch + (j === n - 1 ? 0.26 : AR_PAD), zr = zf - len;
-    const fa = zf - (j === 0 ? 0.33 : 0.13), ra = zr + (j === n - 1 ? 0.33 : 0.13);
-    const seats = []; for (let r = 0; r < rows[j]; r++) seats.push(zf - (j === 0 ? 0.31 : AR_PAD + 0.05) - r*pitch);
-    secs.push({zf, zr, len, fa, ra, rows:rows[j], r0, seats}); r0 += rows[j]; z = zr - AR_GAP;
-  }
-  const out = {cap, n, Lb, pitch, secs, rowZ:secs.flatMap(s => s.seats)}; artCache.set(cap, out); return out;
-}
-const isArt = v => busMove === 'articulated' && v.b.cap > 4;
+/* ================================= JELLY ==================================
+   Bus movement is a setting: Rigid (the whole bus turns as one piece) or Jelly.  A Jelly bus is the same single-body
+   bus: on straight road it is perfectly straight and rigid; in curves and spirals its body bends smoothly along the
+   road's curve, like soft jelly, one continuous shape with no joints; entering and leaving a curve it bends and
+   straightens with a small soft wobble, then settles.  Seats, passengers, wheels and lights follow the bend.  In the
+   queue, a bay and on the parachute exit the bus is straight.  Purely visual: the simulation, its speeds and timings
+   are the same.
+   How: JL_N frames from the bus's front to its back.  Each frame's target is the bus's path (the main road in 3D, or
+   its route through the yard as drawn) at the frame's own distance from the bus's centre; the frame follows its target
+   on a soft, lightly damped spring (its offset from the straight bus), which gives the wobble.  A vertex shader carries
+   the body through the frames. */
+const JL_N = 9, JELLY_ON = new Set(['road', 'toRoad', 'return']), JL = {w:17, zeta:0.32, reach:0.12, turn:0.2};
+let busMove = ['rigid', 'jelly'].includes(params.get('move')) ? params.get('move') : ['jelly', 'snake', 'articulated'].includes(S.loadPrefs().move) ? 'jelly' : 'rigid';
+if (['snake', 'articulated'].includes(params.get('move'))) busMove = 'jelly';      // the old Snake / Articulated settings are now Jelly
 function setMove(m, save){
-  busMove = m === 'articulated' || m === 'snake' ? 'articulated' : 'rigid'; if (save) S.savePrefs({move:busMove});
-  if ($('btnMove')) $('btnMove').textContent = 'Buses: ' + (busMove === 'articulated' ? 'Articulated' : 'Rigid');
-  if (typeof views !== 'undefined') views.forEach(v => v && v.setArt && v.setArt(isArt(v)));
+  busMove = m === 'rigid' ? 'rigid' : 'jelly'; if (save) S.savePrefs({move:busMove});
+  if ($('btnMove')) $('btnMove').textContent = 'Buses: ' + (busMove === 'jelly' ? 'Jelly' : 'Rigid');
   if (typeof onSettings === 'function') onSettings();
 }
-function artUniforms(len){ return {uSk:{value:Array.from({length:AR_N}, () => new THREE.Vector4(0, 0, 0, 0))}, uSkZ:{value:new Float32Array(AR_N)},
-  uSkP:{value:new Float32Array(AR_N)}, uSkOn:{value:0}}; }
-const SK_GLSL = `uniform vec4 uSk[${AR_N}]; uniform float uSkZ[${AR_N}]; uniform float uSkP[${AR_N}]; uniform float uSkOn;
+function jellyUniforms(len){
+  const U = {uSk:{value:Array.from({length:JL_N}, () => new THREE.Vector4(0, 0, 0, 0))}, uSkZ:{value:new Float32Array(JL_N)}, uSkP:{value:new Float32Array(JL_N)}, uSkOn:{value:0}};
+  for (let i = 0; i < JL_N; i++){ const z = len/2 - i*len/(JL_N - 1); U.uSkZ.value[i] = z; U.uSk.value[i].set(0, 0, z, 0); }
+  return U;
+}
+const SK_GLSL = `uniform vec4 uSk[${JL_N}]; uniform float uSkZ[${JL_N}]; uniform float uSkP[${JL_N}]; uniform float uSkOn;
 void skFrame(float z, out vec3 c, out float yaw, out float pit){
-  int i = 0; for (int k = 0; k < ${AR_N - 2}; k++){ if (z < uSkZ[k + 1]) i = k + 1; }
+  int i = 0; for (int k = 0; k < ${JL_N - 2}; k++){ if (z < uSkZ[k + 1]) i = k + 1; }
   float t = clamp((uSkZ[i] - z)/max(1e-4, uSkZ[i] - uSkZ[i + 1]), -0.5, 1.5);
   c = mix(uSk[i].xyz, uSk[i + 1].xyz, t); yaw = mix(uSk[i].w, uSk[i + 1].w, t); pit = mix(uSkP[i], uSkP[i + 1], t); }
 vec3 skRot(vec3 o, float yaw, float pit){ vec3 a = vec3(o.x, o.y*cos(pit) - o.z*sin(pit), o.y*sin(pit) + o.z*cos(pit));
   return vec3(a.x*cos(yaw) + a.z*sin(yaw), a.y, -a.x*sin(yaw) + a.z*cos(yaw)); }
 `;
-function artMat(mat, U, tag){
+function jellyMat(mat, U, tag){
   const prev = mat.onBeforeCompile;
   mat.onBeforeCompile = (sh, r) => { if (prev) prev.call(mat, sh, r); Object.assign(sh.uniforms, U);
     sh.vertexShader = SK_GLSL + sh.vertexShader
@@ -3519,12 +3537,13 @@ function artMat(mat, U, tag){
         if (uSkOn > 0.5){ vec3 skc; float skY, skP; skFrame(position.z, skc, skY, skP); objectNormal = skRot(objectNormal, skY, skP); }`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         if (uSkOn > 0.5){ vec3 skc; float skY, skP; skFrame(position.z, skc, skY, skP); transformed = skc + skRot(vec3(position.x, position.y, 0.0), skY, skP); }`); };
-  mat.customProgramCacheKey = () => 'artic-' + (tag || 'body');
+  const key = mat.customProgramCacheKey ? mat.customProgramCacheKey() : '';
+  mat.customProgramCacheKey = () => key + '|jelly-' + (tag || 'body');
   return mat;
 }
 /* the frame of the body at local z: its centre, yaw and pitch (the shader's interpolation, on the CPU) */
 function skAt(v, z, out){
-  const U = v.U, Z = U.uSkZ.value; let i = 0; for (let k = 0; k < AR_N - 2; k++) if (z < Z[k + 1]) i = k + 1;
+  const U = v.U, Z = U.uSkZ.value; let i = 0; for (let k = 0; k < JL_N - 2; k++) if (z < Z[k + 1]) i = k + 1;
   const t = clamp((Z[i] - z)/Math.max(1e-4, Z[i] - Z[i + 1]), -0.5, 1.5), A = U.uSk.value[i], B = U.uSk.value[i + 1];
   out.x = lerp(A.x, B.x, t); out.y = lerp(A.y, B.y, t); out.z = lerp(A.z, B.z, t); out.yaw = lerp(A.w, B.w, t); out.pit = lerp(U.uSkP.value[i], U.uSkP.value[i + 1], t); return out;
 }
@@ -3537,12 +3556,13 @@ function skPose(v, x, y, z, rx, outM){
 }
 const _v2 = new THREE.Vector3();
 /* the bus's path as drawn: the main road (3D, at its own scale) or its trip through the yard (squeezed by the drawn
-   yard, so its arc length is measured as drawn); q(a) is the point at arc length a, extended straight past the ends */
+   yard, so its arc length is measured as drawn); q(a) is the point at arc length a, extended straight past the ends,
+   with its unit tangent (tx, ty, tz) */
 function skPathOf(v){
   const b = v.b;
   if (b.state === 'road'){ const R = L.ROAD, o = {};
     return {key:'road', at:b.rs, q:(a, out) => { const e = a < 0 ? a : a > R.len ? a - R.len : 0; C.pathAt(R, clamp(a, 0, R.len), o, 0);
-      out.set(o.x + o.dx*e, o.y, o.z + o.dz*e); return out; }}; }
+      out.set(o.x + o.dx*e, o.y, o.z + o.dz*e); const hl = Math.hypot(1, o.slope || 0); out.tx = o.dx/hl; out.tz = o.dz/hl; out.ty = (o.slope || 0)/hl; return out; }}; }
   if (!b.trip) return null;
   if (!v.skPath || v.skPath.seq !== b.trip.seq || v.skPath.view !== view){   // the trip as drawn: sampled, mapped, measured once
     const P = b.trip.path, o = {}, pts = [], N = Math.max(2, Math.ceil(P.len/0.05));
@@ -3556,96 +3576,53 @@ function skPathOf(v){
     let lo = 0, hi = last; if (a <= 0){ lo = 0; hi = 1; } else if (a >= pts[last][2]){ lo = last - 1; hi = last; }
     else while (hi - lo > 1){ const m = (lo + hi) >> 1; if (pts[m][2] <= a) lo = m; else hi = m; }
     const A = pts[lo], B = pts[hi], d = (B[2] - A[2]) || 1e-9, t = (a - A[2])/d;
-    out.set(A[0] + (B[0] - A[0])*t, 0, A[1] + (B[1] - A[1])*t); return out; }};
+    out.set(A[0] + (B[0] - A[0])*t, 0, A[1] + (B[1] - A[1])*t); out.tx = (B[0] - A[0])/d; out.tz = (B[1] - A[1])/d; out.ty = 0; return out; }};
 }
-const _skA = new THREE.Vector3(), _skB = new THREE.Vector3(), _skF = new THREE.Vector3(), _skR = new THREE.Vector3(), _skD = new THREE.Vector3(), _skT = new THREE.Vector3(), _skInv = new THREE.Matrix4();
-/* the straight frames: every section's two ends on the bus's own axis (padded on behind the last) */
-function artStraight(v){
-  const U = v.U, A = artLayout(v.b.cap), Z = U.uSkZ.value; let k = 0;
-  for (const s of A.secs){ Z[k] = s.zf; Z[k + 1] = s.zr; k += 2; }
-  for (; k < AR_N; k++) Z[k] = Z[k - 1] - 1;
-  U.uSk.value.forEach((F, i) => F.set(0, 0, Z[i], 0)); U.uSkP.value.fill(0);
+const _skA = new THREE.Vector3(), _skB = new THREE.Vector3(), _skT = new THREE.Vector3(), _skInv = new THREE.Matrix4();
+/* each frame's spring state: its offset from the straight bus [x, y, z, yaw, pitch] and the offset's velocity */
+function jellyState(v){ if (!v.jl) v.jl = {o:Array.from({length:JL_N}, () => new Float32Array(5)), w:Array.from({length:JL_N}, () => new Float32Array(5)), tgt:Array.from({length:JL_N}, () => new Float32Array(5))}; return v.jl; }
+function jellyUpdate(v, vdt){
+  const b = v.b, on = busMove === 'jelly' && JELLY_ON.has(b.state), S = jellyState(v), U = v.U, Z = U.uSkZ.value;
+  const path = on ? skPathOf(v) : null;
+  // targets: the path at each frame's distance from the bus's centre, in the body's frame, as offsets from straight
+  if (path){
+    v.root.updateMatrixWorld(true); _skInv.copy(v.body.matrixWorld).invert();
+    const k = v.root.scale.x, c0 = path.q(path.at, _skA).clone();
+    for (let i = 0; i < JL_N; i++){ const zl = Z[i], q = path.q(path.at + zl*k, _skB), tx = q.tx, ty = q.ty, tz = q.tz;
+      _skT.set(v.p.x + q.x - c0.x, v.p.y + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
+      _v2.set(v.p.x + q.x - c0.x + tx, v.p.y + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
+      const yaw = angDiff(Math.atan2(_v2.x, _v2.z), 0), pit = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z)), T = S.tgt[i];
+      T[0] = _skT.x; T[1] = _skT.y; T[2] = _skT.z - zl; T[3] = yaw; T[4] = pit; }
+  } else S.tgt.forEach(T => T.fill(0));
+  // the springs (lightly damped: the body overshoots a little and settles)
+  if (vdt > 0){ const w = JL.w, c = 2*JL.zeta*w, n = Math.max(1, Math.ceil(vdt/(1/240))), h = vdt/n;
+    for (let s = 0; s < n; s++) for (let i = 0; i < JL_N; i++){ const o = S.o[i], vv = S.w[i], T = S.tgt[i];
+      for (let j = 0; j < 5; j++){ vv[j] += (w*w*(T[j] - o[j]) - c*vv[j])*h; o[j] += vv[j]*h; }
+      // a small wobble only: never more than JL.reach (position) or JL.turn (angles) off its target
+      const dx = o[0] - T[0], dy = o[1] - T[1], dz = o[2] - T[2], dl = Math.hypot(dx, dy, dz);
+      if (dl > JL.reach){ const f = JL.reach/dl; o[0] = T[0] + dx*f; o[1] = T[1] + dy*f; o[2] = T[2] + dz*f; vv[0] *= 0.5; vv[1] *= 0.5; vv[2] *= 0.5; }
+      for (const j of [3, 4]) if (Math.abs(o[j] - T[j]) > JL.turn){ o[j] = T[j] + Math.sign(o[j] - T[j])*JL.turn; vv[j] *= 0.5; } } }
+  else if (!v.jlInit){ S.o.forEach((o, i) => o.set(S.tgt[i])); }
+  v.jlInit = true;
+  let mag = 0; S.o.forEach((o, i) => { mag = Math.max(mag, Math.abs(o[0]), Math.abs(o[3]), Math.abs(o[4]), Math.abs(S.w[i][0]) + Math.abs(S.w[i][3])); });
+  if (!path && mag < 1e-4){ S.o.forEach(o => o.fill(0)); S.w.forEach(w => w.fill(0)); if (v.bent){ v.bent = false; U.uSkOn.value = 0; jellyLights(v); } return; }
+  for (let i = 0; i < JL_N; i++){ const o = S.o[i]; U.uSk.value[i].set(o[0], o[1], Z[i] + o[2], o[3]); U.uSkP.value[i] = o[4]; }
+  U.uSkOn.value = 1; v.bent = true; jellyLights(v);
 }
-function artUpdate(v, vdt){
-  const b = v.b, want = v.art && ART_ON.has(b.state) ? 1 : 0;
-  v.snk += (want - v.snk)*(vdt > 0 ? 1 - Math.exp(-vdt*7) : 1);                       // bends and straightens over ~0.4 s
-  if (!v.art || (v.snk < 1e-3 && !want)){ v.snk = 0; if (v.bent){ v.bent = false; v.U.uSkOn.value = 0; artLights(v); } return; }
-  const path = skPathOf(v), U = v.U, Z = U.uSkZ.value;
-  if (!path){                                                                          // off the roads (the parachute exit): ease straight
-    const d = vdt > 0 ? Math.exp(-vdt*7) : 0;
-    U.uSk.value.forEach((F, i) => { F.set(F.x*d, F.y*d, lerp(Z[i], F.z, d), F.w*d); U.uSkP.value[i] *= d; });
-    if (v.snk < 1e-3){ v.snk = 0; v.bent = false; U.uSkOn.value = 0; }
-    artLights(v); return; }
-  v.root.updateMatrixWorld(true); _skInv.copy(v.body.matrixWorld).invert();
-  const k = v.root.scale.x, f = v.snk, A = artLayout(b.cap);
-  const local = (p, out) => out.copy(p).applyMatrix4(_skInv);       // the axles sit on the path itself (not on the bus's smoothed place)
-  A.secs.forEach((s, j) => {
-    // its rear axle on the path; its front axle on the path one wheelbase further on (a chord of the curve)
-    // (the first point along the path that far away: stepped forward, then halved down onto it; robust on a tight
-    // turn or a cusp of the road too)
-    const wb = (s.fa - s.ra)*k, ar = path.at + s.ra*k; path.q(ar, _skR); let lo = ar, hi = ar + wb;
-    for (let it = 0; it < 60 && path.q(hi, _skF).distanceTo(_skR) < wb; it++){ lo = hi; hi += Math.max(0.01, wb - _skF.distanceTo(_skR)); }
-    for (let it = 0; it < 18; it++){ const m = (lo + hi)/2; if (path.q(m, _skF).distanceTo(_skR) < wb) lo = m; else hi = m; }
-    path.q(hi, _skF);
-    local(_skR, _skT); local(_skF, _skD); _skD.sub(_skT).normalize();                 // the section's axis, in the body's frame
-    const yaw = Math.atan2(_skD.x, _skD.z), pit = -Math.asin(clamp(_skD.y, -1, 1));
-    for (const [i, zl] of [[2*j, s.zf], [2*j + 1, s.zr]]){
-      const px = _skT.x + _skD.x*(zl - s.ra), py = _skT.y + _skD.y*(zl - s.ra), pz = _skT.z + _skD.z*(zl - s.ra);
-      U.uSk.value[i].set(lerp(0, px, f), lerp(0, py, f), lerp(zl, pz, f), angDiff(yaw, 0)*f); U.uSkP.value[i] = pit*f; }
-    if (j === A.n - 1) for (let i = 2*A.n; i < AR_N; i++){ const zl = Z[i];                // padding: straight on behind the last section
-      U.uSk.value[i].set(lerp(0, _skT.x + _skD.x*(zl - s.ra), f), lerp(0, _skT.y + _skD.y*(zl - s.ra), f), lerp(zl, _skT.z + _skD.z*(zl - s.ra), f), angDiff(yaw, 0)*f); U.uSkP.value[i] = pit*f; }
-  });
-  U.uSkOn.value = 1; v.bent = true; artLights(v);
-}
-/* head and tail lights and their glows ride on the first and last sections */
+/* head and tail lights and their glows ride on the bent body's ends */
 const _skPM = new THREE.Matrix4();
-function artLights(v){
+function jellyLights(v){
   [v.head, v.brake, ...v.hGlow, ...v.bGlow].forEach((o, i) => { const r = v.rest[i];
     if (!v.bent){ o.position.copy(r); if (!o.isSprite) o.rotation.set(0, 0, 0); return; }
     skPose(v, r.x, r.y, r.z, 0, _skPM); o.position.setFromMatrixPosition(_skPM); if (!o.isSprite) o.quaternion.setFromRotationMatrix(_skPM); });
 }
-/* the wheels of a bus (bus space): Rigid as before; Articulated, a front and a rear axle under every section */
-function wheelsOf(cap, art){
+/* the wheels of a bus (bus space) */
+function wheelsOf(cap){
   const len = C.busLen(cap), x = C.BUS_W/2 - 0.045, out = [];
-  const zs = art ? artLayout(cap).secs.flatMap(s => [s.fa, s.ra]) : cap >= 12 ? [len/2 - 0.36, 0, -len/2 + 0.36] : [len/2 - 0.33, -len/2 + 0.33];
-  for (const z of zs) for (const sx of [-1, 1]) out.push([sx*x, WHEEL_R, z]);
+  for (const z of cap >= 12 ? [len/2 - 0.36, 0, -len/2 + 0.36] : [len/2 - 0.33, -len/2 + 0.33]) for (const sx of [-1, 1]) out.push([sx*x, WHEEL_R, z]);
   return out;
 }
-/* an articulated bus's body (bus space, straight): a shell per section (rounded at the bus's two ends, nearly square at
-   the joints), the open top's floor running through, the seat rows of each section, and accordion bellows across every
-   joint: a slightly darker shade of the bus colour, its folds alternating light and dark */
-function artGeo(cap, color){
-  const key = cap + ':' + (color || 'hidden') + ':art'; if (busGeoCache.has(key)) return busGeoCache.get(key);
-  const A = artLayout(cap), W = C.BUS_W, pal = palette(color), parts = [], shells = [];
-  const add = (geo, m, c) => parts.push({geo, m, color:c});
-  A.secs.forEach((s, j) => {
-    const g = busShell(W, s.len, pal, j === 0 ? 0.2 : 0.12, j === A.n - 1 ? 0.2 : 0.12); g.translate(0, 0, (s.zf + s.zr)/2); shells.push(g);
-    for (const z of s.seats) for (const sx of [-1, 1]){ add(rbox(0.33, 0.08, 0.2, 0.035, 1), M(sx*0.21, 0.48, z + 0.01), pal.seat);
-      add(new THREE.BoxGeometry(0.33, 0.24, 0.06), M(sx*0.21, 0.58, z - 0.105), pal.seat); }
-  });
-  const fx = W/2 - 0.1, fz = A.Lb/2 - 0.1;                                        // the floor bends at the joints with the bellows
-  add(new THREE.PlaneGeometry(2*fx, 2*fz, 1, Math.max(2, Math.round(2*fz/0.04))).rotateX(-Math.PI/2), M(0, 0.435, 0), pal.floor);
-  add(rbox(W*0.86, 0.1, 0.1, 0.045, 2), M(0, 0.22, A.Lb/2 + 0.035), pal.trim);
-  add(rbox(W*0.5, 0.05, 0.03, 0.02, 1), M(0, 0.36, A.Lb/2 + 0.068), pal.band);
-  add(rbox(W*0.86, 0.1, 0.1, 0.045, 2), M(0, 0.22, -A.Lb/2 - 0.035), pal.trim);
-  // bellows: a rounded-rectangle tube around each joint, rippled into folds along its length
-  const dark = pal.body.clone().multiplyScalar(0.72), crest = pal.body.clone().multiplyScalar(0.86);
-  for (let j = 0; j < A.n - 1; j++){
-    const z0 = A.secs[j].zr + 0.04, z1 = A.secs[j + 1].zf - 0.04, NZ = 24, NA = 40, pos = [], cl = [], idx = [];
-    const hx = W/2 - 0.08, y0 = 0.17, y1 = 0.62, rr = 0.09;
-    const ring = t => { const P = [], per = 2*(hx - rr + (y1 - y0)/2 - rr)*2 + 2*Math.PI*rr;   // a rounded rect (x, y), by perimeter fraction
-      const pts = []; for (let a = 0; a < NA; a++){ const th = a/NA*Math.PI*2, cx = Math.cos(th), cy = Math.sin(th);
-        const ex = Math.sign(cx)*Math.pow(Math.abs(cx), 0.25), ey = Math.sign(cy)*Math.pow(Math.abs(cy), 0.25);   // superellipse
-        pts.push([ex*hx, (y0 + y1)/2 + ey*(y1 - y0)/2, cx, cy]); } return pts; };
-    const R0 = ring();
-    for (let k = 0; k <= NZ; k++){ const t = k/NZ, z = lerp(z0, z1, t), fold = Math.cos(t*Math.PI*2*5), o = 0.022*fold, c = fold > 0 ? crest : dark;
-      for (const [x, y, nx, ny] of R0){ const l = Math.hypot(nx, ny) || 1; pos.push(x + nx/l*o, y + ny/l*o*0.6, z); cl.push(c.r, c.g, c.b); } }
-    for (let k = 0; k < NZ; k++) for (let a = 0; a < NA; a++){ const i0 = k*NA + a, i1 = k*NA + (a + 1)%NA, i2 = i0 + NA, i3 = i1 + NA; idx.push(i0, i2, i1, i1, i2, i3); }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(cl, 3));
-    g.setIndex(idx); g.computeVertexNormals(); shells.push(g);
-  }
-  const geo = mergeIndexedNI([...shells, mergeParts(parts)]); geo.userData.shared = true; busGeoCache.set(key, geo); return geo;
-}
+
 
 function setView(m, save){
   view = C.setView(m); camera = view === 'ortho' ? orthoCam : perspCam; applyCamera(C.SCREEN_CAM); if (save) S.savePrefs({view});
@@ -4017,7 +3994,7 @@ function resetGame(){
   stopHum();
   game = C.createGame(LEVEL);
   views = game.buses.map(b => new BusView(b));
-  ensureMen(game.men.length); ensureWheels(views.reduce((a, v) => a + wheelsOf(v.b.cap, v.b.cap > 4).length, 0));
+  ensureMen(game.men.length); ensureWheels(views.reduce((a, v) => a + v.wheels.length, 0));
   menIM.count = menShadow.count = menBlob.count = game.men.length; armIM.count = legIM.count = game.men.length*2; cheer.clear();
   MV = game.men.map((m, i) => { const d = m.state !== 'ramp' ? 0 : (game.ramps[m.ramp].cols[m.col].indexOf(i) >= 0 ? game.ramps[m.ramp].cols[m.col].indexOf(i) : m.row);
     return {disp:d, from:d, to:d, t0:-1, ph:hash(i, 7)*6.28, swayA:0.03 + hash(i, 11)*0.045, swayF:1.2 + hash(i, 13)*1.1,
@@ -4165,7 +4142,7 @@ function startCrash(e){
 function updateCrash(t){
   const c = crash, v = c.v, u = t - c.t0, sd = c.side;
   const T = L.TUNNEL, first = c.chain[0], tx = (first ? first.b.x : sd*L.Y.BAY_X[4]) + sd*(C.BUS_W + 0.05), tz = first ? first.b.z : 2.4;
-  const h0 = Math.atan2(T.nx, T.nz), hN = -Math.PI, xs = sd*(L.Y.X_SIDE + 0.25);
+  const h0 = Math.atan2(GT.dx, GT.dz), hN = -Math.PI, xs = sd*(L.Y.X_SIDE + 0.25);
   v.root.visible = true; v.slope.rotation.x = 0; v.mat.color.setScalar(1);
   const at = (w, x, y, z) => { const [dx, dz] = C.dispPoint(x, z); w.root.position.set(dx, y, dz); w.root.scale.setScalar(C.BUS_DRAW*C.dispScale(z)); };
   if (u < 0.42){ const k = u/0.42, e = easeOut(k); at(v, lerp(T.x, xs, e), 0, lerp(T.z, tz + 0.15, e)); v.root.rotation.y = h0 + angDiff(hN, h0)*e; v.body.rotation.z = sd*0.12*Math.sin(k*Math.PI); }
@@ -4198,8 +4175,7 @@ function slotPos(m, rowF){
 const seatMat = new THREE.Matrix4(), SEAT_Y = 0.28;               // seated: hips on the cushion, head and shoulders above the rim
 function seatMatrix(i, out){
   const m = game.men[i], v = views[m.bus], s = C.seatLocal(m.seat, v.b.len);
-  if (v.art) s.z = artLayout(v.b.cap).rowZ[Math.floor(m.seat/2)];                         // an articulated bus's rows
-  if (v.bent) return skPose(v, s.x, SEAT_Y, s.z, 0, out).premultiply(v.body.matrixWorld);   // on its row of a bent articulated bus
+  if (v.bent) return skPose(v, s.x, SEAT_Y, s.z, 0, out).premultiply(v.body.matrixWorld);   // on its row of a bent Jelly bus
   out.makeTranslation(s.x, SEAT_Y, s.z).premultiply(v.body.matrixWorld); return out;
 }
 function manWorld(i){
@@ -4232,7 +4208,11 @@ function updateBus(v, t, vdt){
   if (b.state === 'road') dark = smooth(L.ROAD.end - 0.55, L.ROAD.end - 0.02, b.rs);
   if (b.state === 'return' && b.trip) dark = 1 - smooth(0.0, 0.4, b.trip.s);
   v.dark = dark; v.mat.color.setScalar(1 - dark);
-  const [tx, ty, tz, tvx, tvz] = busTarget(b), dd = C.dispDir(b.dx, b.dz, b.z), hT = Math.atan2(dd[0], dd[1]);
+  const [tx, ty, tz, tvx, tvz] = busTarget(b), dd = C.dispDir(b.dx, b.dz, b.z); let hT = Math.atan2(dd[0], dd[1]);
+  // back from the return tunnel: the route as drawn bends where the yard's squeeze changes, so the bus faces along the
+  // line from its back to its front on that route (straight along the tunnel while it is inside, not across it)
+  if (b.state === 'return'){ const P = skPathOf(v); if (P){ const hl = b.len/2*C.BUS_DRAW*C.dispScale(b.z), f = P.q(P.at + hl, _skA), r = P.q(P.at - hl, _skB);
+    hT = Math.atan2(f.x - r.x, f.z - r.z); } }
   // position: critically damped spring with velocity feed-forward -> eased starts and stops, nothing snaps
   if (!v.init || Math.hypot(tx - v.p.x, tz - v.p.z) > 1.6){
     v.p.set(tx, ty, tz); v.pv.set(tvx, 0, tvz); v.h = hT; v.init = true; v.spd = Math.hypot(tvx, tvz); v.hPrev = hT;
@@ -4291,7 +4271,7 @@ function updateBus(v, t, vdt){
   v.hGlow.forEach(s => { s.material.opacity = flashing ? 1 : 0; });
   if (v.q) v.q.position.y = 1.25 + Math.sin(t*3 + b.id)*0.05;
   if (v.keyS){ v.keyS.visible = !!b.key && !v.keyGone; v.keyS.position.y = (v.q ? 1.85 : 1.18) + Math.sin(t*3.4 + b.id)*0.05; }
-  artUpdate(v, vdt);
+  jellyUpdate(v, vdt);
 }
 /* A full bus first drives straight sideways (perpendicular to the road) off the edge on the side
    away from its ramp, above the neighbouring crowds; only once it is clear of the road - and out
@@ -4374,7 +4354,7 @@ function updateJump(v, t, vdt){
   }
   if (vdt > 0 && u < J.t1) v.wheelAng += 0.6*vdt/WHEEL_R;
   v.spd = 0; v.brakeMat.emissiveIntensity = 0.15; v.bGlow.forEach(s => s.material.opacity = 0);
-  if (v.bent) artUpdate(v, vdt);
+  jellyUpdate(v, vdt);
 }
 function updateWheels(){
   let n = 0;
@@ -4786,7 +4766,7 @@ setMuted(muted);
 applyThemeColors(); $('btnTheme').textContent = 'Theme: ' + TH.label;
 // the booster buttons are placeholders: a wobble, no effect on the game
 document.querySelectorAll('.boost').forEach(b => b.addEventListener('click', () => { audio(); sfx.thud(); b.classList.remove('wob'); void b.offsetWidth; b.classList.add('wob'); }));
-$('btnMove').addEventListener('click', () => { audio(); setMove(busMove === 'articulated' ? 'rigid' : 'articulated', true); });
+$('btnMove').addEventListener('click', () => { audio(); setMove(busMove === 'jelly' ? 'rigid' : 'jelly', true); });
 setMove(busMove);
 $('btnCam').addEventListener('click', () => { audio(); setView(view === 'ortho' ? 'persp' : 'ortho', true); });
 setView(view);
@@ -4868,12 +4848,16 @@ window.__me = {
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS,
   get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, SPEEDS,
-  artWheels(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // world axles (where they meet the road) and wheels, section by section
-    const A = artLayout(v.b.cap), at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);
+  jellyFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames and wheels in the world, front to back
+    const at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);
       const p = new THREE.Vector3().setFromMatrixPosition(m.premultiply(v.body.matrixWorld)); return [p.x, p.y, p.z]; };
-    return {art:v.art, bent:v.bent, f:v.snk, k:v.root.scale.x, sections:v.art ? A.secs.map(s => ({front:at(0, 0, s.fa), rear:at(0, 0, s.ra), wb:s.fa - s.ra})) : null,
-      wheels:v.wheels.map(w => at(w[0], 0, w[2]))}; },
-  artLayout(cap){ return artLayout(cap); }, inView(x, y, z){ camera.updateMatrixWorld(); return inView(x, y, z, 0.08, 0.9); },
+    return {bent:v.bent, k:v.root.scale.x, pts:Array.from(v.U.uSkZ.value).map(z => at(0, 0, z)), wheels:v.wheels.map(w => at(w[0], 0, w[2])),
+      off:v.jl ? v.jl.o.map(o => Array.from(o)) : null, tgt:v.jl ? v.jl.tgt.map(o => Array.from(o)) : null}; },
+ inView(x, y, z){ camera.updateMatrixWorld(); return inView(x, y, z, 0.08, 0.9); },
+  /* the exit and the return tunnel as drawn: mouth, inward direction, road height, the opening's half width at the road,
+     the depth past which a bus is not drawn, and the half width of that cut */
+  tunnels(){ return [0, 1].map(i => { const a = TUN_U.uTun.value[i], b = TUN_U.uTunY.value[i];
+    return {x:a.x, z:a.y, dx:a.z, dz:a.w, y:b.x, half:TUN.Rin*(i ? 0.92*GT.k : 1), depth:b.w, cut:b.z - 0.1}; }); },
   setBot, setDebug(v){ DEBUG = v; WD.dbgGroup.visible = v; $('dbg').style.display = v ? 'block' : 'none'; },
   freeze(v){ frozen = v; }, restart: () => resetGame(), render(){ updateScene(0); renderer.render(scene, camera); },
   /* on-screen sizes in CSS px at the current viewport: standing stickmen (feet to top of head) and buses by capacity */
