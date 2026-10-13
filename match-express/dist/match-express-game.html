@@ -1222,6 +1222,9 @@ const MAN_W = 0.31;                                 // a stickman's width (its h
 /* a level's stickman size (`manScale`, 1 when omitted): its ramps' grid spacing, margins and apron grow with it, so
    larger stickmen never overlap; seated in a bus they stay at most SEAT_SCALE_MAX (two seat rows are ROW_PITCH apart) */
 const MAN_SCALE_MAX = 1.3, SEAT_SCALE_MAX = 1.08;
+/* road gaps: a bus speeds up (GAP_BOOST) over the last GAP_RUNUP before a gap and across it, and jumps it (drawn); it takes
+   off only when the bus ahead has cleared the landing side by its own length, so it never has to stop in the air */
+const GAP_LEN = [0.6, 2.4], GAP_EASE = 0.9, GAP_BOOST = 1.35, GAP_RUNUP = 1.6;
 
 /* ============================= HELPERS ============================== */
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a);
@@ -1308,6 +1311,10 @@ function normalizeLevel(lv){
   if (!Array.isArray(lv.ramps) || !Array.isArray(lv.lanes)) throw new Error('level needs "ramps" and "lanes"');
   const road = lv.road && Array.isArray(lv.road.points) && lv.road.points.length >= 3 ? clone(lv.road) : clone(LEVEL_DATA.road);
   road.points.forEach(p => { p.x = +p.x; p.z = +p.z; });
+  // gaps: the road cut at arc length `at` for `len` (GAP_LEN), flat or with a take-off ramp and a landing ramp
+  const gaps = (Array.isArray(road.gaps) ? road.gaps : []).filter(q => q && isFinite(+q.at)).map(q => ({at:+q.at, len:clamp(+q.len || 1.2, GAP_LEN[0], GAP_LEN[1]), ramp:q.ramp === 'updown' ? 'updown' : 'flat'}))
+    .sort((a, b) => a.at - b.at);
+  if (gaps.length) road.gaps = gaps; else delete road.gaps;
   const out = {format:2, name: lv.name || 'Untitled level', seed: lv.seed, road, ramps:[], lanes:[]};
   if (lv.id != null && String(lv.id).trim()) out.id = String(lv.id).trim();
   if (lv.yard === 'classic') out.yard = 'classic';     // omitted = the default compact yard
@@ -1386,7 +1393,18 @@ function buildRoad(road){
   if (Array.isArray(road.tail)) cps.push(road.tail.slice());
   else { const q = cps[cps.length-2], l = Math.hypot(last[0]-q[0], last[2]-q[2]) || 1;
     cps.push([last[0] + (last[0]-q[0])/l*2.1, last[1], last[2] + (last[2]-q[2])/l*2.1]); }
-  const {pts: dense, cpIdx} = catmullRom(cps, 28), path = makePath(dense);
+  const {pts: dense, cpIdx} = catmullRom(cps, 28); let path = makePath(dense);
+  // a gap's two ends stand at the same height: across it the road is level, easing in and out over GAP_EASE
+  const gaps = (road.gaps || []).map(q => ({at:q.at, len:q.len, ramp:q.ramp, s0:q.at - q.len/2, s1:q.at + q.len/2}));
+  if (gaps.length){ const yAt = sv => { const o = {}; pathAt(path, sv, o, 0); return o.y; };
+    const Y = gaps.map(G => { const y0 = yAt(G.s0 - GAP_EASE), y1 = yAt(G.s1 + GAP_EASE); return {G, y0, y1, yc:(y0 + y1)/2}; });
+    dense.forEach((q, i) => { const sv = path.cum[i];
+      for (const {G, y0, y1, yc} of Y){
+        if (sv >= G.s0 && sv <= G.s1) q[1] = yc;
+        else if (sv > G.s0 - GAP_EASE && sv < G.s0) q[1] = y0 + (yc - y0)*smooth01(G.s0 - GAP_EASE, G.s0, sv);
+        else if (sv > G.s1 && sv < G.s1 + GAP_EASE) q[1] = yc + (y1 - yc)*smooth01(G.s1, G.s1 + GAP_EASE, sv); } });
+    path = makePath(dense); }
+  path.gaps = gaps;
   path.cpS = cpIdx.map(i => path.cum[i]);
   path.pointS = map.map(m => path.cpS[m]);          // arc length at each editable control point
   path.portalS = path.pointS[pts.length - 1];
@@ -1502,6 +1520,7 @@ function pillarSpots(ROAD){
     pathAt(ROAD, s, o, 0);
     let blocked = false;                            // never through a lower part of the road (spiral overpass)
     for (let i=0;i<ROAD.n;i+=2) if (Math.abs(ROAD.cum[i] - s) > 3 && P[i*3+1] < o.y - 0.4 && Math.hypot(P[i*3]-o.x, P[i*3+2]-o.z) < 1.05){ blocked = true; break; }
+    if ((ROAD.gaps || []).some(q => s > q.s0 - 0.4 && s < q.s1 + 0.4)) blocked = true;   // nothing under a gap
     if (!blocked) out.push({s, x:o.x, y:o.y, z:o.z});
   }
   return out;
@@ -2016,6 +2035,18 @@ function stepTimers(g){
       if (!B.open){ openBoxIn(g, ramp, B, true); emit(g, 'unlock', {ramp:lk.ramp, box:B.i, how:'fallback', bus:T.bus, lock:T.lock}); boxOpened(g, ramp); } }
   }
 }
+/* gaps: the top speed of buses (a group: any member) running up to a gap or over it */
+function gapVmax(ROAD, ms){
+  for (const G of ROAD.gaps || []) for (const m of ms) if (m.rs + m.len/2 >= G.s0 - GAP_RUNUP && m.rs - m.len/2 <= G.s1) return BUS_SPEED*GAP_BOOST;
+  return BUS_SPEED;
+}
+/* the furthest a bus (or a group, head to tail) may go before the next gap it has not reached: up to its edge, unless the
+   bus ahead has cleared the landing side by the whole length behind (its rear past the gap's end by that much) */
+function gapHold(ROAD, head, tail, lead){
+  const front = head.rs + head.len/2, G = (ROAD.gaps || []).find(q => front <= q.s0 + 1e-6); if (!G || !lead) return Infinity;
+  const extent = head.rs + head.len/2 - (tail.rs - tail.len/2);
+  return lead.rs - lead.len/2 >= G.s1 + extent + ROAD_GAP ? Infinity : G.s0 - head.len/2;
+}
 function stepRoad(g, dt){
   const R = g.road;
   for (let i=0;i<R.length;i++){
@@ -2027,12 +2058,13 @@ function stepRoad(g, dt){
       if (b.board){ b.v = 0; continue; }
     }
     const lead = i > 0 ? R[i-1] : null;
-    const sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
+    let sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
+    sLimit = Math.min(sLimit, gapHold(g.L.ROAD, b, b, lead));
     const RAMPS = g.L.RAMPS, k0 = b.nextRamp, bk0 = k0 < RAMPS.length ? RAMPS[k0].s : Infinity;
     let stopS = Infinity;
     for (let k = k0; k < RAMPS.length && RAMPS[k].s <= bk0 + 1e-6; k++)    // the next boarding point (two ramps can share it)
       if (bk0 - b.rs < 4 && bk0 >= b.rs - 1e-6 && frontMatch(g, k, b.color)){ stopS = bk0; break; }
-    let vt = Math.min(BUS_SPEED, Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
+    let vt = Math.min(gapVmax(g.L.ROAD, [b]), Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
                       Math.sqrt(2*HARD_BRAKE*Math.max(0, sLimit - b.rs)));
     b.v = vt > b.v ? Math.min(vt, b.v + ACCEL*dt) : vt;
     let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS), boarded = false;
@@ -2073,9 +2105,10 @@ function stepGroup(g, grp, i, dt){
   for (const m of ms) if (m.board){ stepBoarding(g, m); if (grp.jumped) return i - 1; if (m.board) busy = true; }
   if (busy){ ms.forEach(m => { m.v = 0; }); return j; }
   const head = ms[0], tail = ms[ms.length - 1];
-  let allow = Infinity, vt = BUS_SPEED;
+  let allow = Infinity, vt = gapVmax(g.L.ROAD, ms);
   const limit = (d, brake) => { allow = Math.min(allow, Math.max(0, d)); vt = Math.min(vt, Math.sqrt(2*brake*Math.max(0, d))); };
   if (lead) limit(lead.rs - lead.len/2 - head.len/2 - ROAD_GAP - head.rs, HARD_BRAKE);
+  { const h = gapHold(g.L.ROAD, head, tail, lead); if (h < Infinity) limit(h - head.rs, SOFT_BRAKE); }
   const nextId = grp.members[grp.members.indexOf(tail.id) + 1];
   if (nextId != null && g.buses[nextId].state === 'toRoad'){ const nb = g.buses[nextId]; limit(tail.len/2 + nb.len/2 + ROAD_GAP + 1e-6 - tail.rs, SOFT_BRAKE); }   // just past the merge gap
   for (const m of ms){ if (isFull(m) || m.rs >= END) continue;
@@ -2390,6 +2423,21 @@ function queueDeadlock(N){
   }
   return left > 0;
 }
+/* road gaps: clear of the road's ends, of spirals and of each other; no boarding point on a gap, nor where a bus (or the
+   longest connected group) landing after it would still be over it when it stops; no ramp beside a gap */
+function gapWarnings(L, N){
+  const W = [], R = L.ROAD, G = R.gaps || []; if (!G.length) return W;
+  let ext = busLen(12);                             // the longest thing that may land: a 12-seat bus, or a connected group
+  for (const grp of linkGroups(N)) ext = Math.max(ext, grp.members.reduce((a, m) => a + busLen(N.lanes[m.l][m.i].cap), 0) + (grp.members.length - 1)*ROAD_GAP);
+  G.forEach((q, i) => { const o = {}; pathAt(R, q.at, o, 0); const at = {x:o.x, z:o.z, gap:i}, label = 'Gap ' + (i + 1);
+    if (q.s0 < 2.5 || q.s1 > R.portalS - 2) W.push(Object.assign({kind:'gap-ends', msg:label + ' is too near the start or the end of the road'}, at));
+    if (inSpiral(R, q.at, q.len/2 + 1)) W.push(Object.assign({kind:'gap-spiral', msg:label + ' is on a spiral'}, at));
+    if (i && q.s0 - G[i - 1].s1 < 3) W.push(Object.assign({kind:'gap-gap', msg:label + ' is too close to gap ' + i}, at));
+    for (const r of L.RAMPS){ const a = r.edge.sAt(-r.halfW), b = r.edge.sAt(r.halfW), lo = Math.min(a, b), hi = Math.max(a, b);
+      if ((r.s > q.s0 - busLen(12)/2 - 0.2 && r.s < q.s1 + ext + 0.3) || (hi > q.s0 - 0.2 && lo < q.s1 + 0.2))
+        W.push({kind:'gap-ramp', msg:'Ramp ' + (r.src + 1) + ' is on gap ' + (i + 1) + ' (or too close after it for a bus to land and stop): move it along the road', x:r.x, z:r.z, ramp:r.src, gap:i}); } });
+  return W;
+}
 function checkLevel(level){
   const N = normalizeLevel(level), L = buildLayout(N);
   const men = {}, seats = {}, hiddenMen = {n:0}, sizes = {4:0, 6:0, 8:0, 12:0};
@@ -2398,7 +2446,7 @@ function checkLevel(level){
   N.ramps.forEach(r => (r.tunnels || []).forEach(t => { men[t.color] += t.count; }));      // a tunnel's stickmen count too
   let buses = 0; N.lanes.forEach(l => l.forEach(b => { seats[b.color] += b.cap; buses++; sizes[b.cap]++; }));
   const perColor = COLORS.map(c => ({color:c, men:men[c], seats:seats[c], ok:men[c] === seats[c]}));
-  const warnings = [...roadWarnings(L), ...rampWarnings(L)];
+  const warnings = [...roadWarnings(L), ...rampWarnings(L), ...gapWarnings(L, N)];
   // ramp blockers: inside the ramp, one per column, tunnels on empty cells with a cell in front
   const locks = {};
   N.ramps.forEach((r, ri) => {
@@ -2523,7 +2571,7 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, MAN_SCALE_MAX, SEAT_SCALE_MAX, autoManScale, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, MAN_SCALE_MAX, SEAT_SCALE_MAX, autoManScale, GAP_LEN, GAP_EASE, GAP_BOOST, GAP_RUNUP, gapVmax, gapHold, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
   get VIEW(){ return VIEW; }, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
@@ -2899,6 +2947,21 @@ function edt(inside, nx, nz, S){                       // chamfer distance from 
     d[k] = v; }
   return d;
 }
+/* a gap's ravine as a signed distance on the board's grid (positive inside): the road cut square across from s0 to s1,
+   and the cut running on a little past the road's edges on both sides */
+function gapCut(R, nx, nz, S){
+  const G = R.gaps || []; if (!G.length) return null;
+  const out = new Float32Array(nx*nz).fill(-9), o = {}, HW = C.ROAD_HALF + 0.55;
+  for (const q of G){ const pts = []; for (let s = q.s0 - 1.6; s <= q.s1 + 1.6; s += 0.04){ C.pathAt(R, s, o, 0); pts.push([o.x, o.z, s]); }
+    const xs = pts.map(p => p[0]), zs = pts.map(p => p[1]), pad = HW + 1;
+    const i0 = Math.max(0, Math.floor((Math.min(...xs) - pad - GX0)/S)), i1 = Math.min(nx - 1, Math.ceil((Math.max(...xs) + pad - GX0)/S));
+    const j0 = Math.max(0, Math.floor((Math.min(...zs) - pad - GZ0)/S)), j1 = Math.min(nz - 1, Math.ceil((Math.max(...zs) + pad - GZ0)/S));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++){ const x = GX0 + i*S, z = GZ0 + j*S; let best = 1e9, bs = 0;
+      for (const p of pts){ const d = (p[0] - x)**2 + (p[1] - z)**2; if (d < best){ best = d; bs = p[2]; } }
+      let v = Math.min(bs - q.s0, q.s1 - bs, HW - Math.sqrt(best)); if (v > 0) v *= 2;      // steeper walls than the board's edge
+      const k = j*nx + i; if (v > out[k]) out[k] = v; } }
+  return out;
+}
 function boardMask(L, F){
   const S = BOARD.S, nx = Math.round((GX1 - GX0)/S) + 1, nz = Math.round((GZ1 - GZ0)/S) + 1, core = new Uint8Array(nx*nz);
   const ix = x => Math.round((x - GX0)/S), iz = z => Math.round((z - GZ0)/S);
@@ -2923,9 +2986,12 @@ function boardMask(L, F){
   const d1 = edt(grown, nx, nz, S), dil = d1.map(v => v <= BOARD.close ? 0 : 1);       // 1 = outside the dilated board
   const d2 = edt(dil, nx, nz, S), board = new Uint8Array(nx*nz);
   for (let k = 0; k < board.length; k++) board[k] = d2[k] > BOARD.close || grown[k] ? 1 : 0;
+  const gsd = gapCut(L.ROAD, nx, nz, S);                           // a ravine across the road at every gap
+  if (gsd) for (let k = 0; k < board.length; k++) if (gsd[k] > 0) board[k] = 0;
   const notB = board.map(v => 1 - v), dIn = edt(notB, nx, nz, S), dOut = edt(board, nx, nz, S), sd = new Float32Array(nx*nz);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++){ const k = j*nx + i, x = GX0 + i*S, z = GZ0 + j*S;
-    sd[k] = (board[k] ? -dIn[k] + S/2 : dOut[k] - S/2) + 0.28*(vnoise(x*0.55 + 7.3, z*0.55 - 3.1) - 0.5); }   // a little irregular, like rock
+    sd[k] = (board[k] ? -dIn[k] + S/2 : dOut[k] - S/2) + 0.28*(vnoise(x*0.55 + 7.3, z*0.55 - 3.1) - 0.5);   // a little irregular, like rock
+    if (gsd && gsd[k] > -1.5) sd[k] = Math.max(sd[k], gsd[k]); }    // a gap's ravine: its ends exactly where the road stops
   const at = (x, z) => { const fx = clamp((x - GX0)/S, 0, nx - 1.001), fz = clamp((z - GZ0)/S, 0, nz - 1.001), i = Math.floor(fx), j = Math.floor(fz), u = fx - i, w = fz - j;
     const k = j*nx + i; return lerp(lerp(sd[k], sd[k + 1], u), lerp(sd[k + nx], sd[k + nx + 1], u), w); };
   // dc: how far a point is from the level's content (the road, the ramps, the yard, the tunnels)
@@ -2941,8 +3007,11 @@ const baseAt = (x, z) => BM ? (BM.at(x, z) < 0 ? GD : boardY(BM.at(x, z))) : GD;
 function grooveFeatures(L){
   const R = L.ROAD, Y = L.Y, F = [], dp = (x, z) => C.dispPoint(x, z), o = {};
   // the road, from its start at the yard into the exit tunnel; on a bridge it leaves the ground (the deck is a mesh)
-  const road = []; for (let s = 0; s <= R.portalS + 2.3; s += 0.05){ C.pathAt(R, s, o, 0); road.push([o.x, o.z, o.y]); }
-  F.push({kind:'line', pts:road, half:C.ROAD_HALF, road:true});
+  // a gap cuts it into pieces (the ravine below is cut out of the board, see boardMask)
+  const G = R.gaps || [], inGap = s => G.some(q => s > q.s0 && s < q.s1);
+  let road = []; const flush = () => { if (road.length > 1) F.push({kind:'line', pts:road, half:C.ROAD_HALF, road:true}); road = []; };
+  for (let s = 0; s <= R.portalS + 2.3; s += 0.05){ if (inGap(s)){ flush(); continue; } C.pathAt(R, s, o, 0); road.push([o.x, o.z, o.y]); }
+  flush();
   // the yard: one sunken plaza (bays, side lanes, collector), its neck up to the road and the return tunnel's neck
   const XS = Y.X_SIDE, [, zEn] = dp(0, C.Z_ENTRY), [, zCo] = dp(0, C.Z_COLL), [, zR0] = dp(0, C.Z_ROAD0);
   const [xs] = dp(XS, C.Z_COLL);
@@ -3105,8 +3174,9 @@ function stoneTunnel(opt){
    overpasses included); where it lies on the ground it is a groove (see buildGround) ---- */
 const BRIDGE = {pillar:0.12, rampPillar:0.1};
 function buildRoadDeck(add, L){
-  const R = L.ROAD, runs = []; let cur = null;
-  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break; const on = terrain === 'bridge' || R.P[i*3+1] > GD - 0.06;
+  const R = L.ROAD, runs = [], G = R.gaps || []; let cur = null;
+  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break;
+    const on = (terrain === 'bridge' || R.P[i*3+1] > GD - 0.06) && !G.some(q => R.cum[i] > q.s0 && R.cum[i] < q.s1);   // a gap breaks the deck
     if (on){ if (!cur) runs.push(cur = []); cur.push(i); } else cur = null; }
   // the deck is exactly as wide as the road (its outer face is the road's edge, where the ramps begin)
   const wall = TH.rim, top = TH.line, side = '#' + col(TH.stone).lerp(col(TH.rim), 0.3).getHexString(), edgeF = '#' + col(TH.floor).lerp(col(TH.rim), 0.22).getHexString(), H = C.ROAD_HALF;
@@ -3124,6 +3194,28 @@ function buildRoadDeck(add, L){
     if (terrain === 'bridge') list.push([q.x, GLOW - 0.05, q.z, t, BRIDGE.pillar]);        // tall slim pillars from the ground far below
     else if (t - GD > 0.3) list.push([q.x, GD - 0.05, q.z, t, 0.2]); });
   return list;
+}
+/* ---- a gap's two ends: a striped edge across the road on both sides; with take-off and landing ramps, a low striped
+   wedge rising to the take-off edge and one falling away from the landing edge ---- */
+const gapStripeTex = canvasTex(128, 16, x => { x.fillStyle = '#2b2b33'; x.fillRect(0, 0, 128, 16); x.fillStyle = '#ffc93c';
+  for (let k = -16; k < 144; k += 16){ x.beginPath(); x.moveTo(k, 16); x.lineTo(k + 8, 16); x.lineTo(k + 16, 0); x.lineTo(k + 8, 0); x.fill(); } });
+gapStripeTex.wrapS = gapStripeTex.wrapT = THREE.RepeatWrapping;
+function buildGapEnds(add, L){
+  const R = L.ROAD, G = R.gaps || []; if (!G.length) return;
+  const o = {}, W = 2*C.ROAD_HALF - 0.08, stripe = new THREE.MeshStandardMaterial({map:gapStripeTex, roughness:0.7});
+  const wedgeMat = [new THREE.MeshStandardMaterial({color:TH.stone, roughness:0.85}), stripe];
+  const at = (s, out) => { C.pathAt(R, s, o, 0); out.set(o.x, o.y, o.z); return Math.atan2(o.dx, o.dz); };
+  for (const q of G) for (const [edge, dir] of [[q.s0, -1], [q.s1, 1]]){      // dir: away from the gap
+    const p = new THREE.Vector3(), yaw = at(edge + dir*0.09, p);
+    const band = new THREE.Mesh(new THREE.PlaneGeometry(W, 0.16).rotateX(-Math.PI/2), stripe);
+    band.position.copy(p).add(new THREE.Vector3(0, 0.012, 0)); band.rotation.y = yaw; band.receiveShadow = true; add(band);
+    if (q.ramp !== 'updown') continue;
+    // a wedge: 0.6 long, its high end (0.13) at the gap's edge; its striped top faces up the slope
+    const Lw = 0.6, Hw = 0.13, sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(Lw, 0); sh.lineTo(Lw, Hw); sh.lineTo(0, 0.005);
+    const g = new THREE.ExtrudeGeometry(sh, {depth:W, bevelEnabled:false}); g.translate(-Lw, 0, -W/2); g.rotateY(-Math.PI/2);   // local +z: toward the gap
+    g.groups.forEach(gr => { gr.materialIndex = gr.materialIndex === 1 ? 0 : 1; });
+    const m = new THREE.Mesh(g, [wedgeMat[1], wedgeMat[0]]); at(edge, m.position);
+    m.position.y += 0.002; m.rotation.y = yaw + (dir < 0 ? 0 : Math.PI); m.castShadow = m.receiveShadow = true; add(m); }
 }
 function addPillars(add, list){
   if (!list.length) return;
@@ -3335,7 +3427,7 @@ function buildWorld(L){
   GT = drawnTunnel(L.TUNNEL); rng = C.mulberry32(4242);
   const R = L.ROAD, E = L.exit, F = grooveFeatures(L);
   buildGround(add, L, F);
-  const pillars = buildRoadDeck(add, L);
+  const pillars = buildRoadDeck(add, L); buildGapEnds(add, L);
   const bayGlow = Y.BAY_X.map(bx => { const b = bayRect(bx);
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2*b.hw - 0.04, 2*b.hl - 0.04).rotateX(-Math.PI/2),
       new THREE.MeshBasicMaterial({color:'#ffffff', transparent:true, opacity:0, depthWrite:false}));
@@ -3578,8 +3670,9 @@ const _v2 = new THREE.Vector3();
 function skPathOf(v){
   const b = v.b;
   if (b.state === 'road'){ const R = L.ROAD, o = {};
+    const jk = v.jk || 0;                             // over a gap: the straight line of the jump's slope through the bus's centre
     return {key:'road', at:b.rs, q:(a, out) => { const e = a < 0 ? a : a > R.len ? a - R.len : 0; C.pathAt(R, clamp(a, 0, R.len), o, 0);
-      out.set(o.x + o.dx*e, o.y, o.z + o.dz*e); const hl = Math.hypot(1, o.slope || 0); out.tx = o.dx/hl; out.tz = o.dz/hl; out.ty = (o.slope || 0)/hl; return out; }}; }
+      const sl = (o.slope || 0) + jk; out.set(o.x + o.dx*e, o.y + jk*(a - b.rs), o.z + o.dz*e); const hl = Math.hypot(1, sl); out.tx = o.dx/hl; out.tz = o.dz/hl; out.ty = sl/hl; return out; }}; }
   if (!b.trip) return null;
   if (!v.skPath || v.skPath.seq !== b.trip.seq || v.skPath.view !== view){   // the trip as drawn: sampled, mapped, measured once
     const P = b.trip.path, o = {}, pts = [], N = Math.max(2, Math.ceil(P.len/0.05));
@@ -3606,8 +3699,9 @@ function jellyUpdate(v, vdt){
     v.root.updateMatrixWorld(true); _skInv.copy(v.body.matrixWorld).invert();
     const k = v.root.scale.x, c0 = path.q(path.at, _skA).clone();
     for (let i = 0; i < JL_N; i++){ const zl = Z[i], q = path.q(path.at + zl*k, _skB), tx = q.tx, ty = q.ty, tz = q.tz;
-      _skT.set(v.p.x + q.x - c0.x, v.p.y + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
-      _v2.set(v.p.x + q.x - c0.x + tx, v.p.y + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
+      const py = v.p.y + (v.lift || 0);
+      _skT.set(v.p.x + q.x - c0.x, py + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
+      _v2.set(v.p.x + q.x - c0.x + tx, py + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
       const yaw = angDiff(Math.atan2(_v2.x, _v2.z), 0), pit = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z)), T = S.tgt[i];
       T[0] = _skT.x; T[1] = _skT.y; T[2] = _skT.z - zl; T[3] = yaw; T[4] = pit; }
   } else S.tgt.forEach(T => T.fill(0));
@@ -4240,6 +4334,14 @@ function updateStagger(){
     const gap = Math.abs(nb.z - b.z) - (nb.len + b.len)/2, lim = Math.max(0, (gap - 0.04)/2);
     STAG.set(id, Math.sign(st)*Math.min(Math.abs(st), lim)); }
 }
+/* a road bus jumping a gap: one arc from just before the gap to just after it (its rear clear of the landing edge),
+   higher for a longer jump and off a take-off ramp: its height above the road `y`, its slope `k` (dy/ds) and progress `u` */
+function gapLift(b){
+  for (const G of L.ROAD.gaps || []){ const m = b.len*0.45, c0 = G.s0 - m, c1 = G.s1 + m; if (b.rs <= c0 || b.rs >= c1) continue;
+    const w = c1 - c0, u = (b.rs - c0)/w, H = 0.1 + 0.16*w + (G.ramp === 'updown' ? 0.1 : 0);
+    return {y:H*4*u*(1 - u), k:H*4*(1 - 2*u)/w, u, G}; }
+  return null;
+}
 function busTarget(b){                              // where the bus is drawn + velocity, which the render springs chase
   const st = (b.state === 'lane' || b.state === 'bay') ? STAG.get(b.id) || 0 : 0, bx = b.x + b.dx*st, bz = b.z + b.dz*st;
   const [x, z] = C.dispPoint(bx, bz), sx = C.dispSx(b.z), sz = C.dispSlope(b.z);
@@ -4280,10 +4382,16 @@ function updateBus(v, t, vdt){
     v.h += angDiff(hT, v.h)*(1 - Math.exp(-vdt*16));
   }
   v.root.visible = true;
-  v.root.position.copy(v.p); v.root.rotation.y = v.h;
+  // a gap: the bus flies its arc (lift and pitch on top of the road), a little hop at take-off, a squash on landing
+  const J = b.state === 'road' ? gapLift(b) : null;
+  v.lift = J ? J.y : 0; v.jk = J ? J.k : 0;
+  if (vdt > 0 && !!J !== !!v.inJump){ if (J) v.bobV += 0.16;
+    else { v.bobV -= 0.5; v.pitchV += 1.4; sfx.thud(); if (dark < 0.2) puff(new THREE.Vector3(v.p.x, v.p.y + 0.05, v.p.z), 6, [Math.sin(v.h), Math.cos(v.h)], 0.5, 0.6); } }
+  v.inJump = !!J;
+  v.root.position.copy(v.p); v.root.position.y += v.lift; v.root.rotation.y = v.h;
   v.root.scale.setScalar(C.BUS_DRAW*C.dispScale(b.z));   // 10% smaller than simulated; the buses behind a lane's front bus smaller still
   updateTapRing(v, t, vdt);
-  v.slope.rotation.x += (-Math.atan(b.slope) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
+  v.slope.rotation.x += (-Math.atan(b.slope + v.jk) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*(J ? 18 : 10)) : 1);
   if (vdt > 0){
     const fwd = v.pv.x*Math.sin(v.h) + v.pv.z*Math.cos(v.h), spd = Math.max(0, fwd);
     const aInst = (spd - v.spd)/vdt; v.aLong += (aInst - v.aLong)*(1 - Math.exp(-vdt*14));
@@ -4317,7 +4425,7 @@ function updateBus(v, t, vdt){
   const pop = t - v.revealT < 0.5 ? easeOutBack(clamp((t - v.revealT)/0.5, 0, 1), 3) : 1;
   v.body.position.set(px, py, pz); v.body.scale.set(1, pop, 1);
   v.body.rotation.set(v.pitch + extraPitch, 0, v.roll);
-  v.shadow.visible = true; v.shadow.material.opacity = 0.42*(1 - dark);
+  v.shadow.visible = v.lift < 0.03; v.shadow.material.opacity = 0.42*(1 - dark);
   v.brakeMat.emissiveIntensity = 0.15 + v.brakeAmt*2.6;
   v.bGlow.forEach(s => { s.material.opacity = v.brakeAmt*0.95*(1 - dark); });
   const fl = t - v.flashT, flashing = fl > 0 && fl < 0.62 && (fl % 0.31) < 0.16;
@@ -4953,7 +5061,10 @@ window.__me = {
   get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
-  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; }, SPEEDS,
+  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; },
+  groundAt(x, z){ const rc = new THREE.Raycaster(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0)); rc.camera = camera; const hit = rc.intersectObject(world, true)
+    .find(h => { if (h.object.isSprite) return false; for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
+    return hit ? hit.point.y : null; },   // the height of the first surface straight down at (x, z) (buses and stickmen aside) SPEEDS,
   jellyFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames and wheels in the world, front to back
     const at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);
       const p = new THREE.Vector3().setFromMatrixPosition(m.premultiply(v.body.matrixWorld)); return [p.x, p.y, p.z]; };

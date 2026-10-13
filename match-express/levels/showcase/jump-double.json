@@ -1,0 +1,83 @@
+{
+  "format": 2,
+  "id": "jump-double",
+  "name": "Two gaps",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0.01, "z": -2.45, "y": 0.06},
+      {"x": 0.46, "z": -3.48, "y": 0.13},
+      {"x": 1.43, "z": -4.04, "y": 0.19},
+      {"x": 2.57, "z": -4.08, "y": 0.25},
+      {"x": 3.67, "z": -4.18, "y": 0.31},
+      {"x": 4.59, "z": -4.76, "y": 0.37},
+      {"x": 5.12, "z": -5.71, "y": 0.43},
+      {"x": 5.14, "z": -6.8, "y": 0.49},
+      {"x": 4.62, "z": -7.76, "y": 0.55},
+      {"x": 3.71, "z": -8.36, "y": 0.61},
+      {"x": 2.62, "z": -8.47, "y": 0.67},
+      {"x": 1.52, "z": -8.47, "y": 0.73},
+      {"x": 0.42, "z": -8.47, "y": 0.79},
+      {"x": -0.68, "z": -8.47, "y": 0.85},
+      {"x": -1.78, "z": -8.47, "y": 0.91},
+      {"x": -2.87, "z": -8.58, "y": 0.97},
+      {"x": -3.79, "z": -9.15, "y": 1},
+      {"x": -4.33, "z": -10.11, "y": 1},
+      {"x": -4.34, "z": -11.2, "y": 1},
+      {"x": -3.83, "z": -12.16, "y": 1},
+      {"x": -2.91, "z": -12.76, "y": 1},
+      {"x": -1.83, "z": -12.87, "y": 1},
+      {"x": -0.73, "z": -12.87, "y": 1},
+      {"x": 0.37, "z": -12.87, "y": 1},
+      {"x": 1.47, "z": -12.87, "y": 1},
+      {"x": 2.56, "z": -13.15, "y": 1},
+      {"x": 3.28, "z": -14.02, "y": 1},
+      {"x": 3.4, "z": -15.15, "y": 1},
+      {"x": 3.4, "z": -16.25, "y": 1},
+      {"x": 3.4, "z": -17.3, "y": 1}
+    ],
+    "gaps": [
+      {"at": 8.4, "len": 1.2, "ramp": "flat"},
+      {"at": 24, "len": 1.8, "ramp": "updown"}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["purple", "purple", "yellow", "yellow"], ["red", "red", "yellow", "yellow"], ["red", "red", "yellow", "green"], ["red", "red", "yellow", "yellow"], ["purple", "green", "yellow", "green"], ["red", "green", "green", "green"]], "at": 2.862, "side": -1},
+    {"rows": 4, "columns": [["red", "blue", "blue", "purple"], ["red", "blue", "yellow", "yellow"], ["red", "blue", "purple", "purple"], ["red", "red", "yellow", "green"], ["purple", "blue", "blue", "green"], ["purple", "purple", "yellow", "yellow"]], "at": 15.308, "side": 1},
+    {"rows": 4, "columns": [["blue", "blue", "yellow", "purple"], ["red", "red", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow"], ["blue", "red", "red", "green"], ["purple", "blue", "blue", "green"], ["red", "blue", "blue", "green"]], "at": 18.767, "side": -1},
+    {"rows": 4, "columns": [["red", "green", "blue", "blue"], ["purple", "red", "red", "yellow"], ["blue", "blue", "yellow", "yellow"], ["purple", "purple", "yellow", "green"], ["blue", "blue", "yellow", "yellow"], ["blue", "yellow", "yellow", "green"]], "at": 30.616, "side": 1}
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "cap": 6},
+      {"color": "green", "cap": 4},
+      {"color": "blue", "cap": 8},
+      {"color": "yellow", "cap": 6}
+    ],
+    [
+      {"color": "green", "cap": 6},
+      {"color": "yellow", "cap": 4},
+      {"color": "blue", "cap": 4},
+      {"color": "red", "cap": 8},
+      {"color": "blue", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "purple", "cap": 4}
+    ],
+    [
+      {"color": "green", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "red", "cap": 12},
+      {"color": "blue", "cap": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Jumps",
+    "title": "Two gaps",
+    "road": "hairpin",
+    "h": 0.991,
+    "difficulty": "Easy",
+    "random": 0.95,
+    "greedyT": 110.4
+  }
+}

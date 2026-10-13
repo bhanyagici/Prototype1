@@ -1,0 +1,65 @@
+{
+  "format": 2,
+  "id": "jump-first",
+  "name": "First jump",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": 0.02, "z": -3.55, "y": 0.12},
+      {"x": 0.22, "z": -4.68, "y": 0.19},
+      {"x": 0.59, "z": -5.76, "y": 0.25},
+      {"x": 0.97, "z": -6.8, "y": 0.31},
+      {"x": 1.36, "z": -7.88, "y": 0.37},
+      {"x": 1.63, "z": -8.99, "y": 0.44},
+      {"x": 1.67, "z": -10.13, "y": 0.5},
+      {"x": 1.5, "z": -11.27, "y": 0.56},
+      {"x": 1.14, "z": -12.36, "y": 0.63},
+      {"x": 0.76, "z": -13.39, "y": 0.69},
+      {"x": 0.39, "z": -14.42, "y": 0.75},
+      {"x": 0.09, "z": -15.53, "y": 0.81},
+      {"x": 0, "z": -16.67, "y": 0.87},
+      {"x": 0, "z": -17.77, "y": 0.93},
+      {"x": 0, "z": -18.87, "y": 0.99}
+    ],
+    "gaps": [
+      {"at": 9.3, "len": 1, "ramp": "flat"}
+    ]
+  },
+  "ramps": [
+    {"rows": 4, "columns": [["green", "green", "green", "blue"], ["blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "blue"], ["blue", "blue", "red", "red"], ["blue", "blue", "green", "green"]], "at": 2.172, "side": -1},
+    {"rows": 4, "columns": [["green", "green", "green", "green"], ["blue", "blue", "red", "red"], ["yellow", "yellow", "yellow", "blue"], ["green", "green", "green", "green"], ["red", "red", "red", "red"]], "at": 5.43, "side": 1},
+    {"rows": 4, "columns": [["yellow", "green", "green", "green"], ["red", "red", "red", "blue"], ["red", "red", "red", "red"], ["yellow", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue"]], "at": 14.481, "side": -1},
+    {"rows": 4, "columns": [["green", "green", "green", "blue"], ["yellow", "yellow", "yellow", "yellow"], ["red", "red", "red", "blue"], ["yellow", "yellow", "yellow", "yellow"], ["green", "green", "green", "blue"]], "at": 16.415, "side": 1}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "cap": 6},
+      {"color": "red", "cap": 6},
+      {"color": "green", "cap": 8}
+    ],
+    [
+      {"color": "yellow", "cap": 8},
+      {"color": "yellow", "cap": 8},
+      {"color": "blue", "cap": 6},
+      {"color": "red", "cap": 6}
+    ],
+    [
+      {"color": "blue", "cap": 6},
+      {"color": "green", "cap": 8},
+      {"color": "blue", "cap": 6},
+      {"color": "red", "cap": 6},
+      {"color": "blue", "cap": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Jumps",
+    "title": "First jump",
+    "road": "gentle",
+    "h": 0.15,
+    "difficulty": "Easy",
+    "random": 1,
+    "greedyT": 43.2
+  },
+  "manScale": 1.1
+}

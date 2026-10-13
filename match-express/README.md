@@ -31,6 +31,67 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Gaps and jumps
+
+The road can be cut into pieces. Buses jump the gaps.
+
+- **The format:** `road.gaps: [{at, len, ramp}]`.
+  - `at` is the gap's middle, as a distance along the road.
+  - `len` is 0.6 to 2.4 long.
+  - `ramp` is `'flat'` (plain ends) or `'updown'` (a take-off ramp before the gap and a
+    landing ramp after it).
+- **Both ends at the same height:** the road is levelled across a gap and eases in and out
+  over 0.9 on each side.
+- **The rules (core):**
+  - **Run-up:** a bus (a connected group as one) speeds up to 1.35x over the last 1.6
+    before a gap and while crossing it.
+  - **One at a time:** only one bus or group is ever over a gap. The next one waits at the
+    near edge until the one ahead has landed and its rear has cleared the far side.
+  - **No stopping over a gap.** Nothing overtakes.
+  - The counter, sending, boarding and every other rule are unchanged. A level without gaps
+    plays exactly as before.
+- **The checker:**
+  - A gap may not be on a spiral, too near the road's ends, or too near another gap.
+  - No boarding point may sit on a gap, or just after it, where a landing bus (or the
+    longest connected group) would still be over it when it stops.
+  - These show as `gap-spiral`, `gap-ends`, `gap-gap` and `gap-ramp`.
+- **Drawn:**
+  - **Ravine:** the road stops at striped edges and a ravine drops through the plateau.
+    On a Bridge, the deck simply breaks.
+  - **Ramps:** with `updown`, low striped wedges rise to the take-off edge and fall away
+    from the landing edge.
+  - **The jump:** the bus flies one arc. It is higher for a longer gap and off a ramp,
+    its nose up on take-off and down on landing. It gives a little hop as it leaves and a
+    squash with a puff of dust as it lands.
+  - **Jelly buses** follow the same arc.
+  - **No pillars** stand under a gap.
+- **Editor:** the *Cut road* tool (<kbd>G</kbd>).
+  - Click the road to cut a gap there, or drag a gap along the road; the arrow keys
+    nudge it.
+  - The inspector sets its length (0.2 steps) and its ends (*Flat* or *Take-off + landing
+    ramps*); Delete removes it. The right-click menu has the same options, plus *Cut the
+    road here*.
+  - A road edit keeps each gap where it is on the ground.
+- **Showcase:** a *Jumps* category with 5 levels: *First jump*, *Take-off ramps*, *Two
+  gaps*, *Long jump* (connected pairs jumping together) and *Spiral and gap*. Their gaps
+  were placed by `tools/make-showcase.js` on the clean stretch nearest the spot each spec
+  asks for. All five measure *Easy* (random bot 56–100%), even where the content search
+  pushed hard.
+- **Tested:**
+  - `tests/gaps.test.js`, 70 checks:
+    - the format;
+    - level ends, and no pillar under a gap;
+    - the checker's four warnings;
+    - a level without gaps keeps the plain speed and no gap limit a whole game long;
+    - whole greedy games of every gap level, watched step by step: nothing overtakes,
+      only one unit is over a gap, the next waits at the edge, nobody stops over a gap,
+      the boost happens only near a gap, and the greedy bot wins.
+  - `tests/browser.test.js` *jumps*:
+    - in Rigid on the Plateau and Jelly on a Bridge, every bus is in the air over a gap and
+      every landing squashes it;
+    - looking down into a gap shows the ravine or the ground far below;
+    - the editor's cut tool adds, sets, drags, keeps and deletes gaps.
+
 ## Terrain: Plateau or Bridge
 
 A setting in the showcase (*Settings → Terrain*), saved with the other settings. In the
@@ -304,7 +365,9 @@ bots and the checker are the same as before. Everything below is drawn on top of
 
 ### Spirals in most levels
 - **22 of the 27 showcase levels (81%) have a spiral.** Five of them have two:
-  *Count box*, *All combined*, *Double spiral*, *Around spirals* and *4 lanes*.
+  *Count box*, *All combined*, *Double spiral*, *Around spirals* and *4 lanes*. With the
+  *Jumps* category (a gap is never on a spiral; one of its five has a loop), it is 23 of 32
+  (72%).
 - **Seven new spiral roads** (`tools/showcase/specs.js`), each with a different loop:
   - `spiralHi`: the loop high up;
   - `spiralLow`: the loop right after the yard;
@@ -1366,11 +1429,14 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
                               #   close as it allows, a straight back edge with square corners, the boarding point and the order;
                               #   no two stickmen on a ramp closer than a stickman's width at the start and through every column
                               #   shift and run of a whole game; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 119 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
+                              #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
+                              #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
+node tests/browser.test.js    # 130 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)
-node tests/showcase.test.js   # 24 checks: the 27 showcase levels (categories, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
+node tests/showcase.test.js   # 24 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
                               #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
 node tests/editor.test.js     # 63 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
                               #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states

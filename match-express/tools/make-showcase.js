@@ -65,7 +65,23 @@ function worker(){
     const reqs = req.map(q => Object.assign({}, q, seed ? {f:Math.min(0.95, Math.max(0.05, q.f + (rnd() - 0.5)*0.12))} : {}));
     const notes = G.place({ramps:reqs}, lv);
     if (notes.some(x => /NO PLACE/.test(x))) return null;
+    if (spec.gaps && !addGaps(spec, lv)) return null;
     return lv;
+  }
+  // gaps, one after the other: every clean spot (no warning at all, with the gaps already cut), then the middle of the
+  // clean stretch nearest to the spec's spot
+  function addGaps(spec, lv){
+    const S = C.buildLayout(C.normalizeLevel(clone(lv))).ROAD.portalS, stub = [[{color:'red', cap:4}], [], []];
+    lv.road.gaps = [];
+    for (const q of spec.gaps){ const ok = [];
+      for (let at = 2.5; at < S - 2; at += 0.1){ const t = clone(lv); t.road.gaps.push({at:+at.toFixed(2), len:q.len, ramp:q.ramp}); t.lanes = stub;
+        if (!warnings(t).some(w => /^(gap|road|zone|ramp|exit)-/.test(w.kind))) ok.push(at); }
+      const runs = []; let run = [];
+      ok.forEach((a, i) => { if (i && a - ok[i - 1] > 0.15){ runs.push(run); run = []; } run.push(a); }); if (run.length) runs.push(run);
+      const best = runs.filter(r => r[r.length - 1] - r[0] >= 0.2).map(r => (r[0] + r[r.length - 1])/2).sort((a, b) => Math.abs(a - q.near*S) - Math.abs(b - q.near*S))[0];
+      if (best == null){ log(`${spec.id}: no clean spot for a gap`); return false; }
+      lv.road.gaps.push({at:+best.toFixed(2), len:q.len, ramp:q.ramp}); lv.road.gaps.sort((a, b) => a.at - b.at); }
+    return true;
   }
   function withDemoContent(spec, lv){
     const D = clone(PRESETS[spec.from]), out = clone(lv);

@@ -1,0 +1,76 @@
+{
+  "format": 2,
+  "id": "fx_gap_scurve",
+  "name": "S-curve with a gap",
+  "road": {
+    "points": [
+      {"x": 0, "z": -1.3, "y": 0},
+      {"x": 0, "z": -2.4, "y": 0.06},
+      {"x": -0.2, "z": -3.48, "y": 0.12},
+      {"x": -0.83, "z": -4.38, "y": 0.18},
+      {"x": -1.75, "z": -4.99, "y": 0.24},
+      {"x": -2.55, "z": -5.8, "y": 0.3},
+      {"x": -2.93, "z": -6.88, "y": 0.37},
+      {"x": -2.81, "z": -8.01, "y": 0.43},
+      {"x": -2.22, "z": -8.99, "y": 0.49},
+      {"x": -1.28, "z": -9.64, "y": 0.56},
+      {"x": -0.33, "z": -10.19, "y": 0.62},
+      {"x": 0.63, "z": -10.74, "y": 0.68},
+      {"x": 1.58, "z": -11.29, "y": 0.74},
+      {"x": 2.44, "z": -12.04, "y": 0.8},
+      {"x": 2.9, "z": -13.08, "y": 0.86},
+      {"x": 2.86, "z": -14.22, "y": 0.93},
+      {"x": 2.35, "z": -15.24, "y": 0.99},
+      {"x": 1.45, "z": -15.95, "y": 1},
+      {"x": 0.59, "z": -16.63, "y": 1},
+      {"x": 0.09, "z": -17.61, "y": 1},
+      {"x": 0, "z": -18.71, "y": 1},
+      {"x": 0, "z": -19.31, "y": 1}
+    ],
+    "gaps": [
+      {"at": 10.5, "len": 1.4, "ramp": "updown"}
+    ]
+  },
+  "ramps": [
+    {"rows": 5, "columns": [["blue", "blue", "yellow", "green", "green"], ["red", "blue", "yellow", "yellow", "green"], ["red", "red", "yellow", "purple", "purple"], ["purple", "purple", "yellow", "yellow", "green"], ["red", "red", "yellow", "yellow", "red"], ["purple", "blue", "blue", "green", "green"]], "at": 2.777, "side": 1, "shape": [[1.91, -5.68]]},
+    {"rows": 5, "columns": [["red", "yellow", "yellow", "blue", "blue"], ["red", "red", "yellow", "yellow", "red"], ["red", "yellow", "yellow", "purple", "red"], ["blue", "blue", "blue", "blue", "red"], ["purple", "purple", "yellow", "purple", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 7.868, "side": -1, "shape": [[-5.6, -8.92]]},
+    {"rows": 5, "columns": [["red", "blue", "blue", "green", "green"], ["purple", "blue", "blue", "blue", "green"], ["blue", "blue", "yellow", "blue", "blue"], ["blue", "red", "red", "green", "red"], ["purple", "red", "red", "purple", "purple"], ["red", "red", "yellow", "green", "green"]], "at": 14.347, "side": 1, "shape": [[4.36, -9.77]]},
+    {"rows": 5, "columns": [["purple", "purple", "yellow", "yellow", "green"], ["blue", "yellow", "yellow", "purple", "red"], ["purple", "purple", "yellow", "purple", "green"], ["blue", "blue", "yellow", "green", "red"], ["red", "red", "yellow", "yellow", "red"], ["purple", "yellow", "yellow", "yellow", "green"]], "at": 19.901, "side": -1, "shape": [[-0.86, -13.99]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "cap": 6},
+      {"color": "green", "cap": 12},
+      {"color": "purple", "cap": 6},
+      {"color": "red", "cap": 6},
+      {"color": "red", "cap": 12},
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 6}
+    ],
+    [
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 6},
+      {"color": "purple", "cap": 8},
+      {"color": "red", "cap": 8}
+    ],
+    [
+      {"color": "yellow", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "purple", "cap": 6},
+      {"color": "yellow", "cap": 12},
+      {"color": "blue", "cap": 4},
+      {"color": "blue", "cap": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "S-curve",
+    "group": "Roads",
+    "road": "scurve",
+    "h": 0.991,
+    "difficulty": "Easy",
+    "random": 0.935,
+    "greedyT": 89.6
+  },
+  "manScale": 1.2
+}

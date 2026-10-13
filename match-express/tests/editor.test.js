@@ -37,7 +37,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     chk(t2 === 'road' && t4 === 'paint' && t9 === 'count' && await E(() => __ed.tool) === 'select', 'number keys switch tools (2 road, 4 paint, 9 count box, 1 select)', [t2, t4, t9].join(' '));
     await key('Shift+Digit3');
     chk(await E(() => __ed.color) === 'yellow', 'Shift+3 picks the third colour');
-    chk(await E(() => [...document.querySelectorAll('#palette [data-tool]')].every(b => /\(\d or [A-Z]\)$/.test(b.title) && b.querySelector('kbd')))
+    chk(await E(() => [...document.querySelectorAll('#palette [data-tool]')].every(b => /\((\d or )?[A-Z]\)$/.test(b.title) && b.querySelector('kbd')))
       && await E(() => /Ctrl\+Z|⌘Z/.test(document.getElementById('undoBtn').title) && [...document.querySelectorAll('#fileMenu kbd')].length >= 4),
       'tooltips and menus name the shortcuts (Ctrl+... or ⌘ on a Mac)');
     await key('?');

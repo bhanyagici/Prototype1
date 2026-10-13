@@ -18,12 +18,12 @@ const order = JSON.parse(fs.readFileSync(path.join(DIR, 'showcase-order.json'), 
 const ids = order.categories.flatMap(c => c.groups.flatMap(g => g.levels));
 const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(path.join(DIR, id + '.json'), 'utf8'))]));
 { const cats = order.categories.map(c => c.name), lay = order.categories.find(c => c.name === 'Layouts');
-  chk(cats.join() === 'Basics,Blockers,Layouts' && lay && lay.groups.map(g => g.name).join() === 'Roads,Ramp shapes,Lane counts',
-    'three categories (Basics, Blockers, Layouts with Roads, Ramp shapes and Lane counts)', cats.join(', '));
+  chk(cats.join() === 'Basics,Blockers,Layouts,Jumps' && lay && lay.groups.map(g => g.name).join() === 'Roads,Ramp shapes,Lane counts',
+    'four categories (Basics, Blockers, Layouts with Roads, Ramp shapes and Lane counts, Jumps)', cats.join(', '));
   const names = id => order.categories.flatMap(c => c.groups).find(g => g.levels.includes(id));
   const want = {Basics:['Easy', 'Medium', 'Hard', 'Very Hard'], Blockers:['Hidden bus', 'Connected pairs', 'Connected triples', 'Colourful tunnel', 'Hidden stickmen', 'Lock & key box', 'Count box', 'All combined'],
     Roads:['S-curve', 'Zigzag', 'Hairpin', 'Single spiral', 'Double spiral', 'Long winding road'], 'Ramp shapes':['Straight', 'On curves', 'Deep', 'Around spirals', 'Long narrow'],
-    'Lane counts':['2 lanes', '3 lanes', '4 lanes', '5 lanes']};
+    'Lane counts':['2 lanes', '3 lanes', '4 lanes', '5 lanes'], Jumps:['First jump', 'Take-off ramps', 'Two gaps', 'Long jump', 'Spiral and gap']};
   const got = {}; order.categories.forEach(c => c.groups.forEach(g => { got[g.name || c.name] = g.levels.map(id => levels[id].name); }));
   chk(Object.entries(want).every(([k, v]) => JSON.stringify(got[k]) === JSON.stringify(v)), `${ids.length} levels: every one asked for, in its place`, Object.values(got).map(v => v.length).join(' + '));
   void names;
@@ -45,8 +45,8 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   chk(ns(sp) === 1 && ns(dsp) === 2, 'the single spiral has one spiral, the double spiral two');
   // spirals in most levels: at least 70% have one and several have two; a few Layouts keep a road without one
   const withS = ids.filter(id => ns(levels[id]) >= 1), two = ids.filter(id => ns(levels[id]) >= 2), plain = ids.filter(id => !ns(levels[id]));
-  chk(withS.length >= 0.7*ids.length && two.length >= 4 && plain.length >= 3 && plain.every(id => levels[id].meta.category === 'Layouts'),
-    'at least 70% of the levels have a spiral, several two; the few without are Layouts',
+  chk(withS.length >= 0.7*ids.length && two.length >= 4 && plain.length >= 3 && plain.every(id => ['Layouts', 'Jumps'].includes(levels[id].meta.category)),
+    'at least 70% of the levels have a spiral, several two; the few without are Layouts or Jumps',
     `${withS.length}/${ids.length} with a spiral (${Math.round(100*withS.length/ids.length)}%), ${two.length} with two; without: ${plain.join(', ')}`); }
 
 (async () => {
@@ -62,7 +62,7 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
     cats:[...document.querySelectorAll('#menuList .mcat')].map(e => e.textContent), grps:[...document.querySelectorAll('#menuList .mgrp')].map(e => e.textContent),
     cards:[...document.querySelectorAll('#menuList .mcard')].map(c => ({id:c.dataset.id, img:/^data:image\/jpeg;base64,/.test(c.querySelector('img').src) && c.querySelector('img').naturalWidth > 0,
       name:c.querySelector('b').textContent, tags:[...c.querySelectorAll('.tag')].map(t => t.textContent)}))}));
-  chk(m.open && m.cats.join() === 'Basics,Blockers,Layouts' && m.grps.join() === 'Roads,Ramp shapes,Lane counts', 'the showcase opens on its menu: categories and groups', m.cats.join(', ') + ' / ' + m.grps.join(', '));
+  chk(m.open && m.cats.join() === 'Basics,Blockers,Layouts,Jumps' && m.grps.join() === 'Roads,Ramp shapes,Lane counts', 'the showcase opens on its menu: categories and groups', m.cats.join(', ') + ' / ' + m.grps.join(', '));
   chk(m.cards.length === ids.length && m.cards.every(c => c.img && c.name && c.tags.some(t => /^(Easy|Medium|Hard|Very Hard)$/.test(t)) && c.tags.some(t => /^\d lanes$/.test(t))),
     `a card for each of the ${ids.length} levels: its picture, name and tags (difficulty, lanes)`, m.cards.filter(c => !c.img).map(c => c.id).join(','));
   { const t = id => (m.cards.find(c => c.id === id) || {tags:[]}).tags;
@@ -74,7 +74,7 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   chk(await p.evaluate(() => document.getElementById('setPanel').classList.contains('show')), 'the menu\'s gear opens the settings panel');
   await p.click('#segTheme button[data-v="desert"]'); await p.click('#segMove button[data-v="jelly"]'); await p.click('#segCam button[data-v="ortho"]'); await p.click('#segSpeed button[data-v="1.5"]'); await p.click('#segSound button[data-v="off"]');
   const s1 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, view:__me.view, speed:__me.timeScale, muted:__me.muted, on:[...document.querySelectorAll('#setPanel .seg button.on')].map(b => b.dataset.v)}));
-  chk(s1.theme === 'desert' && s1.move === 'jelly' && s1.view === 'ortho' && s1.speed === 1.5 && s1.muted && s1.on.join() === 'desert,jelly,ortho,1.5,off',
+  chk(s1.theme === 'desert' && s1.move === 'jelly' && s1.view === 'ortho' && s1.speed === 1.5 && s1.muted && s1.on.join() === 'desert,jelly,ortho,plateau,1.5,off',
     'theme, bus movement (Rigid / Jelly), camera (Perspective / Orthographic), speed (1x-2x) and sound: set and shown', JSON.stringify(s1));
   await p.click('#btnSetClose');
   await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:120000});

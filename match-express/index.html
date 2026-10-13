@@ -561,6 +561,21 @@ function edt(inside, nx, nz, S){                       // chamfer distance from 
     d[k] = v; }
   return d;
 }
+/* a gap's ravine as a signed distance on the board's grid (positive inside): the road cut square across from s0 to s1,
+   and the cut running on a little past the road's edges on both sides */
+function gapCut(R, nx, nz, S){
+  const G = R.gaps || []; if (!G.length) return null;
+  const out = new Float32Array(nx*nz).fill(-9), o = {}, HW = C.ROAD_HALF + 0.55;
+  for (const q of G){ const pts = []; for (let s = q.s0 - 1.6; s <= q.s1 + 1.6; s += 0.04){ C.pathAt(R, s, o, 0); pts.push([o.x, o.z, s]); }
+    const xs = pts.map(p => p[0]), zs = pts.map(p => p[1]), pad = HW + 1;
+    const i0 = Math.max(0, Math.floor((Math.min(...xs) - pad - GX0)/S)), i1 = Math.min(nx - 1, Math.ceil((Math.max(...xs) + pad - GX0)/S));
+    const j0 = Math.max(0, Math.floor((Math.min(...zs) - pad - GZ0)/S)), j1 = Math.min(nz - 1, Math.ceil((Math.max(...zs) + pad - GZ0)/S));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++){ const x = GX0 + i*S, z = GZ0 + j*S; let best = 1e9, bs = 0;
+      for (const p of pts){ const d = (p[0] - x)**2 + (p[1] - z)**2; if (d < best){ best = d; bs = p[2]; } }
+      let v = Math.min(bs - q.s0, q.s1 - bs, HW - Math.sqrt(best)); if (v > 0) v *= 2;      // steeper walls than the board's edge
+      const k = j*nx + i; if (v > out[k]) out[k] = v; } }
+  return out;
+}
 function boardMask(L, F){
   const S = BOARD.S, nx = Math.round((GX1 - GX0)/S) + 1, nz = Math.round((GZ1 - GZ0)/S) + 1, core = new Uint8Array(nx*nz);
   const ix = x => Math.round((x - GX0)/S), iz = z => Math.round((z - GZ0)/S);
@@ -585,9 +600,12 @@ function boardMask(L, F){
   const d1 = edt(grown, nx, nz, S), dil = d1.map(v => v <= BOARD.close ? 0 : 1);       // 1 = outside the dilated board
   const d2 = edt(dil, nx, nz, S), board = new Uint8Array(nx*nz);
   for (let k = 0; k < board.length; k++) board[k] = d2[k] > BOARD.close || grown[k] ? 1 : 0;
+  const gsd = gapCut(L.ROAD, nx, nz, S);                           // a ravine across the road at every gap
+  if (gsd) for (let k = 0; k < board.length; k++) if (gsd[k] > 0) board[k] = 0;
   const notB = board.map(v => 1 - v), dIn = edt(notB, nx, nz, S), dOut = edt(board, nx, nz, S), sd = new Float32Array(nx*nz);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++){ const k = j*nx + i, x = GX0 + i*S, z = GZ0 + j*S;
-    sd[k] = (board[k] ? -dIn[k] + S/2 : dOut[k] - S/2) + 0.28*(vnoise(x*0.55 + 7.3, z*0.55 - 3.1) - 0.5); }   // a little irregular, like rock
+    sd[k] = (board[k] ? -dIn[k] + S/2 : dOut[k] - S/2) + 0.28*(vnoise(x*0.55 + 7.3, z*0.55 - 3.1) - 0.5);   // a little irregular, like rock
+    if (gsd && gsd[k] > -1.5) sd[k] = Math.max(sd[k], gsd[k]); }    // a gap's ravine: its ends exactly where the road stops
   const at = (x, z) => { const fx = clamp((x - GX0)/S, 0, nx - 1.001), fz = clamp((z - GZ0)/S, 0, nz - 1.001), i = Math.floor(fx), j = Math.floor(fz), u = fx - i, w = fz - j;
     const k = j*nx + i; return lerp(lerp(sd[k], sd[k + 1], u), lerp(sd[k + nx], sd[k + nx + 1], u), w); };
   // dc: how far a point is from the level's content (the road, the ramps, the yard, the tunnels)
@@ -603,8 +621,11 @@ const baseAt = (x, z) => BM ? (BM.at(x, z) < 0 ? GD : boardY(BM.at(x, z))) : GD;
 function grooveFeatures(L){
   const R = L.ROAD, Y = L.Y, F = [], dp = (x, z) => C.dispPoint(x, z), o = {};
   // the road, from its start at the yard into the exit tunnel; on a bridge it leaves the ground (the deck is a mesh)
-  const road = []; for (let s = 0; s <= R.portalS + 2.3; s += 0.05){ C.pathAt(R, s, o, 0); road.push([o.x, o.z, o.y]); }
-  F.push({kind:'line', pts:road, half:C.ROAD_HALF, road:true});
+  // a gap cuts it into pieces (the ravine below is cut out of the board, see boardMask)
+  const G = R.gaps || [], inGap = s => G.some(q => s > q.s0 && s < q.s1);
+  let road = []; const flush = () => { if (road.length > 1) F.push({kind:'line', pts:road, half:C.ROAD_HALF, road:true}); road = []; };
+  for (let s = 0; s <= R.portalS + 2.3; s += 0.05){ if (inGap(s)){ flush(); continue; } C.pathAt(R, s, o, 0); road.push([o.x, o.z, o.y]); }
+  flush();
   // the yard: one sunken plaza (bays, side lanes, collector), its neck up to the road and the return tunnel's neck
   const XS = Y.X_SIDE, [, zEn] = dp(0, C.Z_ENTRY), [, zCo] = dp(0, C.Z_COLL), [, zR0] = dp(0, C.Z_ROAD0);
   const [xs] = dp(XS, C.Z_COLL);
@@ -767,8 +788,9 @@ function stoneTunnel(opt){
    overpasses included); where it lies on the ground it is a groove (see buildGround) ---- */
 const BRIDGE = {pillar:0.12, rampPillar:0.1};
 function buildRoadDeck(add, L){
-  const R = L.ROAD, runs = []; let cur = null;
-  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break; const on = terrain === 'bridge' || R.P[i*3+1] > GD - 0.06;
+  const R = L.ROAD, runs = [], G = R.gaps || []; let cur = null;
+  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break;
+    const on = (terrain === 'bridge' || R.P[i*3+1] > GD - 0.06) && !G.some(q => R.cum[i] > q.s0 && R.cum[i] < q.s1);   // a gap breaks the deck
     if (on){ if (!cur) runs.push(cur = []); cur.push(i); } else cur = null; }
   // the deck is exactly as wide as the road (its outer face is the road's edge, where the ramps begin)
   const wall = TH.rim, top = TH.line, side = '#' + col(TH.stone).lerp(col(TH.rim), 0.3).getHexString(), edgeF = '#' + col(TH.floor).lerp(col(TH.rim), 0.22).getHexString(), H = C.ROAD_HALF;
@@ -786,6 +808,28 @@ function buildRoadDeck(add, L){
     if (terrain === 'bridge') list.push([q.x, GLOW - 0.05, q.z, t, BRIDGE.pillar]);        // tall slim pillars from the ground far below
     else if (t - GD > 0.3) list.push([q.x, GD - 0.05, q.z, t, 0.2]); });
   return list;
+}
+/* ---- a gap's two ends: a striped edge across the road on both sides; with take-off and landing ramps, a low striped
+   wedge rising to the take-off edge and one falling away from the landing edge ---- */
+const gapStripeTex = canvasTex(128, 16, x => { x.fillStyle = '#2b2b33'; x.fillRect(0, 0, 128, 16); x.fillStyle = '#ffc93c';
+  for (let k = -16; k < 144; k += 16){ x.beginPath(); x.moveTo(k, 16); x.lineTo(k + 8, 16); x.lineTo(k + 16, 0); x.lineTo(k + 8, 0); x.fill(); } });
+gapStripeTex.wrapS = gapStripeTex.wrapT = THREE.RepeatWrapping;
+function buildGapEnds(add, L){
+  const R = L.ROAD, G = R.gaps || []; if (!G.length) return;
+  const o = {}, W = 2*C.ROAD_HALF - 0.08, stripe = new THREE.MeshStandardMaterial({map:gapStripeTex, roughness:0.7});
+  const wedgeMat = [new THREE.MeshStandardMaterial({color:TH.stone, roughness:0.85}), stripe];
+  const at = (s, out) => { C.pathAt(R, s, o, 0); out.set(o.x, o.y, o.z); return Math.atan2(o.dx, o.dz); };
+  for (const q of G) for (const [edge, dir] of [[q.s0, -1], [q.s1, 1]]){      // dir: away from the gap
+    const p = new THREE.Vector3(), yaw = at(edge + dir*0.09, p);
+    const band = new THREE.Mesh(new THREE.PlaneGeometry(W, 0.16).rotateX(-Math.PI/2), stripe);
+    band.position.copy(p).add(new THREE.Vector3(0, 0.012, 0)); band.rotation.y = yaw; band.receiveShadow = true; add(band);
+    if (q.ramp !== 'updown') continue;
+    // a wedge: 0.6 long, its high end (0.13) at the gap's edge; its striped top faces up the slope
+    const Lw = 0.6, Hw = 0.13, sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(Lw, 0); sh.lineTo(Lw, Hw); sh.lineTo(0, 0.005);
+    const g = new THREE.ExtrudeGeometry(sh, {depth:W, bevelEnabled:false}); g.translate(-Lw, 0, -W/2); g.rotateY(-Math.PI/2);   // local +z: toward the gap
+    g.groups.forEach(gr => { gr.materialIndex = gr.materialIndex === 1 ? 0 : 1; });
+    const m = new THREE.Mesh(g, [wedgeMat[1], wedgeMat[0]]); at(edge, m.position);
+    m.position.y += 0.002; m.rotation.y = yaw + (dir < 0 ? 0 : Math.PI); m.castShadow = m.receiveShadow = true; add(m); }
 }
 function addPillars(add, list){
   if (!list.length) return;
@@ -997,7 +1041,7 @@ function buildWorld(L){
   GT = drawnTunnel(L.TUNNEL); rng = C.mulberry32(4242);
   const R = L.ROAD, E = L.exit, F = grooveFeatures(L);
   buildGround(add, L, F);
-  const pillars = buildRoadDeck(add, L);
+  const pillars = buildRoadDeck(add, L); buildGapEnds(add, L);
   const bayGlow = Y.BAY_X.map(bx => { const b = bayRect(bx);
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2*b.hw - 0.04, 2*b.hl - 0.04).rotateX(-Math.PI/2),
       new THREE.MeshBasicMaterial({color:'#ffffff', transparent:true, opacity:0, depthWrite:false}));
@@ -1240,8 +1284,9 @@ const _v2 = new THREE.Vector3();
 function skPathOf(v){
   const b = v.b;
   if (b.state === 'road'){ const R = L.ROAD, o = {};
+    const jk = v.jk || 0;                             // over a gap: the straight line of the jump's slope through the bus's centre
     return {key:'road', at:b.rs, q:(a, out) => { const e = a < 0 ? a : a > R.len ? a - R.len : 0; C.pathAt(R, clamp(a, 0, R.len), o, 0);
-      out.set(o.x + o.dx*e, o.y, o.z + o.dz*e); const hl = Math.hypot(1, o.slope || 0); out.tx = o.dx/hl; out.tz = o.dz/hl; out.ty = (o.slope || 0)/hl; return out; }}; }
+      const sl = (o.slope || 0) + jk; out.set(o.x + o.dx*e, o.y + jk*(a - b.rs), o.z + o.dz*e); const hl = Math.hypot(1, sl); out.tx = o.dx/hl; out.tz = o.dz/hl; out.ty = sl/hl; return out; }}; }
   if (!b.trip) return null;
   if (!v.skPath || v.skPath.seq !== b.trip.seq || v.skPath.view !== view){   // the trip as drawn: sampled, mapped, measured once
     const P = b.trip.path, o = {}, pts = [], N = Math.max(2, Math.ceil(P.len/0.05));
@@ -1268,8 +1313,9 @@ function jellyUpdate(v, vdt){
     v.root.updateMatrixWorld(true); _skInv.copy(v.body.matrixWorld).invert();
     const k = v.root.scale.x, c0 = path.q(path.at, _skA).clone();
     for (let i = 0; i < JL_N; i++){ const zl = Z[i], q = path.q(path.at + zl*k, _skB), tx = q.tx, ty = q.ty, tz = q.tz;
-      _skT.set(v.p.x + q.x - c0.x, v.p.y + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
-      _v2.set(v.p.x + q.x - c0.x + tx, v.p.y + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
+      const py = v.p.y + (v.lift || 0);
+      _skT.set(v.p.x + q.x - c0.x, py + q.y - c0.y, v.p.z + q.z - c0.z).applyMatrix4(_skInv);
+      _v2.set(v.p.x + q.x - c0.x + tx, py + q.y - c0.y + ty, v.p.z + q.z - c0.z + tz).applyMatrix4(_skInv).sub(_skT);
       const yaw = angDiff(Math.atan2(_v2.x, _v2.z), 0), pit = -Math.atan2(_v2.y, Math.hypot(_v2.x, _v2.z)), T = S.tgt[i];
       T[0] = _skT.x; T[1] = _skT.y; T[2] = _skT.z - zl; T[3] = yaw; T[4] = pit; }
   } else S.tgt.forEach(T => T.fill(0));
@@ -1902,6 +1948,14 @@ function updateStagger(){
     const gap = Math.abs(nb.z - b.z) - (nb.len + b.len)/2, lim = Math.max(0, (gap - 0.04)/2);
     STAG.set(id, Math.sign(st)*Math.min(Math.abs(st), lim)); }
 }
+/* a road bus jumping a gap: one arc from just before the gap to just after it (its rear clear of the landing edge),
+   higher for a longer jump and off a take-off ramp: its height above the road `y`, its slope `k` (dy/ds) and progress `u` */
+function gapLift(b){
+  for (const G of L.ROAD.gaps || []){ const m = b.len*0.45, c0 = G.s0 - m, c1 = G.s1 + m; if (b.rs <= c0 || b.rs >= c1) continue;
+    const w = c1 - c0, u = (b.rs - c0)/w, H = 0.1 + 0.16*w + (G.ramp === 'updown' ? 0.1 : 0);
+    return {y:H*4*u*(1 - u), k:H*4*(1 - 2*u)/w, u, G}; }
+  return null;
+}
 function busTarget(b){                              // where the bus is drawn + velocity, which the render springs chase
   const st = (b.state === 'lane' || b.state === 'bay') ? STAG.get(b.id) || 0 : 0, bx = b.x + b.dx*st, bz = b.z + b.dz*st;
   const [x, z] = C.dispPoint(bx, bz), sx = C.dispSx(b.z), sz = C.dispSlope(b.z);
@@ -1942,10 +1996,16 @@ function updateBus(v, t, vdt){
     v.h += angDiff(hT, v.h)*(1 - Math.exp(-vdt*16));
   }
   v.root.visible = true;
-  v.root.position.copy(v.p); v.root.rotation.y = v.h;
+  // a gap: the bus flies its arc (lift and pitch on top of the road), a little hop at take-off, a squash on landing
+  const J = b.state === 'road' ? gapLift(b) : null;
+  v.lift = J ? J.y : 0; v.jk = J ? J.k : 0;
+  if (vdt > 0 && !!J !== !!v.inJump){ if (J) v.bobV += 0.16;
+    else { v.bobV -= 0.5; v.pitchV += 1.4; sfx.thud(); if (dark < 0.2) puff(new THREE.Vector3(v.p.x, v.p.y + 0.05, v.p.z), 6, [Math.sin(v.h), Math.cos(v.h)], 0.5, 0.6); } }
+  v.inJump = !!J;
+  v.root.position.copy(v.p); v.root.position.y += v.lift; v.root.rotation.y = v.h;
   v.root.scale.setScalar(C.BUS_DRAW*C.dispScale(b.z));   // 10% smaller than simulated; the buses behind a lane's front bus smaller still
   updateTapRing(v, t, vdt);
-  v.slope.rotation.x += (-Math.atan(b.slope) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*10) : 1);
+  v.slope.rotation.x += (-Math.atan(b.slope + v.jk) - v.slope.rotation.x)*(vdt > 0 ? 1 - Math.exp(-vdt*(J ? 18 : 10)) : 1);
   if (vdt > 0){
     const fwd = v.pv.x*Math.sin(v.h) + v.pv.z*Math.cos(v.h), spd = Math.max(0, fwd);
     const aInst = (spd - v.spd)/vdt; v.aLong += (aInst - v.aLong)*(1 - Math.exp(-vdt*14));
@@ -1979,7 +2039,7 @@ function updateBus(v, t, vdt){
   const pop = t - v.revealT < 0.5 ? easeOutBack(clamp((t - v.revealT)/0.5, 0, 1), 3) : 1;
   v.body.position.set(px, py, pz); v.body.scale.set(1, pop, 1);
   v.body.rotation.set(v.pitch + extraPitch, 0, v.roll);
-  v.shadow.visible = true; v.shadow.material.opacity = 0.42*(1 - dark);
+  v.shadow.visible = v.lift < 0.03; v.shadow.material.opacity = 0.42*(1 - dark);
   v.brakeMat.emissiveIntensity = 0.15 + v.brakeAmt*2.6;
   v.bGlow.forEach(s => { s.material.opacity = v.brakeAmt*0.95*(1 - dark); });
   const fl = t - v.flashT, flashing = fl > 0 && fl < 0.62 && (fl % 0.31) < 0.16;
@@ -2615,7 +2675,10 @@ window.__me = {
   get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
-  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; }, SPEEDS,
+  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; },
+  groundAt(x, z){ const rc = new THREE.Raycaster(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0)); rc.camera = camera; const hit = rc.intersectObject(world, true)
+    .find(h => { if (h.object.isSprite) return false; for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
+    return hit ? hit.point.y : null; },   // the height of the first surface straight down at (x, z) (buses and stickmen aside) SPEEDS,
   jellyFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames and wheels in the world, front to back
     const at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);
       const p = new THREE.Vector3().setFromMatrixPosition(m.premultiply(v.body.matrixWorld)); return [p.x, p.y, p.z]; };

@@ -3,6 +3,8 @@
 // heading up) drawn to climb through the whole target zone, with the exit tunnel at its top.  Ramp requests as there:
 // c columns x r rows, a shape kind (perp, diag a, arc a/b, L b, tilt, fan sp), the side of the road and the spot f along it.
 //   from: a demo level whose stickmen, blockers and buses are kept (only the road and the ramps' places are new)
+//   gaps: cuts in the road, each put on the clean stretch (no warning: clear of boarding points, spirals, the road's ends
+//         and each other) nearest to the spot `near` along the road
 //   target: the difficulty label the content is tuned to (random-bot win rate: Easy > 45%, Medium 15-45%, Hard 5-15%,
 //           Very Hard < 5%); levels without one aim at Medium
 const F = l => ['F', l], L = (d, r) => ['L', d, r], R = (d, r) => ['R', d, r], S = (r, side) => ['S', r, side];
@@ -26,6 +28,7 @@ const ROADS = {
 // the roads with a spiral (most levels use one; a few Layouts keep a road without)
 const SPIRAL_ROADS = ['spiral', 'gspiral', 'sspiral', 'spiralLow', 'spiralHi', 'zspiral', 'dspiral', 'dspiral2', 'dspiralW'];
 const P = (side, f, c, r, kind = 'perp', o = {}) => Object.assign({c, r, kind, side, f}, o);
+const G = (len, ramp, near) => ({len, ramp, near});
 module.exports = {ROADS, SPIRAL_ROADS, SPECS:[
   // ---------------- Basics: the same idea at four difficulties ----------------
   {id:'basics-easy', cat:'Basics', name:'Easy', target:'Easy', lanes:3, colors:3, sizes:[8], road:'gspiral',
@@ -79,4 +82,15 @@ module.exports = {ROADS, SPIRAL_ROADS, SPECS:[
    ramps:[P(1, 0.1, 6, 5), P(-1, 0.3, 6, 5), P(1, 0.5, 6, 5), P(-1, 0.7, 6, 5), P(1, 0.9, 6, 4)]},
   {id:'lanes-5', cat:'Layouts', group:'Lane counts', name:'5 lanes', lanes:5, colors:7, sizes:[4, 6, 8, 12], road:'spiralHi',
    ramps:[P(1, 0.1, 6, 6), P(-1, 0.3, 6, 6), P(1, 0.5, 6, 6), P(-1, 0.7, 6, 6), P(1, 0.9, 6, 4)]},
+  // ---------------- Jumps: the road cut by gaps (gaps: length, ends, the spot along the road it should be nearest) ----------------
+  {id:'jump-first', cat:'Jumps', name:'First jump', target:'Easy', lanes:3, colors:4, sizes:[6, 8], road:'gentle',
+   ramps:[P(-1, 0.12, 5, 4), P(1, 0.3, 5, 4), P(-1, 0.8, 5, 4), P(1, 0.94, 5, 4)], gaps:[G(1.0, 'flat', 0.55)]},
+  {id:'jump-ramps', cat:'Jumps', name:'Take-off ramps', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'scurve',
+   ramps:[P(1, 0.1, 6, 4), P(-1, 0.28, 6, 4), P(1, 0.78, 6, 5), P(-1, 0.93, 6, 4)], gaps:[G(1.6, 'updown', 0.52)]},
+  {id:'jump-double', cat:'Jumps', name:'Two gaps', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'hairpin',
+   ramps:[P(-1, 0.08, 6, 4), P(1, 0.46, 6, 4), P(-1, 0.6, 6, 4), P(1, 0.92, 6, 4)], gaps:[G(1.2, 'flat', 0.27), G(1.8, 'updown', 0.77)]},
+  {id:'jump-long', cat:'Jumps', name:'Long jump', lanes:3, colors:6, sizes:[4, 6, 8, 12], road:'zigzag', blockers:{link:'pairs'}, trapMax:6,
+   ramps:[P(1, 0.08, 6, 5), P(-1, 0.24, 6, 5), P(1, 0.76, 6, 5), P(-1, 0.92, 6, 4)], gaps:[G(2.4, 'updown', 0.5)]},
+  {id:'jump-spiral', cat:'Jumps', name:'Spiral and gap', lanes:4, colors:6, sizes:[4, 6, 8, 12], road:'zspiral', trapMax:6,
+   ramps:[P(1, 0.1, 6, 5), P(-1, 0.24, 6, 5), P(1, 0.68, 4, 6), P(-1, 0.95, 4, 6)], gaps:[G(1.2, 'updown', 0.82)]},
 ]};

@@ -68,6 +68,21 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Jumps",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "jump-first",
+            "jump-ramps",
+            "jump-double",
+            "jump-long",
+            "jump-spiral"
+          ]
+        }
+      ]
     }
   ]
 }

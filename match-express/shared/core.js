@@ -965,6 +965,9 @@ const MAN_W = 0.31;                                 // a stickman's width (its h
 /* a level's stickman size (`manScale`, 1 when omitted): its ramps' grid spacing, margins and apron grow with it, so
    larger stickmen never overlap; seated in a bus they stay at most SEAT_SCALE_MAX (two seat rows are ROW_PITCH apart) */
 const MAN_SCALE_MAX = 1.3, SEAT_SCALE_MAX = 1.08;
+/* road gaps: a bus speeds up (GAP_BOOST) over the last GAP_RUNUP before a gap and across it, and jumps it (drawn); it takes
+   off only when the bus ahead has cleared the landing side by its own length, so it never has to stop in the air */
+const GAP_LEN = [0.6, 2.4], GAP_EASE = 0.9, GAP_BOOST = 1.35, GAP_RUNUP = 1.6;
 
 /* ============================= HELPERS ============================== */
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a);
@@ -1051,6 +1054,10 @@ function normalizeLevel(lv){
   if (!Array.isArray(lv.ramps) || !Array.isArray(lv.lanes)) throw new Error('level needs "ramps" and "lanes"');
   const road = lv.road && Array.isArray(lv.road.points) && lv.road.points.length >= 3 ? clone(lv.road) : clone(LEVEL_DATA.road);
   road.points.forEach(p => { p.x = +p.x; p.z = +p.z; });
+  // gaps: the road cut at arc length `at` for `len` (GAP_LEN), flat or with a take-off ramp and a landing ramp
+  const gaps = (Array.isArray(road.gaps) ? road.gaps : []).filter(q => q && isFinite(+q.at)).map(q => ({at:+q.at, len:clamp(+q.len || 1.2, GAP_LEN[0], GAP_LEN[1]), ramp:q.ramp === 'updown' ? 'updown' : 'flat'}))
+    .sort((a, b) => a.at - b.at);
+  if (gaps.length) road.gaps = gaps; else delete road.gaps;
   const out = {format:2, name: lv.name || 'Untitled level', seed: lv.seed, road, ramps:[], lanes:[]};
   if (lv.id != null && String(lv.id).trim()) out.id = String(lv.id).trim();
   if (lv.yard === 'classic') out.yard = 'classic';     // omitted = the default compact yard
@@ -1129,7 +1136,18 @@ function buildRoad(road){
   if (Array.isArray(road.tail)) cps.push(road.tail.slice());
   else { const q = cps[cps.length-2], l = Math.hypot(last[0]-q[0], last[2]-q[2]) || 1;
     cps.push([last[0] + (last[0]-q[0])/l*2.1, last[1], last[2] + (last[2]-q[2])/l*2.1]); }
-  const {pts: dense, cpIdx} = catmullRom(cps, 28), path = makePath(dense);
+  const {pts: dense, cpIdx} = catmullRom(cps, 28); let path = makePath(dense);
+  // a gap's two ends stand at the same height: across it the road is level, easing in and out over GAP_EASE
+  const gaps = (road.gaps || []).map(q => ({at:q.at, len:q.len, ramp:q.ramp, s0:q.at - q.len/2, s1:q.at + q.len/2}));
+  if (gaps.length){ const yAt = sv => { const o = {}; pathAt(path, sv, o, 0); return o.y; };
+    const Y = gaps.map(G => { const y0 = yAt(G.s0 - GAP_EASE), y1 = yAt(G.s1 + GAP_EASE); return {G, y0, y1, yc:(y0 + y1)/2}; });
+    dense.forEach((q, i) => { const sv = path.cum[i];
+      for (const {G, y0, y1, yc} of Y){
+        if (sv >= G.s0 && sv <= G.s1) q[1] = yc;
+        else if (sv > G.s0 - GAP_EASE && sv < G.s0) q[1] = y0 + (yc - y0)*smooth01(G.s0 - GAP_EASE, G.s0, sv);
+        else if (sv > G.s1 && sv < G.s1 + GAP_EASE) q[1] = yc + (y1 - yc)*smooth01(G.s1, G.s1 + GAP_EASE, sv); } });
+    path = makePath(dense); }
+  path.gaps = gaps;
   path.cpS = cpIdx.map(i => path.cum[i]);
   path.pointS = map.map(m => path.cpS[m]);          // arc length at each editable control point
   path.portalS = path.pointS[pts.length - 1];
@@ -1245,6 +1263,7 @@ function pillarSpots(ROAD){
     pathAt(ROAD, s, o, 0);
     let blocked = false;                            // never through a lower part of the road (spiral overpass)
     for (let i=0;i<ROAD.n;i+=2) if (Math.abs(ROAD.cum[i] - s) > 3 && P[i*3+1] < o.y - 0.4 && Math.hypot(P[i*3]-o.x, P[i*3+2]-o.z) < 1.05){ blocked = true; break; }
+    if ((ROAD.gaps || []).some(q => s > q.s0 - 0.4 && s < q.s1 + 0.4)) blocked = true;   // nothing under a gap
     if (!blocked) out.push({s, x:o.x, y:o.y, z:o.z});
   }
   return out;
@@ -1759,6 +1778,18 @@ function stepTimers(g){
       if (!B.open){ openBoxIn(g, ramp, B, true); emit(g, 'unlock', {ramp:lk.ramp, box:B.i, how:'fallback', bus:T.bus, lock:T.lock}); boxOpened(g, ramp); } }
   }
 }
+/* gaps: the top speed of buses (a group: any member) running up to a gap or over it */
+function gapVmax(ROAD, ms){
+  for (const G of ROAD.gaps || []) for (const m of ms) if (m.rs + m.len/2 >= G.s0 - GAP_RUNUP && m.rs - m.len/2 <= G.s1) return BUS_SPEED*GAP_BOOST;
+  return BUS_SPEED;
+}
+/* the furthest a bus (or a group, head to tail) may go before the next gap it has not reached: up to its edge, unless the
+   bus ahead has cleared the landing side by the whole length behind (its rear past the gap's end by that much) */
+function gapHold(ROAD, head, tail, lead){
+  const front = head.rs + head.len/2, G = (ROAD.gaps || []).find(q => front <= q.s0 + 1e-6); if (!G || !lead) return Infinity;
+  const extent = head.rs + head.len/2 - (tail.rs - tail.len/2);
+  return lead.rs - lead.len/2 >= G.s1 + extent + ROAD_GAP ? Infinity : G.s0 - head.len/2;
+}
 function stepRoad(g, dt){
   const R = g.road;
   for (let i=0;i<R.length;i++){
@@ -1770,12 +1801,13 @@ function stepRoad(g, dt){
       if (b.board){ b.v = 0; continue; }
     }
     const lead = i > 0 ? R[i-1] : null;
-    const sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
+    let sLimit = lead ? lead.rs - lead.len/2 - b.len/2 - ROAD_GAP : Infinity;
+    sLimit = Math.min(sLimit, gapHold(g.L.ROAD, b, b, lead));
     const RAMPS = g.L.RAMPS, k0 = b.nextRamp, bk0 = k0 < RAMPS.length ? RAMPS[k0].s : Infinity;
     let stopS = Infinity;
     for (let k = k0; k < RAMPS.length && RAMPS[k].s <= bk0 + 1e-6; k++)    // the next boarding point (two ramps can share it)
       if (bk0 - b.rs < 4 && bk0 >= b.rs - 1e-6 && frontMatch(g, k, b.color)){ stopS = bk0; break; }
-    let vt = Math.min(BUS_SPEED, Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
+    let vt = Math.min(gapVmax(g.L.ROAD, [b]), Math.sqrt(2*SOFT_BRAKE*Math.max(0, stopS - b.rs)),
                       Math.sqrt(2*HARD_BRAKE*Math.max(0, sLimit - b.rs)));
     b.v = vt > b.v ? Math.min(vt, b.v + ACCEL*dt) : vt;
     let ns = Math.min(b.rs + b.v*dt, Math.max(b.rs, sLimit), stopS), boarded = false;
@@ -1816,9 +1848,10 @@ function stepGroup(g, grp, i, dt){
   for (const m of ms) if (m.board){ stepBoarding(g, m); if (grp.jumped) return i - 1; if (m.board) busy = true; }
   if (busy){ ms.forEach(m => { m.v = 0; }); return j; }
   const head = ms[0], tail = ms[ms.length - 1];
-  let allow = Infinity, vt = BUS_SPEED;
+  let allow = Infinity, vt = gapVmax(g.L.ROAD, ms);
   const limit = (d, brake) => { allow = Math.min(allow, Math.max(0, d)); vt = Math.min(vt, Math.sqrt(2*brake*Math.max(0, d))); };
   if (lead) limit(lead.rs - lead.len/2 - head.len/2 - ROAD_GAP - head.rs, HARD_BRAKE);
+  { const h = gapHold(g.L.ROAD, head, tail, lead); if (h < Infinity) limit(h - head.rs, SOFT_BRAKE); }
   const nextId = grp.members[grp.members.indexOf(tail.id) + 1];
   if (nextId != null && g.buses[nextId].state === 'toRoad'){ const nb = g.buses[nextId]; limit(tail.len/2 + nb.len/2 + ROAD_GAP + 1e-6 - tail.rs, SOFT_BRAKE); }   // just past the merge gap
   for (const m of ms){ if (isFull(m) || m.rs >= END) continue;
@@ -2133,6 +2166,21 @@ function queueDeadlock(N){
   }
   return left > 0;
 }
+/* road gaps: clear of the road's ends, of spirals and of each other; no boarding point on a gap, nor where a bus (or the
+   longest connected group) landing after it would still be over it when it stops; no ramp beside a gap */
+function gapWarnings(L, N){
+  const W = [], R = L.ROAD, G = R.gaps || []; if (!G.length) return W;
+  let ext = busLen(12);                             // the longest thing that may land: a 12-seat bus, or a connected group
+  for (const grp of linkGroups(N)) ext = Math.max(ext, grp.members.reduce((a, m) => a + busLen(N.lanes[m.l][m.i].cap), 0) + (grp.members.length - 1)*ROAD_GAP);
+  G.forEach((q, i) => { const o = {}; pathAt(R, q.at, o, 0); const at = {x:o.x, z:o.z, gap:i}, label = 'Gap ' + (i + 1);
+    if (q.s0 < 2.5 || q.s1 > R.portalS - 2) W.push(Object.assign({kind:'gap-ends', msg:label + ' is too near the start or the end of the road'}, at));
+    if (inSpiral(R, q.at, q.len/2 + 1)) W.push(Object.assign({kind:'gap-spiral', msg:label + ' is on a spiral'}, at));
+    if (i && q.s0 - G[i - 1].s1 < 3) W.push(Object.assign({kind:'gap-gap', msg:label + ' is too close to gap ' + i}, at));
+    for (const r of L.RAMPS){ const a = r.edge.sAt(-r.halfW), b = r.edge.sAt(r.halfW), lo = Math.min(a, b), hi = Math.max(a, b);
+      if ((r.s > q.s0 - busLen(12)/2 - 0.2 && r.s < q.s1 + ext + 0.3) || (hi > q.s0 - 0.2 && lo < q.s1 + 0.2))
+        W.push({kind:'gap-ramp', msg:'Ramp ' + (r.src + 1) + ' is on gap ' + (i + 1) + ' (or too close after it for a bus to land and stop): move it along the road', x:r.x, z:r.z, ramp:r.src, gap:i}); } });
+  return W;
+}
 function checkLevel(level){
   const N = normalizeLevel(level), L = buildLayout(N);
   const men = {}, seats = {}, hiddenMen = {n:0}, sizes = {4:0, 6:0, 8:0, 12:0};
@@ -2141,7 +2189,7 @@ function checkLevel(level){
   N.ramps.forEach(r => (r.tunnels || []).forEach(t => { men[t.color] += t.count; }));      // a tunnel's stickmen count too
   let buses = 0; N.lanes.forEach(l => l.forEach(b => { seats[b.color] += b.cap; buses++; sizes[b.cap]++; }));
   const perColor = COLORS.map(c => ({color:c, men:men[c], seats:seats[c], ok:men[c] === seats[c]}));
-  const warnings = [...roadWarnings(L), ...rampWarnings(L)];
+  const warnings = [...roadWarnings(L), ...rampWarnings(L), ...gapWarnings(L, N)];
   // ramp blockers: inside the ramp, one per column, tunnels on empty cells with a cell in front
   const locks = {};
   N.ramps.forEach((r, ri) => {
@@ -2266,7 +2314,7 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, MAN_SCALE_MAX, SEAT_SCALE_MAX, autoManScale, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, MAN_SCALE_MAX, SEAT_SCALE_MAX, autoManScale, GAP_LEN, GAP_EASE, GAP_BOOST, GAP_RUNUP, gapVmax, gapHold, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
   get VIEW(){ return VIEW; }, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,

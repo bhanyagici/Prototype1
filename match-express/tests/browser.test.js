@@ -371,6 +371,61 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(await p.evaluate(() => __me.terrain) === 'bridge', 'the terrain setting is remembered');
       await ctx.close(); }
 
+    /* ---------------- road gaps: buses jump them; the editor's cut tool ---------------- */
+    console.log('jumps');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      const JL = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'showcase', 'jump-ramps.json'), 'utf8'));
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const play = (lv, move, terr) => p.evaluate(([lv, move, terr]) => {
+        const C = window.MECore; __me.setMove(move); __me.setTerrain(terr); __me.loadLevel(lv, 'export'); __me.freeze(true);
+        const g = __me.game, R = __me.layout.ROAD, G = R.gaps, o = {}, res = {lift:0, below:0, takeoffs:0, landings:0, squash:0, ravine:[], GD:__me.GD};
+        // looking straight down into the middle of each gap: nothing of the road there, only the ravine or the ground far below
+        for (const q of G){ C.pathAt(R, q.at, o, 0); res.ravine.push(__me.groundAt(o.x, o.z)); }
+        const was = new Map(), dip = new Map();
+        for (let step = 0; step < 60*240 && !g.result; step++){
+          if (step % 24 === 0){ const a = C.greedyPick(g); if (a) __me.tap(a); }
+          __me.advance(1/60);
+          for (const v of __me.views){ const b = v.b; if (b.state !== 'road' || !v.root.visible) continue;
+            C.pathAt(R, b.rs, o, 0); const over = G.some(q => b.rs > q.s0 && b.rs < q.s1), lift = v.root.position.y - o.y;
+            if (over){ res.lift = Math.max(res.lift, lift); if (lift < 0.05) res.below++; }
+            const inJ = !!v.inJump, w = was.get(b.id) || false;
+            if (inJ && !w) res.takeoffs++; if (!inJ && w){ res.landings++; dip.set(b.id, {n:30, min:0}); }
+            was.set(b.id, inJ); }
+          // a landing: the body dips (squashes) within half a second
+          for (const [id, d] of dip){ d.min = Math.min(d.min, __me.views[id].bob); if (--d.n <= 0){ if (d.min < -0.015) res.squash++; dip.delete(id); } } }
+        res.result = g.result; return res; }, [lv, move, terr]);
+      for (const [move, terr] of [['rigid', 'plateau'], ['jelly', 'bridge']]){
+        const r = await play(JL, move, terr);
+        chk(r.takeoffs >= 6 && r.landings >= 6 && r.below === 0 && r.lift > 0.3, `jumps (${move}, ${terr}): every bus over a gap is in the air above it, high in the middle of its arc`,
+          `${r.takeoffs} take-offs, ${r.landings} landings, highest ${r.lift.toFixed(2)}, ${r.below} frames low over a gap`);
+        chk(r.squash === r.landings, `jumps (${move}, ${terr}): every landing squashes the bus`, `${r.squash} of ${r.landings}`);
+        chk(r.ravine.length && r.ravine.every(y => y != null && y < r.GD - 1), `jumps (${move}, ${terr}): the road is cut at the gap (looking down, the ravine or the ground far below)`, JSON.stringify(r.ravine));
+      }
+      await ctx.close(); }
+    { const ctx = await newCtx({width:1440, height:900}), ed = await ctx.newPage(); watch(ed);
+      await ed.goto(base + '/editor.html'); await ed.waitForFunction(() => window.__ed, null, {timeout:60000});
+      const JL = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'showcase', 'jump-ramps.json'), 'utf8'));
+      const toScreen = s => ed.evaluate(s => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, s, o, 0); const r = document.getElementById('view').getBoundingClientRect(), [x, y] = __ed.W2S(o.x, o.z); return [r.left + x, r.top + y]; }, s);
+      await ed.evaluate(lv => { delete lv.road.gaps; __ed.setLevel(lv); __ed.fitView(); __ed.setTool('gap'); }, JL);
+      const at = JL.road.gaps ? JL.road.gaps[0].at : 11.5; let [mx, my] = await toScreen(at); await ed.mouse.click(mx, my);
+      const a = await ed.evaluate(() => ({gaps:(__ed.level.road.gaps || []).length, sel:__ed.sel.kind, warn:__ed.check.warnings.length, insp:document.getElementById('insp').innerText}));
+      chk(a.gaps === 1 && a.sel === 'gap' && /Gap 1/.test(a.insp), 'editor: the cut tool (G) cuts the road where it is clicked and selects the new gap', JSON.stringify(a).slice(0, 120));
+      await ed.evaluate(() => document.querySelector('#insp [data-a="len+"]').click()); await ed.evaluate(() => document.querySelector('#insp [data-a="updown"]').click());
+      const b = await ed.evaluate(() => __ed.level.road.gaps[0]);
+      chk(Math.abs(b.len - 1.4) < 1e-9 && b.ramp === 'updown', 'editor: the inspector sets the gap\'s length and its ends (take-off and landing ramps)', JSON.stringify(b));
+      [mx, my] = await toScreen(b.at); const [tx, ty] = await toScreen(b.at + 0.6);
+      await ed.mouse.move(mx, my); await ed.mouse.down(); await ed.mouse.move(tx, ty, {steps:6}); await ed.mouse.up();
+      const c = await ed.evaluate(() => __ed.level.road.gaps[0].at);
+      chk(Math.abs(c - b.at - 0.6) < 0.15, 'editor: dragging a gap slides it along the road', `${b.at} -> ${c}`);
+      // a road edit keeps the gap where it is on the ground
+      const d = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}, g = __ed.level.road.gaps[0]; window.MECore.pathAt(R, g.at, o, 0); const before = [o.x, o.z];
+        __ed.roadEdit(n => { n.road.points[1].x += 0.3; }); const R2 = __ed.layout.ROAD, o2 = {}; window.MECore.pathAt(R2, __ed.level.road.gaps[0].at, o2, 0);
+        return Math.hypot(o2.x - before[0], o2.z - before[1]); });
+      chk(d < 0.1, 'editor: a road edit keeps the gap where it is on the ground', d.toFixed(3));
+      await ed.keyboard.press('Escape'); [mx, my] = await toScreen(await ed.evaluate(() => __ed.level.road.gaps[0].at)); await ed.mouse.click(mx, my); await ed.keyboard.press('Delete');
+      chk(await ed.evaluate(() => !(__ed.level.road.gaps || []).length), 'editor: Delete removes the selected gap');
+      await ctx.close(); }
+
     /* ---------------- editor: layout, preview, independence ---------------- */
     console.log('editor');
     const ctx = await newCtx({width:1440, height:900});
