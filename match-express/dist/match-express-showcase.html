@@ -162,6 +162,7 @@
     color:#fff;background:rgba(10,40,100,.32);box-shadow:none;cursor:pointer}
   .seg button.on{background:linear-gradient(#ffe36e,#ffb21f);color:#5a3500;border-color:#fff4c2;box-shadow:0 5px 0 #b5650a}
   .seg button i{display:inline-block;width:22px;height:22px;border-radius:50%;margin-right:8px;vertical-align:-3px;border:3px solid #fff}
+  #segSpeed button{min-width:92px;padding:12px 4px;font-size:25px}
   #setPanel .row{margin-top:30px}
   /* ---- tutorials: a pointing hand, a tip, a short hint; intro popups for new blockers ---- */
   #hand{left:0;top:0;width:130px;height:160px;display:none;pointer-events:none;z-index:8}
@@ -4896,8 +4897,8 @@ app.addEventListener('pointerdown', e => {
 });
 const busOfAction = a => game.buses[a.kind === 'lane' ? game.lanes[a.idx][0] : game.bays[a.idx]];
 function setBot(on){ botOn = on; botT = 0; $('botTag').style.display = botOn ? 'block' : 'none'; }
-/* game speed: 1x, 1.25x, 1.5x, 1.75x or 2x (the button steps through them); the whole game and every animation run at it */
-const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
+/* game speed: 1x to 3x in steps of 0.25 (the button steps through them); the whole game and every animation run at it */
+const SPEEDS = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3];
 function setSpeed(s, save){
   if (!SPEEDS.includes(s)) s = 1;
   timeScale = s; const b = $('btnSpeed'); b.textContent = s + 'x'; b.classList.toggle('on', s > 1); b.classList.toggle('long', String(s).length > 2);
@@ -4963,7 +4964,7 @@ function effectiveScale(){
 let last = performance.now(), acc = 0, frozen = false;
 function pump(dt){                                    // advance by `dt` real seconds through the time scale
   const gdt = dt*effectiveScale();
-  if (!frozen && !held()){ acc += gdt; let n = 0; while (acc >= FIXED && n < 14){ tick(); acc -= FIXED; n++; } if (n === 14) acc = 0; }
+  if (!frozen && !held()){ acc += gdt; let n = 0; while (acc >= FIXED && n < 20){ tick(); acc -= FIXED; n++; } if (n === 20) acc = 0; }
   updateScene(frozen || held() ? 0 : gdt);
   updateHum();
 }

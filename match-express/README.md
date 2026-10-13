@@ -471,8 +471,10 @@ checker's rules are the same as before. The 40-level funnel was not retuned or r
 - **Faster to draw:** the ground keeps fine cells only where a groove's edge bends it;
   level stretches are single quads. Triangles drawn fell from 480k to 220k.
 
-### Speed: 1x, 1.25x, 1.5x, 1.75x, 2x
-- The speed button in the top bar steps through 1x → 1.25x → 1.5x → 1.75x → 2x → 1x.
+### Speed: 1x to 3x
+- The speed button in the top bar steps through 1x → 1.25x → 1.5x → 1.75x → 2x → 2.25x →
+  2.5x → 2.75x → 3x → 1x; the settings panel lists all nine.
+- At 3x the fixed-step core still takes every step, even on a slow frame (up to 20 steps a frame).
 - It shows the current speed and is highlighted above 1x.
 - One global time scale drives the fixed-step core and every animation, so the whole
   game runs at that speed.
@@ -1432,7 +1434,7 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
 node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
                               #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
                               #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
-node tests/browser.test.js    # 130 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/browser.test.js    # 130 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

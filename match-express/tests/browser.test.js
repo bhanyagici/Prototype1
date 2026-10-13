@@ -48,16 +48,16 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         chk(seen.join(' ') === '1/5 2/5 3/5 4/5 5/5', 'each tap on a queue bus sends it to the road; the counter sign counts it at once', seen.join(' '));
         chk(st6.cnt === '5/5' && st6.front && st6.shook && !st6.parked && !st6.result, 'at 5/5 a tapped queue bus shakes and stays: no bay, no fail', JSON.stringify(st6));
         await p.evaluate(() => __me.restart()); }
-      // speeds 1x, 1.25x, 1.5x, 1.75x, 2x through one global time scale: the button steps through them and shows the current one
+      // speeds 1x to 3x in steps of 0.25 through one global time scale: the button steps through them and shows the current one
       const r1 = await p.evaluate(() => { __me.setSpeed(1); const t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60); return __me.game.t - t0; });
       const steps = [];
-      for (let k = 0; k < 5; k++){
+      for (let k = 0; k < 9; k++){
         await p.click('#btnSpeed');
         steps.push(await p.evaluate(() => { const b = document.getElementById('btnSpeed'), t0 = __me.game.t; for (let i=0;i<30;i++) __me.pump(1/60);
           return {txt:b.textContent, on:b.classList.contains('on'), ts:__me.timeScale, dt:__me.game.t - t0, saved:window.MESync.loadPrefs().speed}; }));
       }
-      chk(steps.map(x => x.txt).join(' ') === '1.25x 1.5x 1.75x 2x 1x' && steps.every(x => x.on === (x.ts > 1) && x.saved === x.ts),
-        'the speed button steps 1x -> 1.25x -> 1.5x -> 1.75x -> 2x -> 1x, shows the current speed (highlighted above 1x) and remembers it', steps.map(x => x.txt).join(' '));
+      chk(steps.map(x => x.txt).join(' ') === '1.25x 1.5x 1.75x 2x 2.25x 2.5x 2.75x 3x 1x' && steps.every(x => x.on === (x.ts > 1) && x.saved === x.ts),
+        'the speed button steps 1x -> 1.25x -> ... -> 2.75x -> 3x -> 1x, shows the current speed (highlighted above 1x) and remembers it', steps.map(x => x.txt).join(' '));
       // the camera setting: Perspective / Orthographic from the settings, remembered; the level is redrawn in place
       const cam = await p.evaluate(() => { const g = __me.game, t0 = g.t; document.getElementById('btnCam').click(); __me.pump(1/60); __me.render();
         const a = {ortho:__me.camera.isOrthographicCamera, view:__me.view, txt:document.getElementById('btnCam').textContent, saved:window.MESync.loadPrefs().view, same:__me.game === g};

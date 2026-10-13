@@ -75,7 +75,7 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   await p.click('#segTheme button[data-v="desert"]'); await p.click('#segMove button[data-v="jelly"]'); await p.click('#segCam button[data-v="ortho"]'); await p.click('#segSpeed button[data-v="1.5"]'); await p.click('#segSound button[data-v="off"]');
   const s1 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, view:__me.view, speed:__me.timeScale, muted:__me.muted, on:[...document.querySelectorAll('#setPanel .seg button.on')].map(b => b.dataset.v)}));
   chk(s1.theme === 'desert' && s1.move === 'jelly' && s1.view === 'ortho' && s1.speed === 1.5 && s1.muted && s1.on.join() === 'desert,jelly,ortho,plateau,1.5,off',
-    'theme, bus movement (Rigid / Jelly), camera (Perspective / Orthographic), speed (1x-2x) and sound: set and shown', JSON.stringify(s1));
+    'theme, bus movement (Rigid / Jelly), camera (Perspective / Orthographic), speed (1x-3x) and sound: set and shown', JSON.stringify(s1));
   await p.click('#btnSetClose');
   await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:120000});
   const s2 = await p.evaluate(() => ({theme:__me.theme, move:__me.move, view:__me.view, speed:__me.timeScale, muted:__me.muted, menu:document.getElementById('menuPanel').classList.contains('show')}));
