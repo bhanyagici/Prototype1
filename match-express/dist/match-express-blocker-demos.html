@@ -219,6 +219,7 @@
     <button id="btnTheme" class="spring">Theme</button>
     <button id="btnMove" class="spring">Buses: Rigid</button>
     <button id="btnCam" class="spring">Camera: Perspective</button>
+    <button id="btnTerrain" class="spring">Terrain: Plateau</button>
     <button id="btnBuiltin" class="spring">Play Level 2</button>
     <div id="presetBtns"></div>
     <small id="levelSrc"></small>
@@ -245,6 +246,7 @@
     <div class="srow"><span>Theme</span><div class="seg" id="segTheme"></div></div>
     <div class="srow"><span>Bus movement</span><div class="seg" id="segMove"><button data-v="rigid">Rigid</button><button data-v="jelly">Jelly</button></div></div>
     <div class="srow"><span>Camera</span><div class="seg" id="segCam"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div></div>
+    <div class="srow"><span>Terrain</span><div class="seg" id="segTerrain"><button data-v="plateau">Plateau</button><button data-v="bridge">Bridge</button></div></div>
     <div class="srow"><span>Speed</span><div class="seg" id="segSpeed"></div></div>
     <div class="srow"><span>Sound</span><div class="seg" id="segSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
     <div class="row"><button id="btnSetStats" class="spring">Stats</button><button id="btnSetClose" class="spring">Done</button></div></div></div>
@@ -2627,6 +2629,10 @@ let CAM = C.CAM;
 const perspCam = new THREE.PerspectiveCamera(CAM.fov, DW/DH, 1, 240), OC = C.ORTHO_CAM;
 const orthoCam = new THREE.OrthographicCamera(-OC.halfW, OC.halfW, OC.halfH, -OC.halfH, 1, 240);
 let view = C.setView(['persp', 'ortho'].includes(params.get('cam')) ? params.get('cam') : S.loadPrefs().view === 'ortho' ? 'ortho' : 'persp');
+/* the terrain: Plateau (the whole board stands on a tall plateau) or Bridge (the plateau only under the queue, the bays
+   and the tunnels; the road above them is a bridge high in the air on tall slim pillars, the ramps hang beside it on
+   their own pillars, with the ground far below in view).  Drawn only: every rule is the same */
+let terrain = ['plateau', 'bridge'].includes(params.get('terrain')) ? params.get('terrain') : S.loadPrefs().terrain === 'bridge' ? 'bridge' : 'plateau';
 let camera = view === 'ortho' ? orthoCam : perspCam;
 function applyCamera(cam){ cam = C.VIEW === 'ortho' ? OC : cam; CAM = cam; if (!cam.ortho) camera.fov = cam.fov;
   camera.position.set(...cam.pos); camera.lookAt(...cam.look); camera.updateProjectionMatrix(); }
@@ -2902,13 +2908,14 @@ function boardMask(L, F){
   const inPoly = (P, x, z) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++){ const a = P[i], b = P[j];
     if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0])*(z - a[1])/(b[1] - a[1]) + a[0]) c = !c; } return c; };
   const poly = P => { const xs = P.map(q => q[0]), zs = P.map(q => q[1]); fill(Math.min(...xs), Math.min(...zs), Math.max(...xs), Math.max(...zs), (x, z) => inPoly(P, x, z)); };
-  for (const f of F){
+  const bridge = terrain === 'bridge';
+  for (const f of F){ if (bridge && f.road) continue;              // on a bridge the road has no plateau under it
     if (f.kind === 'line') for (let k = 0; k < f.pts.length; k += 2){ const [px, pz] = f.pts[k], r = f.half;
       fill(px - r, pz - r, px + r, pz + r, (x, z) => Math.hypot(x - px, z - pz) <= r); }
     else fill(f.x0, f.z0, f.x1, f.z1, (x, z) => sdRect(f, x, z) <= 0);
   }
-  L.RAMPS.forEach(r => poly(r.outline));
-  { const E = L.exit, l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l;
+  if (!bridge) L.RAMPS.forEach(r => poly(r.outline));
+  if (!bridge){ const E = L.exit, l = Math.hypot(E.dx, E.dz) || 1, dx = E.dx/l, dz = E.dz/l;
     poly([[-0.8, -1.7], [3.0, -1.7], [3.0, 1.7], [-0.8, 1.7]].map(([f, u]) => [E.x + dx*f - dz*u, E.z + dz*f + dx*u])); }
   { const T = drawnTunnel(L.TUNNEL), nx = T.dx, nz = T.dz, back = TUN.D*0.92*T.k + 0.3, hw = (TUN.Rout + 0.2)*0.92*T.k;
     poly([[0.5, -hw], [-back, -hw], [-back, hw], [0.5, hw]].map(([f, u]) => [T.x + nx*f - nz*u, T.z + nz*f + nx*u])); }   // the return tunnel and its body
@@ -2960,7 +2967,7 @@ function buildGround(add, L, F){
   // the plateau: level board, rounded lip, cliff, ground below (whole blocks of each become single quads)
   for (let j = 0, k = 0; j <= nz; j++) for (let i = 0; i <= nx; i++, k++){ const d = BM.at(GX0 + i*GST, GZ0 + j*GST);
     H[k] = d < -0.4 ? GD : d > BOARD.wall + 0.05 ? GLOW : boardY(d); }
-  for (const f of F){
+  for (const f of F){ if (terrain === 'bridge' && f.road) continue;   // a bridge's road is a deck in the air, no groove
     if (f.kind === 'line'){
       // densify, then carve a disc of the groove's profile at every sample (the min of the profiles = the channel)
       const pts = []; for (let k = 0; k < f.pts.length - 1; k++){ const a = f.pts[k], b = f.pts[k + 1], m = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1])/0.04));
@@ -3041,7 +3048,7 @@ function groundTexture(L, F){
     const shape = (f, grow) => { x.beginPath();
       if (f.kind === 'line'){ f.pts.forEach((p, i) => i ? x.lineTo(X(p[0]), Z(p[1])) : x.moveTo(X(p[0]), Z(p[1]))); x.lineWidth = U(2*(f.half + grow)); }
       else x.roundRect(X(f.x0 - grow), Z(f.z0 - grow), U(f.x1 - f.x0 + 2*grow), U(f.z1 - f.z0 + 2*grow), U(Math.max(0.01, f.r + grow))); };
-    const paint = (f, grow, c) => { if (f.kind === 'line'){ const seg = f.pts.filter(p => p[2] < GD); if (seg.length < 2) return;
+    const paint = (f, grow, c) => { if (f.kind === 'line'){ if (terrain === 'bridge' && f.road) return; const seg = f.pts.filter(p => p[2] < GD); if (seg.length < 2) return;
         // split where the road leaves the ground (a bridge): only grounded stretches are painted
         let run = []; const flush = () => { if (run.length > 1){ shape({kind:'line', pts:run, half:f.half}, grow); x.strokeStyle = c; x.stroke(); } run = []; };
         f.pts.forEach(p => { if (p[2] < GD - 0.02) run.push(p); else flush(); }); flush(); }
@@ -3097,9 +3104,10 @@ function stoneTunnel(opt){
 }
 /* ---- the road where it is raised above the ground: a deck with soft rounded side walls on rounded pillars (spiral
    overpasses included); where it lies on the ground it is a groove (see buildGround) ---- */
+const BRIDGE = {pillar:0.12, rampPillar:0.1};
 function buildRoadDeck(add, L){
   const R = L.ROAD, runs = []; let cur = null;
-  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break; const on = R.P[i*3+1] > GD - 0.06;
+  for (let i = 0; i < R.n; i++){ if (R.cum[i] > R.portalS + 1.6) break; const on = terrain === 'bridge' || R.P[i*3+1] > GD - 0.06;
     if (on){ if (!cur) runs.push(cur = []); cur.push(i); } else cur = null; }
   // the deck is exactly as wide as the road (its outer face is the road's edge, where the ramps begin)
   const wall = TH.rim, top = TH.line, side = '#' + col(TH.stone).lerp(col(TH.rim), 0.3).getHexString(), edgeF = '#' + col(TH.floor).lerp(col(TH.rim), 0.22).getHexString(), H = C.ROAD_HALF;
@@ -3113,7 +3121,9 @@ function buildRoadDeck(add, L){
   if (geos.length){ const deck = new THREE.Mesh(mergeIndexed(geos), new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.85}));
     deck.castShadow = deck.receiveShadow = true; add(deck); }
   // pillars: the core's spots (never through a lower stretch of road), where the deck is high enough above the ground
-  const list = []; L.pillars.forEach(q => { const t = q.y - 0.3; if (t - GD > 0.3) list.push([q.x, GD - 0.05, q.z, t, 0.2]); });
+  const list = []; L.pillars.forEach(q => { const t = q.y - 0.3;
+    if (terrain === 'bridge') list.push([q.x, GLOW - 0.05, q.z, t, BRIDGE.pillar]);        // tall slim pillars from the ground far below
+    else if (t - GD > 0.3) list.push([q.x, GD - 0.05, q.z, t, 0.2]); });
   return list;
 }
 function addPillars(add, list){
@@ -3151,7 +3161,9 @@ function buildRamps(add, L, pillars){
     for (const line of [left, right, back]){ geos.push(extrude(line, RAIL)); for (let k = 0; k < line.length; k += 4) posts.push([line[k][0], y, line[k][2]]); }
     posts.push([left[left.length - 1][0], y, left[left.length - 1][2]], [right[right.length - 1][0], y, right[right.length - 1][2]]);
     // pillars under a raised platform
-    for (const sv of [0.6, r.length*0.55, r.length - 0.4]){ const q = r.across(sv, 0); if (y - 0.22 - GD > 0.25) pillars.push([q.x, GD - 0.05, q.z, y - 0.2, 0.15]); }
+    if (terrain === 'bridge'){ const hw = r.halfW - 0.3;                                     // hanging beside the road on its own pillars
+      for (const sv of [0.5, r.length - 0.4]) for (const u of [-hw, hw]){ const q = r.across(sv, u); pillars.push([q.x, GLOW - 0.05, q.z, y - 0.2, BRIDGE.rampPillar]); } }
+    else for (const sv of [0.6, r.length*0.55, r.length - 0.4]){ const q = r.across(sv, 0); if (y - 0.22 - GD > 0.25) pillars.push([q.x, GD - 0.05, q.z, y - 0.2, 0.15]); }
     const o = r.across(r.length + 0.15, 0); rampTops.push({x:o.x, y, z:o.z});
   });
   if (plat.length){ const m = new THREE.Mesh(mergeIndexedNI(plat.map(g => { const P = g.attributes.position, cl = new Float32Array(P.count*3), a = col(topC), b = col(TH.stone);
@@ -3333,7 +3345,7 @@ function buildWorld(L){
   addPillars(add, pillars);
   // tunnels: the exit tunnel at the road's end facing the road, the return tunnel on the nearer side of the yard
   const lamps = {};
-  { const top = stoneTunnel({lift:E.y - GD}); top.position.set(E.x, E.y, E.z); top.rotation.y = Math.atan2(-E.dx, -E.dz); add(top); lamps.top = top.userData.lamp;
+  { const top = stoneTunnel({lift:E.y - (terrain === 'bridge' ? GLOW : GD)}); top.position.set(E.x, E.y, E.z); top.rotation.y = Math.atan2(-E.dx, -E.dz); add(top); lamps.top = top.userData.lamp;
     const T = GT, ret = stoneTunnel(); ret.position.set(T.x, 0, T.z); ret.rotation.y = Math.atan2(T.dx, T.dz); ret.scale.setScalar(0.92*T.k); add(ret); lamps.ret = ret.userData.lamp;
     // the queue lanes come out of a wide stone tunnel right above the booster bar
     const q = queueTunnelAt(Y), qt = stoneTunnel({w:q.w}); qt.position.set(0, 0, q.z); qt.rotation.y = Math.PI; qt.scale.set(1, QT.sy, 1); add(qt); }
@@ -3630,6 +3642,12 @@ function wheelsOf(cap){
 }
 
 
+function setTerrain(m, save){
+  terrain = m === 'bridge' ? 'bridge' : 'plateau'; if (save) S.savePrefs({terrain});
+  if ($('btnTerrain')) $('btnTerrain').textContent = 'Terrain: ' + (terrain === 'bridge' ? 'Bridge' : 'Plateau');
+  if (L && game){ buildWorld(L); restoreBadges(); views.forEach(v => { v.init = false; }); placeCounter(); }
+  onSettings(); return terrain;
+}
 function setView(m, save){
   view = C.setView(m); camera = view === 'ortho' ? orthoCam : perspCam; applyCamera(C.SCREEN_CAM); if (save) S.savePrefs({view});
   if ($('btnCam')) $('btnCam').textContent = 'Camera: ' + (view === 'ortho' ? 'Orthographic' : 'Perspective');
@@ -4855,6 +4873,7 @@ document.querySelectorAll('.boost').forEach(b => b.addEventListener('click', () 
 $('btnMove').addEventListener('click', () => { audio(); setMove(busMove === 'jelly' ? 'rigid' : 'jelly', true); });
 setMove(busMove);
 $('btnCam').addEventListener('click', () => { audio(); setView(view === 'ortho' ? 'persp' : 'ortho', true); });
+$('btnTerrain').addEventListener('click', () => { audio(); setTerrain(terrain === 'bridge' ? 'plateau' : 'bridge', true); });
 setView(view);
 $('btnTheme').addEventListener('click', () => setTheme(THEME_IDS[(THEME_IDS.indexOf(themeId) + 1) % THEME_IDS.length]));
 /* ---------------- the showcase: start menu, settings panel ---------------- */
@@ -4895,6 +4914,7 @@ function onSettings(){                                 // the settings panel sho
   $('segTheme').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === themeId));
   $('segMove').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === busMove));
   $('segCam').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
+  $('segTerrain').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === terrain));
   $('segSpeed').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === timeScale));
   $('segSound').querySelectorAll('button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'off') === muted));
 }
@@ -4903,6 +4923,7 @@ SPEEDS.forEach(v => { const b = document.createElement('button'); b.dataset.v = 
 $('segTheme').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setTheme(b.dataset.v); onSettings(); });
 $('segMove').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMove(b.dataset.v, true); });
 $('segCam').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setView(b.dataset.v, true); });
+$('segTerrain').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setTerrain(b.dataset.v, true); });
 $('segSpeed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setSpeed(+b.dataset.v, true); });
 $('segSound').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMuted(b.dataset.v === 'off'); onSettings(); });
 $('btnSetClose').addEventListener('click', () => { audio(); $('setPanel').classList.remove('show'); });
@@ -4933,7 +4954,7 @@ window.__me = {
   get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
-  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, SPEEDS,
+  get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; }, SPEEDS,
   jellyFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames and wheels in the world, front to back
     const at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);
       const p = new THREE.Vector3().setFromMatrixPosition(m.premultiply(v.body.matrixWorld)); return [p.x, p.y, p.z]; };

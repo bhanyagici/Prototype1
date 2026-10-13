@@ -31,6 +31,30 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Terrain: Plateau or Bridge
+
+A setting in the showcase (*Settings → Terrain*), saved with the other settings. In the
+game it is a button or `?terrain=bridge`. It is drawn only: every rule, timing and level is
+the same in both.
+
+- **Plateau** (as before): the whole board stands on a tall plateau, with the road in a
+  groove on top.
+- **Bridge:** the plateau stays only under the bottom part: the queue, the queue tunnel,
+  the bays and the return tunnel.
+  - **The road is a bridge** high up on tall, slim pillars that stand on the ground far below.
+    The ground stays in view between them.
+  - **The ramps hang beside the road** at road height. Each stands on four slim pillars of
+    its own.
+  - **The exit tunnel** stands on its own tall stone base.
+- **Tested** (`tests/browser.test.js`, *terrain*):
+  - In Bridge, the plateau is under the bays, the queue and the return tunnel, but not under
+    the road or the ramps.
+  - Every road pillar and every ramp pillar stands on the ground far below.
+  - Each ramp has its own pillars.
+  - The same game plays out identically in Plateau and Bridge: the same times, sends and
+    bus positions.
+  - The setting is remembered.
+
 ## Connected buses polish
 
 Drawn only: the rules, the queue, the bays and the timings are unchanged.
@@ -1342,7 +1366,7 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
                               #   close as it allows, a straight back edge with square corners, the boarding point and the order;
                               #   no two stickmen on a ramp closer than a stickman's width at the start and through every column
                               #   shift and run of a whole game; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 114 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/browser.test.js    # 119 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

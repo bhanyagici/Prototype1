@@ -340,6 +340,37 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         `${r.jumps} parachutes, ${r.gone} left the screen, ${r.vanished} vanished on screen (games: ${r.result})`);
       await ctx.close(); }
 
+    /* ---------------- terrain: Plateau or Bridge ---------------- */
+    console.log('terrain');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      // the same greedy game for 25 s, then what stands on the plateau and where the pillars stand
+      const run = terr => p.evaluate(terr => {
+        const C = window.MECore; __me.setTerrain(terr); __me.loadLevel(JSON.parse(JSON.stringify(C.LEVEL_DATA)), 'export'); __me.freeze(true);
+        const g = __me.game; for (let i = 0; i < 25/0.2 && !g.result; i++){ if (i % 2 === 0){ const a = C.greedyPick(g); if (a) __me.tap(a); } __me.advance(0.2); }
+        const game = JSON.stringify({t:g.t.toFixed(3), sends:g.sends, buses:g.buses.map(b => [b.state, b.x.toFixed(3), b.z.toFixed(3)])});
+        const L = __me.layout, R = L.ROAD, BM = __me.boardMask, o = {}, on = (x, z) => BM.at(x, z) < 0;
+        let road = 0, n = 0; for (let s = 2; s < R.portalS - 1; s += 0.5){ C.pathAt(R, s, o, 0); n++; if (on(o.x, o.z)) road++; }
+        const Y = L.Y, bays = Y.BAY_X.every(bx => on(...C.dispPoint(bx, (C.Z_BAY_TOP + C.Z_BAY_BOT)/2)));
+        const lanes = Y.LANE_X.every(lx => on(...C.dispPoint(lx, C.Z_LANE_TOP + 1.5))), T = L.TUNNEL, tunnel = on(...C.dispPoint(T.x - T.nx*0.6, T.z - T.nz*0.6));
+        const rampsOn = L.RAMPS.filter(r => { const q = r.across(r.length/2, 0); return on(q.x, q.z); }).length;
+        const pil = []; __me.scene.traverse(m => { if (!m.isInstancedMesh || !m.geometry.parameters || m.geometry.parameters.radiusBottom !== 1.12) return;
+          const M = m.matrix.clone(); for (let i = 0; i < m.count; i++){ m.getMatrixAt(i, M); const e = M.elements; pil.push([e[12], e[13], e[14], e[13] + e[5]]); } });
+        const inPoly = (P, x, z) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++){ const a = P[i], b = P[j];
+          if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0])*(z - a[1])/(b[1] - a[1]) + a[0]) c = !c; } return c; };
+        return {game, road:road/n, bays, lanes, tunnel, rampsOn, ramps:L.RAMPS.length, pillars:pil.length, low:pil.filter(q => q[1] < __me.GD - 3).length,
+          rampPillars:L.RAMPS.map(r => pil.filter(q => inPoly(r.outline, q[0], q[2]) && q[1] < __me.GD - 3).length), terrain:__me.terrain};
+      }, terr);
+      const a = await run('plateau'), b = await run('bridge'), info = o => JSON.stringify(Object.assign({}, o, {game:undefined}));
+      chk(a.terrain === 'plateau' && a.road > 0.9 && a.rampsOn === a.ramps && a.low === 0, 'Plateau: the road and the ramps are on the plateau, no pillar reaches down to the ground far below', info(a));
+      chk(b.terrain === 'bridge' && b.bays && b.lanes && b.tunnel && b.road < 0.15 && b.rampsOn === 0,
+        'Bridge: the plateau only under the bottom part (bays, queue, return tunnel); the road and the ramps are up in the air', info(b));
+      chk(b.pillars > 6 && b.low === b.pillars && b.rampPillars.every(k => k >= 4), 'Bridge: tall slim pillars from the ground far below carry the road, and every ramp hangs on four pillars of its own', b.rampPillars.join(','));
+      chk(a.game === b.game, 'Bridge is drawn only: the same game plays out exactly as on the Plateau');
+      await p.evaluate(() => __me.setTerrain('bridge', true)); await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      chk(await p.evaluate(() => __me.terrain) === 'bridge', 'the terrain setting is remembered');
+      await ctx.close(); }
+
     /* ---------------- editor: layout, preview, independence ---------------- */
     console.log('editor');
     const ctx = await newCtx({width:1440, height:900});
