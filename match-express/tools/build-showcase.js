@@ -8,7 +8,7 @@
 // Settings are kept in localStorage.
 //   node tools/build-showcase.js
 const fs = require('fs'), path = require('path');
-const B = require('../shared/bundle.js'), C = require('../tests/core.js')();
+const B = require('../shared/bundle.js'), C = require('../tests/core.js')(), {editorFile} = require('./editor-file.js');
 const ROOT = path.join(__dirname, '..'), DIR = path.join(ROOT, 'levels', 'showcase'), OUT = path.join(ROOT, 'dist');
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8'), clone = o => JSON.parse(JSON.stringify(o));
 
@@ -56,9 +56,11 @@ const funnel = forder.levels.map((id, k) => {
 const categories = order.categories.concat([{name:'Funnel: 40 levels in order', ordered:true, groups:[{name:null, levels:forder.levels}]}]);
 const game = B.inlineGame(read('index.html'), {core:read('shared/core.js'), sync:read('shared/sync.js'), three:read('vendor/three.module.min.js')});
 const title = 'Match Express — Showcase';
-const html = B.withShare(game, {levels:levels.concat(funnel), nosim:true, noSaved:true, nav:true, stats:true, statsKey:'showcase', title,
+let html = B.withShare(game, {levels:levels.concat(funnel), nosim:true, noSaved:true, nav:true, stats:true, statsKey:'showcase', title,
   showcase:{categories, cards, thumbs}}, title);
+// the level editor rides along (base64): the menu's pencil opens it over the showcase
+html = html.replace('</body>', () => `<script type="text/plain" id="me-editor">\n${B.b64(editorFile(game))}\n</script>\n</body>`);
 fs.mkdirSync(OUT, {recursive:true});
 const file = path.join(OUT, 'match-express-showcase.html');
 fs.writeFileSync(file, html);
-console.log(`dist/match-express-showcase.html  ${(fs.statSync(file).size/1024).toFixed(0)} KB, ${levels.length} showcase levels in ${order.categories.length} categories and the ${funnel.length}-level funnel`);
+console.log(`dist/match-express-showcase.html  ${(fs.statSync(file).size/1024).toFixed(0)} KB, ${levels.length} showcase levels in ${order.categories.length} categories, the ${funnel.length}-level funnel, the editor`);

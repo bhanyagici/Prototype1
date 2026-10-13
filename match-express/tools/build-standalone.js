@@ -12,19 +12,11 @@ const fs = require('fs'), path = require('path');
 const B = require('../shared/bundle.js');
 const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'dist');
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
-function replaceOnce(html, from, to){
-  if (!html.includes(from)) throw new Error('missing: ' + from);
-  return html.replace(from, () => to);
-}
+const {editorFile} = require('./editor-file.js');
 
 const files = {core:read('shared/core.js'), sync:read('shared/sync.js'), three:read('vendor/three.module.min.js')};
 const game = B.inlineGame(read('index.html'), files);
-
-let editor = read('editor.html');
-// the packed game goes before the editor's scripts: the editor looks for it while it starts
-editor = replaceOnce(editor, '<script src="shared/core.js"></script>', `<script type="text/plain" id="me-game-template">\n${B.b64(game)}\n</script>\n<script src="shared/core.js"></script>`);
-for (const f of ['shared/core.js', 'shared/sync.js', 'shared/bundle.js'])
-  editor = replaceOnce(editor, `<script src="${f}"></script>`, `<script>/* ${f} (inlined) */\n${B.safe(read(f))}</script>`);
+const editor = editorFile(game);
 
 const share = level => B.withShare(game, {level, nosim:true, noSaved:true});
 const FILES = {'match-express-game.html': game, 'match-express-editor.html': editor,

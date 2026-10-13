@@ -31,6 +31,35 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## The editor inside the showcase, My Levels
+
+- **The editor is inside the showcase.** The pencil at the top left of the showcase menu
+  opens a list of every level: the showcase's, the funnel's, and My Levels. Picking one
+  opens the full level editor over the whole window, with that level loaded.
+  - It is the same single-file editor as `dist/match-express-editor.html`, carried inside
+    the showcase as base64. It has every editor feature, including the cut-road tool, the
+    stickmen size and the phone preview.
+  - *Showcase* (top left) goes back to the menu. *File → Open a showcase level…*
+    (<kbd>Ctrl O</kbd>) brings the list back.
+- **The originals never change.** *Save* (<kbd>Ctrl S</kbd>) stores a copy under the next
+  free suffix of the level's id: `f30` becomes `f30_1`, then `f30_2`, and so on. Saving
+  `f30_1` again also makes the next free copy. The copies live in the showcase's
+  `localStorage` (key `match-express:my-levels`).
+- **My Levels:** the menu's last category, once something is saved. Each card shows a
+  small map of the level's road and ramps and has three buttons:
+  - **Edit** opens it in the editor (a save makes the next copy);
+  - **Export** downloads `<id>.json`;
+  - **Delete** removes it.
+
+  Tapping the card plays the level. *Export all* downloads `my-levels.json`, a level pack
+  (`{type:'match-express-levels', levels:[...]}`).
+- **Tested** (`tests/showcase.test.js`):
+  - the picker lists all 72 levels;
+  - the editor opens on the chosen level with the gap tool and the stickmen size;
+  - two saves make `f30_1` and `f30_2`, and the original stays byte for byte the same;
+  - My Levels appears, each level exports one by one or all together, a level plays with
+    its edits, and a level can be deleted.
+
 ## The funnel inside the showcase
 
 - **Its own category:** the showcase menu ends with *Funnel: 40 levels in order*.
@@ -1539,8 +1568,9 @@ node tests/browser.test.js    # 140 checks: game + editor in Chromium (needs `np
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)
-node tests/showcase.test.js   # 30 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
-                              #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
+node tests/showcase.test.js   # 38 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
+                              #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline,
+                              #   the funnel tiles in order, the editor inside it (save as f30_1, f30_2) and My Levels
 node tests/editor.test.js     # 63 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
                               #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states
 node tests/standalone.test.js # 18 checks: builds dist/, opens the single files, an exported pack and both share files from file://, offline

@@ -135,6 +135,38 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
     await p.evaluate(() => { __me.closeIntro(); __me.openMenu(); });
     const tl = await p.evaluate(() => ({won:[...document.querySelectorAll('#menuList .mcard.num.won')].map(c => c.dataset.id), next:[...document.querySelectorAll('#menuList .mcard.nextup')].map(c => c.dataset.id)}));
     chk(tl.won.join() === 'f02' && tl.next.join() === 'f01', 'the tiles mark the won levels and the next one to play', JSON.stringify(tl)); }
+  console.log('the editor inside the showcase, My Levels');
+  { const orig = await p.evaluate(() => JSON.stringify(__me.playlist.find(l => l.id === 'f30')));
+    await p.click('#menuEdit');
+    const rows = await p.evaluate(() => document.querySelectorAll('#edPick .lv').length);
+    chk(rows === 72, 'the pencil opens a picker of every level (the showcase\'s and the funnel\'s)', rows);
+    await p.evaluate(() => [...document.querySelectorAll('#edPick .lv')].find(b => b.querySelector('code').textContent === 'f30').click());
+    const ed = await (await p.waitForSelector('#edFrame')).contentFrame();
+    await ed.waitForFunction(() => window.__ed && __ed.level && __ed.level.id === 'f30', null, {timeout:120000});
+    const tools = await ed.evaluate(() => ({gap:!!document.querySelector('[data-tool="gap"]'), size:/Stickmen size/.test(document.getElementById('insp').innerText), back:!!document.getElementById('hostClose')}));
+    chk(tools.gap && tools.size && tools.back, 'the editor opens over the showcase with the level, its cut-road tool and the stickmen size', JSON.stringify(tools));
+    await ed.evaluate(() => { __ed.edit(n => { n.name = 'My level 30'; n.road.gaps = [{at:9, len:1, ramp:'flat'}]; }); __ed.saveLevel(false); });
+    await ed.waitForFunction(() => __ed.level.id === 'f30_1', null, {timeout:20000});
+    await ed.evaluate(() => { __ed.edit(n => { n.manScale = 1.1; }); __ed.saveLevel(false); });
+    await ed.waitForFunction(() => __ed.level.id === 'f30_2', null, {timeout:20000});
+    const mine = await p.evaluate(() => JSON.parse(localStorage.getItem('match-express:my-levels')).levels.map(l => [l.id, l.name]));
+    chk(JSON.stringify(mine) === JSON.stringify([['f30_1', 'My level 30'], ['f30_2', 'My level 30']]), 'each save keeps a new copy: f30_1, f30_2, ...', JSON.stringify(mine));
+    await ed.evaluate(() => document.getElementById('hostClose').click());
+    const back = await p.evaluate(() => ({host:document.getElementById('edHost').classList.contains('show'), cats:[...document.querySelectorAll('#menuList .mcat')].map(x => x.firstChild.textContent),
+      mine:[...document.querySelectorAll('#menuList .mcard')].filter(c => c.querySelector('.mtools')).map(c => c.dataset.id), same:JSON.stringify(__me.playlist.find(l => l.id === 'f30'))}));
+    chk(!back.host && back.cats[back.cats.length - 1] === 'My Levels' && back.mine.join() === 'f30_1,f30_2', 'back in the menu: a My Levels category with the saved copies', JSON.stringify(back.mine));
+    chk(back.same === orig, 'the original level never changes');
+    const [d1] = await Promise.all([p.waitForEvent('download'), p.evaluate(() => document.querySelector('#menuList .mcard[data-id="f30_2"] [data-a="export"]').click())]);
+    const one = JSON.parse(fs.readFileSync(await d1.path(), 'utf8'));
+    const [d2] = await Promise.all([p.waitForEvent('download'), p.click('#myExportAll')]);
+    const all = JSON.parse(fs.readFileSync(await d2.path(), 'utf8'));
+    chk(d1.suggestedFilename() === 'f30_2.json' && one.id === 'f30_2' && one.manScale === 1.1 && d2.suggestedFilename() === 'my-levels.json' && all.levels.map(l => l.id).join() === 'f30_1,f30_2',
+      'My Levels export one by one (<id>.json) or all together (my-levels.json)');
+    await p.evaluate(() => document.querySelector('#menuList .mcard[data-id="f30_1"]').click());
+    const pl = await p.evaluate(() => ({id:__me.LEVEL.id, gaps:(__me.layout.ROAD.gaps || []).length, menu:__me.menuOpen}));
+    chk(pl.id === 'f30_1' && pl.gaps === 1 && !pl.menu, 'a level from My Levels plays (with its edits)', JSON.stringify(pl));
+    await p.evaluate(() => { __me.openMenu(); document.querySelector('#menuList .mcard[data-id="f30_2"] [data-a="del"]').click(); });
+    chk(await p.evaluate(() => JSON.parse(localStorage.getItem('match-express:my-levels')).levels.map(l => l.id).join()) === 'f30_1', 'a level can be deleted from My Levels'); }
   chk(!errs.length && !net.length, 'no page errors, nothing fetched from the network', errs.concat(net).slice(0, 3).join(' | '));
   await browser.close(); done();
 })().catch(e => { chk(false, 'exception: ' + e.message.split('\n')[0]); done(); });

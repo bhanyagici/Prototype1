@@ -259,7 +259,9 @@ const C = window.MECore, S = window.MESync, B = window.MEBundle;
 const $ = id => document.getElementById(id);
 const clone = o => JSON.parse(JSON.stringify(o));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
-const KEY_DRAFT = 'match-express:editor-draft';
+/* inside the showcase (it opens this editor over the game with window.ME_EDITOR_HOST = 'showcase'): see HOST below */
+const IN_SHOWCASE = window.ME_EDITOR_HOST === 'showcase' && window.parent !== window;
+const KEY_DRAFT = IN_SHOWCASE ? 'match-express:showcase-editor-draft' : 'match-express:editor-draft';
 const RAD = C.ROAD_HALF, ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
 const round = (v, d = 2) => +(+v).toFixed(d);
 
@@ -363,6 +365,7 @@ function migrateAndSeed(){
   S.saveSlots(out); S.savePrefs({seededPresets:seeded});
 }
 function saveLevel(asNew){
+  if (IN_SHOWCASE){ hostPost({type:'save', level:clone(lvl)}); return true; }     // the showcase keeps it under a new id
   const slots = S.loadSlots();
   if (asNew){ const id = prompt('Id for the new level (letters, digits, _ and -):', nextId()); if (!id) return false;
     if (!ID_RE.test(id)){ toast('Ids use letters, digits, _ and -'); return false; } if (slots[id]){ toast(`"${id}" is already used`); return false; }
@@ -1465,7 +1468,7 @@ document.querySelectorAll('.menu').forEach(m => { m.querySelector('[data-menu]')
   document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); m.classList.toggle('open', open); }; });
 addEventListener('pointerdown', e => { if (!e.target.closest('.menu')) document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); });
 document.querySelectorAll('.menu [data-act]').forEach(b => b.onclick = () => { document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); ACT[b.dataset.act](); });
-const ACT = {new:newLevel, levels:openLevels, save:() => saveLevel(false), saveAs:() => saveLevel(true), import:() => pickFile(importLevel),
+const ACT = {new:newLevel, levels:() => IN_SHOWCASE ? hostPost({type:'pick'}) : openLevels(), save:() => saveLevel(false), saveAs:() => saveLevel(true), import:() => pickFile(importLevel),
   dupLevel:duplicateCurrentLevel, exportJSON:exportLevelJSON, exportHtmlLevel:() => exportHtml('level'), exportHtmlOrder:() => exportHtml('order'), exportOrder:exportOrderJSON, playTab:playInTab};
 $('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
 $('levelId').onchange = e => { if (!renameId(e.target.value)) e.target.value = lvl.id; };
@@ -1727,7 +1730,7 @@ addEventListener('keydown', e => {
   const stop = () => { e.preventDefault(); e.stopPropagation(); };
   // file shortcuts work everywhere, even while typing in a field (the field's change is committed first)
   if (mod && !e.altKey && ['s', 'n', 'o', 'e'].includes(k)){ stop(); if (typing(e.target)) e.target.blur();
-    if (k === 's') saveLevel(e.shiftKey); else if (k === 'n') newLevel(); else if (k === 'o') openLevels(); else e.shiftKey ? exportHtml('level') : exportLevelJSON(); return; }
+    if (k === 's') saveLevel(e.shiftKey); else if (k === 'n') newLevel(); else if (k === 'o') ACT.levels(); else e.shiftKey ? exportHtml('level') : exportLevelJSON(); return; }
   if (mod && k === 'enter'){ stop(); run(); return; }
   if (typing(e.target)){ if (k === 'escape') e.target.blur(); return; }
   if (k === 'escape'){ if ($('ctx').classList.contains('show')) closeCtx(); else if ($('busPop').classList.contains('show')) closeBusPop();
@@ -1833,6 +1836,23 @@ $('camSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.d
   fitPhone(); resize();
 })();
 
+/* ======================= INSIDE THE SHOWCASE =======================
+   The showcase sends the level to edit (any of its levels or one of My Levels). Save never changes the level it came
+   from: the showcase keeps a copy under the next free suffix of its id (f30 -> f30_1, f30_2, ...) in My Levels and
+   answers with that id. Open asks the showcase for its level list; the close button goes back to the showcase. */
+function hostPost(msg){ if (IN_SHOWCASE) window.parent.postMessage(Object.assign({source:'me-editor'}, msg), '*'); }
+if (IN_SHOWCASE){
+  const back = h(`<button id="hostClose" class="primary" title="Back to the showcase (the edits stay as a draft)">${icon('x')} Showcase</button>`);
+  back.onclick = () => hostPost({type:'close'}); $('bar').prepend(back);
+  document.querySelector('[data-act="levels"]').innerHTML = `${icon('list')} Open a showcase level… <kbd>${kb('Ctrl O')}</kbd>`;
+  document.querySelector('[data-act="save"]').innerHTML = `${icon('save')} Save to My Levels (a new copy) <kbd>${kb('Ctrl S')}</kbd>`;
+  addEventListener('message', e => { const m = e.data || {}; if (m.source !== 'me-showcase') return;
+    if (m.type === 'open'){ setLevel(m.level); savedJSON = m.mine ? JSON.stringify(lvl) : null; sel = {kind:'level'}; fitView(); renderAll(); run();
+      toast(m.mine ? `Editing "${lvl.id}" from My Levels` : `Editing "${lvl.id}": saving keeps a copy in My Levels, the original never changes`); }
+    if (m.type === 'saved'){ lvl.id = m.id; savedJSON = JSON.stringify(lvl); draftSave(); renderAll(); toast(`Saved as "${m.id}" in My Levels`); }
+  });
+  hostPost({type:'ready'});
+}
 /* test hooks */
 window.__ed = {get level(){ return lvl; }, get hover(){ return hover; }, get layout(){ return L; }, get check(){ return check; }, get sel(){ return sel; }, set sel(v){ sel = v; renderAll(); },
   get tool(){ return tool; }, setTool, get color(){ return color; }, set color(v){ color = v; renderPalette(); }, set cap(v){ cap = BP.cap = v; renderPalette(); },
