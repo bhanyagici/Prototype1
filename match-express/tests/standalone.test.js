@@ -60,6 +60,7 @@ let pass = 0, fail = 0; const chk = (ok, n, i='') => { ok ? pass++ : fail++; con
     const [tab] = await Promise.all([c.waitForEvent('page'), p.click('#exportMenu [data-act="playTab"]')]); watch(tab);
     const ok = await tab.waitForFunction(() => window.__me && __me.game && __me.LEVEL.name === 'Auto edited', null, {timeout:90000}).then(()=>true, ()=>false);
     chk(ok && (await tab.evaluate(() => __me.levelSource)) === 'export', '"Play this level in a new tab" opens a packed copy of the current level', tab.url().slice(0, 30));
+    await tab.close();                              // (one live game less: the pack below starts sooner)
     // Export > Playable HTML (level order) from the single-file editor: no server needed
     await p.evaluate(() => { localStorage.setItem('match-express:level-order', JSON.stringify(['demo_hidden_bus', 'demo_lock_box'])); });
     const html = await p.evaluate(() => __ed.exportHtml('order'));

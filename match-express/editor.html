@@ -103,6 +103,9 @@
   #camSeg{display:flex;gap:0;margin:0 0 8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
   #camSeg button{border:0;border-radius:0;padding:4px 10px;font-size:12px;background:transparent;color:inherit;cursor:pointer}
   #camSeg button.on{background:#2f6fde;color:#fff}
+  #zoomRow{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:12px;flex:none;width:100%;max-width:330px}
+  #zoomRow input{flex:1;min-width:0;accent-color:#2f6fde} #zoomRow b{min-width:74px;text-align:center;font-variant-numeric:tabular-nums}
+  #zoomRow button{padding:2px 8px;font-size:12px}
   /* ---- modals ---- */
   .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(6,9,16,.6)}
   .modal.show{display:flex;animation:fadein .15s}
@@ -211,7 +214,8 @@
     <div id="queueFoot"><button id="addBusBtn" class="primary" title="Add a bus: lane, colour, seats, hidden">ICON:plus Add bus</button></div>
   </section>
   <aside id="inspector"><div id="insp"></div><div id="checks"></div></aside>
-  <aside id="previewDock"><div id="camSeg" title="Preview camera"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div><div id="phone"><div id="phoneInner"><iframe id="preview" title="Game preview"></iframe></div></div></aside>
+  <aside id="previewDock"><div id="camSeg" title="Preview camera"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div>
+    <div id="zoomRow" title="Camera zoom: the field of view (Perspective) or the orthographic size; the same setting as the game's"><span>Zoom</span><input type="range" id="edZoom" min="25" max="60" step="1"><b id="edZoomVal"></b><button id="edZoomReset">Reset</button></div><div id="phone"><div id="phoneInner"><iframe id="preview" title="Game preview"></iframe></div></div></aside>
 </div>
 
 <div class="modal" id="levelsModal"><div class="sheet">
@@ -1814,14 +1818,25 @@ function renderEmpty(){
 // (wider for 4-5 lanes) + inspector 280
 function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return;
   const work = 190 + 320 + (+$('app').dataset.qw || 258) + 280;
-  const k = Math.max(0.4, Math.min(1, (d.clientHeight - 16 - 36)/(844 + 28), (innerWidth - work - 20)/(390 + 28)));
+  const k = Math.max(0.4, Math.min(1, (d.clientHeight - 16 - 36 - 30)/(844 + 28), (innerWidth - work - 20)/(390 + 28)));   // (the camera switch and zoom above it)
   $('phone').style.transform = `scale(${k})`; d.style.width = Math.round((390 + 28)*k + 20) + 'px'; }
 addEventListener('resize', fitPhone);
 // the preview's camera: Perspective or Orthographic (the game's own setting, remembered with its prefs)
 function setPreviewCam(v){ v = v === 'ortho' ? 'ortho' : 'persp'; S.savePrefs({view:v});
   $('camSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   try { preview.contentWindow.postMessage({type:'camera', view:v, id:'cam' + Date.now()}, '*'); } catch (e) {} }
-$('camSeg').onclick = e => { const b = e.target.closest('button'); if (b) setPreviewCam(b.dataset.v); };
+$('camSeg').onclick = e => { const b = e.target.closest('button'); if (b) setPreviewCam(b.dataset.v); zoomShow(); };
+// the preview's camera zoom (the game's own setting, remembered with its prefs): the field of view in Perspective, the
+// orthographic size over the same range in Orthographic (size = default size x tan(fov/2) / tan(default fov/2))
+const ZOOM_DEF = C.SCREEN_CAM.fov, zoomNow = () => Math.max(25, Math.min(60, Math.round(+S.loadPrefs().camFov || ZOOM_DEF)));
+function zoomShow(){ const f = zoomNow(), ortho = S.loadPrefs().view === 'ortho';
+  $('edZoom').value = f; $('edZoomReset').disabled = f === ZOOM_DEF;
+  $('edZoomVal').textContent = ortho ? 'Size ' + (C.ORTHO_CAM.halfH*Math.tan(f*Math.PI/360)/Math.tan(ZOOM_DEF*Math.PI/360)).toFixed(2) : 'FOV ' + f + '°'; }
+function setPreviewZoom(f){ f = Math.max(25, Math.min(60, Math.round(+f))); S.savePrefs({camFov:f}); zoomShow();
+  try { preview.contentWindow.postMessage({type:'zoom', fov:f, id:'zoom' + Date.now()}, '*'); } catch (e) {} }
+$('edZoom').oninput = () => setPreviewZoom($('edZoom').value);
+$('edZoomReset').onclick = () => setPreviewZoom(ZOOM_DEF);
+zoomShow();
 $('camSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === (S.loadPrefs().view === 'ortho' ? 'ortho' : 'persp')));
 
 /* ================================ START ================================ */

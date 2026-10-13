@@ -31,6 +31,15 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Camera zoom
+
+- A *Camera zoom* slider under the camera switch, in the showcase's settings panel and the game's settings,
+  and *Zoom* above the editor's phone preview, each with *Reset* and the value beside it.
+- **Perspective:** the field of view, 25° (zoomed in) to 60° (zoomed out), default **30°**; the camera keeps
+  its position and angle. **Orthographic:** the orthographic size over the same range, default **16.5588**.
+- Saved with the other settings and applied to every level; only the 3D scene zooms. The details and the
+  formula for Unity are in *Camera: Perspective or Orthographic* below.
+
 ## The editor inside the showcase, My Levels
 
 - **The editor is inside the showcase.** The pencil at the top left of the showcase menu
@@ -38,7 +47,7 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   opens the full level editor over the whole window, with that level loaded.
   - It is the same single-file editor as `dist/match-express-editor.html`, carried inside
     the showcase as base64. It has every editor feature, including the cut-road tool, the
-    stickmen size and the phone preview.
+    stickmen size and the phone preview. It makes the showcase file about 4.8 MB (2.1 MB without it).
   - *Showcase* (top left) goes back to the menu. *File → Open a showcase level…*
     (<kbd>Ctrl O</kbd>) brings the list back.
 - **The originals never change.** *Save* (<kbd>Ctrl S</kbd>) stores a copy under the next
@@ -540,6 +549,22 @@ the bottom of the screen):**
     (vertical).
   - Orthographic: position (0, 41.769, -27.522), rotation (52, 0, 0), orthographic size
     16.5588.
+- **Camera zoom** (a setting for every level, remembered as `camFov` with the other
+  settings, or `index.html?fov=40`).
+  - **Where:** a *Camera zoom* slider under the camera switch in the showcase's settings
+    panel and in the game's settings, and *Zoom* under the *Perspective / Orthographic*
+    switch above the editor's phone preview. *Reset* goes back to the default.
+  - **Perspective:** the slider sets the vertical field of view from **25°** (zoomed in) to
+    **60°** (zoomed out). The default is **30°**. The camera keeps its position and angle.
+  - **Orthographic:** the same slider sets the orthographic size (half the view's height,
+    Unity's `orthographicSize`) over the same zoom range:
+    size = 16.5588 × tan(fov / 2) / tan(15°). That gives 13.70 at 25°, **16.5588 (the
+    default)** at 30° and 35.68 at 60°.
+  - **The value is shown next to the slider** (*FOV 30°*, or *Size 16.56*), so the same
+    setup can be copied into Unity.
+  - **Only the 3D scene zooms.** The top bar and the booster bar stay as they are; the
+    counter sign stays beside the yard as it moves. Taps go through the zoomed camera, and
+    the levels and rules are unchanged.
 - **The same screen zones in both views:**
   - The orthographic camera is sized and centred so the target zone's ground spans the
     same screen rows, 7% to 61% of the height (z -23.184 to -0.489 on y = 0).
@@ -1564,8 +1589,8 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
 node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
                               #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
                               #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
-node tests/browser.test.js    # 140 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
-                              #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
+node tests/browser.test.js    # 146 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
+                              #   the camera setting and its zoom, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)
 node tests/showcase.test.js   # 38 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from

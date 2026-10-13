@@ -193,6 +193,14 @@
   #setPanel .card{width:720px;padding:40px 36px 44px}
   #setPanel h1{margin:0 0 18px;font-size:58px}
   .srow{margin:18px 0 0;text-align:left}
+  .zoomrow{display:flex;align-items:center;gap:14px}
+  .zoomrow input,.zoombox input{flex:1;min-width:0;height:44px;accent-color:#ffb21f;cursor:pointer}
+  .zoomrow b{min-width:150px;font-size:28px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums}
+  .zoomrow button{font:inherit;font-size:24px;font-weight:900;color:#fff;padding:10px 16px;border-radius:16px;border:4px solid #fff;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 4px 0 #1559b0;cursor:pointer}
+  .zoomrow button:disabled,.zoombox button:disabled{opacity:.5;cursor:default}
+  .zoombox{margin:8px 0;padding:10px 12px;border-radius:20px;border:4px solid #fff;background:rgba(255,255,255,.08)}
+  .zoombox div{display:flex;justify-content:space-between;font-size:24px;font-weight:800} .zoombox input{width:100%}
+  #settings .zoombox button{margin:4px 0 0;padding:8px;font-size:22px}
   .srow > span{display:block;margin:0 0 10px 6px;font-size:28px;font-weight:900;opacity:.92}
   .seg{display:flex;flex-wrap:wrap;gap:10px}
   .seg button{flex:1;min-width:110px;margin:0;padding:14px 8px;border-radius:20px;border:4px solid rgba(255,255,255,.85);font:inherit;font-size:27px;font-weight:900;
@@ -259,6 +267,7 @@
     <button id="btnTheme" class="spring">Theme</button>
     <button id="btnMove" class="spring">Buses: Rigid</button>
     <button id="btnCam" class="spring">Camera: Perspective</button>
+    <div class="zoombox"><div><span>Camera zoom</span><b class="zoomVal"></b></div><input type="range" class="zoomRange" min="25" max="60" step="1" aria-label="Camera zoom"><button class="zoomReset spring">Reset</button></div>
     <button id="btnTerrain" class="spring">Terrain: Plateau</button>
     <button id="btnBuiltin" class="spring">Play Level 2</button>
     <div id="presetBtns"></div>
@@ -287,6 +296,7 @@
     <div class="srow"><span>Theme</span><div class="seg" id="segTheme"></div></div>
     <div class="srow"><span>Bus movement</span><div class="seg" id="segMove"><button data-v="rigid">Rigid</button><button data-v="jelly">Jelly</button></div></div>
     <div class="srow"><span>Camera</span><div class="seg" id="segCam"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div></div>
+    <div class="srow"><span>Camera zoom</span><div class="zoomrow"><input type="range" class="zoomRange" id="zoomRange" min="25" max="60" step="1" aria-label="Camera zoom"><b class="zoomVal" id="zoomVal"></b><button class="zoomReset" id="zoomReset">Reset</button></div></div>
     <div class="srow"><span>Terrain</span><div class="seg" id="segTerrain"><button data-v="plateau">Plateau</button><button data-v="bridge">Bridge</button></div></div>
     <div class="srow"><span>Speed</span><div class="seg" id="segSpeed"></div></div>
     <div class="srow"><span>Sound</span><div class="seg" id="segSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
@@ -339,7 +349,16 @@ let view = C.setView(['persp', 'ortho'].includes(params.get('cam')) ? params.get
    their own pillars, with the ground far below in view).  Drawn only: every rule is the same */
 let terrain = ['plateau', 'bridge'].includes(params.get('terrain')) ? params.get('terrain') : S.loadPrefs().terrain === 'bridge' ? 'bridge' : 'plateau';
 let camera = view === 'ortho' ? orthoCam : perspCam;
-function applyCamera(cam){ cam = C.VIEW === 'ortho' ? OC : cam; CAM = cam; if (!cam.ortho) camera.fov = cam.fov;
+/* the camera zoom, a setting for every level (remembered as camFov): Perspective changes the vertical field of view
+   (25-60 degrees; the camera keeps its place and its angle), Orthographic the size of its view over the same range:
+   orthographic size (half the view's height, Unity's orthographicSize) = default size x tan(fov/2) / tan(30/2). Only
+   the 3D scene zooms: the top bar and the booster bar never do */
+const ZOOM = {min:25, max:60, def:C.SCREEN_CAM.fov};
+const zoomFov = v => Math.max(ZOOM.min, Math.min(ZOOM.max, Math.round(+v || ZOOM.def)));
+let camFov = zoomFov(params.get('fov') || S.loadPrefs().camFov || ZOOM.def);
+const orthoSize = fov => OC.halfH*Math.tan(fov*Math.PI/360)/Math.tan(ZOOM.def*Math.PI/360);
+function applyCamera(cam){ cam = C.VIEW === 'ortho' ? OC : cam; CAM = cam; if (!cam.ortho) camera.fov = camFov*cam.fov/ZOOM.def;
+  else { const k = orthoSize(camFov)/OC.halfH; Object.assign(orthoCam, {left:-OC.halfW*k, right:OC.halfW*k, top:OC.halfH*k, bottom:-OC.halfH*k}); }
   camera.position.set(...cam.pos); camera.lookAt(...cam.look); camera.updateProjectionMatrix(); }
 applyCamera(CAM);
 const TOPVIEW = params.has('top');                                   // debug: overhead layout view
@@ -1399,8 +1418,19 @@ function setTerrain(m, save){
   if (L && game){ buildWorld(L); restoreBadges(); views.forEach(v => { v.init = false; }); placeCounter(); }
   onSettings(); return terrain;
 }
+function setZoom(v, save){
+  camFov = zoomFov(v); if (save) S.savePrefs({camFov});
+  applyCamera(C.VIEW === 'ortho' ? OC : CAM); if (L && game) placeCounter();
+  zoomUI(); return camFov;
+}
+const zoomText = () => view === 'ortho' ? 'Size ' + orthoSize(camFov).toFixed(2) : 'FOV ' + camFov + '°';
+function zoomUI(){                                    // every zoom slider shows the zoom and its value (FOV or size)
+  document.querySelectorAll('.zoomRange').forEach(r => { r.value = camFov; });
+  document.querySelectorAll('.zoomVal').forEach(b => { b.textContent = zoomText(); });
+  document.querySelectorAll('.zoomReset').forEach(b => { b.disabled = camFov === ZOOM.def; });
+}
 function setView(m, save){
-  view = C.setView(m); camera = view === 'ortho' ? orthoCam : perspCam; applyCamera(C.SCREEN_CAM); if (save) S.savePrefs({view});
+  view = C.setView(m); camera = view === 'ortho' ? orthoCam : perspCam; applyCamera(C.SCREEN_CAM); if (save) S.savePrefs({view}); zoomUI();
   if ($('btnCam')) $('btnCam').textContent = 'Camera: ' + (view === 'ortho' ? 'Orthographic' : 'Perspective');
   // the yard is drawn differently in each view: rebuild the world, buses jump to their new places
   if (L && game){ buildWorld(L); restoreBadges(); views.forEach(v => { v.init = false; }); placeCounter(); }
@@ -1877,6 +1907,7 @@ function onMessage(d){
   if ((d.type === 'run' || d.type === 'watch') && d.level) loadLevel(d.level, 'editor', {bot: d.type === 'watch'});
   else if (d.type === 'restart') resetGame();
   else if (d.type === 'camera') setView(d.view, true);           // the editor's preview: Perspective / Orthographic
+  else if (d.type === 'zoom') setZoom(d.fov, true);              // and its camera zoom
 }
 if (EMBED && !SHARE) addEventListener('message', e => { if (e.source === parent) onMessage(e.data); });
 
@@ -2810,6 +2841,9 @@ SPEEDS.forEach(v => { const b = document.createElement('button'); b.dataset.v = 
 $('segTheme').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setTheme(b.dataset.v); onSettings(); });
 $('segMove').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMove(b.dataset.v, true); });
 $('segCam').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setView(b.dataset.v, true); });
+document.querySelectorAll('.zoomRange').forEach(r => r.addEventListener('input', () => setZoom(r.value, true)));
+document.querySelectorAll('.zoomReset').forEach(b => b.addEventListener('click', () => { audio(); setZoom(ZOOM.def, true); }));
+zoomUI();
 $('segTerrain').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setTerrain(b.dataset.v, true); });
 $('segSpeed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setSpeed(+b.dataset.v, true); });
 $('segSound').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; audio(); setMuted(b.dataset.v === 'off'); onSettings(); });
@@ -2843,6 +2877,7 @@ window.__me = {
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
   get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; },
   get paused(){ return pauseOpen; }, openPause, closePause, get timerText(){ return timerShown; },
+  get camFov(){ return camFov; }, setZoom, ZOOM, orthoSize, get perspCam(){ return perspCam; }, get orthoCam(){ return orthoCam; },
   groundAt(x, z){ const rc = new THREE.Raycaster(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0)); rc.camera = camera; const hit = rc.intersectObject(world, true)
     .find(h => { if (h.object.isSprite) return false; for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
     return hit ? hit.point.y : null; },   // the height of the first surface straight down at (x, z) (buses and stickmen aside)

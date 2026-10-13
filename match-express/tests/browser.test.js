@@ -461,6 +461,42 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(lay.B.length === 3 && lay.B.every(([w, h, br]) => w === h && br === '50%'), 'the booster buttons are round', JSON.stringify(lay.B));
       await ctx.close(); }
 
+    /* ---------------- camera zoom ---------------- */
+    console.log('camera zoom');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const st = () => p.evaluate(() => { const c = __me.camera, rect = id => { const b = document.getElementById(id).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map(Math.round).join(','); };
+        const E = __me.layout.exit, sp = __me.screenOf(E.x, E.y, E.z), off = Math.hypot(sp[0] - 450, sp[1] - 975);
+        return {fov:__me.camFov, pfov:+__me.perspCam.fov.toFixed(3), otop:+__me.orthoCam.top.toFixed(4), pos:c.position.toArray().map(v => +v.toFixed(3)).join(','),
+          q:c.quaternion.toArray().map(v => +v.toFixed(4)).join(','), val:document.getElementById('zoomVal').textContent, range:+document.getElementById('zoomRange').value,
+          ui:['levelPill', 'boosters', 'btnPause', 'timer'].map(rect).join('|'), off:+off.toFixed(1), saved:window.MESync.loadPrefs().camFov}; });
+      const slide = v => p.evaluate(v => { const r = document.getElementById('zoomRange'); r.value = v; r.dispatchEvent(new Event('input')); }, v);
+      const a = await st(); await slide(45); const b = await st(); await slide(25); const c = await st();
+      chk(a.fov === 30 && a.pfov === 30 && a.val === 'FOV 30°' && a.range === 30, 'the camera zoom starts at the default: a 30° field of view, shown next to the slider', JSON.stringify(a));
+      chk(b.pfov === 45 && b.val === 'FOV 45°' && c.pfov === 25 && c.val === 'FOV 25°' && b.pos === a.pos && c.pos === a.pos && b.q === a.q && c.q === a.q,
+        'Perspective: the slider sets the field of view (25° to 60°); the camera keeps its place and its angle', `${a.pfov} -> ${b.pfov}, ${c.pfov}`);
+      chk(b.off < a.off && c.off > a.off && b.ui === a.ui && c.ui === a.ui, 'only the 3D scene zooms (out at 45°, in at 25°); the top bar and the booster bar stay as they are', `${a.off} / ${b.off} / ${c.off}`);
+      await p.evaluate(() => __me.setView('ortho'));
+      const d = await st(), want = (fov => 16.5588*Math.tan(fov*Math.PI/360)/Math.tan(Math.PI/12))(25);
+      chk(Math.abs(d.otop - want) < 0.01 && d.val === 'Size ' + want.toFixed(2) && d.ui === a.ui, 'Orthographic: the same slider sets the orthographic size over the same zoom range, shown next to it', `${d.otop} (${d.val})`);
+      await p.evaluate(() => document.getElementById('zoomReset').click()); const e = await st();
+      chk(e.fov === 30 && Math.abs(e.otop - 16.5588) < 0.001 && e.val === 'Size 16.56' && e.saved === 30, 'Reset returns to the default (30°, orthographic size 16.56)', JSON.stringify(e));
+      await slide(50); await p.evaluate(() => { __me.setView('persp'); __me.loadLevel(JSON.parse(JSON.stringify(window.MECore.PRESETS['crowded-rush'])), 'export'); });
+      const f = await st(); await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000}); const g = await st();
+      chk(f.pfov === 50 && g.fov === 50 && g.pfov === 50 && g.saved === 50, 'the zoom applies to every level and is remembered with the settings', `${f.pfov}, after a reload ${g.pfov}`);
+      await p.evaluate(() => __me.setZoom(30, true));
+      await ctx.close(); }
+    { const ctx = await newCtx({width:1440, height:900}), ed = await ctx.newPage(); watch(ed);
+      await ed.goto(base + '/editor.html'); await ed.waitForFunction(() => window.__ed, null, {timeout:60000});
+      await ed.waitForFunction(() => { const f = document.getElementById('preview'); return f && f.contentWindow && f.contentWindow.__me && f.contentWindow.__me.game; }, null, {timeout:120000});
+      const v0 = await ed.evaluate(() => ({val:document.getElementById('edZoomVal').textContent, under:document.getElementById('zoomRow').getBoundingClientRect().top >= document.getElementById('camSeg').getBoundingClientRect().bottom - 1}));
+      await ed.evaluate(() => { const r = document.getElementById('edZoom'); r.value = 40; r.dispatchEvent(new Event('input')); });
+      await ed.waitForFunction(() => document.getElementById('preview').contentWindow.__me.camFov === 40, null, {timeout:10000}).catch(() => {});
+      const v1 = await ed.evaluate(() => ({val:document.getElementById('edZoomVal').textContent, fov:document.getElementById('preview').contentWindow.__me.perspCam.fov}));
+      chk(v0.under && v0.val === 'FOV 30°' && v1.val === 'FOV 40°' && Math.abs(v1.fov - 40) < 1e-6, 'the editor\'s preview has the camera zoom under its camera switch, and the preview follows it', JSON.stringify([v0, v1]));
+      await ed.evaluate(() => document.getElementById('edZoomReset').click());
+      await ctx.close(); }
+
     /* ---------------- editor: layout, preview, independence ---------------- */
     console.log('editor');
     const ctx = await newCtx({width:1440, height:900});
@@ -475,10 +511,10 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const ui = await ed.evaluate(() => ({
         bar: ['#fileMenu', '#undoBtn', '#redoBtn', '#runBtn', '#testBtn', '#exportMenu', '#helpBtn'].every(q => document.querySelector(q)),
         barTips: [...document.querySelectorAll('#bar > button, #bar .menu > [data-menu]')].every(b => b.title && b.querySelector('svg.i')),
-        tools: [...document.querySelectorAll('#palette [data-tool]')].map(b => ({id:b.dataset.tool, tip:/\(\d or \w\)$/.test(b.title), icon:!!b.querySelector('svg.i')})),
+        tools: [...document.querySelectorAll('#palette [data-tool]')].map(b => ({id:b.dataset.tool, tip:/\((\d or )?\w\)$/.test(b.title), icon:!!b.querySelector('svg.i')})),
         insp: !!document.querySelector('#insp .card'), queue: document.querySelectorAll('#queueSvg .bus').length }));
       chk(ui.bar && ui.barTips, 'top toolbar: file menu, undo/redo, run/test, export, help; every button has an icon and a tooltip');
-      chk(ui.tools.map(t => t.id).join(',') === 'select,road,ramp,paint,erase,hide,tunnel,lock,count,link' && ui.tools.every(t => t.tip && t.icon),
+      chk(ui.tools.map(t => t.id).join(',') === 'select,road,ramp,gap,paint,erase,hide,tunnel,lock,count,link' && ui.tools.every(t => t.tip && t.icon),
         'left tool panel with every blocker tool, each with an icon and a tooltip naming its shortcut', ui.tools.map(t => t.id).join(','));
       chk(ui.insp && ui.queue === 26, 'right inspector and the queue pane (26 buses of Level 2)'); }
     await ed.keyboard.press('?');
