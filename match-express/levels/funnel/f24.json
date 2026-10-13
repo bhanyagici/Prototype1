@@ -62,5 +62,6 @@
     "diff": 4,
     "road": "straight road with a wave",
     "ramps": "four small ramps and one big ramp near the end"
-  }
+  },
+  "manScale": 1.05
 }

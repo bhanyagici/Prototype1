@@ -44,5 +44,6 @@
     "ramps": "two diagonal ramps",
     "tutorial": "bay-resend",
     "tutorialLane": 1
-  }
+  },
+  "manScale": 1.3
 }

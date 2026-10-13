@@ -265,6 +265,29 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         chk(o.darkIn > 0.95 && o.darkOut > 0.95, `tunnels (${M}): a bus is dark when it vanishes into the exit tunnel and when it appears in the return tunnel`, JSON.stringify([o.darkIn, o.darkOut])); }
       await ctx.close(); }
 
+    /* ---------------- stickmen size per level ---------------- */
+    console.log('stickmen size');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const F01 = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'funnel', 'f01.json'), 'utf8'));
+      // the drawn size of the stickmen standing on the ramps: the mean scale of their instances
+      const drawn = lv => p.evaluate(lv => { __me.loadLevel(lv, 'export'); __me.freeze(true); __me.advance(0.2);
+        const g = __me.game, M = __me.camera.matrix.clone(); let s = 0, n = 0;
+        g.men.forEach((m, i) => { if (m.state !== 'ramp') return; __me.menIM.getMatrixAt(i, M); const e = M.elements; s += Math.hypot(e[0], e[1], e[2]); n++; });
+        return {k:__me.layout.manScale, s:s/n, n}; }, lv);
+      const a = await drawn(JSON.parse(JSON.stringify(await p.evaluate(() => window.MECore.LEVEL_DATA)))), b = await drawn(F01);
+      chk(a.k === 1 && b.k === F01.manScale && b.k >= 1.25 && Math.abs(b.s/a.s - b.k) < 0.04, 'the stickmen are drawn at their level\'s size (Level 2 x1, level 1 of the funnel larger)',
+        `x${a.k} ${a.s.toFixed(3)} / x${b.k} ${b.s.toFixed(3)} = ${(b.s/a.s).toFixed(3)}`);
+      await ctx.close(); }
+    { const ctx = await newCtx({width:1440, height:900}), ed = await ctx.newPage(); watch(ed);
+      await ed.goto(base + '/editor.html'); await ed.waitForFunction(() => window.__ed, null, {timeout:60000});
+      await ed.evaluate(() => { __ed.setLevel(JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA))); __ed.sel = {kind:'level'}; });
+      await ed.evaluate(() => document.getElementById('msPlus').click()); const k1 = await ed.evaluate(() => __ed.level.manScale);
+      await ed.evaluate(() => document.getElementById('msAuto').click()); const k2 = await ed.evaluate(() => __ed.level.manScale || 1);
+      const auto = await ed.evaluate(() => window.MECore.autoManScale(JSON.parse(JSON.stringify(__ed.level))));
+      chk(k1 === 1.05 && k2 === auto, 'the editor\'s level card sets the stickmen size (− / +) and Auto picks the largest the level has room for', `${k1}, auto ${k2}`);
+      await ctx.close(); }
+
     /* ---------------- editor: layout, preview, independence ---------------- */
     console.log('editor');
     const ctx = await newCtx({width:1440, height:900});

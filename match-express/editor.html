@@ -509,7 +509,7 @@ const rampOf = src => L.RAMPS.find(r => r.src === src);
 function rampOutline(r){ return C.rampOutline(r); }       // the platform as the game draws it (its apron included)
 /* the four corners of a block of cells on a ramp (for tunnels, boxes and rubber-band selection) */
 function cellQuad(r, col, row, w, h){
-  const sl = r.slots, hp = C.RAMP_SP/2, c0 = sl[col][row], c1 = sl[col + w - 1][row + h - 1];
+  const sl = r.slots, hp = r.sp/2, c0 = sl[col][row], c1 = sl[col + w - 1][row + h - 1];
   const across = [c0.fz*0 + (sl[Math.min(r.cols - 1, col + 1)][row].x - sl[Math.max(0, col - 1)][row].x), (sl[Math.min(r.cols - 1, col + 1)][row].z - sl[Math.max(0, col - 1)][row].z)];
   const al = Math.hypot(across[0], across[1]) || 1, ax = across[0]/al*hp, az = across[1]/al*hp, fx = -c0.fx*hp, fz = -c0.fz*hp;
   const A = sl[col][row], Bc = sl[col + w - 1][row], Cc = sl[col + w - 1][row + h - 1], D = sl[col][row + h - 1];
@@ -558,7 +558,7 @@ function draw(){
     const warnR = check.warnings.some(w => w.ramp === r.src);
     path(rampOutline(r)); ctx.fillStyle = '#cdd1d6'; ctx.fill();
     ctx.lineWidth = selR ? 3 : hovR ? 2.5 : 1.5; ctx.strokeStyle = warnR ? '#ff3b3b' : selR ? SEL : hovR ? HOV : '#ffffff'; ctx.stroke();
-    const cells = rd.columns, rad = Math.max(2.5, 0.13*s);
+    const cells = rd.columns, rad = Math.max(2.5, 0.13*s*r.manK);
     for (let c = 0; c < r.cols; c++) for (let k = 0; k < r.rows; k++){
       const sl = r.slots[c][k], [x, y] = W2S(sl.x, sl.z), cell = C.parseCell(cells[c][k]);
       ctx.beginPath(); ctx.arc(x, y, rad, 0, 7);
@@ -654,7 +654,7 @@ function hitNode(x, z, rad){
   return null;
 }
 function hitBlocker(x, z){
-  for (const r of L.RAMPS){ const cell = hitCell(r, x, z, C.RAMP_SP*0.75); if (!cell) continue; const rd = lvl.ramps[r.src], [c, k] = cell;
+  for (const r of L.RAMPS){ const cell = hitCell(r, x, z, r.sp*0.75); if (!cell) continue; const rd = lvl.ramps[r.src], [c, k] = cell;
     const inR = o => c >= o.col && c < o.col + o.w && k >= o.row && k < o.row + o.h;
     const ti = (rd.tunnels || []).findIndex(inR); if (ti >= 0) return {kind:'tunnel', ramp:r.src, i:ti};
     const bi = (rd.boxes || []).findIndex(inR); if (bi >= 0) return {kind:'box', ramp:r.src, i:bi}; }
@@ -712,7 +712,7 @@ cv.addEventListener('pointerdown', e => {
   if (e.button === 1 || spaceDown){ drag = {kind:'pan', ox:VIEW.ox, oy:VIEW.oy}; return; }
   if (e.button === 2){ press = null; ctxAt(e.clientX, e.clientY, x, z, hr); return; }
   if (['paint', 'erase', 'hide'].includes(tool)){ const ri = hitRamp(x, z); if (ri >= 0){ sel = {kind:'ramp', ramp:ri}; drag = {kind:'paint', ramp:ri, done:new Set(), hiddenOn:null}; paintAt(x, z); renderInspector(); return; } }
-  if (['tunnel', 'lock', 'count'].includes(tool)){ for (const R of L.RAMPS){ const c = hitCell(R, x, z, C.RAMP_SP*0.8); if (c){ drag = {kind:'block', tool, ramp:R.src, c0:c, c1:c}; drag.ok = blockOk(drag); draw(); return; } } }
+  if (['tunnel', 'lock', 'count'].includes(tool)){ for (const R of L.RAMPS){ const c = hitCell(R, x, z, R.sp*0.8); if (c){ drag = {kind:'block', tool, ramp:R.src, c0:c, c1:c}; drag.ok = blockOk(drag); draw(); return; } } }
   if (tool === 'ramp'){ addRampAt(x, z); press = null; return; }
   let pi = hitPoint(x, z, hr);
   const nd0 = tool === 'select' ? hitNode(x, z, hr*1.1) : null;
@@ -737,7 +737,7 @@ cv.addEventListener('pointerdown', e => {
     const ri = hitRamp(x, z);
     if (ri >= 0){ if (multi){ toggleSel('ramp', ri); press = null; return; }
       if (!(sel.kind === 'ramp' && rampList().includes(ri))){ sel = {kind:'ramp', ramp:ri}; renderAll(); }
-      const R = rampOf(ri), c = hitCell(R, x, z, C.RAMP_SP*0.8);
+      const R = rampOf(ri), c = hitCell(R, x, z, R.sp*0.8);
       drag = {kind:'cellbox', ramp:ri, c0:c, sx0:mx, sy0:my}; return; }
   }
   drag = {kind:'box', sx0:mx, sy0:my, multi, deselect:!multi};    // empty space: a box selects; a click deselects
@@ -758,7 +758,7 @@ cv.addEventListener('pointermove', e => {
     roadEdit(n => { drag.list.forEach(i => { if (!n.road.points[i]) return; n.road.points[i].x = round(drag.at[i][0] + dx); n.road.points[i].z = round(drag.at[i][1] + dz); }); }, !first); return; }
   if (drag.kind === 'exit'){ roadEdit(n => { const p = n.road.points[n.road.points.length - 1]; p.x = round(x); p.z = round(z); }, !first); return; }
   if (drag.kind === 'paint'){ paintAt(x, z); return; }
-  if (drag.kind === 'block'){ const R = rampOf(drag.ramp), c = hitCell(R, x, z, C.RAMP_SP*1.5); if (c){ drag.c1 = c; drag.ok = blockOk(drag); } draw(); return; }
+  if (drag.kind === 'block'){ const R = rampOf(drag.ramp), c = hitCell(R, x, z, R.sp*1.5); if (c){ drag.c1 = c; drag.ok = blockOk(drag); } draw(); return; }
   if (drag.kind === 'front'){ drag.x = x; drag.z = z; drag.snap = snapFront(x, z); moveFront(drag, !first); return; }
   if (drag.kind === 'shape'){ const src = drag.ramp;      // the back node: the way the ramp points from its boarding point
     const fn = n => { const rd = n.ramps[src]; if (rd.at == null && !rd.front){ rd.at = rampOf(src).s; delete rd.cp; } rd.shape = [[round(x), round(z)]]; delete rd.tilt; };
@@ -813,7 +813,7 @@ function updateHover(x, z){
   if (!h && nd) h = {kind:'node', ramp:nd.ramp, i:nd.i};
   if (!h && tool === 'select' && hitExit(x, z)) h = {kind:'exit'};
   if (!h) h = hitBlocker(x, z);
-  if (!h){ const ri = hitRamp(x, z); if (ri >= 0){ h = {kind:'ramp', ramp:ri}; const c = hitCell(rampOf(ri), x, z, C.RAMP_SP*0.8); if (c) h.cell = c; } }
+  if (!h){ const ri = hitRamp(x, z); if (ri >= 0){ h = {kind:'ramp', ramp:ri}; const c = hitCell(rampOf(ri), x, z, rampOf(ri).sp*0.8); if (c) h.cell = c; } }
   const key = JSON.stringify(h); if (key === JSON.stringify(hover)) return;
   hover = h; cv.style.cursor = h ? (h.kind === 'point' || h.kind === 'node' || h.kind === 'exit' ? 'grab' : 'pointer') : (['paint', 'erase', 'hide', 'tunnel', 'lock', 'count'].includes(tool) ? 'crosshair' : 'default'); draw();
 }
@@ -826,7 +826,7 @@ function ctxAt(cx, cy, x, z, hr){
   const nd = hitNode(x, z, hr*1.1); if (nd){ if (!(sel.kind === 'ramp' && rampList().includes(nd.ramp))) sel = {kind:'ramp', ramp:nd.ramp}; renderAll(); openCtx(cx, cy, 'ramp', {x, z}); return; }
   const bl = hitBlocker(x, z); if (bl){ if (!(sel.kind === bl.kind && blkList().some(o => o.ramp === bl.ramp && o.i === bl.i))) sel = bl; renderAll(); openCtx(cx, cy, bl.kind, {x, z}); return; }
   const ri = hitRamp(x, z);
-  if (ri >= 0){ const c = hitCell(rampOf(ri), x, z, C.RAMP_SP*0.8);
+  if (ri >= 0){ const c = hitCell(rampOf(ri), x, z, rampOf(ri).sp*0.8);
     if (c && sel.kind === 'cells' && sel.ramp === ri && sel.cells.some(q => q[0] === c[0] && q[1] === c[1])){ openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
     if (c && ['paint', 'erase', 'hide'].includes(tool)){ sel = {kind:'cells', ramp:ri, cells:[c]}; renderAll(); openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
     if (!(sel.kind === 'ramp' && rampList().includes(ri))) sel = {kind:'ramp', ramp:ri}; renderAll(); openCtx(cx, cy, 'ramp', {x, z, cell:c}); return; }
@@ -1159,6 +1159,7 @@ function inspLevel(el){
     <div class="row"><label>Queue lanes</label><span class="stepper"><button id="lnMinus" ${lvl.lanes.length <= C.LANE_MIN ? 'disabled' : ''}>−</button><b>${lvl.lanes.length}</b><button id="lnPlus" ${lvl.lanes.length >= C.LANE_MAX ? 'disabled' : ''}>+</button></span><span class="hint">${C.LANE_MIN}-${C.LANE_MAX}</span></div>
     <div class="row"><label>Road</label><span>${lvl.road.points.length} points · length ${L.ROAD.portalS.toFixed(1)}</span></div>
     <div class="row"><label>Ramps</label><span>${lvl.ramps.length}</span></div>
+    <div class="row"><label>Stickmen size</label><span class="stepper"><button id="msMinus" title="Smaller" ${(lvl.manScale || 1) <= 1 ? 'disabled' : ''}>−</button><b>×${(lvl.manScale || 1).toFixed(2)}</b><button id="msPlus" title="Larger" ${(lvl.manScale || 1) >= C.MAN_SCALE_MAX - 1e-9 ? 'disabled' : ''}>+</button></span><button id="msAuto" title="The largest size the level's free space allows (its ramps grow with their stickmen)">Auto</button></div>
     <div class="row"><label>Queue</label><span>${nb} buses</span></div>
     <div class="row"><button id="fitBtn">${icon('fit')} Fit view <kbd>F</kbd></button></div>
     <div class="hint">Select something in the view or the queue to edit it. The return tunnel picks its side by itself (now <b>${L.TUNNEL.side > 0 ? 'right' : 'left'}</b>).</div></div>`);
@@ -1169,6 +1170,10 @@ function inspLevel(el){
   const setDiff = d => edit(n => { n.meta = Object.assign({}, n.meta); const v = (n.meta.diff != null ? n.meta.diff : 4) + d; n.meta.diff = Math.max(1, Math.min(10, v)); });
   c.querySelector('#dMinus').onclick = () => setDiff(-1); c.querySelector('#dPlus').onclick = () => setDiff(1);
   c.querySelector('#lnMinus').onclick = () => setLanes(lvl.lanes.length - 1); c.querySelector('#lnPlus').onclick = () => setLanes(lvl.lanes.length + 1);
+  // the stickmen's size: their ramps grow with them (a size the level has no room for shows as warnings)
+  const setMS = v => edit(n => { v = Math.round(Math.max(1, Math.min(C.MAN_SCALE_MAX, v))*100)/100; if (v > 1) n.manScale = v; else delete n.manScale; });
+  c.querySelector('#msMinus').onclick = () => setMS((lvl.manScale || 1) - 0.05); c.querySelector('#msPlus').onclick = () => setMS((lvl.manScale || 1) + 0.05);
+  c.querySelector('#msAuto').onclick = () => { const v = C.autoManScale(clone(lvl)); setMS(v); toast('Stickmen size ×' + v.toFixed(2) + (v > 1 ? ' (the most this level has room for)' : ' (no room for larger ones)')); };
   el.append(c);
 }
 function inspPoint(el){

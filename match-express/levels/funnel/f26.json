@@ -104,5 +104,6 @@
     "road": "gentle curve",
     "ramps": "diagonal ramps",
     "popup": "tunnel"
-  }
+  },
+  "manScale": 1.15
 }

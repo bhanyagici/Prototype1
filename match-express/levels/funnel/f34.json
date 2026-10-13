@@ -145,5 +145,6 @@
     "diff": 4,
     "road": "gentle wave",
     "ramps": "five ramps"
-  }
+  },
+  "manScale": 1.05
 }

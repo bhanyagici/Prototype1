@@ -53,5 +53,6 @@
     "diff": 3,
     "road": "gentle almost straight road",
     "ramps": "two very wide bleachers"
-  }
+  },
+  "manScale": 1.1
 }

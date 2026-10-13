@@ -801,7 +801,7 @@ function buildRamps(add, L, pillars){
     const g = new THREE.ExtrudeGeometry(sh, {depth:0.18, bevelEnabled:true, bevelThickness:0.03, bevelSize:0.03, bevelSegments:2, curveSegments:2});
     g.rotateX(-Math.PI/2); g.translate(0, y - 0.21, 0); plat.push(g);
     // lines between the columns, from the front row back (straight and evenly spaced: the grid is a regular rectangle)
-    for (let c = 1; c < r.cols; c++){ const u = (c - r.cols/2)*C.RAMP_SP, a = r.across(0.16, u), b = r.across(r.length - 0.12, u);
+    for (let c = 1; c < r.cols; c++){ const u = (c - r.cols/2)*r.sp, a = r.across(0.16*r.manK, u), b = r.across(r.length - 0.12*r.manK, u);
       geos.push(extrude([[a.x, y + 0.004, a.z], [b.x, y + 0.004, b.z]], [[-0.012, 0, lineC], [0.012, 0, lineC]])); }
     // railings: left side (from its front corner on the road edge), back, right side
     const hw = r.halfW - 0.07, edge = (sv, sgn) => { const q = r.across(sv, sgn*hw); return [q.x, y + 0.32, q.z]; };
@@ -1347,11 +1347,14 @@ function limbs(i, base, P){
     _a.compose(_v, _q, _one); _a.premultiply(base); legIM.setMatrixAt(i*2 + k, _a);
   }
 }
+/* the level's stickman size (C.MAN_SCALE_MAX at most): set per man before he is drawn (seated ones stay small enough to
+   fit the bus's seats) */
+let MANK = 1;
 function setMan(i, x, y, z, yaw, pitch, roll, P, sy = 1, blobY = null){
-  _e.set(pitch, yaw, roll, 'YXZ'); _q.setFromEuler(_e); _v.set(x, y, z); const sx = 1/Math.sqrt(sy); _s.set(sx, sy, sx);
+  _e.set(pitch, yaw, roll, 'YXZ'); _q.setFromEuler(_e); _v.set(x, y, z); const sx = 1/Math.sqrt(sy); _s.set(sx*MANK, sy*MANK, sx*MANK);
   _m.compose(_v, _q, _s); menIM.setMatrixAt(i, _m); limbs(i, _m, P);
   if (blobY === null) menBlob.setMatrixAt(i, _zero);
-  else { const lift = clamp(1 - (y - blobY)*2.2, 0.35, 1); _a.compose(_v.set(x, blobY + 0.012, z), _q.identity(), _s.set(lift, 1, lift)); menBlob.setMatrixAt(i, _a); }
+  else { const lift = clamp(1 - (y - blobY)*2.2, 0.35, 1); _a.compose(_v.set(x, blobY + 0.012, z), _q.identity(), _s.set(lift*MANK, 1, lift*MANK)); menBlob.setMatrixAt(i, _a); }
 }
 function setManMatrix(i, mat, P){ menIM.setMatrixAt(i, mat); limbs(i, mat, P); menBlob.setMatrixAt(i, _zero); }
 function hideMan(i){ menIM.setMatrixAt(i, _zero); for (const k of [0, 1]){ armIM.setMatrixAt(i*2 + k, _zero); legIM.setMatrixAt(i*2 + k, _zero); } menBlob.setMatrixAt(i, _zero); }
@@ -1553,7 +1556,7 @@ function makeLabel(bg){                             // a number on a rounded tag
 function cellBlock(k, col, row, w, h){
   const r = L.RAMPS[k], a = r.slots[col][row], b = r.slots[col + w - 1][row + h - 1], c = r.slots[col][row + h - 1], d = r.slots[col + w - 1][row];
   const x = (a.x + b.x + c.x + d.x)/4, z = (a.z + b.z + c.z + d.z)/4, fx = (a.fx + b.fx)/2, fz = (a.fz + b.fz)/2;
-  return {x, y:r.y, z, yaw:Math.atan2(fx, fz), W:w*C.RAMP_SP, D:h*C.RAMP_SP};
+  return {x, y:r.y, z, yaw:Math.atan2(fx, fz), W:w*r.sp, D:h*r.sp};
 }
 const bellowsGeo = (() => { const parts = [{geo:new THREE.BoxGeometry(0.66, 0.4, 1), m:M(), color:col('#8b919c')}];
   for (let i = 0; i < 7; i++) parts.push({geo:rbox(0.78, 0.5, 0.07, 0.03, 1), m:M(0, 0, -0.42 + i*0.14), color:col(i % 2 ? '#a7adb7' : '#bfc4cc')});
@@ -2058,7 +2061,7 @@ function shiftCols(t){
     // as drawn last frame: he only moves away from the ramp)
     const rid = colRun.get(k*1000 + c), rv = rid != null ? MV[rid] : null;
     if (rv && t - rv.runT < C.RUN_TIME){ const q = rv.runPos || [rv.runFrom.x, rv.runFrom.z];
-      prev = rv.runRow - ((q[0] - rv.runFrom.x)*rv.runDir[0] + (q[1] - rv.runFrom.z)*rv.runDir[1])/C.RAMP_SP; }
+      prev = rv.runRow - ((q[0] - rv.runFrom.x)*rv.runDir[0] + (q[1] - rv.runFrom.z)*rv.runDir[1])/L.RAMPS[k].sp; }
     else if (rid != null) colRun.delete(k*1000 + c);
     for (const i of col){ const mv = MV[i];
       if (mv.t0 >= 0){ const k = clamp((t - mv.t0)/(C.COLUMN_SHIFT_TIME*1.15), 0, 1); mv.shiftK = k;
@@ -2068,17 +2071,18 @@ function shiftCols(t){
 }
 /* a boarding man's run: first straight forward off the grid on to the apron (past the front line of the stickmen, so he
    never brushes the men still standing), then on to the point just short of his seat; k: 0..1 along the whole way */
-const RUN_OUT = 0.38;
+const RUN_OUT = 0.38;   // (times the level's stickman size)
 function runPoint(mv, F, E, k){
-  const d = mv.runDir || [0, 0], G = [F.x + d[0]*RUN_OUT, F.z + d[1]*RUN_OUT], l1 = RUN_OUT*Math.hypot(d[0], d[1]), l2 = Math.hypot(E.x - G[0], E.z - G[1]), a = k*(l1 + l2);
+  const o = RUN_OUT*(L.manScale || 1), d = mv.runDir || [0, 0], G = [F.x + d[0]*o, F.z + d[1]*o], l1 = o*Math.hypot(d[0], d[1]), l2 = Math.hypot(E.x - G[0], E.z - G[1]), a = k*(l1 + l2);
   if (a <= l1 || l2 < 1e-6){ const f = l1 > 1e-6 ? Math.min(1, a/l1) : 1; return [F.x + (G[0] - F.x)*f, F.z + (G[1] - F.z)*f]; }
   const f = (a - l1)/l2; return [G[0] + (E.x - G[0])*f, G[1] + (E.z - G[1])*f];
 }
 function updateMen(t, vdt){
   updateCheer(); shiftCols(t);
   scene.updateMatrixWorld();
+  const K = L.manScale || 1, KS = Math.min(K, C.SEAT_SCALE_MAX);
   for (let i=0;i<game.men.length;i++){
-    const m = game.men[i], mv = MV[i];
+    const m = game.men[i], mv = MV[i]; MANK = K;
     if (mv.fly){                                        // tumbling out of a crash: ballistic with bounces
       const f = mv.fly;
       if (!f.rest){ f.v.y -= 9*vdt; f.p.addScaledVector(f.v, vdt); f.r.addScaledVector(f.w, vdt);
@@ -2112,7 +2116,7 @@ function updateMen(t, vdt){
       const sway = Math.sin(t*mv.swayF + mv.ph)*mv.swayA;
       if (mv.popT != null && t - mv.popT < 0.25) y -= 0.25*(1 - (t - mv.popT)/0.25);   // stepping out of a tunnel
       setMan(i, p.x, y, p.z, yaw, 0, sway, P, sy, p.y);
-      if (m.hidden && !m.revealed) markHidden(p.x, y + MH + 0.16, p.z);
+      if (m.hidden && !m.revealed) markHidden(p.x, y + MH*K + 0.16, p.z);
       if (mv.tint){ manColor(i, 0); mv.tint = 0; }
       continue;
     }
@@ -2126,7 +2130,7 @@ function updateMen(t, vdt){
         mv.runPos = q; setMan(i, q[0], F.y + Math.abs(Math.sin(u/0.5*Math.PI*5))*0.05, q[1], yaw, 0.22, 0, pose(-1.0*sw, 1.0*sw, 0.18, 0.18, 0.9*sw, -0.9*sw), 1, F.y); }
       else if (u < 0.62){ const k = (u - 0.5)/0.12; mv.runPos = [E.x, E.z];
         setMan(i, E.x, E.y, E.z, yaw, 0.3, 0, pose(0.7, 0.7, 0.3, 0.3, -0.5, -0.5), 1 - 0.26*Math.sin(Math.PI*k), E.y); }
-      else { const k = (u - 0.62)/0.38, lift = Math.max(0, T.y - E.y); mv.runPos = [lerp(E.x, T.x, k), lerp(E.z, T.z, k)];
+      else { const k = (u - 0.62)/0.38, lift = Math.max(0, T.y - E.y); mv.runPos = [lerp(E.x, T.x, k), lerp(E.z, T.z, k)]; MANK = lerp(K, KS, k);   // down to seat size
         setMan(i, lerp(E.x, T.x, k), lerp(E.y, T.y, easeOut(k)) + Math.sin(Math.PI*k)*(0.45 + lift*0.35), lerp(E.z, T.z, k), yaw, -0.12, 0,
                pose(-2.6, -2.6, 0.45, 0.45, -1.0*Math.sin(Math.PI*k), -1.0*Math.sin(Math.PI*k)), 1 + 0.18*Math.sin(Math.PI*k)); }
       continue;
@@ -2135,7 +2139,7 @@ function updateMen(t, vdt){
     seatMatrix(i, seatMat);
     const land = t - mv.landT, bounce = land < 0.35 ? Math.sin(land/0.35*Math.PI)*Math.exp(-land*4)*0.3 : 0;
     _e.set(v.pitch*1.8 + Math.sin(t*1.9 + mv.ph)*0.02, 0, v.roll*1.6 + Math.sin(t*mv.swayF + mv.ph)*0.04, 'XYZ'); _q.setFromEuler(_e);
-    _v.set(0, bounce*0.2, 0); _s.set(1 + bounce*0.25, 1 - bounce*0.5, 1 + bounce*0.25);
+    _v.set(0, bounce*0.2, 0); _s.set((1 + bounce*0.25)*KS, (1 - bounce*0.5)*KS, (1 + bounce*0.25)*KS);
     _a.compose(_v, _q, _s); seatMat.multiply(_a);
     if (b.state === 'jump' && v.jump && t - b.tJump > v.jump.t1 - 0.1){ const w = Math.sin(t*13 + mv.ph)*0.35;
       setManMatrix(i, seatMat, pose(-2.0 + w, -2.0 - w, 1.05, 1.05, -1.5, -1.5)); }
@@ -2538,7 +2542,7 @@ window.__me = {
   tap(a){ return a && tapAllowed(busOfAction(a)) ? doAction(a) : false; },
   get tutorial(){ return TUT ? {kind:TUT.kind, step:TUT.step, bus:TUT.bus, hand:TUT.hand, tip:$('tip').dataset.text || ''} : null; },
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
-  stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS,
+  stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
   get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, SPEEDS,
   jellyFrames(id){ const v = views[id]; if (!v) return null; v.root.updateMatrixWorld(true);   // the body's frames and wheels in the world, front to back
     const at = (x, y, z) => { const m = new THREE.Matrix4(); if (v.bent) skPose(v, x, y, z, 0, m); else m.makeTranslation(x, y, z);

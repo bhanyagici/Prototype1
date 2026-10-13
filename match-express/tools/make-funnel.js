@@ -197,6 +197,7 @@ function worker(){
   function finish(spec, b, lv, h, full, t0, tries, tag){
     const band = BANDS[spec.diff], early = spec.n <= 5;
     const ff = early ? failFree(lv) : null;
+    { const ms = C.autoManScale(JSON.parse(JSON.stringify(lv))); if (ms > 1) lv.manScale = ms; else delete lv.manScale; }   // stickmen as large as it has room for
     fs.writeFileSync(path.join(OUT, id(spec.n) + '.json'), fmt(lv) + '\n');
     const ck = C.checkLevel(JSON.parse(JSON.stringify(lv))), N = C.normalizeLevel(JSON.parse(JSON.stringify(lv)));
     const res = {id:id(spec.n), n:spec.n, role:spec.role, diff:spec.diff, band, lanes:lv.lanes.length, h:+h.toFixed(3), rate:full.rate, wins:full.wins, runs:full.runs,

@@ -58,5 +58,6 @@
     "road": "hairpin",
     "ramps": "bleachers inside and outside the hairpin",
     "hint": "triple"
-  }
+  },
+  "manScale": 1.05
 }

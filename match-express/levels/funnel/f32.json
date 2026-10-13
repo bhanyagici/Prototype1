@@ -107,5 +107,6 @@
     "road": "gentle curve",
     "ramps": "L-shaped ramps",
     "popup": "lock"
-  }
+  },
+  "manScale": 1.2
 }

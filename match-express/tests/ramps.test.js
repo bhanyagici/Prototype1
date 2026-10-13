@@ -17,10 +17,10 @@ const TOL = 0.005;                                    // world units (half a cen
 const SP = C.RAMP_SP;
 
 /* distance from a point to the road's centre line (the dense polyline), searched near arc length s */
-function centreDist(R, x, z, s){
+function centreDist(R, x, z, s, win = 4){
   let best = 1e9;
   for (let i = 0; i < R.n - 1; i++){
-    if (Math.abs(R.cum[i] - s) > 4) continue;
+    if (Math.abs(R.cum[i] - s) > win) continue;
     const ax = R.P[i*3], az = R.P[i*3 + 2], bx = R.P[i*3 + 3], bz = R.P[i*3 + 5], dx = bx - ax, dz = bz - az, l2 = dx*dx + dz*dz || 1e-12;
     const t = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
     best = Math.min(best, Math.hypot(x - ax - t*dx, z - az - t*dz));
@@ -31,7 +31,7 @@ function centreDist(R, x, z, s){
 function frontGap(L, r){
   let worst = 0, n = 0;
   const w = r.halfW, N = Math.max(8, Math.ceil(2*w/0.02)), at = u => r.across(r.frontAt(u), u);
-  for (let k = 0; k <= N; k++){ const u = -w + 2*w*k/N, e = at(u), d = centreDist(L.ROAD, e.x, e.z, r.s) - C.ROAD_HALF;
+  for (let k = 0; k <= N; k++){ const u = -w + 2*w*k/N, e = at(u), d = centreDist(L.ROAD, e.x, e.z, r.s, w + 2) - C.ROAD_HALF;
     if (Math.abs(d) > Math.abs(worst)) worst = d; n++; }
   // the drawn outline starts with the same front edge, corner to corner
   const f0 = r.outline[0], f1 = r.outline[r.front.length - 1], e0 = at(-w), e1 = at(w);
@@ -42,7 +42,7 @@ function frontGap(L, r){
 function gridError(r){
   const s0 = r.slots[0][0], n = r.dir, t = [-n[1], n[0]], sg = r.cols > 1 ? Math.sign((r.slots[1][0].x - s0.x)*t[0] + (r.slots[1][0].z - s0.z)*t[1]) || 1 : 1;
   let e = 0; for (let c = 0; c < r.cols; c++) for (let k = 0; k < r.rows; k++){ const q = r.slots[c][k];
-    e = Math.max(e, Math.hypot(q.x - (s0.x + sg*t[0]*c*SP + n[0]*k*SP), q.z - (s0.z + sg*t[1]*c*SP + n[1]*k*SP))); }
+    e = Math.max(e, Math.hypot(q.x - (s0.x + sg*t[0]*c*r.sp + n[0]*k*r.sp), q.z - (s0.z + sg*t[1]*c*r.sp + n[1]*k*r.sp))); }
   return e;
 }
 /* the back edge: how far its points stray from the straight line between its corners, and how far the corners are
@@ -67,7 +67,7 @@ const nRamps = ALL.reduce((a, x) => a + x.L.RAMPS.length, 0);
 console.log('every ramp of every level: a regular grid of stickmen');
 { let worst = 0, at = ''; const bad = [];
   for (const {id, L} of ALL) for (const r of L.RAMPS){ const e = gridError(r); if (e > worst){ worst = e; at = `${id} ramp ${r.src + 1}`; } if (e > 1e-9) bad.push(`${id} ramp ${r.src + 1}: ${e.toExponential(1)}`); }
-  chk(!bad.length, `${nRamps} ramps in ${ALL.length} levels: the stickmen stand in a regular rectangle of columns x rows, ${SP} apart (never bent, squeezed or fanned)`,
+  chk(!bad.length, `${nRamps} ramps in ${ALL.length} levels: the stickmen stand in a regular rectangle of columns x rows, ${SP} apart times the level's stickman size (never bent, squeezed or fanned)`,
     bad.length ? bad.slice(0, 5).join('; ') : `worst ${worst.toExponential(1)} off the grid (${at})`);
   let curved = 0; for (const {L} of ALL) for (const r of L.RAMPS) if (r.apron > 0.05 && gridError(r) < 1e-9) curved++;
   chk(curved >= 10, 'ramps beside a curve keep the same regular grid', `${curved} ramps with an apron`);
@@ -90,14 +90,14 @@ console.log('every ramp of every level: the front edge on the road edge, an apro
   chk(bent >= 10, 'front edges along a curved stretch of road are bent with it (not a straight chord)', `${bent} curved front edges`);
   let deep = 0, worstA = 0, atA = ''; const far = [];
   for (const {id, L} of ALL) for (const r of L.RAMPS){
-    if (r.apron > worstA){ worstA = r.apron; atA = `${id} ramp ${r.src + 1}`; } if (r.apron > C.RAMP_APRON_MAX + 1e-9) deep++;
+    if (r.apron/r.manK > worstA){ worstA = r.apron/r.manK; atA = `${id} ramp ${r.src + 1}`; } if (r.apron > C.RAMP_APRON_MAX*r.manK + 1e-9) deep++;
     // the rectangle's front line touches the road edge somewhere (the apron is nil there) and the first row stands
     // 0.34 behind that line: as close to the road as the apron allows
     let top = -1e9; for (let k = 0; k <= 200; k++) top = Math.max(top, r.frontAt(-r.halfW + 2*r.halfW*k/200));
     const s0 = r.slots[0][0], O = r.across(0, 0), sv = (s0.x - O.x)*r.dir[0] + (s0.z - O.z)*r.dir[1];
-    if (Math.abs(top) > 1e-3 || Math.abs(sv - 0.34) > 1e-9) far.push(`${id} ramp ${r.src + 1}: ${top.toFixed(4)}, first row ${sv.toFixed(3)}`); }
-  chk(!deep, `the apron between the curved road edge and the straight first row is at most one row deep (${C.RAMP_APRON_MAX})`, `deepest ${worstA.toFixed(3)} (${atA})`);
-  chk(!far.length, 'the first row stands as close to the road as the apron allows (0.34 behind the point where the road edge reaches furthest)', far.slice(0, 3).join('; '));
+    if (Math.abs(top) > 1e-3 || Math.abs(sv - 0.34*r.manK) > 1e-9) far.push(`${id} ramp ${r.src + 1}: ${top.toFixed(4)}, first row ${sv.toFixed(3)}`); }
+  chk(!deep, `the apron between the curved road edge and the straight first row is at most one row deep (${C.RAMP_APRON_MAX}, times the stickman size)`, `deepest ${worstA.toFixed(3)} (${atA}, in normal-size units)`);
+  chk(!far.length, 'the first row stands as close to the road as the apron allows (0.34 behind the point where the road edge reaches furthest, times the stickman size)', far.slice(0, 3).join('; '));
   // the checker: a ramp on a bend too tight for its width warns, and says what to do
   const lv = clone(C.LEVEL_DATA); lv.ramps[0].columns = Array.from({length:14}, () => lv.ramps[0].columns[0].slice()); lv.ramps[0].at = 24.5; delete lv.ramps[0].shape; delete lv.ramps[0].tilt;
   const w = C.checkLevel(clone(lv)).warnings.find(x => x.kind === 'ramp-apron' && x.ramp === 0);
@@ -130,16 +130,17 @@ console.log('stickmen never overlap: at the start and during column shifts');
   // grid and runs on to his seat (runPoint: easeInOut over the first half of RUN_TIME), crouches and hops in; until then
   // the man stepping up behind him keeps a stickman's width back.  He must not brush the men still standing (two runners
   // meeting at the bus door are past the ramp).  Checked every 1/60 s while anyone moves.
-  const ease = (t, s) => 1 + (s + 1)*Math.pow(t - 1, 3) + s*Math.pow(t - 1, 2), DUR = C.COLUMN_SHIFT_TIME*1.15, W = C.MAN_W, GAP = (W + 0.005)/SP;
+  const ease = (t, s) => 1 + (s + 1)*Math.pow(t - 1, 3) + s*Math.pow(t - 1, 2), DUR = C.COLUMN_SHIFT_TIME*1.15;
   const inOut = t => t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
   const slotPos = (r, c, f) => { const cs = r.slots[c], i0 = Math.max(0, Math.min(cs.length - 1, Math.floor(f))), i1 = Math.min(cs.length - 1, i0 + 1), k = Math.max(0, Math.min(1, f - i0));
     return [cs[i0].x + (cs[i1].x - cs[i0].x)*k, cs[i0].z + (cs[i1].z - cs[i0].z)*k]; };
   let worstStart = 1e9, atStart = '', worstShift = 1e9, atShift = '', shifts = 0, checks = 0, games = 0, runs = 0; const bad = [];
   for (const {id, lv, L} of ALL){
+    const K = L.manScale || 1, W = C.MAN_W*K, GAP = (C.MAN_W + 0.005)/SP;     // a stickman's width at this level's size (in rows: the same)
     // at the start: every cell of every ramp, all ramps together
     const cells = L.RAMPS.flatMap(r => r.slots.flat());
     for (let a = 0; a < cells.length; a++) for (let b = a + 1; b < cells.length; b++){ const d = Math.hypot(cells[a].x - cells[b].x, cells[a].z - cells[b].z);
-      if (d < worstStart){ worstStart = d; atStart = id; } }
+      if (d/K < worstStart){ worstStart = d/K; atStart = id; } }
     // a whole game (greedy play)
     const g = C.createGame(clone(lv), {}), RS = g.L.RAMPS, MV = new Map(), RUN = new Map(), COLRUN = new Map();
     g.men.forEach((m, i) => { if (m.state !== 'ramp') return; const at = g.ramps[m.ramp].cols[m.col].indexOf(i), d = at >= 0 ? at : m.row; MV.set(i, {disp:d, from:d, to:d, t0:-1}); });
@@ -152,7 +153,7 @@ console.log('stickmen never overlap: at the start and during column shifts');
       return a <= l1 ? [q.F[0] + (q.G[0] - q.F[0])*a/l1, q.F[1] + (q.G[1] - q.F[1])*a/l1] : [q.G[0] + (q.E[0] - q.G[0])*(a - l1)/l2, q.G[1] + (q.E[1] - q.G[1])*(a - l1)/l2]; };
     const sample = t => { let moving = RUN.size > 0;
       g.ramps.forEach((R, k) => R.cols.forEach((col, c) => { let prev = -Infinity;
-        const rq = COLRUN.get(k*1000 + c); if (rq && t - rq.t < C.RUN_TIME){ const p = runAt(rq, t); prev = rq.row - ((p[0] - rq.F[0])*rq.dir[0] + (p[1] - rq.F[1])*rq.dir[1])/SP; }
+        const rq = COLRUN.get(k*1000 + c); if (rq && t - rq.t < C.RUN_TIME){ const p = runAt(rq, t); prev = rq.row - ((p[0] - rq.F[0])*rq.dir[0] + (p[1] - rq.F[1])*rq.dir[1])/RS[k].sp; }
         for (const i of col){ const mv = MV.get(i); if (!mv) continue;
           if (mv.t0 >= 0 && t >= mv.t0){ const u = Math.min(1, (t - mv.t0)/DUR); mv.disp = mv.from + (mv.to - mv.from)*ease(u, 1.4); if (u >= 1){ mv.t0 = -1; mv.disp = mv.to; } }
           if (mv.t0 >= 0) moving = true;
@@ -162,7 +163,7 @@ console.log('stickmen never overlap: at the start and during column shifts');
         R.cols.forEach((col, c) => col.forEach(i => { const mv = MV.get(i); if (mv) P.push([c, slotPos(r, c, mv.disp), mv.t0 >= 0]); }));
         for (const [i, q] of RUN){ if (q.k !== k) continue; if (t - q.t > C.RUN_TIME){ RUN.delete(i); continue; } P.push([-9, runAt(q, t), true]); }
         for (let a = 0; a < P.length; a++) if (P[a][2]) for (let b = 0; b < P.length; b++){ if (b === a || (P[a][0] < 0 && P[b][0] < 0) || (P[a][0] >= 0 && P[b][0] >= 0 && Math.abs(P[a][0] - P[b][0]) > 1)) continue;
-          const d = Math.hypot(P[a][1][0] - P[b][1][0], P[a][1][1] - P[b][1][1]); checks++; if (d < worst){ worst = d; if (process.env.DBG) worstInfo = {t, a:P[a], b:P[b], runs:[...RUN.values()].filter(q => q.k === k).map(q => ({dt:+(t - q.t).toFixed(3), F:q.F.map(v => +v.toFixed(2)), G:q.G.map(v => +v.toFixed(2)), E:q.E.map(v => +v.toFixed(2))})), dir:RS[k].dir.map(v => +v.toFixed(2))}; } } }); };
+          const d = Math.hypot(P[a][1][0] - P[b][1][0], P[a][1][1] - P[b][1][1])/K; checks++; if (d < worst){ worst = d; if (process.env.DBG) worstInfo = {t, a:P[a], b:P[b], runs:[...RUN.values()].filter(q => q.k === k).map(q => ({dt:+(t - q.t).toFixed(3), F:q.F.map(v => +v.toFixed(2)), G:q.G.map(v => +v.toFixed(2)), E:q.E.map(v => +v.toFixed(2))})), dir:RS[k].dir.map(v => +v.toFixed(2))}; } } }); };
     while (!g.result && g.t < 1500){
       think -= C.SIM_DT; if (think <= 0){ think += C.BOT_THINK; const a = C.greedyPick(g); if (a) C.applyAction(g, a); }
       C.step(g, C.SIM_DT);
@@ -171,7 +172,7 @@ console.log('stickmen never overlap: at the start and during column shifts');
         if (e.type === 'board'){ const mv = MV.get(e.man), r = RS[e.ramp], F = slotPos(r, e.col, mv ? Math.max(0, mv.disp) : 0), b = g.buses[e.bus];
           // his seat on the bus (drawn BUS_DRAW of its size), and the point 0.6 short of it where the run ends
           const q = C.seatLocal(e.seat, b.len), k = C.BUS_DRAW, T = [b.x + (q.x*b.dz + q.z*b.dx)*k, b.z + (-q.x*b.dx + q.z*b.dz)*k], dl = Math.hypot(F[0] - T[0], F[1] - T[1]) || 1;
-          const f = r.slots[e.col][0], G = [F[0] + f.fx*0.38, F[1] + f.fz*0.38];        // off the grid first (index.html runPoint)
+          const f = r.slots[e.col][0], G = [F[0] + f.fx*0.38*K, F[1] + f.fz*0.38*K];    // off the grid first (index.html runPoint)
           const run = {k:e.ramp, t:e.t, F, G, T, E:[T[0] + (F[0] - T[0])/dl*0.6, T[1] + (F[1] - T[1])/dl*0.6], row:mv ? Math.max(0, mv.disp) : 0, dir:[f.fx, f.fz]};
           RUN.set(e.man, run); COLRUN.set(e.ramp*1000 + e.col, run); MV.delete(e.man); runs++; } }
       g.ramps.forEach(R => R.cols.forEach(col => col.forEach((m, i) => { let mv = MV.get(m);
@@ -181,11 +182,23 @@ console.log('stickmen never overlap: at the start and during column shifts');
     }
     games++;
     if (worst < worstShift){ worstShift = worst; atShift = id; }
-    if (worst < W) bad.push(`${id}: ${worst.toFixed(3)}` + (process.env.DBG ? JSON.stringify(worstInfo) : ''));
+    if (worst < C.MAN_W) bad.push(`${id}: ${worst.toFixed(3)}` + (process.env.DBG ? JSON.stringify(worstInfo) : ''));
   }
-  chk(worstStart >= W, `at the start no two stickmen of ${ALL.length} levels are closer than a stickman's width (${W})`, `closest ${worstStart.toFixed(3)} (${atStart})`);
-  chk(!bad.length && shifts > 1000, `through every column shift of a whole game in each of ${games} levels (and every run off it), no two stickmen on a ramp come closer than ${W}`,
+  chk(worstStart >= C.MAN_W, `at the start no two stickmen of ${ALL.length} levels are closer than a stickman's width (${C.MAN_W} times the level's stickman size)`, `closest ${worstStart.toFixed(3)} (${atStart}, in stickman sizes)`);
+  chk(!bad.length && shifts > 1000, `through every column shift of a whole game in each of ${games} levels (and every run off it), no two stickmen on a ramp come closer than a stickman's width`,
     bad.length ? bad.slice(0, 5).join('; ') : `${shifts} shifts, ${runs} runs, ${checks} distances while moving, closest ${worstShift.toFixed(3)} (${atShift})`);
+}
+
+console.log('stickmen size per level');
+{ const sizes = ALL.map(({id, lv, L}) => [id, L.manScale || 1, C.autoManScale(clone(lv))]);
+  const off = sizes.filter(([, k, a]) => Math.abs(k - a) > 1e-9);
+  chk(!off.length, 'every level\'s stickman size is the largest its free space allows (its grown ramps raise no warning), up to ' + C.MAN_SCALE_MAX, off.slice(0, 4).map(x => x.join(' ')).join('; '));
+  const big = sizes.filter(([, k]) => k >= 1.2).map(x => x[0]), crowded = ['crowded-rush', 'crowded-rush-curve'].map(id => sizes.find(x => x[0] === id));
+  chk(big.length >= 3 && crowded.every(x => x && x[1] === 1), 'levels with few or short ramps get larger stickmen (up to 1.3x); crowded levels keep the normal size',
+    `${big.length} levels at 1.2x or more (${big.slice(0, 4).join(', ')}...), Crowded Rush ${crowded.map(x => x[1]).join(' / ')}`);
+  chk(C.MAN_W*C.SEAT_SCALE_MAX <= C.ROW_PITCH && C.MAN_W*C.SEAT_SCALE_MAX <= 0.42, 'seated, stickmen stay at most ' + C.SEAT_SCALE_MAX + 'x, so their heads still fit between two seat rows (' + C.ROW_PITCH + ' apart)', (C.MAN_W*C.SEAT_SCALE_MAX).toFixed(3));
+  const lv = clone(C.LEVEL_DATA); lv.manScale = 1.3; const r1 = C.buildLayout(clone(C.LEVEL_DATA)).RAMPS[0], r2 = C.buildLayout(lv).RAMPS[0];
+  chk(Math.abs(r2.sp - 1.3*r1.sp) < 1e-9 && Math.abs(r2.halfW - 1.3*r1.halfW) < 1e-9 && gridError(r2) < 1e-9, 'a level\'s stickman size grows its ramps with it: spacing, width and margins (the grid stays regular)', `spacing ${r1.sp.toFixed(3)} -> ${r2.sp.toFixed(3)}`);
 }
 
 console.log('the front stays flush when the road or the ramp moves');

@@ -125,6 +125,7 @@ function worker(){
   function save(spec, lv, e, t0, tag){
     lv.meta.difficulty = C.difficulty(e.rate); lv.meta.random = +e.rate.toFixed(3); lv.meta.greedyT = +e.greedy.t.toFixed(1);
     const out = {format:2, id:spec.id, name:spec.name}; Object.assign(out, lv, {id:spec.id, name:spec.name});
+    { const ms = C.autoManScale(JSON.parse(JSON.stringify(out))); if (ms > 1) out.manScale = ms; else delete out.manScale; }   // stickmen as large as it has room for
     fs.writeFileSync(path.join(OUT, spec.id + '.json'), fmt(out) + '\n');
     const want = spec.target ? ` (target ${spec.target})` : '';
     log(`${spec.id.padEnd(24)} ${lv.meta.difficulty.padEnd(9)}${want.padEnd(20)} random ${(e.rate*100).toFixed(1).padStart(5)}%  greedy ${e.greedy.t.toFixed(0)} s  ${tag}  ${((Date.now() - t0)/1000).toFixed(0)} s`);

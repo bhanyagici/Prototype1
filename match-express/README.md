@@ -31,6 +31,37 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Stickmen size per level
+
+- **The field:** each level has a stickman size, `manScale`, from 1 to 1.3 (left out at 1).
+- **Ramps grow with it:** a level's ramps grow with its stickmen. The grid's spacing, the
+  ramp's margins and the deepest allowed apron are all times the size, so larger stickmen
+  never overlap. The no-overlap test runs at each level's own size.
+- **Chosen from free space:** `MECore.autoManScale(level)` picks the largest step, up to 1.3,
+  at which the level's grown ramps raise no warning it does not already have. Levels with
+  few or short ramps get larger stickmen; crowded ones keep the normal size.
+- **Every level carries its size:** `tools/set-man-scale.js` wrote it into every level
+  (the funnel and showcase generators now set it too):
+
+  | size | levels |
+  |---|---|
+  | ×1.3 | 6 |
+  | ×1.2 – 1.25 | 3 |
+  | ×1.05 – 1.15 | 17 |
+  | ×1 | 50 (Level 2, both Crowded Rush levels, the demos and most of the funnel) |
+- **Seats:** seated in a bus, a stickman stays at most ×1.08, so heads still fit between
+  two seat rows. A boarding stickman shrinks to that size during his hop into the bus.
+- **Editor:** the level card has *Stickmen size* (− / +, 0.05 steps) and *Auto*. A size
+  the level has no room for shows as the usual ramp warnings.
+- **Tested:**
+  - `tests/ramps.test.js` checks four things:
+    - each level's size is the one its free space allows;
+    - crowded levels keep 1, and several levels get 1.2 or more;
+    - a larger size grows the ramp's spacing, width and margins together;
+    - seated stickmen fit their seats.
+  - `tests/browser.test.js` (*stickmen size*) checks that the game draws them at their
+    level's size (×1.3 next to ×1), and that the editor's − / + and *Auto* set it.
+
 ## Ramps: regular grids, curved aprons
 
 Gameplay rules are unchanged; the only play-relevant change is noted under *Boarding order*.
@@ -1281,12 +1312,12 @@ node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, send
                               #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
 node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
-node tests/ramps.test.js      # 17 checks: every ramp of every level (built-in, presets, funnel, showcase): a regular grid of stickmen,
+node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, presets, funnel, showcase): a regular grid of stickmen,
                               #   the front edge flush on the road edge (every 2 cm), an apron of at most one row, the first row as
                               #   close as it allows, a straight back edge with square corners, the boarding point and the order;
                               #   no two stickmen on a ramp closer than a stickman's width at the start and through every column
                               #   shift and run of a whole game; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 108 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/browser.test.js    # 110 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

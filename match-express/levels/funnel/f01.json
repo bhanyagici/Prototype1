@@ -32,5 +32,6 @@
     "ramps": "one diagonal ramp",
     "tutorial": "first-sends",
     "tutorialLane": 1
-  }
+  },
+  "manScale": 1.3
 }

@@ -79,5 +79,6 @@
     "difficulty": "Very Hard",
     "random": 0,
     "greedyT": 207.3
-  }
+  },
+  "manScale": 1.05
 }

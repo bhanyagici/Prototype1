@@ -69,5 +69,6 @@
     "difficulty": "Easy",
     "random": 0.94,
     "greedyT": 97.1
-  }
+  },
+  "manScale": 1.25
 }

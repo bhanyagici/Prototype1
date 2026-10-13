@@ -75,5 +75,6 @@
     "diff": 8,
     "road": "long winding road",
     "ramps": "wide diagonal ramps in the bends"
-  }
+  },
+  "manScale": 1.05
 }

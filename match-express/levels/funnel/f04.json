@@ -42,5 +42,6 @@
     "diff": 3,
     "road": "long almost straight road",
     "ramps": "long narrow diagonal ramps"
-  }
+  },
+  "manScale": 1.3
 }

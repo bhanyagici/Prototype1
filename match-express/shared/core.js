@@ -962,6 +962,9 @@ function dispDir(dx, dz, z){ const a = dx*dispSx(z), b = dz*dispSlope(z), l = Ma
 const RAMP_SP = 0.36;                               // stickman spacing along and across a ramp
 const RAMP_APRON_MAX = RAMP_SP;                     // the deepest apron between the road edge and a ramp's first row: one row
 const MAN_W = 0.31;                                 // a stickman's width (its head; two never come closer)
+/* a level's stickman size (`manScale`, 1 when omitted): its ramps' grid spacing, margins and apron grow with it, so
+   larger stickmen never overlap; seated in a bus they stay at most SEAT_SCALE_MAX (two seat rows are ROW_PITCH apart) */
+const MAN_SCALE_MAX = 1.3, SEAT_SCALE_MAX = 1.08;
 
 /* ============================= HELPERS ============================== */
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a);
@@ -1077,6 +1080,7 @@ function normalizeLevel(lv){
   });
   const nl = clamp(Math.round(+lv.laneCount) || lv.lanes.length || 3, LANE_MIN, LANE_MAX);
   out.laneCount = nl;
+  if (lv.manScale != null && isFinite(+lv.manScale) && Math.abs(+lv.manScale - 1) > 1e-9) out.manScale = clamp(Math.round(+lv.manScale*100)/100, 1, MAN_SCALE_MAX);
   for (let l=0;l<nl;l++) out.lanes.push(((lv.lanes[l]) || []).filter(b => b && COLORS.includes(b.color) && [4,6,8,12].includes(+b.cap))
     .map(b => { const o = {color:b.color, cap:+b.cap}; if (b.hidden) o.hidden = true; if (b.link != null && b.link !== '') o.link = String(b.link);
       if (b.key != null && b.key !== '') o.key = String(b.key); return o; }));
@@ -1162,7 +1166,8 @@ function roadEdge(ROAD, s, side, reach){
    exactly on the road's edge, following its curve, and a small apron fills the gap between that curved edge and the
    straight first row, which sits as close to the road as the apron allows.  The back and side edges are straight with
    square corners.  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
-function buildRamp(ROAD, rd, src, Y){
+function buildRamp(ROAD, rd, src, Y, K){
+  K = K || 1; const SP = RAMP_SP*K;                 // the level's stickman size: the grid's spacing and margins grow with it
   let s = rd.at != null ? rd.at : rd.cp != null ? ROAD.pointS[clamp(rd.cp, 0, ROAD.pointS.length-1)] : ROAD.portalS*(0.2 + 0.15*src);
   let side = rd.side || 1;
   if (rd.front){
@@ -1172,8 +1177,8 @@ function buildRamp(ROAD, rd, src, Y){
     side = ((rd.front[0] - q.x)*(-q.dz) + (rd.front[1] - q.z)*q.dx) >= 0 ? 1 : -1;
   }
   s = clamp(s, 0.6, ROAD.portalS - 0.6);
-  const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
-  const halfW = cols*RAMP_SP/2 + 0.16;
+  const rows = rd.rows, cols = rd.columns.length, length = 0.34*K + (rows-1)*SP + 0.42*K;
+  const halfW = cols*SP/2 + 0.16*K;
   // the whole front edge lies along the road, from just after its start to just before the exit tunnel: a ramp too
   // close to either end slides along the road until it fits
   let E = roadEdge(ROAD, s, side, halfW + 0.3);
@@ -1216,7 +1221,7 @@ function buildRamp(ROAD, rd, src, Y){
   const slots = [];
   for (let col=0; col<cols; col++){
     const colSlots = [];
-    for (let r=0; r<rows; r++){ const q = across(0.34 + r*RAMP_SP, (col - (cols-1)/2)*RAMP_SP); colSlots.push({x:q.x, y, z:q.z, fx:-n0[0], fz:-n0[1]}); }
+    for (let r=0; r<rows; r++){ const q = across(0.34*K + r*SP, (col - (cols-1)/2)*SP); colSlots.push({x:q.x, y, z:q.z, fx:-n0[0], fz:-n0[1]}); }
     slots.push(colSlots);
   }
   // the outline: the front edge along the road edge, then the straight right side, back and left side
@@ -1232,7 +1237,7 @@ function buildRamp(ROAD, rd, src, Y){
   // one the bus passes first
   const mid = (cols - 1)/2, colOrder = slots.map((_, i) => i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || (a - b)*side);
   return {src, s, side, x:p.x, y, z:p.z, spline, ctrl:[[A[0], A[1]], [tip.x, tip.z]], dir:n0, length,
-          rows, cols, halfW, slots, colOrder, snapped:true, front, outline, backEdge, frontShort, apron, across, frontAt, edge:E};
+          rows, cols, halfW, sp:SP, manK:K, slots, colOrder, snapped:true, front, outline, backEdge, frontShort, apron, across, frontAt, edge:E};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -1252,12 +1257,12 @@ function buildLayout(level){
   if (layoutCache.has(N)) return layoutCache.get(N);
   const ROAD = buildRoad(N.road), base = YARDS[N.yard] || YARD;
   const Y = N.laneCount === 3 ? base : Object.assign({}, base, {LANE_X:laneXs(N.laneCount, base)});   // the level's queue lanes
-  const RAMPS = N.ramps.map((r, i) => buildRamp(ROAD, r, i, Y)).sort((a, b) => (a.s === b.s ? 0 : a.s - b.s) || a.src - b.src);
+  const K = N.manScale || 1, RAMPS = N.ramps.map((r, i) => buildRamp(ROAD, r, i, Y, K)).sort((a, b) => (a.s === b.s ? 0 : a.s - b.s) || a.src - b.src);
   RAMPS.forEach((r, k) => r.k = k);
   const ex = {}; pathAt(ROAD, ROAD.portalS, ex, 0);
   const dR = Math.hypot(ex.x - Y.TUNNEL_R.x, ex.z - Y.TUNNEL_R.z), dL = Math.hypot(ex.x - Y.TUNNEL_L.x, ex.z - Y.TUNNEL_L.z);
   const L = {ROAD, RAMPS, Y, TUNNEL: dL < dR - 1e-9 ? Y.TUNNEL_L : Y.TUNNEL_R, exit:{x:ex.x, y:ex.y, z:ex.z, dx:ex.dx, dz:ex.dz},
-             pillars: pillarSpots(ROAD), level:N};
+             pillars: pillarSpots(ROAD), level:N, manScale:K};
   L.CAM = SCREEN_CAM;                               // one camera for every level
   layoutCache.set(N, L); layoutCache.set(level, L);
   return L;
@@ -2062,8 +2067,8 @@ function rampWarnings(L){
     if (hit) W.push({kind:'ramp-road', msg: label + ' overlaps the road', x:hit.x, z:hit.z, ramp:r.src});
     else if (r.frontShort) W.push({kind:'ramp-road', msg: label + '\'s front edge does not fit the road (turned too far against a bend)', x:r.x, z:r.z, ramp:r.src});
     // the apron between the road edge and the straight first row may be about one row deep at most
-    if (r.apron > RAMP_APRON_MAX + 1e-6){ const o = {}; pathAt(R, r.s, o, 0); const turned = Math.abs(r.dir[0]*o.dx + r.dir[1]*o.dz) > 0.09;
-      W.push({kind:'ramp-apron', msg: label + ': the road bends too much here for its width (its apron would be ' + (r.apron/RAMP_SP).toFixed(1) + ' rows deep): move it along the road' + (turned ? ', turn it square to the road' : '') + ' or make it narrower', x:r.x, z:r.z, ramp:r.src}); }
+    if (r.apron > RAMP_APRON_MAX*r.manK + 1e-6){ const o = {}; pathAt(R, r.s, o, 0); const turned = Math.abs(r.dir[0]*o.dx + r.dir[1]*o.dz) > 0.09;
+      W.push({kind:'ramp-apron', msg: label + ': the road bends too much here for its width (its apron would be ' + (r.apron/r.sp).toFixed(1) + ' rows deep): move it along the road' + (turned ? ', turn it square to the road' : '') + ' or make it narrower', x:r.x, z:r.z, ramp:r.src}); }
     for (let j=k+1;j<L.RAMPS.length;j++){
       const o = L.RAMPS[j], h2 = polysOverlap(polys[k], polys[j], 0.05);
       if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2[0], z:h2[1], ramp:r.src});
@@ -2088,6 +2093,15 @@ function rampWarnings(L){
 }
 /* connected buses: queue positions of every link group, and whether each group has a valid shape
    (2-3 buses; in one lane they follow each other; across lanes only neighbouring lanes, at most one row apart) */
+/* the stickman size a level's free space allows: the largest step up to MAN_SCALE_MAX at which its (grown) ramps still
+   raise no warning the level does not have at the normal size; a crowded level keeps 1 */
+function autoManScale(level){
+  const base = clone(level); delete base.manScale;
+  const kinds = new Set(checkLevel(clone(base)).warnings.map(w => w.kind + ':' + (w.ramp != null ? w.ramp : '')));
+  for (let s = MAN_SCALE_MAX; s > 1.001; s = Math.round((s - 0.05)*100)/100){ const t = clone(base); t.manScale = s;
+    if (checkLevel(t).warnings.every(w => kinds.has(w.kind + ':' + (w.ramp != null ? w.ramp : '')))) return s; }
+  return 1;
+}
 function linkGroups(N){
   const by = {};
   N.lanes.forEach((lane, l) => lane.forEach((b, i) => { if (b.link != null) (by[b.link] = by[b.link] || []).push({l, i}); }));
@@ -2252,7 +2266,7 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, MAN_SCALE_MAX, SEAT_SCALE_MAX, autoManScale, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
   get VIEW(){ return VIEW; }, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,

@@ -52,5 +52,6 @@
     "diff": 3,
     "road": "straight road",
     "ramps": "two very wide fan ramps"
-  }
+  },
+  "manScale": 1.1
 }

@@ -38,5 +38,6 @@
     "diff": 2,
     "road": "S-curve, ramps on both sides",
     "ramps": "square bleachers on both sides"
-  }
+  },
+  "manScale": 1.3
 }

@@ -51,5 +51,6 @@
     "diff": 3,
     "road": "gentle curve",
     "ramps": "wide fan ramps at an angle"
-  }
+  },
+  "manScale": 1.1
 }

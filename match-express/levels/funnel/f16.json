@@ -65,5 +65,6 @@
     "diff": 7,
     "road": "zigzag + spiral",
     "ramps": "diagonal ramps"
-  }
+  },
+  "manScale": 1.1
 }
