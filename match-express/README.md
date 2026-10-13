@@ -31,6 +31,31 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Connected buses polish
+
+Drawn only: the rules, the queue, the bays and the timings are unchanged.
+
+- **A group parachutes together.** When a connected group is complete, every bus starts
+  its exit at the same moment, in the leading bus's direction. Each bus keeps its place
+  in the group: the group never splits, fans out or crosses itself.
+- **No bus vanishes mid-air.** A parachuting bus glides outward and gently down past the
+  board's edge. It stays well above the ground far below and never lands or fades. It is
+  hidden only once its whole box, parachute included, has left the screen.
+- **Jelly bellows.** In Jelly mode each bus bends smoothly. The bellows run from the
+  leader's rear to the follower's front, taken on the bent bodies. They stretch and bend
+  with the buses and never pop or cut through a body.
+- **Queue and bays.** Connected buses never overlap. Side by side (neighbouring lanes at
+  the same place in the queue, or neighbouring bays), they are drawn staggered: the
+  leading bus a little ahead and the following one a little behind. The bellows then run
+  across from the rear half of one to the front half of the other. The offset (up to
+  0.5) is cut short so a bus never comes near the bus ahead or behind it in its lane.
+- **Tested** (`tests/browser.test.js`, *connected buses and parachutes*): whole games of
+  the connected-bus demos are watched frame by frame. The checks:
+  - connected buses never overlap in the queue or the bays;
+  - side by side, the leading bus always stands ahead;
+  - a completed group leaves in one direction, each bus keeping its place;
+  - every parachuting bus is hidden only after it has left the screen.
+
 ## Stickmen size per level
 
 - **The field:** each level has a stickman size, `manScale`, from 1 to 1.3 (left out at 1).
@@ -1317,7 +1342,7 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
                               #   close as it allows, a straight back edge with square corners, the boarding point and the order;
                               #   no two stickmen on a ramp closer than a stickman's width at the start and through every column
                               #   shift and run of a whole game; moving the road or the ramp keeps it so
-node tests/browser.test.js    # 110 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/browser.test.js    # 114 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

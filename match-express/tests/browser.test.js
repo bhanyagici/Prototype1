@@ -288,6 +288,58 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(k1 === 1.05 && k2 === auto, 'the editor\'s level card sets the stickmen size (− / +) and Auto picks the largest the level has room for', `${k1}, auto ${k2}`);
       await ctx.close(); }
 
+    /* ---------------- connected buses in the queue and the bays; parachutes ---------------- */
+    console.log('connected buses and parachutes');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const play = id => p.evaluate(id => {
+        const C = window.MECore; __me.loadLevel(JSON.parse(JSON.stringify(C.PRESETS[id])), 'export'); __me.freeze(true);
+        const g = __me.game, res = {pairs:0, overlap:0, side:0, ahead:0, groups:0, spread:0, dir:0, jumps:0, gone:0, vanished:0, offAtGone:0};
+        // a bus as drawn: the rectangle of its view (centre, heading, scale)
+        const box = v => { const k = v.root.scale.x, hx = Math.sin(v.h), hz = Math.cos(v.h), L2 = v.b.len*k/2, W2 = C.BUS_W*k/2;
+          return [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [v.p.x + hz*a*W2 + hx*b*L2, v.p.z - hx*a*W2 + hz*b*L2]); };
+        const meet = (A, B) => { for (const P of [A, B]) for (let i = 0; i < 4; i++){ const a = P[i], b = P[(i + 1) % 4], nx = b[1] - a[1], nz = a[0] - b[0];
+            const pa = A.map(q => q[0]*nx + q[1]*nz), pb = B.map(q => q[0]*nx + q[1]*nz); if (Math.max(...pa) <= Math.min(...pb) || Math.max(...pb) <= Math.min(...pa)) return false; } return true; };
+        const cam = __me.camera, V = new cam.position.constructor(), onScreen = (x, y, z) => { V.set(x, y, z).project(cam); return Math.abs(V.x) < 1 && Math.abs(V.y) < 1; };
+        const seen = new Map(), start = new Map();
+        // (on for 15 s after the game ends: the last parachutes glide off the screen too)
+        for (let step = 0, after = 0; step < 60*600 && after < 60*15; step++){ if (g.result) after++;
+          if (step % 12 === 0 && !g.result){ const a = C.greedyPick(g); if (a) __me.tap(a); }
+          __me.advance(1/60);
+          for (const G of g.groups){
+            const vs = G.members.map(id => __me.views[id]);
+            // in the queue and the bays: never overlapping; side by side, the leading one stands ahead
+            const qb = vs.filter(v => v.root.visible && v.init && ['lane', 'bay'].includes(v.b.state));
+            for (let i = 0; i < qb.length; i++) for (let j = i + 1; j < qb.length; j++){ res.pairs++; if (meet(box(qb[i]), box(qb[j]))) res.overlap++;
+              // (standing level and still: a bus still driving up its lane is not side by side yet)
+              const a = qb[i].b, b = qb[j].b, sideBySide = a.state === b.state && Math.abs(a.z - b.z) < 0.05 && qb[i].spd < 0.02 && qb[j].spd < 0.02 &&
+                (a.state === 'lane' ? Math.abs(a.lane - b.lane) === 1 && g.lanes[a.lane].indexOf(a.id) === g.lanes[b.lane].indexOf(b.id) : Math.abs(a.bay - b.bay) === 1);
+              if (sideBySide){ res.side++; const hx = Math.sin(qb[i].h), hz = Math.cos(qb[i].h); if ((qb[i].p.x - qb[j].p.x)*hx + (qb[i].p.z - qb[j].p.z)*hz > 0.08) res.ahead++; } }
+            // a completed group parachutes as one: one direction, the members keeping their places in the group
+            const js = vs.filter(v => v.b.state === 'jump' && v.jump && !v.jump.gone);
+            if (js.length === vs.length){
+              if (!start.has(G.id)){ start.set(G.id, vs.map(v => [v.root.position.x - vs[0].root.position.x, v.root.position.z - vs[0].root.position.z])); res.groups++;
+                res.dir = Math.max(res.dir, ...vs.map(v => Math.hypot(v.jump.ex - vs[0].jump.ex, v.jump.ez - vs[0].jump.ez))); }
+              const s0 = start.get(G.id); vs.forEach((v, k) => { res.spread = Math.max(res.spread, Math.hypot(v.root.position.x - vs[0].root.position.x - s0[k][0], v.root.position.z - vs[0].root.position.z - s0[k][1])); }); }
+          }
+          // no bus disappears while it is still on the screen: a parachuting bus is hidden only once it has glided off
+          for (const v of __me.views){ if (v.b.state !== 'jump' || !v.jump) continue;
+            if (!seen.has(v.b.id)){ seen.set(v.b.id, true); res.jumps++; }
+            const vis = v.root.visible, was = seen.get(v.b.id);
+            if (was && !vis){ if (v.jump.gone){ res.gone++; const q = v.root.position; if (!onScreen(q.x, q.y + 0.5, q.z)) res.offAtGone++; } else res.vanished++; }
+            seen.set(v.b.id, vis); }
+        }
+        res.result = g.result; return res; }, id);
+      const a = await play('demo_connected'), b = await play('demo_combo');
+      const r = Object.fromEntries(Object.keys(a).map(k => [k, typeof a[k] === 'number' ? (k === 'spread' || k === 'dir' ? Math.max(a[k], b[k]) : a[k] + b[k]) : a[k] + '/' + b[k]]));
+      chk(r.pairs > 200 && r.overlap === 0, 'connected buses never overlap each other in the queue or the bays', `${r.pairs} pairs checked, ${r.overlap} overlapping`);
+      chk(r.side > 20 && r.ahead === r.side, 'side by side (neighbouring lanes or bays), the leading bus stands a little ahead of the following one', `${r.ahead} of ${r.side} side-by-side frames staggered`);
+      chk(r.groups >= 2 && r.dir < 1e-9 && r.spread < 0.02, 'a completed connected group parachutes as one: one direction, every bus keeping its place in the group',
+        `${r.groups} groups, direction spread ${r.dir.toExponential(1)}, places kept within ${r.spread.toFixed(3)}`);
+      chk(r.jumps > 10 && r.vanished === 0 && r.gone === r.jumps && r.offAtGone === r.gone, 'no parachuting bus disappears mid-air: each glides on until it has left the screen',
+        `${r.jumps} parachutes, ${r.gone} left the screen, ${r.vanished} vanished on screen (games: ${r.result})`);
+      await ctx.close(); }
+
     /* ---------------- editor: layout, preview, independence ---------------- */
     console.log('editor');
     const ctx = await newCtx({width:1440, height:900});

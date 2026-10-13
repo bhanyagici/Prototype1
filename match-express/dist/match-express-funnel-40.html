@@ -3902,6 +3902,12 @@ const bellowsGeo = (() => { const parts = [{geo:new THREE.BoxGeometry(0.66, 0.4,
   const g = mergeParts(parts); g.userData.shared = true; return g; })();
 const bellowsMat = new THREE.MeshStandardMaterial({vertexColors:true, roughness:0.75}); bellowsMat.userData.shared = true;
 let BLK = {group:null, tunnels:[], boxes:[], bellows:[], under:new Set(), keys:[], qIM:null, nq:0};
+/* a point of a bus's body in the world: on a bent Jelly body it follows the bend */
+const _bpM = new THREE.Matrix4();
+function bodyPoint(v, x, y, z, out){
+  if (v.bent){ skPose(v, x, y, z, 0, _bpM); return out.setFromMatrixPosition(_bpM.premultiply(v.body.matrixWorld)); }
+  return out.set(x, y, z).applyMatrix4(v.body.matrixWorld);
+}
 function buildBlockers(){
   if (BLK.group){ disposeTree(BLK.group); scene.remove(BLK.group); }
   BLK.keys.forEach(k => { scene.remove(k.s); k.s.material.dispose(); });
@@ -3993,7 +3999,7 @@ function updateBlockers(t){
     if (side && Math.abs(lat) > Math.abs(lon)*0.6){
       const sg = Math.sign(lat) || 1, along = clamp(lon/2, -va.b.len/4, va.b.len/4);
       _pa.set(-sg*C.BUS_W/2, 0.36, along).applyMatrix4(va.body.matrixWorld); _pb.set(sg*C.BUS_W/2, 0.36, clamp(-lon/2, -vb.b.len/4, vb.b.len/4)).applyMatrix4(vb.body.matrixWorld);
-    } else { _pa.set(0, 0.36, -va.b.len/2 + 0.04).applyMatrix4(va.body.matrixWorld); _pb.set(0, 0.36, vb.b.len/2 - 0.04).applyMatrix4(vb.body.matrixWorld); }
+    } else { bodyPoint(va, 0, 0.36, -va.b.len/2 + 0.04, _pa); bodyPoint(vb, 0, 0.36, vb.b.len/2 - 0.04, _pb); }   // rear of one to the front of the next (on a Jelly body: its bent ends)
     const d = _pa.distanceTo(_pb), s = Math.min(va.root.scale.x, vb.root.scale.x);
     B.m.position.lerpVectors(_pa, _pb, 0.5); B.m.lookAt(_pb); B.m.scale.set(s, s, Math.max(0.02, d)); });
   camera.getWorldQuaternion(_camQ);
@@ -4198,8 +4204,28 @@ function manWorld(i){
 }
 
 /* ------------------------------ buses ------------------------------ */
+/* linked buses standing side by side - in neighbouring lanes at the same place in the queue, or in neighbouring bays -
+   stand staggered (drawn only; the lanes and bays are unchanged): the leading one a little ahead, the following one a
+   little behind, so the bellows run straight across from the rear half of one to the front half of the other.  Never
+   into the bus ahead or behind in the same lane */
+const STAG = new Map(), STAG_D = 0.5;
+function updateStagger(){
+  STAG.clear();
+  const side = (a, b) => a.state === 'lane' && b.state === 'lane' ? Math.abs(a.lane - b.lane) === 1 && game.lanes[a.lane].indexOf(a.id) === game.lanes[b.lane].indexOf(b.id)
+    : a.state === 'bay' && b.state === 'bay' ? Math.abs(a.bay - b.bay) === 1 : false;
+  for (const G of game.groups){ let chain = [];
+    const flush = () => { if (chain.length > 1) chain.forEach((b, i) => STAG.set(b.id, STAG_D*((chain.length - 1)/2 - i))); chain = []; };
+    for (const id of G.members){ const b = game.buses[id]; if (chain.length && side(chain[chain.length - 1], b)) chain.push(b); else { flush(); chain = [b]; } }
+    flush(); }
+  for (const [id, st] of STAG){ const b = game.buses[id]; if (b.state !== 'lane') continue;
+    const ln = game.lanes[b.lane], i = ln.indexOf(id), nb = st > 0 ? game.buses[ln[i - 1]] : game.buses[ln[i + 1]];
+    if (!nb) continue;                              // the front of a lane may move up, the last one back
+    const gap = Math.abs(nb.z - b.z) - (nb.len + b.len)/2, lim = Math.max(0, (gap - 0.04)/2);
+    STAG.set(id, Math.sign(st)*Math.min(Math.abs(st), lim)); }
+}
 function busTarget(b){                              // where the bus is drawn + velocity, which the render springs chase
-  const [x, z] = C.dispPoint(b.x, b.z), sx = C.dispSx(b.z), sz = C.dispSlope(b.z);
+  const st = (b.state === 'lane' || b.state === 'bay') ? STAG.get(b.id) || 0 : 0, bx = b.x + b.dx*st, bz = b.z + b.dz*st;
+  const [x, z] = C.dispPoint(bx, bz), sx = C.dispSx(b.z), sz = C.dispSlope(b.z);
   if (b.state === 'lane') return [x, 0, z, 0, -b.v*sz];
   if (b.state === 'bay') return [x, 0, z, 0, 0];
   return [x, b.y, z, b.dx*b.v*sx, b.dz*b.v*sz];
@@ -4301,6 +4327,23 @@ function exitDistance(x, y, z, ex, ez, len){
   return EXIT_OUT + 3.5;
 }
 function startExit(v, e){
+  const b = v.b, G = b.group;
+  if (G && G.members.length > 1){
+    // a connected group: the first member's event starts them all with the leading bus's exit, each keeping its place
+    if (v.jump && v.jump.t0 === e.t) return;
+    const vs = G.members.map(id => views[id]).filter(Boolean); vs.forEach(w => w.jump = null);
+    const lead = vs[0]; exitOne(lead, e);
+    const J = lead.jump; let out = J.out, top = J.lift + J.y;
+    for (const w of vs.slice(1)){ out = Math.max(out, exitDistance(w.p.x, w.p.y, w.p.z, J.ex, J.ez, w.b.len)); }
+    const t1 = EXIT.side*Math.sqrt(out/EXIT_OUT);
+    for (const w of vs){ const own = Object.assign({}, J, {x:w.p.x, y:w.p.y, z:w.p.z, h:w.h, out, t1, t2:t1 + EXIT.crouch, t3:t1 + EXIT.crouch + EXIT.hop, tc:t1 + EXIT.chute,
+        dust:false, side:J.side, lift:Math.max(0, top - w.p.y), group:G.id});
+      w.jump = own; if (!w.chute){ w.chute = makeChute(w.b.color); w.chute.visible = false; } w.whooshed = false; }
+    return;
+  }
+  exitOne(v, e);
+}
+function exitOne(v, e){
   const b = v.b, r = v.boardRamp >= 0 ? L.RAMPS[v.boardRamp] : null;
   const hx = Math.sin(v.h), hz = Math.cos(v.h);                       // heading of the bus as drawn
   let ex, ez;
@@ -4318,11 +4361,17 @@ function startExit(v, e){
             out, t1, t2:t1 + EXIT.crouch, t3:t1 + EXIT.crouch + EXIT.hop, tc:t1 + EXIT.chute, edge, da, ke:edge < 99 ? (c0 >= 0 ? 0 : -da + Math.sqrt(da*da - 2*c0)) : 99};
   v.chute = makeChute(b.color); v.chute.visible = false; v.whooshed = false;
 }
+/* a bus (with its parachute) is off the screen when every corner of its box projects outside the view */
+function offScreen(x, y, z, len){
+  for (const dx of [-len/2, len/2]) for (const dz of [-len/2, len/2]) for (const dy of [0, 2.2]){
+    _v3.set(x + dx, y + dy, z + dz).project(camera); if (Math.abs(_v3.x) < 1.02 && Math.abs(_v3.y) < 1.02) return false; }
+  return true;
+}
 function updateJump(v, t, vdt){
   const J = v.jump, b = v.b;
   if (!J){ v.root.visible = false; return; }
   const u = t - J.t0;
-  if (u > J.t3 + C.PARACHUTE_DURATION){ v.root.visible = false; removeChute(v); return; }
+  if (J.gone){ v.root.visible = false; return; }                     // glided off the screen
   v.root.visible = true; v.slope.rotation.x *= 0.85; v.mat.color.setScalar(1); v.dark = 0;
   let x = J.x, y = J.y, z = J.z, sq = 1, swing = 0, lean = 0, yaw = 0, slid = J.out, fade = 0;
   const off = (d) => { x += J.ex*d; z += J.ez*d; };
@@ -4334,16 +4383,17 @@ function updateJump(v, t, vdt){
     off(J.out + 0.5*k); y += 0.55*Math.sin(Math.PI*0.5*k); sq = 1 + 0.16*Math.sin(Math.PI*k); }
   else { const k = u - J.t3, f = Math.max(0, k - J.ke);                                             // 4) swing away, over the edge and down
     swing = 0.34*Math.sin(k*3.1)*Math.exp(-k*0.35);
-    const ka = Math.min(k, J.ke), ve = J.da + ka;                                                     // past the edge the drift dies down
-    off(J.out + 0.5 + J.da*ka + 0.5*ka*ka + Math.min(1.1, ve/3.5)*(1 - Math.exp(-3.5*f))); z += 0.45*k; y += 0.55 - 0.42*k - (1 - Math.cos(swing))*1.1 - 1.1*f - 0.9*f*f;
-    const end = C.PARACHUTE_DURATION - k; if (end < 0.3) fade = smooth(0.3, 0, end); }
+    // past the board's edge it glides on outward and gently down, never landing, until it has left the screen
+    const ka = Math.min(k, J.ke), ve = Math.max(1.4, J.da + ka);
+    off(J.out + 0.5 + J.da*ka + 0.5*ka*ka + ve*f); z += 0.45*k; y += 0.55 - 0.42*Math.min(k, 3) - (1 - Math.cos(swing))*1.1 - 1.4*(1 - Math.exp(-0.9*f)); }
   if (u > J.tc && !v.whooshed){ v.whooshed = true; sfx.whoosh(); }
   y += Math.max(0, GD - J.y)*smooth(C.ROAD_HALF - 0.25, C.ROAD_HALF + 0.25, slid);   // out of the groove onto the ground
   y += J.lift*(u < J.t1 ? easeOut(clamp(u/(J.t1*0.6), 0, 1)) : 1);                    // over a crowd beside the road
-  if (u > J.t3) y = Math.max(y, baseAt(x, z) + 0.15);                                   // never into the rock or the ground
+  if (u > J.t3) y = Math.max(y, baseAt(x, z) + (BM && BM.at(x, z) > 0.3 ? 1.2 : 0.15));    // never into the rock; well above the ground far below
+  if (u > J.t3 + 0.4 && offScreen(x, y, z, b.len)){ J.gone = true; v.root.visible = false; removeChute(v); return; }
   v.root.position.set(x, y, z);
   v.root.rotation.y = J.h + yaw;
-  v.body.position.set(0, 0, 0); { const fs = 1 - 0.9*fade; v.body.scale.set(fs/Math.sqrt(sq), fs*sq, fs/Math.sqrt(sq)); }   // fades into the distance at the end
+  v.body.position.set(0, 0, 0); { const fs = 1 - 0.9*fade; v.body.scale.set(fs/Math.sqrt(sq), fs*sq, fs/Math.sqrt(sq)); }
   // swing about the bus's own long axis toward the drift side
   v.body.rotation.set(0, 0, (swing + lean)*J.side);
   v.shadow.visible = u < J.t1; v.shadow.material.opacity = 0.42*(1 - smooth(C.ROAD_HALF - 0.2, EXIT_OUT, slid));   // only while over the road
@@ -4460,7 +4510,7 @@ function updateMen(t, vdt){
       continue;
     }
     const v = views[m.bus], b = v.b;
-    if ((b.state === 'jump' && t - b.tJump > C.PARACHUTE_DURATION + 1.0) || !v.root.visible || v.dark > 0.97){ hideMan(i); continue; }
+    if (!v.root.visible || v.dark > 0.97){ hideMan(i); continue; }
     if (m.state === 'run'){                             // run (arms and legs pumping), crouch, hop arc (stretched) into the seat
       const u = clamp((t - mv.runT)/C.RUN_TIME, 0, 1); seatMatrix(i, seatMat); const T = new THREE.Vector3().setFromMatrixPosition(seatMat);
       const F = mv.runFrom, dx = F.x - T.x, dz = F.z - T.z, dl = Math.hypot(dx, dz) || 1, yaw = Math.atan2(-dx, -dz);
@@ -4490,6 +4540,7 @@ function updateMen(t, vdt){
 /* ------------------------------ frame ------------------------------ */
 function updateScene(vdt){
   const t = game.t;
+  updateStagger();
   for (const v of views) updateBus(v, t, vdt);
   if (crash) updateCrash(t);
   for (const v of views) if (v.chute && v.b.state !== 'jump') removeChute(v);
