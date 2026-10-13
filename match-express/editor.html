@@ -232,8 +232,8 @@
   <div class="keys" id="keysList"></div>
   <div class="guide">
     <b>Road</b>: drag the points; with the road tool, click the road to add one (it lands inside the target zone). The exit tunnel is the road's end: drag it anywhere in the target zone.
-    <b>Ramps</b>: each ramp is shaped by its nodes. Drag the front node (diamond) along the road: it snaps to the road (green ring) and becomes the boarding
-    point; dropped away from the road it turns red and the ramp gets a warning. <b>Blockers</b>: pick the tunnel, lock box or count box tool and drag
+    <b>Ramps</b>: each ramp is a straight platform holding a regular grid of stickmen. Drag the front node (diamond) along the road: it snaps to the road (green
+    ring) and becomes the boarding point; dropped away from the road it turns red and the ramp gets a warning. Drag the back node (square) to turn the ramp. <b>Blockers</b>: pick the tunnel, lock box or count box tool and drag
     across the cells of a ramp. <b>Queue</b>: 2–5 lanes (− / +); <i>Add bus</i> picks lane, colour, seats and hidden; drag buses within and between lanes;
     Shift-click two or three touching buses (also across neighbouring lanes) and press <kbd>L</kbd> to connect them.
     <b>Everywhere</b>: right-click for a menu; copy, paste, duplicate, delete and the arrow keys work on whatever is selected.
@@ -506,7 +506,7 @@ new ResizeObserver(resize).observe(cv);
 const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
 const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];
 const rampOf = src => L.RAMPS.find(r => r.src === src);
-function rampOutline(r){ return C.rampOutline(r); }       // the platform as the game draws it (fan / wedge width included)
+function rampOutline(r){ return C.rampOutline(r); }       // the platform as the game draws it (its apron included)
 /* the four corners of a block of cells on a ramp (for tunnels, boxes and rubber-band selection) */
 function cellQuad(r, col, row, w, h){
   const sl = r.slots, hp = C.RAMP_SP/2, c0 = sl[col][row], c1 = sl[col + w - 1][row + h - 1];
@@ -627,7 +627,7 @@ function draw(){
 }
 const WARN_SHORT = {'zone-road':'road leaves the target zone', 'zone-ramp':'ramp leaves the target zone', 'zone-exit':'exit tunnel outside the zone', 'road-cross':'road crosses itself',
   'road-tight':'turn too tight', 'ramp-road':'ramp overlaps the road', 'ramp-ramp':'ramps overlap', 'ramp-spiral':'ramp on a spiral', 'ramp-unsnapped':'not connected to the road',
-  'ramp-exit':'ramp too near the exit', 'exit-road':'exit tunnel on the road', 'ramp-fold':'ramp folds over itself', 'blocker-bounds':'blocker leaves the ramp', 'blocker-overlap':'two blockers in a column',
+  'ramp-exit':'ramp too near the exit', 'exit-road':'exit tunnel on the road', 'ramp-apron':'road bends too much for its width (move it or narrow it)', 'blocker-bounds':'blocker leaves the ramp', 'blocker-overlap':'two blockers in a column',
   'tunnel-front':'tunnel needs a free cell in front', 'tunnel-count':'tunnel needs stickmen', 'tunnel-cells':'tunnel sits on stickmen', 'count-range':'count out of range',
   'lock-dup':'lock id used twice', 'lock-keys':'several key buses', 'lock-no-key':'no key bus', 'bay':'yard problem'};
 const shortWarn = w => WARN_SHORT[w.kind] || (w.msg.length > 40 ? w.msg.slice(0, 38) + '…' : w.msg);
@@ -760,18 +760,22 @@ cv.addEventListener('pointermove', e => {
   if (drag.kind === 'paint'){ paintAt(x, z); return; }
   if (drag.kind === 'block'){ const R = rampOf(drag.ramp), c = hitCell(R, x, z, C.RAMP_SP*1.5); if (c){ drag.c1 = c; drag.ok = blockOk(drag); } draw(); return; }
   if (drag.kind === 'front'){ drag.x = x; drag.z = z; drag.snap = snapFront(x, z); moveFront(drag, !first); return; }
-  if (drag.kind === 'shape'){ const src = drag.ramp, k = drag.k;
-    const fn = n => { const rd = n.ramps[src]; if (!rd.shape) rd.shape = rampOf(src).ctrl.slice(1).map(p => [round(p[0]), round(p[1])]);
-      if (rd.at == null && !rd.front){ rd.at = rampOf(src).s; delete rd.cp; } rd.shape[k] = [round(x), round(z)]; };
+  if (drag.kind === 'shape'){ const src = drag.ramp;      // the back node: the way the ramp points from its boarding point
+    const fn = n => { const rd = n.ramps[src]; if (rd.at == null && !rd.front){ rd.at = rampOf(src).s; delete rd.cp; } rd.shape = [[round(x), round(z)]]; delete rd.tilt; };
     first ? edit(fn) : editLive(fn); return; }
 });
 function moveFront(d, live){
+  // a ramp square to the road stays square; one turned by its back node keeps its angle to the road (a tilted one its
+  // angle on screen)
   const src = d.ramp;
-  const fn = n => { const rd = n.ramps[src], old = rampOf(src);
-    if (!rd.shape) rd.shape = old.ctrl.slice(1).map(p => [round(p[0]), round(p[1])]);
+  const fn = n => { const rd = n.ramps[src], old = rampOf(src), had = rd.shape && rd.tilt == null;
     rd.at = round(d.snap.s, 3); rd.side = d.snap.side; delete rd.cp; delete rd.front; delete rd.push;
-    const nl = C.buildLayout(clone(n)), nr = nl.RAMPS.find(q => q.src === src), dx = nr.ctrl[0][0] - old.ctrl[0][0], dz = nr.ctrl[0][1] - old.ctrl[0][1];
-    rd.shape = rd.shape.map(p => [round(p[0] + dx), round(p[1] + dz)]); };
+    if (!had){ delete rd.shape; return; }
+    const o0 = {}, o1 = {}; C.pathAt(L.ROAD, old.s, o0, 0); C.pathAt(L.ROAD, d.snap.s, o1, 0);
+    const n0 = [-o0.dz*old.side, o0.dx*old.side], n1 = [-o1.dz*d.snap.side, o1.dx*d.snap.side];
+    const a = Math.atan2(n0[0]*old.dir[1] - n0[1]*old.dir[0], n0[0]*old.dir[0] + n0[1]*old.dir[1])*(d.snap.side === old.side ? 1 : -1), ca = Math.cos(a), sa = Math.sin(a);
+    const dir = [n1[0]*ca - n1[1]*sa, n1[0]*sa + n1[1]*ca], ax = o1.x + n1[0]*C.ROAD_HALF, az = o1.z + n1[1]*C.ROAD_HALF, l = old.length + 0.4;
+    rd.shape = [[round(ax + dir[0]*l), round(az + dir[1]*l)]]; };
   live ? editLive(fn) : edit(fn);
 }
 const endTouch = e => { if (e && e.pointerType === 'touch'){ touches.delete(e.pointerId); if (drag && drag.kind === 'pinch'){ if (!touches.size){ drag = null; press = null; } return true; } } return false; };
@@ -857,10 +861,10 @@ function finishBlock(d){
   renderAll();
 }
 function addRampAt(x, z){
-  // the default ramp (a straight platform) at the road spot nearest the click, on the clicked side; if it would
+  // the default ramp (a straight platform square to the road) at the road spot nearest the click, on the clicked side; if it would
   // overlap something or leave the target zone, try the free stretches of road instead
-  const make = (at, side) => ({at:round(at, 3), side, tilt:C.RAMP_TILT, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))});
-  const BAD = ['zone-ramp', 'ramp-road', 'ramp-ramp', 'ramp-spiral'];
+  const make = (at, side) => ({at:round(at, 3), side, rows:6, columns:[0,1,2,3].map(() => new Array(6).fill(null))});   // square to the road
+  const BAD = ['zone-ramp', 'ramp-road', 'ramp-ramp', 'ramp-spiral', 'ramp-apron'];
   const ok = (at, side) => { const t = clone(lvl); t.ramps.push(make(at, side)); const k = t.ramps.length - 1; return !C.checkLevel(t).warnings.some(w => w.ramp === k && BAD.includes(w.kind)); };
   const sn = snapFront(x, z) || (() => { const nr = nearestRoadS(x, z), o = {}; C.pathAt(L.ROAD, nr.s, o, 0); return {s:nr.s, side:((x - o.x)*(-o.dz) + (z - o.z)*o.dx) >= 0 ? 1 : -1}; })();
   let pick = null;
@@ -881,13 +885,9 @@ function rampAction(a, i){
     if (a === 'c+' && r.columns.length < 20) r.columns.push(new Array(r.rows).fill(null));
     if (a === 'c-' && r.columns.length > 1){ r.columns.pop(); ['tunnels', 'boxes'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.col + o.w <= r.columns.length); }); }
     if (a === 'r+' && r.rows < 15){ r.rows++; r.columns.forEach(c => c.push(null)); }
-    if (a === 'sp+' || a === 'sp-'){ const v = Math.round(((r.spread || 0) + (a === 'sp+' ? 0.1 : -0.1))*10)/10;   // fan (+) / wedge (-)
-      if (v >= -0.5 && v <= 1.5){ if (v) r.spread = v; else delete r.spread; } }
     if (a === 'r-' && r.rows > 1){ r.rows--; r.columns.forEach(c => c.pop()); ['tunnels', 'boxes'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.row + o.h <= r.rows); }); }
-    if (a === 'flip'){ const lr = rampOf(i); if (lr.snapped){ r.at = lr.s; delete r.cp; } r.side = -lr.side; delete r.shape; r.tilt = C.RAMP_TILT; }
-    if (a === 'node+'){ const lr = rampOf(i), c = lr.ctrl, p = c[c.length - 1], q = c[c.length - 2] || c[0], dx = p[0] - q[0], dz = p[1] - q[1], l = Math.hypot(dx, dz) || 1;
-      r.shape = c.slice(1).map(v => [round(v[0]), round(v[1])]).concat([[round(p[0] + dx/l*1.2), round(p[1] + dz/l*1.2)]]); if (lr.snapped && r.at == null){ r.at = lr.s; delete r.cp; } }
-    if (a === 'node-'){ const lr = rampOf(i); r.shape = lr.ctrl.slice(1).map(v => [round(v[0]), round(v[1])]); if (r.shape.length > 1) r.shape.pop(); if (lr.snapped && r.at == null){ r.at = lr.s; delete r.cp; } }
+    if (a === 'flip'){ const lr = rampOf(i); if (lr.snapped){ r.at = lr.s; delete r.cp; } r.side = -lr.side; delete r.shape; delete r.tilt; }
+    if (a === 'square'){ const lr = rampOf(i); if (lr.snapped && r.at == null){ r.at = lr.s; delete r.cp; } delete r.shape; delete r.tilt; }
     if (a === 'clear') r.columns = r.columns.map(col => col.map(() => null));
     if (a === 'fill'){ const used = [...new Set(lvl.ramps.flatMap(x => x.columns.flat()).map(c => C.parseCell(c)).filter(Boolean).map(c => c.color))];
       const pal = used.length >= 2 ? used : C.COLORS.slice(0, 4), cover = (c, k) => (r.tunnels || []).some(t => c >= t.col && c < t.col + t.w && k >= t.row && k < t.row + t.h);
@@ -1188,15 +1188,17 @@ function inspPoint(el){
   el.append(c);
 }
 function stepper(label, val, a){ return `<div class="row"><label>${label}</label><span class="stepper"><button data-a="${a}-">−</button><b>${val}</b><button data-a="${a}+">+</button></span></div>`; }
+function turnText(r){ const o = {}; C.pathAt(L.ROAD, r.s, o, 0); const nx = -o.dz*r.side, nz = o.dx*r.side, a = Math.round(Math.abs(Math.atan2(nx*r.dir[1] - nz*r.dir[0], nx*r.dir[0] + nz*r.dir[1]))*180/Math.PI);
+  return a < 1 ? 'square to the road' : 'turned ' + a + '°'; }
 function inspRamp(el){
   const i = sel.ramp, rd = lvl.ramps[i], lr = rampOf(i);
   const c = h(`<div class="card"><h2>${icon('ramp')} Ramp ${i + 1}</h2>
     <div class="row"><label>Road</label>${lr.snapped ? `<span class="pill ok">snapped</span><span class="hint">boarding point at ${lr.s.toFixed(1)}</span>` : `<span class="pill bad">not on the road</span><button data-a="snap">${icon('node')} Snap to road</button>`}</div>
-    ${stepper('Columns', lr.cols, 'c')}${stepper('Rows', lr.rows, 'r')}${stepper('Spread', (lr.spread > 0 ? '+' : '') + (lr.spread || 0).toFixed(1), 'sp')}
+    ${stepper('Columns', lr.cols, 'c')}${stepper('Rows', lr.rows, 'r')}
     <div class="row"><label>Side</label><button data-a="flip">Flip (${lr.side > 0 ? 'right' : 'left'})</button></div>
-    <div class="row"><label>Nodes</label><span>${lr.ctrl.length}</span><button data-a="node+" title="Add a node at the far end">${icon('plus')}</button><button data-a="node-" title="Remove the last node">−</button></div>
+    <div class="row"><label>Direction</label><span>${turnText(lr)}</span><button data-a="square" title="Point the ramp straight out from the road">Square to road</button></div>
     <div class="row"><button data-a="fill">${icon('shuffle')} Fill random</button><button data-a="clear">Clear</button><button data-a="del" class="danger">${icon('trash')} Delete</button></div>
-    <div class="hint">Drag the green diamond (front node) along the road to move the boarding point; drag the white squares to bend the ramp. The front row always faces the road.</div></div>`);
+    <div class="hint">Drag the green diamond (front node) along the road to move the boarding point; drag the white square (back node) to turn the ramp. The stickmen always stand in a regular grid facing the road; where the road curves, a small apron fills in to the road edge.</div></div>`);
   c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => rampAction(b.dataset.a, i));
   el.append(c);
   const list = (rd.tunnels || []).map((t, k) => ['tunnel', k, `Tunnel · ${t.color} · ${t.count}`]).concat((rd.boxes || []).map((b, k) => ['box', k, b.lock != null ? `Lock box · key ${b.lock}` : `Count box · ${b.count}`]));
@@ -1597,7 +1599,7 @@ function openCtx(cx, cy, kind, info){
     if (n === 1 && sel.i > 0 && sel.i < lvl.road.points.length - 1){ sep(); const p = lvl.road.points[sel.i]; it(p.spiral ? 'Spiral off' : 'Spiral on', '', () => roadEdit(nn => { const q = nn.road.points[sel.i]; if (q.spiral) delete q.spiral; else q.spiral = {r:1.2, side:1}; }), true, 'spiral'); } }
   else if (kind === 'exit'){ title = 'Exit tunnel'; it('Top left', '', () => exitTo('left'), true, 'node'); it('Top centre', '', () => exitTo('centre'), true, 'node'); it('Top right', '', () => exitTo('right'), true, 'node'); }
   else if (kind === 'ramp'){ const n = rampList().length; title = n > 1 ? plural(n, 'ramp') : 'Ramp ' + (sel.ramp + 1); common();
-    if (n === 1){ sep(); it('Flip side', '', () => rampAction('flip'), true, 'shuffle'); it('Fill random', '', () => rampAction('fill'), true, 'shuffle'); it('Clear stickmen', '', () => rampAction('clear'), true, 'eraser');
+    if (n === 1){ sep(); it('Flip side', '', () => rampAction('flip'), true, 'shuffle'); it('Square to road', '', () => rampAction('square'), true, 'node'); it('Fill random', '', () => rampAction('fill'), true, 'shuffle'); it('Clear stickmen', '', () => rampAction('clear'), true, 'eraser');
       if (!rampOf(sel.ramp).snapped) it('Snap to road', '', () => rampAction('snap'), true, 'node');
       if (info && info.cell){ sep(); it('Select this cell', '', () => { sel = {kind:'cells', ramp:sel.ramp, cells:[info.cell]}; renderAll(); }, true, 'select'); } } }
   else if (kind === 'tunnel' || kind === 'box'){ const n = blkList().length; title = n > 1 ? plural(n, kind === 'tunnel' ? 'tunnel' : 'box') : kind === 'tunnel' ? 'Colourful tunnel' : 'Box'; common(); }

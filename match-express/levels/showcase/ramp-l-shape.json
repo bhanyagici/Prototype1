@@ -1,7 +1,7 @@
 {
   "format": 2,
   "id": "ramp-l-shape",
-  "name": "L-shape",
+  "name": "Deep",
   "road": {
     "points": [
       {"x": 0, "z": -1.3, "y": 0},
@@ -25,10 +25,10 @@
     ]
   },
   "ramps": [
-    {"rows": 8, "columns": [["blue", "blue", "blue", "yellow", "yellow", "green", "green", "red"], ["purple", "purple", "red", "red", "blue", "blue", "green", "green"], ["purple", "red", "red", "yellow", "yellow", "purple", "green", "red"], ["red", "red", "red", "yellow", "yellow", "yellow", "green", "green"]], "at": 4.561, "side": -1, "shape": [[-2.88, -3.97], [-3.43, -3.09], [-3.97, -2.78], [-5.73, -3]]},
+    {"rows": 8, "columns": [["blue", "blue", "blue", "yellow", "yellow", "green", "green", "red"], ["purple", "purple", "red", "red", "blue", "blue", "green", "green"], ["purple", "red", "red", "yellow", "yellow", "purple", "green", "red"], ["red", "red", "red", "yellow", "yellow", "yellow", "green", "green"]], "at": 4.561, "side": -1, "shape": [[-5.09, -2.27]]},
     {"rows": 8, "columns": [["purple", "purple", "blue", "blue", "yellow", "purple", "red", "red"], ["purple", "red", "yellow", "yellow", "blue", "blue", "green", "green"], ["blue", "blue", "yellow", "yellow", "blue", "blue", "green", "red"], ["blue", "blue", "red", "red", "blue", "blue", "green", "green"]], "at": 6.233, "side": 1, "tilt": 0},
-    {"rows": 8, "columns": [["purple", "red", "yellow", "yellow", "yellow", "yellow", "green", "green"], ["blue", "blue", "blue", "blue", "yellow", "green", "green", "red"], ["blue", "red", "yellow", "yellow", "yellow", "purple", "purple", "red"], ["purple", "purple", "red", "red", "purple", "purple", "green", "red"]], "at": 20.614, "side": -1, "shape": [[-2.42, -9.93], [-3.2, -9.25], [-3.81, -9.11], [-5.43, -9.84]]},
-    {"rows": 6, "columns": [["purple", "purple", "blue", "yellow", "yellow", "purple"], ["blue", "red", "red", "yellow", "yellow", "purple"], ["blue", "blue", "yellow", "yellow", "yellow", "green"], ["purple", "red", "red", "yellow", "yellow", "yellow"]], "at": 24.386, "side": 1, "shape": [[2.26, -13.83], [3.06, -14.09], [3.56, -13.89], [3.99, -12.35]]}
+    {"rows": 8, "columns": [["purple", "red", "yellow", "yellow", "yellow", "yellow", "green", "green"], ["blue", "blue", "blue", "blue", "yellow", "green", "green", "red"], ["blue", "red", "yellow", "yellow", "yellow", "purple", "purple", "red"], ["purple", "purple", "red", "red", "purple", "purple", "green", "red"]], "at": 20.614, "side": -1, "shape": [[-5.13, -9.17]]},
+    {"rows": 6, "columns": [["purple", "purple", "blue", "yellow", "yellow", "purple"], ["blue", "red", "red", "yellow", "yellow", "purple"], ["blue", "blue", "yellow", "yellow", "yellow", "green"], ["purple", "red", "red", "yellow", "yellow", "yellow"]], "at": 24.386, "side": 1, "shape": [[4.43, -12.83]]}
   ],
   "lanes": [
     [
@@ -57,7 +57,7 @@
   ],
   "meta": {
     "category": "Layouts",
-    "title": "L-shape",
+    "title": "Deep",
     "group": "Ramp shapes",
     "road": "sspiral",
     "h": 0.991,

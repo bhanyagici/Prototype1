@@ -19,8 +19,8 @@
     ]
   },
   "ramps": [
-    {"rows": 4, "columns": [["red", "red", "red", "red"], ["blue", "blue", "blue", "blue"], ["red", "red", "red", "yellow"], ["blue", "blue", "blue", "blue"]], "at": 3.576, "side": 1, "shape": [[0.2, -5.83], [1.05, -6.64]]},
-    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "yellow"], ["blue", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue"], ["red", "yellow", "yellow", "yellow"]], "at": 7.866, "side": -1, "shape": [[-2.63, -9.5], [-3.5, -10.29]]}
+    {"rows": 4, "columns": [["red", "red", "red", "red"], ["blue", "blue", "blue", "blue"], ["red", "red", "red", "yellow"], ["blue", "blue", "blue", "blue"]], "at": 3.576, "side": 1, "shape": [[0.67, -6.27]]},
+    {"rows": 4, "columns": [["yellow", "yellow", "yellow", "yellow"], ["blue", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue"], ["red", "yellow", "yellow", "yellow"]], "at": 7.866, "side": -1, "shape": [[-3.06, -9.89]]}
   ],
   "lanes": [
     [

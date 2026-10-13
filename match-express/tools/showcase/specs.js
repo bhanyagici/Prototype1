@@ -35,7 +35,7 @@ module.exports = {ROADS, SPIRAL_ROADS, SPECS:[
   {id:'basics-hard', cat:'Basics', name:'Hard', target:'Hard', lanes:4, colors:7, sizes:[4, 6, 8, 12], road:'spiralHi', trapMax:7, blockers:{hidden:2},
    ramps:[P(1, 0.12, 6, 6), P(-1, 0.32, 6, 6), P(1, 0.54, 6, 6), P(-1, 0.76, 6, 6), P(1, 0.92, 6, 4)]},
   {id:'basics-very-hard', cat:'Basics', name:'Very Hard', target:'Very Hard', lanes:3, colors:8, sizes:[4, 6, 8, 12], road:'zspiral', trapMax:9, blockers:{hidden:3, link:'pairs'},
-   ramps:[P(1, 0.1, 8, 6), P(-1, 0.28, 8, 6), P(1, 0.48, 8, 6), P(-1, 0.68, 8, 6), P(1, 0.88, 8, 4)]},
+   ramps:[P(1, 0.1, 6, 8), P(-1, 0.28, 6, 8), P(1, 0.48, 6, 8), P(-1, 0.68, 6, 8), P(1, 0.88, 4, 8)]},   // (narrower and deeper: ramps are straight now)
   // ---------------- Blockers: one at a time, then all together ----------------
   {id:'blk-hidden-bus', cat:'Blockers', name:'Hidden bus', from:'demo_hidden_bus', road:'sspiral', kind:'perp'},
   {id:'blk-connected-pairs', cat:'Blockers', name:'Connected pairs', from:'demo_connected', road:'gspiral', kind:'perp'},
@@ -62,12 +62,12 @@ module.exports = {ROADS, SPIRAL_ROADS, SPECS:[
   // ---------------- Layouts: ramp shapes ----------------
   {id:'ramp-straight', cat:'Layouts', group:'Ramp shapes', name:'Straight', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'gentle',
    ramps:[P(-1, 0.16, 6, 5), P(1, 0.36, 6, 5), P(-1, 0.62, 6, 5), P(1, 0.84, 6, 5)]},
-  {id:'ramp-arc', cat:'Layouts', group:'Ramp shapes', name:'Curved arc', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'gspiral',
-   ramps:[P(-1, 0.16, 6, 5, 'arc', {a:-10, b:40}), P(1, 0.36, 6, 5, 'arc', {a:10, b:-40}), P(-1, 0.64, 6, 5, 'arc', {a:-10, b:40}), P(1, 0.86, 6, 5, 'arc', {a:10, b:-40})]},
-  {id:'ramp-l-shape', cat:'Layouts', group:'Ramp shapes', name:'L-shape', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'sspiral',
-   ramps:[P(-1, 0.16, 4, 8, 'L', {b:80}), P(1, 0.38, 4, 8, 'L', {b:-80}), P(-1, 0.66, 4, 8, 'L', {b:80}), P(1, 0.88, 4, 6, 'L', {b:-80})]},
-  {id:'ramp-wide-fan', cat:'Layouts', group:'Ramp shapes', name:'Wide fan', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'dspiral',
-   ramps:[P(-1, 0.16, 6, 5, 'fan', {sp:0.6}), P(1, 0.38, 6, 5, 'fan', {sp:0.6}), P(-1, 0.64, 6, 5, 'fan', {sp:0.6}), P(1, 0.86, 6, 5, 'fan', {sp:0.6})]},
+  {id:'ramp-arc', cat:'Layouts', group:'Ramp shapes', name:'On curves', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'gspiral',
+   ramps:[P(-1, 0.16, 6, 5, 'diag', {a:-6}), P(1, 0.36, 6, 5, 'diag', {a:6}), P(-1, 0.64, 6, 5, 'diag', {a:-6}), P(1, 0.86, 6, 5, 'diag', {a:6})]},
+  {id:'ramp-l-shape', cat:'Layouts', group:'Ramp shapes', name:'Deep', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'sspiral',
+   ramps:[P(-1, 0.16, 4, 8), P(1, 0.38, 4, 8), P(-1, 0.66, 4, 8), P(1, 0.88, 4, 6)]},
+  {id:'ramp-wide-fan', cat:'Layouts', group:'Ramp shapes', name:'Around spirals', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'dspiral',
+   ramps:[P(-1, 0.16, 6, 5), P(1, 0.38, 6, 5), P(-1, 0.64, 6, 5), P(1, 0.86, 6, 5)]},
   {id:'ramp-long-narrow', cat:'Layouts', group:'Ramp shapes', name:'Long narrow', lanes:3, colors:5, sizes:[4, 6, 8, 12], road:'spiralLow',
    ramps:[P(-1, 0.14, 3, 10, 'diag', {a:25}), P(1, 0.34, 3, 10, 'diag', {a:25}), P(-1, 0.6, 3, 10, 'diag', {a:25}), P(1, 0.82, 3, 10, 'diag', {a:25})]},
   // ---------------- Layouts: lane counts ----------------

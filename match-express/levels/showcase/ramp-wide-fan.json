@@ -1,7 +1,7 @@
 {
   "format": 2,
   "id": "ramp-wide-fan",
-  "name": "Wide fan",
+  "name": "Around spirals",
   "road": {
     "points": [
       {"x": 0, "z": -1.3, "y": 0},
@@ -25,10 +25,10 @@
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 13.5, "side": -1, "shape": [[-3.08, -2.63], [-3.88, -1.54]], "spread": 0.6},
-    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 29.312, "side": 1, "shape": [[1.94, -8.7], [3.23, -8.3]], "spread": 0.6},
-    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 31.999, "side": -1, "shape": [[-1.75, -12.59], [-3.03, -13.03]], "spread": 0.6},
-    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 33.911, "side": 1, "shape": [[2.85, -12.98], [4.12, -12.52]], "spread": 0.6}
+    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 13.4, "side": -1, "shape": [[-3.78, -1.47]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 29.312, "side": 1, "shape": [[2.76, -8.45]]},
+    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 31.999, "side": -1, "shape": [[-2.56, -12.87]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 33.911, "side": 1, "shape": [[3.65, -12.69]]}
   ],
   "lanes": [
     [
@@ -56,7 +56,7 @@
   ],
   "meta": {
     "category": "Layouts",
-    "title": "Wide fan",
+    "title": "Around spirals",
     "group": "Ramp shapes",
     "road": "dspiral",
     "h": 0.981,

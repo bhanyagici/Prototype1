@@ -1,12 +1,12 @@
 // Road and ramp geometry for the funnel levels (tools/make-funnel.js).
 // - road(spec): control points with heights: a gentle climb, +1.45 after every spiral (the loop crosses over itself)
-// - rampShape(ROAD, s, side, req): a ramp's `shape` (spline points after its front node) for a shape kind:
-//     perp   straight out, front edge parallel to the road (a bleacher)
-//     diag   straight, turned by `a` degrees toward the direction of travel (negative: against it)
-//     arc    starts like diag(a) and bends by `b` degrees over its depth
-//     L      straight for part of its depth, then turns by `b` degrees (an L)
-//     tilt   the default straight platform at a fixed screen angle (35 degrees, outward and up)
-//     fan    perp with the columns spreading toward the back (`sp` > 0); wedge: drawing together (`sp` < 0)
+// - rampShape(ROAD, s, side, req): a ramp's direction for a shape kind (every ramp is a straight rectangle, so its
+//   `shape` is one node it points at):
+//     perp   straight out, square to the road (a bleacher)
+//     diag   turned by `a` degrees toward the direction of travel (negative: against it)
+//     arc, L the design table's bent ramps: now straight, the way they leave the road (as diag(a))
+//     tilt   a fixed screen angle (35 degrees, outward and up)
+//     fan    the design table's fanned ramps: now straight out, like perp (a fan's spread is gone)
 // - place(spec, level): finds a spot for every ramp along the road (side, position, small angle changes) where it
 //   stays inside the target zone and keeps clear of the road, the exit tunnel, spirals and the other ramps.
 const C = require('../../tests/core.js')();
@@ -62,19 +62,13 @@ function rampShape(ROAD, s, side, q){
   if (q.kind === 'tilt'){ out.tilt = q.tilt || 35; return out; }
   // the front edge lies flush on the road edge (the core lays it there); the body leaves it at angle a0
   const a0 = q.kind === 'perp' || q.kind === 'fan' ? 0 : (q.a || 0), d0 = rot(n, t, a0);
-  const off = C.ROAD_HALF, A = [p.x + n[0]*off, p.z + n[1]*off], pts = [];
-  if (q.kind === 'arc'){ const N = 5; for (let k = 1; k <= N; k++){ const d = rot(n, t, a0 + (q.b || 40)*k/N), prev = pts.length ? pts[pts.length - 1] : A;
-      pts.push([prev[0] + d[0]*len/N, prev[1] + d[1]*len/N]); } }
-  else if (q.kind === 'L'){ const k1 = (q.k || 0.55)*len, d1 = rot(n, t, a0 + (q.b || 90)), c = [A[0] + d0[0]*k1, A[1] + d0[1]*k1];
-    pts.push([A[0] + d0[0]*k1*0.5, A[1] + d0[1]*k1*0.5], c, [c[0] + (d0[0] + d1[0])*0.35, c[1] + (d0[1] + d1[1])*0.35], [c[0] + d1[0]*(len - k1 + 0.6), c[1] + d1[1]*(len - k1 + 0.6)]); }
-  else pts.push([A[0] + d0[0]*len*0.5, A[1] + d0[1]*len*0.5], [A[0] + d0[0]*len, A[1] + d0[1]*len]);
-  out.shape = pts.map(v => [r2(v[0]), r2(v[1])]);
-  if (q.sp) out.spread = q.sp;
+  const off = C.ROAD_HALF, A = [p.x + n[0]*off, p.z + n[1]*off];
+  if (a0) out.shape = [[r2(A[0] + d0[0]*len), r2(A[1] + d0[1]*len)]];       // square to the road needs no node
   return out;
 }
 
 /* can ramp k (already in `level`) stay where it is? its own warnings + a little air to the other ramps */
-const BAD = new Set(['ramp-road', 'ramp-ramp', 'zone-ramp', 'ramp-spiral', 'ramp-fold', 'ramp-exit', 'ramp-unsnapped']);
+const BAD = new Set(['ramp-road', 'ramp-ramp', 'zone-ramp', 'ramp-spiral', 'ramp-fold', 'ramp-exit', 'ramp-unsnapped', 'ramp-apron']);
 function rampProblems(level0, k, gap){
   const level = Object.assign({}, level0, {ramps:level0.ramps.slice()});     // layouts are cached per object: a fresh one
   const L = C.buildLayout(level), ck = C.checkLevel(level), r = L.RAMPS.find(x => x.src === k);
@@ -104,8 +98,8 @@ function place(spec, level){
       const sides = q.side ? [q.side, -q.side] : [k % 2 ? -1 : 1, k % 2 ? 1 : -1];
       const pref = q.s != null ? q.s : spec.pack ? last[q.side || 1] : (q.f != null ? q.f : (k + 0.5)/spec.ramps.length)*S, offs = [];
       for (let d = 0; d <= (q.s != null ? 1.2 : S); d += 0.2){ offs.push(d); if (d && !spec.pack) offs.push(-d); }   // s: pinned to that spot
-      const angles = q.kind === 'perp' || q.kind === 'fan' || q.kind === 'tilt' ? [q.a || 0] : [q.a || 0, (q.a || 0) - 12, (q.a || 0) + 12, (q.a || 0) - 25, (q.a || 0) + 25];
-      const bends = q.kind === 'arc' || q.kind === 'L' ? [q.b, q.b*0.7, q.b*0.45] : [q.b];
+      const angles = q.kind === 'tilt' ? [0] : [...new Set([q.kind === 'perp' || q.kind === 'fan' ? 0 : q.a || 0, 0, -8, 8, -15, 15])];   // straight ramps: near square to the road
+      const bends = [q.b];
       search: for (const side of sides.slice(0, q.side && !q.anySide ? 1 : 2)) for (const da of offs){
         if (Math.abs(da) > (q === q0 ? S : S*0.5)) continue;
         const s = pref + da; if (s < 0.9 || s > S - 0.9) continue;

@@ -25,7 +25,7 @@
     {"side": -1, "rows": 6, "columns": [["yellow", "red", "yellow", "blue", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red", "red", "red"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "yellow", "yellow", "red", "red", "red"]], "cp": 1},
     {"side": 1, "rows": 6, "columns": [["blue", "blue", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "red", "blue", "red"], ["yellow", "red", "red", "blue", "blue", "yellow"], ["yellow", "yellow", "yellow", "blue", "red", "red"]], "cp": 2},
     {"side": 1, "rows": 6, "columns": [["blue", "blue", "green", "green", "green", "red"], ["green", "yellow", "red", "red", "yellow", "green"], ["yellow", "yellow", "yellow", "green", "green", "green"], ["red", "blue", "blue", "red", "red", "yellow"]], "cp": 4},
-    {"side": -1, "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "cp": 12}
+    {"side": -1, "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "at": 28.897, "shape": [[-1.32, -15.45]]}
   ],
   "lanes": [
     [

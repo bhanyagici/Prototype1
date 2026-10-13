@@ -201,11 +201,13 @@ console.log('\nbundled levels');
   const CR = require('../levels/crowded-rush.json');
   const ck = C.checkLevel(CR), L = C.buildLayout(CR);
   chk(!ck.warnings.length && ck.balanced, 'Crowded Rush: no layout warnings, seats match stickmen', ck.warnings.map(w => w.kind).join(',') || 'clean');
-  chk(CR.ramps.length === 4 && CR.ramps.every(r => r.columns.length === 6 && r.rows === 15 && r.tilt >= 30 && r.tilt <= 35), 'Crowded Rush: 4 ramps of 6 x 15, tilted 30-35 degrees');
-  // every ramp points outward and up; left ramps sit left of the road, right ramps right
-  const outward = L.RAMPS.every(r => { const a = r.ctrl[0], b = r.ctrl[r.ctrl.length-1], dx = b[0]-a[0], dz = b[1]-a[1];
-    return dz < 0 && Math.sign(dx) === Math.sign(a[0] - L.ROAD.P[0]) && Math.abs(Math.atan2(-dz, Math.abs(dx))*180/Math.PI - CR.ramps[r.src].tilt) < 0.5; });
-  chk(outward, 'Crowded Rush: each ramp runs diagonally outward and up at its tilt');
+  // four big ramps of 90 stickmen: 6 x 15, one 9 x 10 (four straight 6 x 15 ramps cannot share this board)
+  chk(CR.ramps.length === 4 && CR.ramps.every(r => r.columns.length*r.rows === 90 && [6, 9].includes(r.columns.length)) && CR.ramps.filter(r => r.columns.length === 6).length === 3,
+    'Crowded Rush: 4 ramps of 90 stickmen (three 6 x 15, one 9 x 10)', CR.ramps.map(r => r.columns.length + 'x' + r.rows).join(' '));
+  // every ramp points outward, away from the road: left ramps sit left of the road, right ramps right
+  const outward = L.RAMPS.every(r => { const a = r.ctrl[0], o = {}; C.pathAt(L.ROAD, r.s, o, 0); const n = [-o.dz*r.side, o.dx*r.side];
+    return Math.sign(r.dir[0]) === Math.sign(a[0] - L.ROAD.P[0]) && r.dir[0]*n[0] + r.dir[1]*n[1] > 0.9; });
+  chk(outward, 'Crowded Rush: each ramp points outward, away from the road (left ramps left, right ramps right)');
   // the whole layout is on screen, stickmen stay readable
   const cam = L.CAM, k = 390/cam.w; let off = 0, minPx = 1e9;
   L.RAMPS.forEach(r => r.slots.forEach(cs => cs.forEach(q => {      // on-screen height of a stickman (feet to the top of the head)

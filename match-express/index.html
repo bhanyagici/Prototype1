@@ -786,8 +786,9 @@ function addPillars(add, list){
   list.forEach(([x, y0, z, y1, r], i) => { a.setMatrixAt(i, M(x, y0, z, 0,0,0, r, y1 - y0, r)); b.setMatrixAt(i, M(x, y1, z, 0,0,0, r*1.3, 1, r*1.3)); });
   a.castShadow = b.castShadow = true; a.receiveShadow = true; add(a); add(b);
 }
-/* ---- ramps: a platform with soft edges, white railings along its sides and back (its front lies on the road's
-   edge), thin lines between the columns, and pillars when it stands above the ground ---- */
+/* ---- ramps: a rectangular platform with soft edges (its front edge lies on the road's edge, a small apron filling in
+   to the first row where the road curves), white railings along its sides and back, thin lines between the columns,
+   and pillars when it stands above the ground ---- */
 function buildRamps(add, L, pillars){
   const rampTops = [], geos = [], posts = [];
   const RAIL = [[-0.03,-0.03,'#eef0f3'],[-0.03,0.03,'#ffffff'],[0.03,0.03,'#ffffff'],[0.03,-0.03,'#e4e7eb']];
@@ -799,21 +800,20 @@ function buildRamps(add, L, pillars){
     const sh = new THREE.Shape(out.map(q => new THREE.Vector2(q[0], -q[1])));
     const g = new THREE.ExtrudeGeometry(sh, {depth:0.18, bevelEnabled:true, bevelThickness:0.03, bevelSize:0.03, bevelSegments:2, curveSegments:2});
     g.rotateX(-Math.PI/2); g.translate(0, y - 0.21, 0); plat.push(g);
-    // lines between the columns, from the front row back
-    for (let c = 1; c < r.cols; c++){ const pts = [];
-      for (let sv = 0.18; sv <= r.length - 0.12; sv += 0.12){ const q = r.across(sv, (c - r.cols/2)*C.RAMP_SP*r.widthK(sv)); pts.push([q.x, y + 0.004, q.z]); }
-      if (pts.length > 1) geos.push(extrude(pts, [[-0.012, 0, lineC], [0.012, 0, lineC]])); }
-    // railings: left side, back, right side
-    const edge = (sv, sgn) => { const q = r.across(sv, sgn*(r.halfWAt(sv) - 0.07)); return [q.x, y + 0.32, q.z]; };
+    // lines between the columns, from the front row back (straight and evenly spaced: the grid is a regular rectangle)
+    for (let c = 1; c < r.cols; c++){ const u = (c - r.cols/2)*C.RAMP_SP, a = r.across(0.16, u), b = r.across(r.length - 0.12, u);
+      geos.push(extrude([[a.x, y + 0.004, a.z], [b.x, y + 0.004, b.z]], [[-0.012, 0, lineC], [0.012, 0, lineC]])); }
+    // railings: left side (from its front corner on the road edge), back, right side
+    const hw = r.halfW - 0.07, edge = (sv, sgn) => { const q = r.across(sv, sgn*hw); return [q.x, y + 0.32, q.z]; };
     const left = [], right = [], back = [];
-    for (let sv = 0.12; sv <= r.length - 0.07; sv += 0.1){ left.push(edge(sv, -1)); right.push(edge(sv, 1)); }
-    left.push(edge(r.length - 0.07, -1)); right.push(edge(r.length - 0.07, 1));
-    const hw = r.halfWAt(r.length) - 0.07; for (let k = 0; k <= 8; k++){ const q = r.across(r.length - 0.07, -hw + 2*hw*k/8); back.push([q.x, y + 0.32, q.z]); }
+    for (const [line, sgn] of [[left, -1], [right, 1]]){ const s0 = r.frontAt(sgn*hw) + 0.12, n = Math.max(1, Math.ceil((r.length - 0.07 - s0)/0.1));
+      for (let k = 0; k <= n; k++) line.push(edge(s0 + (r.length - 0.07 - s0)*k/n, sgn)); }
+    for (let k = 0; k <= 8; k++){ const q = r.across(r.length - 0.07, -hw + 2*hw*k/8); back.push([q.x, y + 0.32, q.z]); }
     for (const line of [left, right, back]){ geos.push(extrude(line, RAIL)); for (let k = 0; k < line.length; k += 4) posts.push([line[k][0], y, line[k][2]]); }
     posts.push([left[left.length - 1][0], y, left[left.length - 1][2]], [right[right.length - 1][0], y, right[right.length - 1][2]]);
     // pillars under a raised platform
     for (const sv of [0.6, r.length*0.55, r.length - 0.4]){ const q = r.across(sv, 0); if (y - 0.22 - GD > 0.25) pillars.push([q.x, GD - 0.05, q.z, y - 0.2, 0.15]); }
-    const o = {}; C.pathAt(r.spline, r.length + 0.15, o, 0); rampTops.push({x:o.x, y, z:o.z});
+    const o = r.across(r.length + 0.15, 0); rampTops.push({x:o.x, y, z:o.z});
   });
   if (plat.length){ const m = new THREE.Mesh(mergeIndexedNI(plat.map(g => { const P = g.attributes.position, cl = new Float32Array(P.count*3), a = col(topC), b = col(TH.stone);
       const yt = (() => { let m = -1e9; for (let i = 0; i < P.count; i++) m = Math.max(m, P.getY(i)); return m; })();
@@ -1517,6 +1517,7 @@ function setMuted(m){
 /* ============================== GAME BINDING ============================= */
 let LEVEL = null, levelSource = 'builtin', L = null;
 let game = null, views = [], MV = [], winAt = Infinity, failAt = Infinity, crash = null, DEBUG = false, botOn = false, botT = 0;
+const colRun = new Map();                           // ramp*1000 + column -> the last man who boarded from it (see shiftCols)
 let timeScale = 1, shake = 0, lastSqueak = -9, winSoundAt = Infinity, levelSerial = 0;
 /* ================================ BLOCKERS ===============================
    Ramp tunnels (a coloured block with the number of stickmen left, feeding the cells in front of it),
@@ -1662,7 +1663,7 @@ function resetGame(){
   game = C.createGame(LEVEL);
   views = game.buses.map(b => new BusView(b));
   ensureMen(game.men.length); ensureWheels(views.reduce((a, v) => a + v.wheels.length, 0));
-  menIM.count = menShadow.count = menBlob.count = game.men.length; armIM.count = legIM.count = game.men.length*2; cheer.clear();
+  menIM.count = menShadow.count = menBlob.count = game.men.length; armIM.count = legIM.count = game.men.length*2; cheer.clear(); colRun.clear();
   MV = game.men.map((m, i) => { const d = m.state !== 'ramp' ? 0 : (game.ramps[m.ramp].cols[m.col].indexOf(i) >= 0 ? game.ramps[m.ramp].cols[m.col].indexOf(i) : m.row);
     return {disp:d, from:d, to:d, t0:-1, ph:hash(i, 7)*6.28, swayA:0.03 + hash(i, 11)*0.045, swayF:1.2 + hash(i, 13)*1.1,
             bobF:1.6 + hash(i, 17)*1.4, lookT:hash(i, 3)*6, look:0, lookTo:0, runFrom:null, runT:-9, landT:-9, fly:null, tint:0}; });
@@ -1774,7 +1775,8 @@ function handleEvents(){
       case 'merge': {
         const next = game.trips.find(b => b.trip.kind === 'toRoad' && Math.hypot(b.x, b.z - C.Z_ROAD0) < 4.2);
         if (next) views[next.id].flashT = e.t + 0.15; break; }
-      case 'board': { const m = MV[e.man], sp = slotPos(game.men[e.man], m.disp); m.runFrom = new THREE.Vector3(sp.x, sp.y, sp.z); m.runT = e.t;
+      case 'board': { const m = MV[e.man], sp = slotPos(game.men[e.man], m.disp); m.runFrom = new THREE.Vector3(sp.x, sp.y, sp.z); m.runT = e.t; m.runDir = [sp.fx, sp.fz];
+        m.runRow = Math.max(0, m.disp); m.runPos = null; colRun.set(e.ramp*1000 + e.col, e.man);
         const r = game.ramps[e.ramp];
         r.cols[e.col].forEach((id, i) => { const mv = MV[id]; mv.from = mv.disp; mv.to = i; mv.t0 = e.t + 0.05 + i*0.045; });
         break; }
@@ -2046,8 +2048,34 @@ function updateCheer(){
   for (const m of game.men) if (m.state === 'ramp' && m.cheerBus >= 0)
     cheer.set(m.id, m.cheerT + Math.min(0.6, m.cheerI*0.045) + hash(m.id, 23)*0.12);
 }
+/* column shifts: each man of a changed column eases to his new place (staggered front first, with a small overshoot);
+   a long shift moves the men behind faster than the ones ahead, so none ever comes closer to the man in front of him
+   (as drawn) than a stickman's width */
+const SHIFT_GAP = (C.MAN_W + 0.005)/C.RAMP_SP;      // a stickman's width, and 5 mm
+function shiftCols(t){
+  game.ramps.forEach((R, k) => R.cols.forEach((col, c) => { let prev = -Infinity;
+    // the man who just boarded from this column counts as the one in front until his run and hop are over (his place
+    // as drawn last frame: he only moves away from the ramp)
+    const rid = colRun.get(k*1000 + c), rv = rid != null ? MV[rid] : null;
+    if (rv && t - rv.runT < C.RUN_TIME){ const q = rv.runPos || [rv.runFrom.x, rv.runFrom.z];
+      prev = rv.runRow - ((q[0] - rv.runFrom.x)*rv.runDir[0] + (q[1] - rv.runFrom.z)*rv.runDir[1])/C.RAMP_SP; }
+    else if (rid != null) colRun.delete(k*1000 + c);
+    for (const i of col){ const mv = MV[i];
+      if (mv.t0 >= 0){ const k = clamp((t - mv.t0)/(C.COLUMN_SHIFT_TIME*1.15), 0, 1); mv.shiftK = k;
+        mv.disp = lerp(mv.from, mv.to, easeOutBack(k, 1.4)); if (k >= 1){ mv.t0 = -1; mv.disp = mv.to; } }
+      if (mv.disp < prev + SHIFT_GAP) mv.disp = prev + SHIFT_GAP;
+      prev = Math.max(0, mv.disp); } }));
+}
+/* a boarding man's run: first straight forward off the grid on to the apron (past the front line of the stickmen, so he
+   never brushes the men still standing), then on to the point just short of his seat; k: 0..1 along the whole way */
+const RUN_OUT = 0.38;
+function runPoint(mv, F, E, k){
+  const d = mv.runDir || [0, 0], G = [F.x + d[0]*RUN_OUT, F.z + d[1]*RUN_OUT], l1 = RUN_OUT*Math.hypot(d[0], d[1]), l2 = Math.hypot(E.x - G[0], E.z - G[1]), a = k*(l1 + l2);
+  if (a <= l1 || l2 < 1e-6){ const f = l1 > 1e-6 ? Math.min(1, a/l1) : 1; return [F.x + (G[0] - F.x)*f, F.z + (G[1] - F.z)*f]; }
+  const f = (a - l1)/l2; return [G[0] + (E.x - G[0])*f, G[1] + (E.z - G[1])*f];
+}
 function updateMen(t, vdt){
-  updateCheer();
+  updateCheer(); shiftCols(t);
   scene.updateMatrixWorld();
   for (let i=0;i<game.men.length;i++){
     const m = game.men[i], mv = MV[i];
@@ -2063,11 +2091,8 @@ function updateMen(t, vdt){
     if (m.state === 'tunnel' || (m.state === 'ramp' && BLK.under.has(i))){ hideMan(i); continue; }
     if (m.state === 'ramp'){
       let stepHop = 0, sy = 1, step = 0;
-      if (mv.t0 >= 0){                                  // staggered column shift: a little stepping hop with an overshoot
-        const k = clamp((t - mv.t0)/(C.COLUMN_SHIFT_TIME*1.15), 0, 1);
-        mv.disp = lerp(mv.from, mv.to, easeOutBack(k, 1.4));
-        stepHop = Math.sin(Math.PI*k)*0.07; sy = 1 + 0.07*Math.sin(Math.PI*k); step = Math.sin(Math.PI*2*k)*0.6;
-        if (k >= 1){ mv.t0 = -1; mv.disp = mv.to; }
+      if (mv.shiftK > 0 && mv.shiftK < 1){             // staggered column shift (see shiftCols): a little stepping hop
+        const k = mv.shiftK; stepHop = Math.sin(Math.PI*k)*0.07; sy = 1 + 0.07*Math.sin(Math.PI*k); step = Math.sin(Math.PI*2*k)*0.6;
       }
       const p = slotPos(m, mv.disp), r = L.RAMPS[m.ramp];
       let yaw = Math.atan2(p.fx, p.fz), y = p.y + stepHop, P;
@@ -2097,11 +2122,11 @@ function updateMen(t, vdt){
       const u = clamp((t - mv.runT)/C.RUN_TIME, 0, 1); seatMatrix(i, seatMat); const T = new THREE.Vector3().setFromMatrixPosition(seatMat);
       const F = mv.runFrom, dx = F.x - T.x, dz = F.z - T.z, dl = Math.hypot(dx, dz) || 1, yaw = Math.atan2(-dx, -dz);
       const E = new THREE.Vector3(T.x + dx/dl*0.6, F.y, T.z + dz/dl*0.6);
-      if (u < 0.5){ const k = easeInOut(u/0.5), sw = Math.sin(u/0.5*Math.PI*5);
-        setMan(i, lerp(F.x, E.x, k), F.y + Math.abs(Math.sin(u/0.5*Math.PI*5))*0.05, lerp(F.z, E.z, k), yaw, 0.22, 0, pose(-1.0*sw, 1.0*sw, 0.18, 0.18, 0.9*sw, -0.9*sw), 1, F.y); }
-      else if (u < 0.62){ const k = (u - 0.5)/0.12;
+      if (u < 0.5){ const sw = Math.sin(u/0.5*Math.PI*5), q = runPoint(mv, F, E, easeInOut(u/0.5));     // off the grid first, then to his seat
+        mv.runPos = q; setMan(i, q[0], F.y + Math.abs(Math.sin(u/0.5*Math.PI*5))*0.05, q[1], yaw, 0.22, 0, pose(-1.0*sw, 1.0*sw, 0.18, 0.18, 0.9*sw, -0.9*sw), 1, F.y); }
+      else if (u < 0.62){ const k = (u - 0.5)/0.12; mv.runPos = [E.x, E.z];
         setMan(i, E.x, E.y, E.z, yaw, 0.3, 0, pose(0.7, 0.7, 0.3, 0.3, -0.5, -0.5), 1 - 0.26*Math.sin(Math.PI*k), E.y); }
-      else { const k = (u - 0.62)/0.38, lift = Math.max(0, T.y - E.y);
+      else { const k = (u - 0.62)/0.38, lift = Math.max(0, T.y - E.y); mv.runPos = [lerp(E.x, T.x, k), lerp(E.z, T.z, k)];
         setMan(i, lerp(E.x, T.x, k), lerp(E.y, T.y, easeOut(k)) + Math.sin(Math.PI*k)*(0.45 + lift*0.35), lerp(E.z, T.z, k), yaw, -0.12, 0,
                pose(-2.6, -2.6, 0.45, 0.45, -1.0*Math.sin(Math.PI*k), -1.0*Math.sin(Math.PI*k)), 1 + 0.18*Math.sin(Math.PI*k)); }
       continue;

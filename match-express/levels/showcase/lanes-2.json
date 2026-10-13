@@ -24,10 +24,10 @@
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["red", "red", "blue", "blue", "blue"], ["red", "red", "red", "red", "yellow"], ["red", "red", "green", "green", "green"], ["green", "green", "green", "blue", "blue"]], "at": 4.02, "side": 1, "shape": [[2.09, -5.31], [3.44, -5.31]]},
-    {"rows": 5, "columns": [["green", "blue", "yellow", "yellow", "yellow"], ["blue", "blue", "blue", "blue", "yellow"], ["red", "red", "red", "red", "red"], ["red", "red", "red", "yellow", "blue"]], "at": 17.085, "side": -1, "shape": [[-2, -4.98], [-2.43, -3.71]]},
-    {"rows": 5, "columns": [["green", "green", "yellow", "yellow", "yellow"], ["green", "green", "green", "green", "green"], ["green", "green", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue", "yellow"]], "at": 21.15, "side": 1, "shape": [[-0.55, -10.02], [0.79, -9.8]]},
-    {"rows": 4, "columns": [["green", "green", "green", "green"], ["blue", "blue", "blue", "yellow"], ["blue", "blue", "blue", "yellow"], ["green", "green", "yellow", "yellow"]], "at": 25.267, "side": -1, "shape": [[-3.8, -14.34], [-4.97, -14.34]]}
+    {"rows": 5, "columns": [["red", "red", "blue", "blue", "blue"], ["red", "red", "red", "red", "yellow"], ["red", "red", "green", "green", "green"], ["green", "green", "green", "blue", "blue"]], "at": 4.02, "side": 1, "shape": [[2.94, -5.31]]},
+    {"rows": 5, "columns": [["green", "blue", "yellow", "yellow", "yellow"], ["blue", "blue", "blue", "blue", "yellow"], ["red", "red", "red", "red", "red"], ["red", "red", "red", "yellow", "blue"]], "at": 17.085, "side": -1, "shape": [[-2.27, -4.18]]},
+    {"rows": 5, "columns": [["green", "green", "yellow", "yellow", "yellow"], ["green", "green", "green", "green", "green"], ["green", "green", "blue", "blue", "blue"], ["blue", "blue", "blue", "blue", "yellow"]], "at": 21.25, "side": 1, "shape": [[0.77, -9.73]]},
+    {"rows": 4, "columns": [["green", "green", "green", "green"], ["blue", "blue", "blue", "yellow"], ["blue", "blue", "blue", "yellow"], ["green", "green", "yellow", "yellow"]], "at": 25.267, "side": -1, "shape": [[-4.47, -14.34]]}
   ],
   "lanes": [
     [

@@ -9,7 +9,7 @@
 //   screenshots/jelly-spiral-390.png         a 12-seat bus in Jelly mode bending in a spiral
 //   screenshots/tunnel-exit-390.png          close-up: a bus driving into the exit tunnel's darkness, front first
 //   screenshots/tunnel-return-390.png        close-up: a bus coming out of the return tunnel's darkness
-//   screenshots/ramp-curve-390.png           close-up: a ramp on a curved road (front edge bent to the road, back edge straight)
+//   screenshots/ramp-curve-390.png           close-up: a ramp on a tight curve (a regular grid, an apron to the curved road edge)
 //   screenshots/five-lanes-bar-390.png       a 5-lane level with the queue tunnel and the booster bar
 //   node tools/shoot-showcase.js             (needs playwright; CHROMIUM=/path/to/chrome as for the tests)
 const fs = require('fs'), path = require('path'), {pathToFileURL} = require('url'), {chromium} = require('playwright');
@@ -79,12 +79,13 @@ const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'screenshots'), F
     for (let k = 0; k < 60*120 && !(b.state === 'return' && b.trip && b.trip.s >= 1.4); k++) __me.advance(1/60);
     __me.render(); const T = __me.layout.TUNNEL, [x, z] = window.MECore.dispPoint(T.x, T.z); return [x, 0.5, z]; }, tun.color);
   await zoomAt(ret, 2.5); await shot('tunnel-return-390.png'); await unzoom();
-  // a ramp on a curved road: the one in the Medium basics level whose front edge bends the most
-  const ramp = await p.evaluate(() => { const i = __me.playlist.findIndex(l => l.id === 'basics-medium');
-    __me.setTheme('meadow'); __me.openMenu(); __me.goLevel(i); __me.closeMenu(); __me.freeze(true); __me.render();
-    let best = null; for (const r of __me.layout.RAMPS){ const F = r.front, a = F[0], b = F[F.length - 1], m = F[F.length >> 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
-      const bend = Math.abs(((m[0] - a[0])*(b[1] - a[1]) - (m[1] - a[1])*(b[0] - a[0]))/l); if (!best || bend > best.bend) best = {bend, r}; }
-    const r = best.r, c = r.across(r.length*0.5, 0); return [c.x, r.y, c.z]; });
+  // a ramp on a tight curve: of all the showcase's ramps, the one with the deepest apron (its regular grid of stickmen
+  // beside a road edge that bends the most a ramp of its width may)
+  const ramp = await p.evaluate(() => { const C = window.MECore; let best = null;
+    __me.playlist.forEach((lv, i) => { if (!Array.isArray(lv.ramps)) return; const L = C.buildLayout(C.normalizeLevel(JSON.parse(JSON.stringify(lv))));
+      for (const r of L.RAMPS) if (!best || r.apron > best.apron) best = {apron:r.apron, i, src:r.src}; });
+    __me.setTheme('meadow'); __me.openMenu(); __me.goLevel(best.i); __me.closeMenu(); __me.freeze(true); __me.render();
+    const r = __me.layout.RAMPS.find(q => q.src === best.src), c = r.across(r.length*0.3, 0); return [c.x, r.y, c.z]; });
   await zoomAt(ramp, 2); await shot('ramp-curve-390.png'); await unzoom();
   await play('lanes-5', 'town', 'rigid', 10); await shot('five-lanes-bar-390.png');
   await p.evaluate(() => { __me.setTheme('meadow'); __me.setMove('rigid', true); __me.setView('persp', true); });

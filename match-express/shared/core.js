@@ -28,9 +28,6 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
   "name": "Level 2",
   "seed": 11,
   "road": {
-    // control points from the entry road up to the top tunnel (the last point is the tunnel mouth).
-    // "spiral" turns the next stretch into a loop that crosses over itself; "tail" is the point
-    // inside the tunnel (optional, otherwise 2.1 units along the last tangent).
     "points": [
       {"x": 0, "z": -1.3, "y": 0},
       {"x": 0, "z": -3.3, "y": 0.05},
@@ -54,7 +51,7 @@ const LEVEL_DATA = /*LEVEL_BEGIN*/{
     {"side": 1, "columns": [["pink", "pink", "pink", "pink", "red", "red", "purple", "red", "red"], ["red", "red", "green", "green", "yellow", "yellow", "purple", "purple", "purple"], ["orange", "blue", "blue", "blue", "cyan", "cyan", "yellow", "yellow", "green"], ["green", "orange", "orange", "pink", "pink", "pink", "green", "red", "red"]], "at": 3.96},
     {"side": -1, "columns": [["green", "green", "yellow", "yellow", "purple", "purple", "yellow", "green", "green", "blue"], ["orange", "orange", "orange", "orange", "purple", "purple", "yellow", "green", "green", "orange"], ["yellow", "yellow", "cyan", "red", "red", "purple", "orange", "orange", "orange", "cyan"], ["purple", "purple", "pink", "pink", "pink", "cyan", "cyan", "cyan", "purple", "yellow"]], "at": 6.54},
     {"side": 1, "columns": [["yellow", "pink", "pink", "pink", "pink", "yellow", "yellow", "yellow", "cyan"], ["pink", "pink", "pink", "pink", "yellow", "yellow", "red", "red", "cyan"], ["cyan", "cyan", "cyan", "blue", "green", "yellow", "yellow", "yellow", "yellow"], ["green", "red", "red", "red", "red", "purple", "purple", "orange", "orange"]], "at": 7.81},
-    {"side": -1, "columns": [["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"], ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"], ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"], ["pink", "blue", "blue", "blue", "green", "blue", "cyan", "blue", "blue", "blue"]], "at": 27.73}
+    {"side": -1, "columns": [["purple", "purple", "blue", "cyan", "cyan", "cyan", "cyan", "blue", "yellow", "green"], ["green", "green", "green", "blue", "red", "orange", "purple", "purple", "blue", "blue"], ["blue", "green", "cyan", "cyan", "purple", "purple", "blue", "cyan", "cyan", "blue"], ["pink", "blue", "blue", "blue", "green", "blue", "cyan", "blue", "blue", "blue"]], "at": 29.73, "shape": [[-3.27, -15.39]]}
   ],
   "lanes": [
     [
@@ -119,10 +116,10 @@ const PRESETS = /*PRESETS_BEGIN*/{
       "tail": [0, 1.85, -17.1]
     },
     "ramps": [
-      {"side": 1, "tilt": 35, "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]], "at": 1.317},
-      {"side": -1, "tilt": 35, "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]], "at": 3.825},
-      {"side": 1, "tilt": 35, "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]], "at": 20.632},
-      {"side": -1, "tilt": 35, "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]], "at": 19.31}
+      {"side": 1, "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]], "at": 2.6, "shape": [[6.89, -3.68]]},
+      {"side": -1, "rows": 10, "columns": [["green", "red", "red", "red", "green", "blue", "orange", "yellow", "green", "pink"], ["red", "purple", "pink", "cyan", "purple", "blue", "cyan", "yellow", "blue", "cyan"], ["orange", "pink", "purple", "yellow", "yellow", "green", "green", "pink", "orange", "cyan"], ["yellow", "red", "red", "green", "blue", "orange", "orange", "green", "pink", "red"], ["purple", "purple", "cyan", "purple", "blue", "cyan", "yellow", "red", "cyan", "blue"], ["pink", "orange", "yellow", "purple", "green", "green", "pink", "orange", "cyan", "yellow"], ["green", "pink", "red", "red", "orange", "blue", "green", "yellow", "purple", "pink"], ["red", "purple", "pink", "cyan", "blue", "blue", "red", "cyan", "blue", "blue"], ["orange", "yellow", "purple", "green", "yellow", "pink", "purple", "cyan", "orange", "orange"]], "at": 3.5},
+      {"side": 1, "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]], "at": 20, "shape": [[6.73, -8.58]]},
+      {"side": -1, "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]], "at": 19.2, "shape": [[-5.93, -14.88]]}
     ],
     "lanes": [
       [
@@ -205,10 +202,10 @@ const PRESETS = /*PRESETS_BEGIN*/{
       "tail": [0, 1.85, -17.1]
     },
     "ramps": [
-      {"at": 1.856, "side": 1, "tilt": 35, "shape": [[4.55, -4.81], [5.84, -7.11]], "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]]},
-      {"at": 3.9248845776089056, "side": -1, "tilt": 35, "shape": [[-3.7, -6.72], [-5.71, -9.51]], "rows": 15, "columns": [["green", "green", "red", "red", "red", "green", "green", "orange", "orange", "orange", "green", "green", "green", "purple", "red"], ["red", "red", "purple", "pink", "pink", "purple", "purple", "blue", "cyan", "cyan", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "orange", "purple", "purple", "purple", "yellow", "yellow", "green", "green", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "red", "pink", "red", "red", "red", "blue", "blue", "blue", "orange", "yellow", "yellow", "pink", "pink", "pink"], ["purple", "purple", "purple", "cyan", "cyan", "cyan", "blue", "blue", "blue", "yellow", "yellow", "cyan", "cyan", "cyan", "blue"], ["pink", "pink", "yellow", "yellow", "yellow", "green", "green", "green", "pink", "pink", "pink", "cyan", "cyan", "cyan", "orange"]]},
-      {"at": 20.332, "side": 1, "tilt": 35, "shape": [[6.9, -14.9]], "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]]},
-      {"at": 21.210127635680642, "side": -1, "tilt": 35, "shape": [[-3.77, -13.6], [-6.24, -16.16]], "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]]}
+      {"at": 2.7, "side": 1, "shape": [[6.9, -3.79]], "rows": 15, "columns": [["cyan", "cyan", "blue", "blue", "orange", "orange", "orange", "red", "red", "blue", "blue", "blue", "cyan", "cyan", "cyan"], ["green", "orange", "orange", "orange", "green", "red", "red", "yellow", "yellow", "pink", "pink", "pink", "green", "red", "red"], ["purple", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "purple", "purple", "purple", "orange", "orange", "orange", "yellow"], ["yellow", "pink", "pink", "green", "pink", "cyan", "yellow", "yellow", "purple", "purple", "cyan", "cyan", "cyan", "purple", "purple"], ["orange", "orange", "blue", "cyan", "cyan", "blue", "blue", "blue", "green", "green", "green", "purple", "pink", "pink", "red"], ["red", "pink", "pink", "pink", "red", "red", "blue", "blue", "green", "green", "green", "yellow", "yellow", "yellow", "green"]]},
+      {"at": 3.4, "side": -1, "shape": [[-5.32, -4.83]], "rows": 10, "columns": [["green", "red", "red", "red", "green", "blue", "orange", "yellow", "green", "pink"], ["red", "purple", "pink", "cyan", "purple", "blue", "cyan", "yellow", "blue", "cyan"], ["orange", "pink", "purple", "yellow", "yellow", "green", "green", "pink", "orange", "cyan"], ["yellow", "red", "red", "green", "blue", "orange", "orange", "green", "pink", "red"], ["purple", "purple", "cyan", "purple", "blue", "cyan", "yellow", "red", "cyan", "blue"], ["pink", "orange", "yellow", "purple", "green", "green", "pink", "orange", "cyan", "yellow"], ["green", "pink", "red", "red", "orange", "blue", "green", "yellow", "purple", "pink"], ["red", "purple", "pink", "cyan", "blue", "blue", "red", "cyan", "blue", "blue"], ["orange", "yellow", "purple", "green", "yellow", "pink", "purple", "cyan", "orange", "orange"]]},
+      {"at": 20, "side": 1, "shape": [[6.73, -8.58]], "rows": 15, "columns": [["yellow", "yellow", "pink", "pink", "cyan", "yellow", "yellow", "cyan", "cyan", "red", "cyan", "cyan", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "pink", "yellow", "cyan", "cyan", "green", "green", "red", "green", "green", "cyan", "purple"], ["purple", "cyan", "red", "red", "red", "purple", "purple", "purple", "green", "green", "blue", "blue", "blue", "orange", "orange"], ["purple", "purple", "red", "red", "red", "orange", "orange", "orange", "pink", "pink", "yellow", "red", "red", "orange", "orange"], ["cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "purple", "purple", "orange", "orange", "green", "green", "pink", "pink"], ["red", "purple", "purple", "blue", "blue", "blue", "green", "green", "pink", "blue", "blue", "blue", "orange", "orange", "blue"]]},
+      {"at": 21.4, "side": -1, "shape": [[-6.58, -12.82]], "rows": 15, "columns": [["red", "red", "blue", "blue", "cyan", "cyan", "orange", "orange", "orange", "blue", "purple", "yellow", "yellow", "yellow", "pink"], ["pink", "yellow", "orange", "orange", "red", "blue", "blue", "blue", "green", "green", "green", "purple", "purple", "blue", "blue"], ["blue", "green", "green", "purple", "purple", "yellow", "yellow", "yellow", "red", "red", "red", "purple", "purple", "pink", "pink"], ["purple", "cyan", "cyan", "pink", "pink", "pink", "yellow", "yellow", "green", "green", "green", "cyan", "cyan", "cyan", "orange"], ["orange", "orange", "red", "red", "orange", "orange", "orange", "purple", "purple", "purple", "pink", "pink", "pink", "cyan", "cyan"], ["cyan", "yellow", "yellow", "yellow", "red", "red", "cyan", "red", "blue", "blue", "blue", "green", "green", "green", "pink"]]}
     ],
     "lanes": [
       [
@@ -294,7 +291,7 @@ const PRESETS = /*PRESETS_BEGIN*/{
       {"side": -1, "rows": 6, "columns": [["yellow", "red", "yellow", "blue", "yellow", "yellow"], ["yellow", "yellow", "yellow", "red", "red", "red"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "yellow", "yellow", "red", "red", "red"]], "cp": 1},
       {"side": 1, "rows": 6, "columns": [["blue", "blue", "red", "blue", "blue", "blue"], ["yellow", "red", "red", "red", "blue", "red"], ["yellow", "red", "red", "blue", "blue", "yellow"], ["yellow", "yellow", "yellow", "blue", "red", "red"]], "cp": 2},
       {"side": 1, "rows": 6, "columns": [["blue", "blue", "green", "green", "green", "red"], ["green", "yellow", "red", "red", "yellow", "green"], ["yellow", "yellow", "yellow", "green", "green", "green"], ["red", "blue", "blue", "red", "red", "yellow"]], "cp": 4},
-      {"side": -1, "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "cp": 12}
+      {"side": -1, "rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "green", "blue"], ["blue", "blue", "green", "green", "green", "blue"], ["blue", "green", "green", "blue", "green", "green"], ["green", "green", "green", "blue", "green", "green"]], "at": 28.897, "shape": [[-1.32, -15.45]]}
     ],
     "lanes": [
       [
@@ -346,7 +343,7 @@ const PRESETS = /*PRESETS_BEGIN*/{
       {"side": -1, "rows": 6, "columns": [["green", "blue", "blue", "blue", "green", "red"], ["blue", "blue", "yellow", "yellow", "red", "red"], ["green", "green", "yellow", "yellow", "yellow", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"]], "at": 3.06},
       {"side": 1, "rows": 6, "columns": [["green", "yellow", "yellow", "yellow", "green", "green"], ["red", "green", "blue", "blue", "blue", "red"], ["green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "yellow", "green", "green", "blue"]], "at": 3},
       {"side": 1, "rows": 6, "columns": [["green", "red", "red", "red", "green", "red"], ["blue", "blue", "yellow", "yellow", "yellow", "blue"], ["green", "green", "green", "yellow", "red", "red"], ["blue", "blue", "red", "red", "green", "blue"]], "at": 7.66},
-      {"side": -1, "rows": 6, "columns": [["red", "red", "blue", "blue", "yellow", "red"], ["yellow", "blue", "blue", "yellow", "yellow", "red"], ["yellow", "blue", "green", "green", "green", "red"], ["green", "green", "blue", "yellow", "red", "red"]], "at": 27.73}
+      {"side": -1, "rows": 6, "columns": [["red", "red", "blue", "blue", "yellow", "red"], ["yellow", "blue", "blue", "yellow", "yellow", "red"], ["yellow", "blue", "green", "green", "green", "red"], ["green", "green", "blue", "yellow", "red", "red"]], "at": 28.93}
     ],
     "lanes": [
       [
@@ -446,7 +443,8 @@ const PRESETS = /*PRESETS_BEGIN*/{
           ["blue", "blue", "yellow", "yellow", "yellow", "green"],
           ["green", "green", "yellow", "green", "green", "green"]
         ],
-        "cp": 12
+        "at": 28.897,
+        "shape": [[-1.32, -15.45]]
       }
     ],
     "lanes": [
@@ -504,7 +502,7 @@ const PRESETS = /*PRESETS_BEGIN*/{
       {"side": -1, "rows": 6, "columns": [["red", "red", "?red", "?blue", "?blue", "?blue"], ["red", "?red", "red", "?green", "?green", "yellow"], ["red", "?blue", "?yellow", "?yellow", "?blue", "green"], ["yellow", "?yellow", "?yellow", "?blue", "?blue", "?yellow"]], "cp": 1},
       {"side": 1, "rows": 6, "columns": [["yellow", "?yellow", "yellow", "red", "?yellow", "?yellow"], ["yellow", "yellow", "yellow", "?blue", "?blue", "green"], ["green", "green", "green", "?yellow", "?green", "?green"], ["blue", "?red", "red", "?red", "green", "yellow"]], "cp": 2},
       {"side": 1, "rows": 6, "columns": [["red", "?blue", "?blue", "?red", "?yellow", "yellow"], ["red", "?green", "?green", "red", "yellow", "?green"], ["red", "?red", "?blue", "?yellow", "blue", "blue"], ["green", "?red", "red", "?yellow", "?yellow", "yellow"]], "cp": 4},
-      {"side": -1, "rows": 6, "columns": [["blue", "?blue", "?green", "?red", "?red", "?blue"], ["red", "?green", "?green", "?green", "?blue", "?blue"], ["blue", "?blue", "blue", "green", "?green", "green"], ["green", "green", "green", "?blue", "?red", "?red"]], "cp": 12}
+      {"side": -1, "rows": 6, "columns": [["blue", "?blue", "?green", "?red", "?red", "?blue"], ["red", "?green", "?green", "?green", "?blue", "?blue"], ["blue", "?blue", "blue", "green", "?green", "green"], ["green", "green", "green", "?blue", "?red", "?red"]], "at": 28.897, "shape": [[-1.32, -15.45]]}
     ],
     "lanes": [
       [
@@ -598,7 +596,8 @@ const PRESETS = /*PRESETS_BEGIN*/{
           ["green", "green", "yellow", "blue", "blue", "blue"],
           ["green", "green", "green", "blue", "blue", "green"]
         ],
-        "cp": 12
+        "at": 28.897,
+        "shape": [[-1.32, -15.45]]
       }
     ],
     "lanes": [
@@ -696,7 +695,8 @@ const PRESETS = /*PRESETS_BEGIN*/{
           ["green", "yellow", "yellow", "yellow", "blue", "blue"],
           ["yellow", "yellow", "yellow", "red", "yellow", "blue"]
         ],
-        "cp": 12
+        "at": 28.897,
+        "shape": [[-1.32, -15.45]]
       }
     ],
     "lanes": [
@@ -797,7 +797,8 @@ const PRESETS = /*PRESETS_BEGIN*/{
         "tunnels": [
           {"col": 2, "row": 2, "w": 1, "h": 2, "color": "green", "count": 6}
         ],
-        "cp": 12
+        "at": 28.897,
+        "shape": [[-1.32, -15.45]]
       }
     ],
     "lanes": [
@@ -959,6 +960,8 @@ function drawnBay(bx){ const L12 = busLen(12), z0 = parkZ(L12), [x, z] = dispPoi
 function dispDir(dx, dz, z){ const a = dx*dispSx(z), b = dz*dispSlope(z), l = Math.hypot(a, b) || 1; return [a/l, b/l]; }
 
 const RAMP_SP = 0.36;                               // stickman spacing along and across a ramp
+const RAMP_APRON_MAX = RAMP_SP;                     // the deepest apron between the road edge and a ramp's first row: one row
+const MAN_W = 0.31;                                 // a stickman's width (its head; two never come closer)
 
 /* ============================= HELPERS ============================== */
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a);
@@ -1060,7 +1063,7 @@ function normalizeLevel(lv){
     if (loose) nr.front = [+r.front[0], +r.front[1]];
     else if (r.at != null) nr.at = +r.at; else if (r.cp != null) nr.cp = r.cp | 0; else if (place.cp != null) nr.cp = place.cp; else if (place.at != null) nr.at = place.at; else nr.at = null;
     if (r.tilt != null && isFinite(+r.tilt)) nr.tilt = +r.tilt;
-    if (r.spread != null && isFinite(+r.spread) && +r.spread !== 0) nr.spread = clamp(+r.spread, -0.5, 1.5);
+    // (an old `spread` - columns fanning out or drawing together - is dropped: every ramp is a regular rectangle)
     if (r.push != null && isFinite(+r.push) && +r.push > 0) nr.push = +r.push;      // front node this much further from the road
     const shp = Array.isArray(r.shape) && r.shape.length ? r.shape : place.shape;
     if (shp) nr.shape = shp.map(p => [+p[0], +p[1]]);
@@ -1151,12 +1154,14 @@ function roadEdge(ROAD, s, side, reach){
   E.sAt = u => { const [lo, hi, f] = find(u*side); return lerpN(list[lo][2], list[hi][2], f); };   // the road's arc length beside edge point u
   return E;
 }
-/* A ramp: a grid of stickmen beside the road, its front edge always lying exactly on the road's edge - straight on a
-   straight road, following the curve on a curved one.  Its body follows a spline from the middle of that front edge
-   (straight out, tilted, or bent by `shape`) and is a rectangle across it (square to the spline) whose front is cut to
-   fit the road: only the front edge takes the road's curve.  The rows behind it keep less and less of that curve, the
-   back row and the back edge none, so the back edge is straight with square corners and the side edges are straight
-   (along the spline).  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
+/* A ramp: a straight rectangular platform beside the road holding a regular grid of stickmen - columns x rows, evenly
+   spaced RAMP_SP apart, never bent, squeezed or fanned, however the road bends.  It points in one direction from the
+   middle of its front edge (its boarding point, on the road's edge): `tilt` (a fixed screen angle), else the way its
+   `shape` path leaves the road (only that first direction counts: an old bent or fanned ramp is straightened along
+   it), else straight out, square to the road.  Only the platform's outline adapts to the road: its front edge lies
+   exactly on the road's edge, following its curve, and a small apron fills the gap between that curved edge and the
+   straight first row, which sits as close to the road as the apron allows.  The back and side edges are straight with
+   square corners.  A ramp whose front node is off the road (an old level's "front") snaps to the nearest road point. */
 function buildRamp(ROAD, rd, src, Y){
   let s = rd.at != null ? rd.at : rd.cp != null ? ROAD.pointS[clamp(rd.cp, 0, ROAD.pointS.length-1)] : ROAD.portalS*(0.2 + 0.15*src);
   let side = rd.side || 1;
@@ -1168,46 +1173,26 @@ function buildRamp(ROAD, rd, src, Y){
   }
   s = clamp(s, 0.6, ROAD.portalS - 0.6);
   const rows = rd.rows, cols = rd.columns.length, length = 0.34 + (rows-1)*RAMP_SP + 0.42;
-  // `spread` fans the columns out (> 0) or draws them together (< 0) toward the back: the lateral spacing grows
-  // linearly from RAMP_SP at the front row to RAMP_SP*(1 + spread) at the back row (and on to the far edge)
-  const spread = rd.spread || 0, depth = Math.max(RAMP_SP, (rows - 1)*RAMP_SP);
-  const widthK = sv => 1 + spread*Math.max(0, (sv - 0.34)/depth);
-  const halfWAt = sv => cols*RAMP_SP*widthK(sv)/2 + 0.16;
-  const halfW0 = halfWAt(0), halfW = Math.max(halfW0, halfWAt(length));
+  const halfW = cols*RAMP_SP/2 + 0.16;
   // the whole front edge lies along the road, from just after its start to just before the exit tunnel: a ramp too
   // close to either end slides along the road until it fits
   let E = roadEdge(ROAD, s, side, halfW + 0.3);
   for (let it = 0; it < 4; it++){
-    const a = E.sAt(-halfW0), b = E.sAt(halfW0), lo = Math.min(a, b), hi = Math.max(a, b);
+    const a = E.sAt(-halfW), b = E.sAt(halfW), lo = Math.min(a, b), hi = Math.max(a, b);
     const ds = lo < 0.15 ? 0.15 - lo : hi > ROAD.portalS - 0.3 ? ROAD.portalS - 0.3 - hi : 0;
     if (Math.abs(ds) < 1e-4) break;
     s = clamp(s + ds, 0.6, ROAD.portalS - 0.6); E = roadEdge(ROAD, s, side, halfW + 0.3);
   }
   const A = E(0), p = {}; pathAt(ROAD, s, p, 0);
   const nx = -p.dz*side, nz = p.dx*side;           // outward horizontal normal
-  // a tilted ramp points at a fixed screen angle: outward (to its side of the screen) and up by `tilt` degrees
-  const tilt = rd.tilt != null ? rd.tilt*Math.PI/180 : null, wx = nx >= 0 ? 1 : -1;
-  const tdx = tilt != null ? wx*Math.cos(tilt) : 0, tdz = tilt != null ? -Math.sin(tilt) : 0;
   const y = p.y - ((Y || YARD).RAMP_DROP || 0);
-  const c = [[A[0], y, A[1]]];
-  if (rd.shape && rd.shape.length) rd.shape.forEach(q => c.push([q[0], y, q[1]]));
-  else if (tilt != null)                            // straight platform
-    c.push([A[0] + tdx*length*0.5, y, A[1] + tdz*length*0.5], [A[0] + tdx*(length + 0.45), y, A[1] + tdz*(length + 0.45)]);
-  else {                                            // default shape: leave the road square-on, bend toward "up"
-    const dir = a => [side*Math.cos(a), -Math.sin(a)];
-    const a0 = Math.atan2(-nz, nx*side), a1 = 0.86;
-    for (const [a,l] of [[a0,1.3],[(a0+a1)/2,1.3],[a1,2.0]]){ const q=c[c.length-1], v=dir(a); c.push([q[0]+v[0]*l, y, q[2]+v[1]*l]); }
-  }
-  let spl = makePath(catmullRom(c, 24).pts);
-  if (spl.len < length + 0.3){                      // stretch the last point so every row fits
-    const q = c[c.length-1], w = c[c.length-2], l = Math.hypot(q[0]-w[0], q[2]-w[2]) || 1, ext = length + 0.4 - spl.len;
-    c[c.length-1] = [q[0] + (q[0]-w[0])/l*ext, y, q[2] + (q[2]-w[2])/l*ext]; spl = makePath(catmullRom(c, 24).pts);
-  }
-  // across the ramp: u along its straight crosswise axis (square to the spline at the front, the same way round as
-  // the road edge); the front edge's depth there, fr(u), is how far out the road edge lies at u.  A row at depth sv
-  // keeps (1 - sv/length) of that, turned with the spline as it bends: the front edge is the road edge, the back
-  // edge a straight line
-  const o0 = {}; pathAt(spl, 0, o0, 0); const th0 = Math.atan2(o0.dz, o0.dx), n0 = [o0.dx, o0.dz];
+  // its direction n0: a tilted ramp points at a fixed screen angle, outward (to its side of the screen) and up by `tilt`
+  // degrees; a shaped one the way its path leaves the road; otherwise square to the road
+  let n0 = [nx, nz];
+  if (rd.tilt != null){ const t = rd.tilt*Math.PI/180; n0 = [(nx >= 0 ? 1 : -1)*Math.cos(t), -Math.sin(t)]; }
+  else if (rd.shape && rd.shape.length){ const o = {}, c = [[A[0], y, A[1]]].concat(rd.shape.map(q => [q[0], y, q[1]]));
+    pathAt(makePath(catmullRom(c, 24).pts), 0, o, 0); const l = Math.hypot(o.dx, o.dz); if (l > 1e-9) n0 = [o.dx/l, o.dz/l]; }
+  // across the ramp: u along t0, square to n0 and the same way round as the road edge (so the columns run as before)
   const t0 = (() => { const a = E(0.05), b = E(-0.05), d = [a[0] - b[0], a[1] - b[1]], k = d[0]*n0[0] + d[1]*n0[1], v = [d[0] - n0[0]*k, d[1] - n0[1]*k], l = Math.hypot(v[0], v[1]) || 1; return [v[0]/l, v[1]/l]; })();
   // the road edge in the ramp's frame, [u, depth] by ascending u: walked out from the middle of the front edge each
   // way only while it keeps moving across the ramp (never on to another stretch of the road)
@@ -1216,37 +1201,38 @@ function buildRamp(ROAD, rd, src, Y){
     for (const sg of [1, -1]) for (let t = 0.02, last = 0; t < reach*2; t += 0.02){ const q = at(sg*t); if (q[0]*sg <= last + 1e-6) break; last = q[0]*sg;
       if (sg > 0) FR.push(q); else FR.unshift(q); if (last > reach) break; } }
   // the road edge must run across the whole front (a ramp turned too far against a bend would hang off it)
-  const frontShort = FR[0][0] > -halfW0 + 1e-6 || FR[FR.length - 1][0] < halfW0 - 1e-6;
+  const frontShort = FR[0][0] > -halfW + 1e-6 || FR[FR.length - 1][0] < halfW - 1e-6;
   const fr = u => { let lo = 0, hi = FR.length - 1;
     if (u <= FR[0][0]) return FR[0][1]; if (u >= FR[hi][0]) return FR[hi][1];
     while (hi - lo > 1){ const m = (lo + hi) >> 1; if (FR[m][0] <= u) lo = m; else hi = m; }
     const f = (u - FR[lo][0])/((FR[hi][0] - FR[lo][0]) || 1); return FR[lo][1] + (FR[hi][1] - FR[lo][1])*f; };
-  const across = (sv, u) => { const o = {}; pathAt(spl, sv, o, 0); const k = Math.max(0, 1 - sv/length), d = fr(u)*k;
-    const dx = t0[0]*u + n0[0]*d, dz = t0[1]*u + n0[1]*d, a = Math.atan2(o.dz, o.dx) - th0, ca = Math.cos(a), sa = Math.sin(a);
-    return {x:o.x + dx*ca - dz*sa, z:o.z + dx*sa + dz*ca, o}; };
+  // the rectangle starts where the road edge reaches farthest out across the ramp's width; in front of it the apron
+  // reaches down to the road edge, `apron` deep at most
+  let vF = Math.max(fr(-halfW), fr(halfW)), vMin = Math.min(fr(-halfW), fr(halfW));      // (fr is piecewise linear: its corners and ends)
+  for (const q of FR) if (q[0] > -halfW && q[0] < halfW){ vF = Math.max(vF, q[1]); vMin = Math.min(vMin, q[1]); }
+  const apron = vF - vMin, O = [A[0] + n0[0]*vF, A[1] + n0[1]*vF];
+  const across = (sv, u) => ({x:O[0] + t0[0]*u + n0[0]*sv, z:O[1] + t0[1]*u + n0[1]*sv});   // sv: depth behind the rectangle's front line
+  const frontAt = u => fr(u) - vF;                  // the front edge's depth there (<= 0: the apron in front of the rectangle)
   const slots = [];
   for (let col=0; col<cols; col++){
     const colSlots = [];
-    for (let r=0; r<rows; r++){
-      const sv = 0.34 + r*RAMP_SP, q = across(sv, (col - (cols-1)/2)*RAMP_SP*widthK(sv));
-      colSlots.push({x:q.x, y, z:q.z, fx:-q.o.dx, fz:-q.o.dz});
-    }
+    for (let r=0; r<rows; r++){ const q = across(0.34 + r*RAMP_SP, (col - (cols-1)/2)*RAMP_SP); colSlots.push({x:q.x, y, z:q.z, fx:-n0[0], fz:-n0[1]}); }
     slots.push(colSlots);
   }
-  // the outline: the front edge along the road edge, the sides and the back following the body
-  const front = [], right = [], back = [], left = [], NU = Math.max(4, Math.ceil(halfW0*2/0.12)), NS = Math.max(4, Math.ceil(length/0.15));
-  for (let k = 0; k <= NU; k++){ const u = -halfW0 + 2*halfW0*k/NU, q = across(0, u); front.push([q.x, q.z]); }
-  for (let k = 1; k <= NS; k++){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, hw); right.push([q.x, q.z]); }
-  for (let k = 1; k < NU; k++){ const hw = halfWAt(length), u = hw - 2*hw*k/NU, q = across(length, u); back.push([q.x, q.z]); }
-  for (let k = NS; k >= 1; k--){ const sv = length*k/NS, hw = halfWAt(sv); const q = across(sv, -hw); left.push([q.x, q.z]); }
+  // the outline: the front edge along the road edge, then the straight right side, back and left side
+  const front = [], right = [], back = [], left = [], NU = Math.max(4, Math.ceil(halfW*2/0.12)), NS = Math.max(4, Math.ceil(length/0.15));
+  for (let k = 0; k <= NU; k++){ const u = -halfW + 2*halfW*k/NU, q = across(frontAt(u), u); front.push([q.x, q.z]); }
+  { const s0 = frontAt(halfW); for (let k = 1; k <= NS; k++){ const q = across(s0 + (length - s0)*k/NS, halfW); right.push([q.x, q.z]); } }
+  for (let k = 1; k < NU; k++){ const u = halfW - 2*halfW*k/NU, q = across(length, u); back.push([q.x, q.z]); }
+  { const s0 = frontAt(-halfW); for (let k = NS; k >= 1; k--){ const q = across(s0 + (length - s0)*k/NS, -halfW); left.push([q.x, q.z]); } }
   const outline = front.concat(right, back, left);
   const backEdge = [right[right.length - 1]].concat(back, [left[0]]);      // corner to corner (a straight line)
-  // columns nearest the boarding point first; of two as near as each other (either side of the middle of a front edge
-  // flush on the road) the one the bus passes first
-  const dq = c => Math.round(Math.hypot(slots[c][0].x-p.x, slots[c][0].z-p.z)*1e3);
-  const colOrder = slots.map((_, i) => i).sort((a,b) => dq(a) - dq(b) || (a - b)*side);
-  return {src, s, side, x:p.x, y, z:p.z, spline:spl, ctrl:c.map(q => [q[0], q[2]]), length,
-          rows, cols, halfW, halfW0, halfWAt, widthK, spread, slots, colOrder, snapped:true, front, outline, backEdge, frontShort, across, edge:E};
+  const tip = across(length, 0), spline = makePath([[O[0], y, O[1]], [tip.x + n0[0]*0.6, y, tip.z + n0[1]*0.6]]);   // its middle line, from the rectangle's front
+  // columns nearest the boarding point first: from the middle of the front row out; of two as near as each other the
+  // one the bus passes first
+  const mid = (cols - 1)/2, colOrder = slots.map((_, i) => i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || (a - b)*side);
+  return {src, s, side, x:p.x, y, z:p.z, spline, ctrl:[[A[0], A[1]], [tip.x, tip.z]], dir:n0, length,
+          rows, cols, halfW, slots, colOrder, snapped:true, front, outline, backEdge, frontShort, apron, across, frontAt, edge:E};
 }
 function pillarSpots(ROAD){
   const o = {}, out = [], P = ROAD.P;
@@ -2002,6 +1988,11 @@ function inTarget(x, y, z){                        // inside the target zone of 
   const [u, v] = project(x, y, z, SCREEN_CAM);
   return u >= SCREEN.MARGIN && u <= SCREEN.w - SCREEN.MARGIN && v >= SCREEN.TARGET_TOP*SCREEN.h && v <= SCREEN.TARGET_BOT*SCREEN.h;
 }
+function inZoneBoth(x, y, z){                      // on screen within the target zone's rows in both cameras (a pixel to spare)
+  for (const cam of [SCREEN_CAM, ORTHO_CAM]){ const [u, v] = project(x, y, z, cam);
+    if (u < -1 || u > SCREEN.w + 1 || v < SCREEN.TARGET_TOP*SCREEN.h - 1 || v > SCREEN.TARGET_BOT*SCREEN.h + 1) return false; }
+  return true;
+}
 function inSpiral(ROAD, s, pad){ return ROAD.spirals.some(sp => s > sp.s0 - pad && s < sp.s1 + pad); }
 function roadWarnings(L){
   const W = [], R = L.ROAD, P = R.P, n = R.n, pts = [];
@@ -2070,19 +2061,19 @@ function rampWarnings(L){
       if (polyDist(polys[k], p.x, p.z) < ROAD_HALF - 0.1){ hit = p; break; } }
     if (hit) W.push({kind:'ramp-road', msg: label + ' overlaps the road', x:hit.x, z:hit.z, ramp:r.src});
     else if (r.frontShort) W.push({kind:'ramp-road', msg: label + '\'s front edge does not fit the road (turned too far against a bend)', x:r.x, z:r.z, ramp:r.src});
+    // the apron between the road edge and the straight first row may be about one row deep at most
+    if (r.apron > RAMP_APRON_MAX + 1e-6){ const o = {}; pathAt(R, r.s, o, 0); const turned = Math.abs(r.dir[0]*o.dx + r.dir[1]*o.dz) > 0.09;
+      W.push({kind:'ramp-apron', msg: label + ': the road bends too much here for its width (its apron would be ' + (r.apron/RAMP_SP).toFixed(1) + ' rows deep): move it along the road' + (turned ? ', turn it square to the road' : '') + ' or make it narrower', x:r.x, z:r.z, ramp:r.src}); }
     for (let j=k+1;j<L.RAMPS.length;j++){
       const o = L.RAMPS[j], h2 = polysOverlap(polys[k], polys[j], 0.05);
       if (h2) W.push({kind:'ramp-ramp', msg: label + ' overlaps ramp ' + (o.src + 1), x:h2[0], z:h2[1], ramp:r.src});
     }
-    // a bend tighter than the ramp is wide folds its inner side: two stickman cells would overlap
-    let fold = null; const cells = r.slots.flat();
-    for (let a = 0; a < cells.length && !fold; a++) for (let b = a + 1; b < cells.length; b++)
-      if (Math.hypot(cells[a].x - cells[b].x, cells[a].z - cells[b].z) < RAMP_SP*0.5){ fold = cells[a]; break; }
-    if (fold) W.push({kind:'ramp-fold', msg: label + ' bends too sharply for its width (stickmen would overlap)', x:fold.x, z:fold.z, ramp:r.src});
     const ex = exitFootprint(L.exit), he = polysOverlap(polys[k], ex, 0.1);
     if (he) W.push({kind:'ramp-exit', msg: label + ' runs into the exit tunnel', x:he[0], z:he[1], ramp:r.src});
     let out = null;
     for (const cs of r.slots){ for (const q of cs) if (!inTarget(q.x, q.y + 0.8, q.z) || !inTarget(q.x, q.y, q.z)){ out = q; break; } if (out) break; }
+    // its platform too, in either camera (perspective or orthographic): the whole outline on screen within the zone's rows
+    if (!out) for (const q of r.outline) if (!inZoneBoth(q[0], r.y, q[1])){ out = {x:q[0], z:q[1]}; break; }
     if (out) W.push({kind:'zone-ramp', msg: label + ' leaves the target zone', x:out.x, z:out.z, ramp:r.src});
     if (!r.snapped) W.push({kind:'ramp-unsnapped', msg: label + ': its front node is not on the road (no bus can reach it)', x:r.x, z:r.z, ramp:r.src});
     else if (inSpiral(R, r.s, 0.8)) W.push({kind:'ramp-spiral', msg: label + ': boarding point is on a spiral overpass', x:r.x, z:r.z, ramp:r.src});
@@ -2261,13 +2252,13 @@ const ROAD = DEFAULT_LAYOUT.ROAD, RAMPS = DEFAULT_LAYOUT.RAMPS, TUNNEL = DEFAULT
 root.MECore = {
   BUS_SPEED, BOARD_RATE, COLUMN_SHIFT_TIME, ROAD_CAPACITY, STATIC_SLOTS, PARACHUTE_DURATION,
   rampOutline, polyDist, inPoly, polysOverlap,
-  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
+  RETURN_TUNNEL_TIME, WIN_PANEL_DELAY, RUN_TIME, BOT_THINK, SIM_DT, RAMP_SP, RAMP_APRON_MAX, MAN_W, LANE_GAP, CAM, SCREEN, SCREEN_CAM, DISP, BUS_DRAW, drawnBay, dispZ, dispSx, dispSlope, dispScale, dispPoint, dispDir, inTarget, ORTHO_CAM, ORTHO_M, setView, viewCam, orthoRowZ,
   get VIEW(){ return VIEW; }, MIN_TURN_R,
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
   routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn,
-  normalizeLevel, buildLayout, parseCell, cellStr, checkLevel, difficulty, testLevel,
+  normalizeLevel, buildLayout, buildRamp, parseCell, cellStr, checkLevel, difficulty, testLevel,
   createGame, step, tapLane, tapBay, canRoad, freeBay, frontColors, legalSends,
   greedyPick, randomPick, applyAction, simulate, lapBoarders, groupReady, linkGroups, queueDeadlock, rampEmpty, KEY_FALLBACK_DELAY, validateLevel, generateLevel, evaluateLevel, searchSeed, mulberry32
 };

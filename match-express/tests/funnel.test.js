@@ -178,15 +178,16 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     const sp = []; for (let k = 0; k < 5; k++){ await p.click('#btnSpeed'); sp.push(await p.evaluate(() => __me.timeScale + ':' + document.getElementById('btnSpeed').textContent)); }
     chk(sp.join(' ') === '1.25:1.25x 1.5:1.5x 1.75:1.75x 2:2x 1:1x' && await p.evaluate(() => __me.timeScale === 1), 'the speed button steps 1x, 1.25x, 1.5x, 1.75x, 2x and back to 1x', sp.join(' '));
     // a fail (random play), a retry, then a win (greedy play)
-    let r, k = 0;
+    let r, k = 0, rw = 0;                           // (a random game may also win: it counts as a win)
     do { r = await p.evaluate(seed => { let s = seed; const rng = () => (s = (s*16807) % 2147483647)/2147483647;
       for (let i = 0; i < 4000 && !__me.game.result; i++){ const a = __me.C.randomPick(__me.game, rng); if (a) __me.tap(a); __me.advance(0.4); } __me.advance(4); __me.render(); return {res:__me.game.result, t:__me.game.t}; }, 11 + k++);
+      if (r.res === 'win') rw++;
       if (r.res !== 'fail') await p.evaluate(() => __me.restart()); } while (r.res !== 'fail' && k < 8);
     chk(r.res === 'fail' && await p.evaluate(() => document.getElementById('failPanel').classList.contains('show')), 'random play on level 40 fails (Out of Space)', JSON.stringify(r));
     await p.click('#btnRetry');
     const w = await playTo(p, 0, 900); await step(p, 5);
     const st = await p.evaluate(() => __me.stats().f40);
-    chk(w.res === 'win' && st && st.fails.length === 1 && Math.abs(st.fails[0] - r.t) < 6 && st.time > 0 && st.wins === 1, 'stats: the fail and its second, then the completion time', JSON.stringify(st));
+    chk(w.res === 'win' && st && st.fails.length === 1 && Math.abs(st.fails[0] - r.t) < 6 && st.time > 0 && st.wins === 1 + rw, 'stats: the fail and its second, then the completion time', JSON.stringify(st) + (rw ? `, ${rw} random win(s) before` : ''));
     chk(await p.evaluate(() => document.getElementById('winPanel').classList.contains('show') && document.getElementById('btnNext').classList.contains('auto')), 'a win shows the countdown to the next level');
     await p.waitForTimeout(await p.evaluate(() => __me.AUTO_MS) + 800);
     chk(await p.evaluate(() => document.getElementById('donePanel').classList.contains('show')), 'after the last level the pack ends on "All levels complete"');
@@ -200,7 +201,7 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
     chk(pan.show && pan.held && pan.rows === 42 && /^40/.test(pan.r40) && /^1\d/.test(pan.r1), 'the Stats panel lists every level (and holds the game)', JSON.stringify(pan));
     const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btnCsv')]);
     const csv = fs.readFileSync(await dl.path(), 'utf8').trim().split('\n');
-    chk(dl.suggestedFilename() === 'match-express-stats.csv' && csv[0] === 'level,id,name,completion_s,fails,fail_seconds,wins' && csv.length === 41 && /^40,f40,Level 40,[\d.]+,1,[\d.]+,1$/.test(csv[40]) && /^1,f01,Level 1,[\d.]+,0,,[1-9]\d*$/.test(csv[1]),
+    chk(dl.suggestedFilename() === 'match-express-stats.csv' && csv[0] === 'level,id,name,completion_s,fails,fail_seconds,wins' && csv.length === 41 && new RegExp('^40,f40,Level 40,[\\d.]+,1,[\\d.]+,' + (1 + rw) + '$').test(csv[40]) && /^1,f01,Level 1,[\d.]+,0,,[1-9]\d*$/.test(csv[1]),
         'Export CSV: one row per level with completion time, fails and their seconds', csv[1] + ' | ' + csv[40]);
     await p.click('#btnStatsReset'); const one = await p.evaluate(() => Object.keys(__me.stats()).length);
     await p.click('#btnStatsReset'); const two = await p.evaluate(() => [Object.keys(__me.stats()).length, localStorage.getItem('me-stats:funnel-40')]);

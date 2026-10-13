@@ -411,8 +411,10 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const n = await ed.evaluate(() => __ed.level.ramps.length); await ed.evaluate(() => __ed.setTool('ramp'));
       const spot = await ed.evaluate(() => { const R = __ed.layout.ROAD, o = {}; window.MECore.pathAt(R, R.pointS[3], o, 0); return [o.x - o.dz*1.2, o.z + o.dx*1.2]; });
       [mx, my] = await toScreen(...spot); await ed.mouse.click(mx, my);
-      chk(await ed.evaluate(n => __ed.level.ramps.length === n + 1 && __ed.sel.kind === 'ramp' && __ed.layout.RAMPS.find(r => r.src === n).snapped && __ed.level.ramps[n].tilt >= 30, n),
-        'the ramp tool adds a snapped, tilted ramp where the road was clicked'); }
+      chk(await ed.evaluate(n => { const r = __ed.layout.RAMPS.find(q => q.src === n), o = {}; if (!r) return false; window.MECore.pathAt(__ed.layout.ROAD, r.s, o, 0);
+          const nx = -o.dz*r.side, nz = o.dx*r.side;
+          return __ed.level.ramps.length === n + 1 && __ed.sel.kind === 'ramp' && r.snapped && __ed.level.ramps[n].tilt == null && nx*r.dir[0] + nz*r.dir[1] > Math.cos(Math.PI/180); }, n),
+        'the ramp tool adds a snapped ramp, square to the road, where the road was clicked'); }
     // blockers with the mouse: tunnel, count box, lock box + key bus
     await ed.evaluate(() => { __ed.setLevel(JSON.parse(JSON.stringify(window.MECore.LEVEL_DATA))); __ed.fitView(); __ed.setTool('tunnel'); __ed.color = 'red'; });
     const dragCells = async (src, a, b) => { const [x0, y0] = await toScreen(...await cellAt(src, a[0], a[1])), [x1, y1] = await toScreen(...await cellAt(src, b[0], b[1]));

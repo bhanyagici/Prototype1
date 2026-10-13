@@ -27,9 +27,73 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   [Orthographic](screenshots/spiral-ortho-390.png);
 - [a 12-seat bus in Jelly mode bending in a spiral](screenshots/jelly-spiral-390.png);
 - a bus [driving into the dark exit tunnel](screenshots/tunnel-exit-390.png) and [coming out of the return tunnel](screenshots/tunnel-return-390.png) (close-ups);
-- [a ramp on a curved road with its straight back edge](screenshots/ramp-curve-390.png) (close-up);
+- [a ramp on a tight curve: a regular grid of stickmen, a small curved apron to the road edge](screenshots/ramp-curve-390.png) (close-up);
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
+
+## Ramps: regular grids, curved aprons
+
+Gameplay rules are unchanged; the only play-relevant change is noted under *Boarding order*.
+
+- **Rectangles everywhere:** every ramp is a straight rectangular platform holding a regular
+  grid of stickmen, columns × rows, evenly spaced 0.36 apart. The grid is never bent,
+  squeezed or fanned, however the road bends.
+- **Only the outline adapts:** the front edge lies exactly on the road edge and follows its
+  curve. A small apron fills the space between that curved edge and the straight first row.
+  The back and side edges are straight, with square corners.
+- **The first row** stands 0.34 behind the point where the road edge reaches furthest out
+  across the ramp, as close to the road as the apron allows. The boarding point (the middle
+  of the front edge, on the road edge) is unchanged.
+- **Direction:** a ramp points one way from its boarding point: square to the road by
+  default, or turned by its back node in the editor (or an old level's `tilt`). Old bent
+  (arc, L) and fanned ramps are straightened along the way they left the road, and their
+  `spread` is dropped.
+- **Apron warning:** a ramp whose apron would be more than one row deep (0.36), because
+  the road bends too much under its front for its width, gets a `ramp-apron` warning. In the
+  editor it suggests moving the ramp along the road or making it narrower (or turning it
+  square to the road, if it is turned).
+- **Editor:**
+  - a ramp has its front node (diamond) and one back node (square) that turns it;
+  - the inspector shows its direction (*square to the road* or *turned N°*) with a
+    *Square to road* button, also in the context menu;
+  - the *Spread* stepper and the add / remove node buttons are gone;
+  - new ramps start square to the road.
+- **No overlap:** two stickmen on a ramp never come closer than a stickman's width (0.31):
+  - at the start, since the grid is regular;
+  - during column shifts: each man still eases forward with a small overshoot, but never
+    comes closer to the man in front of him than a stickman's width. A long shift used to
+    let the men behind catch up with the ones ahead;
+  - a boarding man first steps straight off the grid onto the apron, then runs to his
+    seat, and the man stepping up behind him keeps his distance until the runner has
+    hopped in.
+- **Boarding order:** the columns board from the middle of the front row out (of two
+  equally near, the one the bus passes first). This used to follow each column's exact
+  distance to the boarding point, which depended on fine details of the old bent rows.
+  It now depends only on the column number, so it changed on some ramps. The greedy bot
+  still wins every level.
+- **Every level fixed:**
+  - `tools/fix-ramps.js` gave each shaped ramp a single direction node, then turned each
+    ramp that warned toward square to the road (no effect on play). Only where that was not
+    enough did it slide the ramp along the road, as little as possible;
+  - `tools/place-ramps.js` placed all the ramps of the most crowded boards together, nearest
+    their old boarding points. On *crowded-rush* and *crowded-rush-curve*, ramp 2 is now 9 × 10
+    (the same 90 stickmen, laid row by row, front to back), since four straight 6 × 15 ramps
+    cannot share those boards. It did the same for funnel levels 25, 33, 35, 37 and 38, some of
+    whose ramps changed shape the same way;
+  - funnel levels 19, 20, 21, 27, 30 and 36 were made again by the generator; 25, 33 and 35 got
+    new content on their new layout (`make-funnel.js --search`);
+  - the showcase's *Very Hard* basics level was made again with narrower, deeper ramps (6 × 8);
+  - the showcase's *Curved arc*, *L-shape* and *Wide fan* are now *On curves*, *Deep* and
+    *Around spirals*.
+- **Tested** (`tests/ramps.test.js`, every ramp of every level):
+  - the grid is regular;
+  - the front edge is on the road edge;
+  - the apron is at most one row deep, and the first row is as close to the road as it
+    allows;
+  - the back edge is straight with square corners;
+  - the boarding point is unchanged and the order is middle-out;
+  - no two stickmen on a ramp come closer than 0.31, at the start or through every column
+    shift and run of a whole game (the game's own shift animation, every 1/60 s).
 
 ## Polish pass
 
@@ -87,7 +151,7 @@ same taps in both modes and gets the same game.
   - the bus is fully dark when it vanishes into the exit tunnel and when it appears in
     the return tunnel.
 
-### Ramps: only the front edge follows the road
+### Ramps: only the front edge follows the road (replaced: see *Ramps: regular grids, curved aprons*)
 - **The shape:** a ramp is a rectangle square to its body, whose front edge is cut to
   fit the road. The front edge snaps to the road edge and takes the road's curve.
 - **The back edge** is a straight line with square corners. The side edges are straight
@@ -160,7 +224,7 @@ bots and the checker are the same as before. Everything below is drawn on top of
 
 ### Spirals in most levels
 - **22 of the 27 showcase levels (81%) have a spiral.** Five of them have two:
-  *Count box*, *All combined*, *Double spiral*, *Wide fan* and *4 lanes*.
+  *Count box*, *All combined*, *Double spiral*, *Around spirals* and *4 lanes*.
 - **Seven new spiral roads** (`tools/showcase/specs.js`), each with a different loop:
   - `spiralHi`: the loop high up;
   - `spiralLow`: the loop right after the yard;
@@ -328,7 +392,7 @@ One self-contained file (double-click, no server, no network) to try everything.
 | Basics | Easy, Medium, Hard, Very Hard |
 | Blockers | Hidden bus, Connected pairs, Connected triples, Colourful tunnel, Hidden stickmen, Lock & key box, Count box, All combined |
 | Layouts: roads | S-curve, Zigzag, Hairpin, Single spiral, Double spiral, Long winding road |
-| Layouts: ramp shapes | Straight, Curved arc, L-shape, Wide fan, Long narrow |
+| Layouts: ramp shapes | Straight, On curves, Deep, Around spirals, Long narrow |
 | Layouts: lane counts | 2 lanes, 3 lanes, 4 lanes, 5 lanes |
 
 Every showcase level:
@@ -609,17 +673,19 @@ What the selection commands work on:
 
 ### Ramps and their nodes
 - **Add ramp** (R), then click next to the road. A ramp appears there, on that side, as
-  a straight platform at 35° (`"tilt"`).
-- A ramp is shaped by its **nodes**:
+  a straight platform square to the road.
+- A ramp is a straight rectangle with a regular grid of stickmen, and two **nodes**:
   - The **front node** (diamond) is its boarding point. Drag it along the road; it always
     snaps to the nearest road point, on the side of the road the pointer is on. A ramp
-    is never off the road.
+    is never off the road. A ramp square to the road stays square; a turned one keeps
+    its angle to the road.
   - The ramp's whole **front edge lies flush on the road's edge**: straight along a
-    straight road, bent with it on a curve. Moving the ramp or the road keeps it that
-    way, in the game and the editor (the front follows its boarding point `at`).
-  - The other nodes (squares) bend the ramp into a spline. *+* / *−* in the inspector
-    add or remove one.
-- The front row always faces the road, its stickmen standing right at the road's edge.
+    straight road, bent with it on a curve, with a small apron in front of the first row.
+    Moving the ramp or the road keeps it that way, in the game and the editor (the front
+    follows its boarding point `at`).
+  - The **back node** (square) turns the ramp. *Square to road* in the inspector (and
+    the context menu) points it straight out again.
+- The front row always faces the road, as close to the road's edge as the apron allows.
 - The ramp inspector also sets columns and rows, flips the side, and has *Fill random*
   (runs of 1–3 per column from the colours already in the level), *Clear* and *Delete*.
 - Stickmen:
@@ -1215,10 +1281,12 @@ node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, send
                               #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
 node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
-node tests/ramps.test.js      # 9 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
-                              #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so; its back
-                              #   edge is a straight line with square corners; its rows straighten from the front curve to the back
-node tests/browser.test.js    # 106 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
+node tests/ramps.test.js      # 17 checks: every ramp of every level (built-in, presets, funnel, showcase): a regular grid of stickmen,
+                              #   the front edge flush on the road edge (every 2 cm), an apron of at most one row, the first row as
+                              #   close as it allows, a straight back edge with square corners, the boarding point and the order;
+                              #   no two stickmen on a ramp closer than a stickman's width at the start and through every column
+                              #   shift and run of a whole game; moving the road or the ramp keeps it so
+node tests/browser.test.js    # 108 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

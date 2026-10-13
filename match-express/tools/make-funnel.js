@@ -224,7 +224,7 @@ function worker(){
     if (spec.tutorialLane != null) m.tutorialLane = spec.tutorialLane;      // the lane whose front bus the tutorial's hand points at first
     return m;
   }
-  function shapeName(spec, r){ return r.spread > 0 ? 'fan' : r.spread < 0 ? 'wedge' : r.tilt != null ? 'diagonal (35 deg)' : (r.shape && r.shape.length > 2 ? 'curved' : 'straight'); }
+  function shapeName(spec, r){ return r.tilt != null ? 'straight, tilted ' + r.tilt + ' deg' : r.shape ? 'straight, turned' : 'straight, square to the road'; }
   function blockerText(lv){
     const out = [], lanes = lv.lanes.flat(), hid = lanes.filter(b => b.hidden).length, groups = {};
     lanes.forEach(b => { if (b.link) groups[b.link] = (groups[b.link] || 0) + 1; });

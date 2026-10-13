@@ -25,10 +25,10 @@
     ]
   },
   "ramps": [
-    {"rows": 4, "columns": [["red", "red", "yellow", "green"], ["red", "red", "green", "green"], ["purple", "yellow", "yellow", "yellow"], ["purple", "purple", "blue", "blue"], ["red", "red", "blue", "blue"], ["red", "yellow", "yellow", "green"]], "at": 13.212, "side": -1, "shape": [[-2.51, -2.48], [-3.07, -1.45]]},
-    {"rows": 4, "columns": [["blue", "blue", "blue", "green"], ["red", "red", "blue", "green"], ["purple", "purple", "green", "green"], ["red", "green", "green", "blue"], ["purple", "blue", "green", "green"], ["red", "red", "blue", "blue"]], "at": 28.887, "side": 1, "shape": [[1.54, -8.11], [2.61, -7.62]]},
-    {"rows": 4, "columns": [["red", "red", "yellow", "yellow"], ["purple", "yellow", "yellow", "green"], ["purple", "purple", "yellow", "yellow"], ["red", "blue", "blue", "yellow"], ["red", "red", "yellow", "yellow"], ["purple", "purple", "green", "yellow"]], "at": 31.236, "side": -1, "shape": [[-1.84, -11.38], [-3.01, -11.5]]},
-    {"rows": 4, "columns": [["purple", "purple", "blue", "blue"], ["red", "red", "green", "green"], ["red", "red", "blue", "green"], ["purple", "blue", "blue", "blue"], ["purple", "purple", "yellow", "yellow"], ["red", "green", "green", "green"]], "at": 34.661, "side": 1, "shape": [[2.94, -13.75], [4.04, -13.36]]}
+    {"rows": 4, "columns": [["red", "red", "yellow", "green"], ["red", "red", "green", "green"], ["purple", "yellow", "yellow", "yellow"], ["purple", "purple", "blue", "blue"], ["red", "red", "blue", "blue"], ["red", "yellow", "yellow", "green"]], "at": 13.212, "side": -1, "shape": [[-3.24, -1.56]]},
+    {"rows": 4, "columns": [["blue", "blue", "blue", "green"], ["red", "red", "blue", "green"], ["purple", "purple", "green", "green"], ["red", "green", "green", "blue"], ["purple", "blue", "green", "green"], ["red", "red", "blue", "blue"]], "at": 29.187, "side": 1},
+    {"rows": 4, "columns": [["red", "red", "yellow", "yellow"], ["purple", "yellow", "yellow", "green"], ["purple", "purple", "yellow", "yellow"], ["red", "blue", "blue", "yellow"], ["red", "red", "yellow", "yellow"], ["purple", "purple", "green", "yellow"]], "at": 31.236, "side": -1, "shape": [[-2.51, -11.44]]},
+    {"rows": 4, "columns": [["purple", "purple", "blue", "blue"], ["red", "red", "green", "green"], ["red", "red", "blue", "green"], ["purple", "blue", "blue", "blue"], ["purple", "purple", "yellow", "yellow"], ["red", "green", "green", "green"]], "at": 34.661, "side": 1, "shape": [[3.57, -13.52]]}
   ],
   "lanes": [
     [

@@ -1178,74 +1178,76 @@
     0.4
    ],
    "lanes": 3,
-   "h": 0.531,
-   "rate": 0.34,
-   "wins": 68,
+   "h": 0.979,
+   "rate": 0.275,
+   "wins": 55,
    "runs": 200,
    "inBand": true,
-   "greedyT": 178.1,
-   "greedySends": 25,
-   "notes": [],
+   "greedyT": 136.8,
+   "greedySends": 23,
+   "notes": [
+    "ramp 3: 9x4 did not fit, built as 6x6"
+   ],
    "failFree": null,
    "ramps": [
     {
      "cols": 8,
      "rows": 5,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     },
     {
      "cols": 8,
      "rows": 5,
-     "kind": "curved"
+     "kind": "straight, turned"
+    },
+    {
+     "cols": 6,
+     "rows": 6,
+     "kind": "straight, square to the road"
     },
     {
      "cols": 9,
      "rows": 4,
-     "kind": "straight"
-    },
-    {
-     "cols": 9,
-     "rows": 4,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 22
+     "men": 26
     },
     {
      "color": "orange",
-     "men": 20
+     "men": 28
     },
     {
      "color": "yellow",
-     "men": 34
+     "men": 22
     },
     {
      "color": "green",
-     "men": 20
-    },
-    {
-     "color": "blue",
      "men": 30
     },
     {
+     "color": "blue",
+     "men": 24
+    },
+    {
      "color": "purple",
-     "men": 26
+     "men": 22
     }
    ],
    "buses": {
-    "4": 7,
-    "6": 6,
+    "4": 4,
+    "6": 4,
     "8": 2,
-    "12": 6
+    "12": 8
    },
-   "nBuses": 21,
+   "nBuses": 18,
    "men": 152,
    "road": "double spiral",
    "rampIdea": "arc and diagonal ramps between the spirals",
-   "blockers": "1 connected pair, 5 connected triples",
+   "blockers": "2 connected pairs, 2 connected triples",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -1413,74 +1415,79 @@
     0.22
    ],
    "lanes": 4,
-   "h": 0.86,
-   "rate": 0.185,
-   "wins": 37,
+   "h": 0.778,
+   "rate": 0.35,
+   "wins": 70,
    "runs": 200,
-   "inBand": true,
-   "greedyT": 191.5,
-   "greedySends": 32,
-   "notes": [],
+   "inBand": false,
+   "greedyT": 168.8,
+   "greedySends": 35,
+   "notes": [
+    "ramp 1: 11x4 did not fit, built as 4x11",
+    "ramp 2: 11x4 did not fit, built as 4x11",
+    "ramp 3: 11x4 did not fit, built as 4x11",
+    "ramp 4: 11x4 did not fit, built as 4x11"
+   ],
    "failFree": null,
    "ramps": [
     {
-     "cols": 11,
-     "rows": 4,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 11,
+     "kind": "straight, turned"
     },
     {
-     "cols": 11,
-     "rows": 4,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 11,
+     "kind": "straight, turned"
     },
     {
-     "cols": 11,
-     "rows": 4,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 11,
+     "kind": "straight, turned"
     },
     {
-     "cols": 11,
-     "rows": 4,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 11,
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 36
-    },
-    {
-     "color": "orange",
      "men": 30
     },
     {
+     "color": "orange",
+     "men": 24
+    },
+    {
      "color": "yellow",
-     "men": 22
+     "men": 30
     },
     {
      "color": "green",
-     "men": 26
+     "men": 30
     },
     {
      "color": "blue",
-     "men": 26
+     "men": 36
     },
     {
      "color": "purple",
-     "men": 36
+     "men": 26
     }
    ],
    "buses": {
-    "4": 8,
+    "4": 7,
     "6": 6,
-    "8": 3,
-    "12": 7
+    "8": 5,
+    "12": 6
    },
    "nBuses": 24,
    "men": 176,
    "road": "long winding road",
    "rampIdea": "wide diagonal ramps in the bends",
-   "blockers": "2 hidden buses, 1 connected pair, 7 connected triples",
+   "blockers": "2 hidden buses, 3 connected pairs, 4 connected triples",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -1584,40 +1591,40 @@
     0.5
    ],
    "lanes": 3,
-   "h": 1,
-   "rate": 0.4,
-   "wins": 80,
+   "h": 0.983,
+   "rate": 0.665,
+   "wins": 133,
    "runs": 200,
-   "inBand": true,
-   "greedyT": 122.2,
-   "greedySends": 34,
+   "inBand": false,
+   "greedyT": 122.1,
+   "greedySends": 39,
    "notes": [],
    "failFree": null,
    "ramps": [
     {
      "cols": 8,
      "rows": 6,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     },
     {
      "cols": 11,
      "rows": 4,
-     "kind": "wedge"
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 26
+     "men": 18
     },
     {
      "color": "orange",
-     "men": 20
+     "men": 24
     },
     {
      "color": "yellow",
@@ -1629,18 +1636,18 @@
     },
     {
      "color": "blue",
-     "men": 20
+     "men": 26
     },
     {
      "color": "purple",
-     "men": 22
+     "men": 20
     }
    ],
    "buses": {
-    "4": 9,
-    "6": 6,
-    "8": 4,
-    "12": 3
+    "4": 7,
+    "6": 8,
+    "8": 5,
+    "12": 2
    },
    "nBuses": 22,
    "men": 140,
@@ -1740,35 +1747,40 @@
     0.4
    ],
    "lanes": 3,
-   "h": 0.873,
-   "rate": 0.605,
-   "wins": 121,
+   "h": 0.972,
+   "rate": 0.28,
+   "wins": 56,
    "runs": 200,
-   "inBand": false,
-   "greedyT": 110.2,
-   "greedySends": 34,
-   "notes": [],
+   "inBand": true,
+   "greedyT": 118.4,
+   "greedySends": 30,
+   "notes": [
+    "ramp 1: shape perp did not fit, built as diag",
+    "ramp 2: shape perp did not fit, built as diag",
+    "ramp 3: shape perp did not fit, built as diag",
+    "ramp 4: 11x4 did not fit, built as 4x11"
+   ],
    "failFree": null,
    "ramps": [
     {
      "cols": 11,
      "rows": 4,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 11,
      "rows": 4,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 11,
      "rows": 4,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
-     "cols": 11,
-     "rows": 4,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 11,
+     "kind": "straight, square to the road"
     }
    ],
    "colors": [
@@ -1778,11 +1790,11 @@
     },
     {
      "color": "orange",
-     "men": 36
+     "men": 32
     },
     {
      "color": "yellow",
-     "men": 30
+     "men": 34
     },
     {
      "color": "green",
@@ -1790,24 +1802,24 @@
     },
     {
      "color": "blue",
-     "men": 28
+     "men": 34
     },
     {
      "color": "purple",
-     "men": 34
+     "men": 28
     }
    ],
    "buses": {
-    "4": 11,
+    "4": 6,
     "6": 4,
-    "8": 9,
-    "12": 3
+    "8": 1,
+    "12": 10
    },
-   "nBuses": 27,
+   "nBuses": 21,
    "men": 176,
    "road": "S-curve",
    "rampIdea": "long wide bleachers",
-   "blockers": "tunnel (green, 8), tunnel (blue, 8)",
+   "blockers": "tunnel (blue, 8), tunnel (orange, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2223,39 +2235,41 @@
    ],
    "lanes": 3,
    "h": 0.887,
-   "rate": 0.15,
-   "wins": 30,
+   "rate": 0.155,
+   "wins": 31,
    "runs": 200,
-   "inBand": true,
-   "greedyT": 176.4,
-   "greedySends": 42,
-   "notes": [],
+   "inBand": false,
+   "greedyT": 178.6,
+   "greedySends": 43,
+   "notes": [
+    "ramp 5: 8x6 did not fit, built as 6x8"
+   ],
    "failFree": null,
    "ramps": [
     {
      "cols": 8,
      "rows": 6,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "curved"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
-     "cols": 8,
-     "rows": 6,
-     "kind": "straight"
+     "cols": 6,
+     "rows": 8,
+     "kind": "straight, square to the road"
     }
    ],
    "colors": [
@@ -2298,7 +2312,7 @@
    "men": 240,
    "road": "long road with a spiral",
    "rampIdea": "five ramps, mixed shapes",
-   "blockers": "2 hidden buses, 2 connected triples, tunnel (yellow, 8)",
+   "blockers": "2 hidden buses, 2 connected triples, tunnel (purple, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2406,74 +2420,74 @@
     0.4
    ],
    "lanes": 3,
-   "h": 0.986,
-   "rate": 0.34,
-   "wins": 68,
+   "h": 0.83,
+   "rate": 0.4,
+   "wins": 80,
    "runs": 200,
    "inBand": true,
-   "greedyT": 147.7,
-   "greedySends": 37,
+   "greedyT": 153.7,
+   "greedySends": 40,
    "notes": [],
    "failFree": null,
    "ramps": [
     {
      "cols": 10,
      "rows": 5,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 10,
      "rows": 5,
-     "kind": "straight"
+     "kind": "straight, turned"
+    },
+    {
+     "cols": 5,
+     "rows": 10,
+     "kind": "straight, turned"
     },
     {
      "cols": 10,
      "rows": 5,
-     "kind": "straight"
-    },
-    {
-     "cols": 10,
-     "rows": 5,
-     "kind": "straight"
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 24
-    },
-    {
-     "color": "orange",
-     "men": 34
-    },
-    {
-     "color": "yellow",
-     "men": 32
-    },
-    {
-     "color": "green",
      "men": 26
     },
     {
-     "color": "cyan",
+     "color": "orange",
+     "men": 30
+    },
+    {
+     "color": "yellow",
      "men": 28
     },
     {
+     "color": "green",
+     "men": 24
+    },
+    {
+     "color": "cyan",
+     "men": 26
+    },
+    {
      "color": "blue",
-     "men": 32
+     "men": 36
     },
     {
      "color": "purple",
-     "men": 24
+     "men": 30
     }
    ],
    "buses": {
-    "4": 4,
+    "4": 8,
     "6": 6,
-    "8": 8,
+    "8": 6,
     "12": 7
    },
-   "nBuses": 25,
+   "nBuses": 27,
    "men": 200,
    "road": "zigzag",
    "rampIdea": "wide diagonal ramps",
@@ -2493,63 +2507,63 @@
     0.6
    ],
    "lanes": 3,
-   "h": 1,
-   "rate": 0.52,
-   "wins": 104,
+   "h": 0.979,
+   "rate": 0.735,
+   "wins": 147,
    "runs": 200,
-   "inBand": true,
-   "greedyT": 105,
-   "greedySends": 32,
+   "inBand": false,
+   "greedyT": 113.6,
+   "greedySends": 33,
    "notes": [],
    "failFree": null,
    "ramps": [
     {
      "cols": 10,
      "rows": 6,
-     "kind": "wedge"
+     "kind": "straight, turned"
     },
     {
      "cols": 10,
      "rows": 6,
-     "kind": "wedge"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 8,
-     "kind": "straight"
+     "kind": "straight, square to the road"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 34
+     "men": 28
     },
     {
      "color": "orange",
-     "men": 34
+     "men": 24
     },
     {
      "color": "yellow",
-     "men": 30
+     "men": 26
     },
     {
      "color": "green",
-     "men": 30
+     "men": 34
     },
     {
      "color": "blue",
-     "men": 32
+     "men": 38
     },
     {
      "color": "purple",
-     "men": 24
+     "men": 34
     }
    ],
    "buses": {
     "4": 0,
-    "6": 4,
-    "8": 11,
-    "12": 6
+    "6": 6,
+    "8": 8,
+    "12": 7
    },
    "nBuses": 21,
    "men": 184,
@@ -2663,12 +2677,12 @@
     0.22
    ],
    "lanes": 3,
-   "h": 0.664,
-   "rate": 0.205,
-   "wins": 41,
+   "h": 0.778,
+   "rate": 0.155,
+   "wins": 31,
    "runs": 200,
    "inBand": true,
-   "greedyT": 168.7,
+   "greedyT": 216.6,
    "greedySends": 38,
    "notes": [],
    "failFree": null,
@@ -2676,32 +2690,32 @@
     {
      "cols": 8,
      "rows": 6,
-     "kind": "curved"
+     "kind": "straight, square to the road"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "curved"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 6,
-     "kind": "curved"
+     "kind": "straight, turned"
     },
     {
-     "cols": 8,
-     "rows": 6,
-     "kind": "straight"
+     "cols": 4,
+     "rows": 12,
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 24
+     "men": 26
     },
     {
      "color": "orange",
-     "men": 24
+     "men": 30
     },
     {
      "color": "yellow",
@@ -2709,28 +2723,28 @@
     },
     {
      "color": "green",
-     "men": 22
+     "men": 32
     },
     {
      "color": "cyan",
-     "men": 28
+     "men": 30
     },
     {
      "color": "blue",
-     "men": 32
+     "men": 20
     },
     {
      "color": "purple",
-     "men": 32
+     "men": 24
     }
    ],
    "buses": {
-    "4": 12,
-    "6": 10,
-    "8": 3,
-    "12": 5
+    "4": 5,
+    "6": 8,
+    "8": 5,
+    "12": 7
    },
-   "nBuses": 30,
+   "nBuses": 25,
    "men": 192,
    "road": "spiral + hairpin",
    "rampIdea": "arc ramps",
@@ -2837,87 +2851,87 @@
     0.22
    ],
    "lanes": 5,
-   "h": 0.876,
-   "rate": 0.18,
-   "wins": 36,
+   "h": 0.722,
+   "rate": 0.125,
+   "wins": 25,
    "runs": 200,
    "inBand": true,
-   "greedyT": 195.3,
-   "greedySends": 50,
+   "greedyT": 215.3,
+   "greedySends": 52,
    "notes": [],
    "failFree": null,
    "ramps": [
     {
-     "cols": 8,
-     "rows": 7,
-     "kind": "straight"
+     "cols": 7,
+     "rows": 8,
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 7,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 7,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 7,
-     "kind": "straight"
+     "kind": "straight, turned"
     },
     {
      "cols": 8,
      "rows": 7,
-     "kind": "straight"
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 48
+     "men": 32
     },
     {
      "color": "orange",
-     "men": 30
+     "men": 38
     },
     {
      "color": "yellow",
-     "men": 28
+     "men": 26
     },
     {
      "color": "green",
-     "men": 28
+     "men": 34
     },
     {
      "color": "cyan",
-     "men": 28
+     "men": 46
     },
     {
      "color": "blue",
-     "men": 30
+     "men": 28
     },
     {
      "color": "purple",
-     "men": 48
+     "men": 44
     },
     {
      "color": "pink",
-     "men": 40
+     "men": 32
     }
    ],
    "buses": {
-    "4": 12,
+    "4": 11,
     "6": 10,
-    "8": 5,
-    "12": 11
+    "8": 7,
+    "12": 10
    },
    "nBuses": 38,
    "men": 280,
    "road": "long winding road",
    "rampIdea": "five deep ramps",
-   "blockers": "8 connected pairs, tunnel (pink, 8), lock & key",
+   "blockers": "11 connected pairs, tunnel (pink, 8), lock & key",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2933,13 +2947,13 @@
     0.22
    ],
    "lanes": 4,
-   "h": 0.871,
-   "rate": 0.18,
-   "wins": 36,
+   "h": 0.526,
+   "rate": 0.15,
+   "wins": 30,
    "runs": 200,
    "inBand": true,
-   "greedyT": 202.6,
-   "greedySends": 40,
+   "greedyT": 225.8,
+   "greedySends": 46,
    "notes": [
     "ramp 1: 10x6 did not fit, built as 12x5"
    ],
@@ -2948,40 +2962,40 @@
     {
      "cols": 12,
      "rows": 5,
-     "kind": "curved"
+     "kind": "straight, turned"
     },
     {
      "cols": 10,
      "rows": 6,
-     "kind": "curved"
+     "kind": "straight, square to the road"
     },
     {
-     "cols": 10,
-     "rows": 6,
-     "kind": "curved"
+     "cols": 5,
+     "rows": 12,
+     "kind": "straight, turned"
     },
     {
-     "cols": 10,
-     "rows": 6,
-     "kind": "straight"
+     "cols": 5,
+     "rows": 12,
+     "kind": "straight, turned"
     }
    ],
    "colors": [
     {
      "color": "red",
-     "men": 26
+     "men": 38
     },
     {
      "color": "orange",
-     "men": 42
+     "men": 30
     },
     {
      "color": "yellow",
-     "men": 34
+     "men": 36
     },
     {
      "color": "green",
-     "men": 30
+     "men": 24
     },
     {
      "color": "cyan",
@@ -2989,24 +3003,24 @@
     },
     {
      "color": "blue",
-     "men": 40
+     "men": 36
     },
     {
      "color": "purple",
-     "men": 28
+     "men": 36
     }
    ],
    "buses": {
-    "4": 10,
+    "4": 8,
     "6": 6,
-    "8": 4,
-    "12": 11
+    "8": 8,
+    "12": 9
    },
    "nBuses": 31,
    "men": 240,
    "road": "spiral + hairpin",
    "rampIdea": "arc ramps",
-   "blockers": "14 connected pairs, lock & key",
+   "blockers": "13 connected pairs, lock & key",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -3118,5 +3132,5 @@
   }
  },
  "generated": "2026-10-13",
- "totalGreedy1x": 4348.400000000001
+ "totalGreedy1x": 4400.400000000001
 }

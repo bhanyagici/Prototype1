@@ -22,7 +22,7 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
     'three categories (Basics, Blockers, Layouts with Roads, Ramp shapes and Lane counts)', cats.join(', '));
   const names = id => order.categories.flatMap(c => c.groups).find(g => g.levels.includes(id));
   const want = {Basics:['Easy', 'Medium', 'Hard', 'Very Hard'], Blockers:['Hidden bus', 'Connected pairs', 'Connected triples', 'Colourful tunnel', 'Hidden stickmen', 'Lock & key box', 'Count box', 'All combined'],
-    Roads:['S-curve', 'Zigzag', 'Hairpin', 'Single spiral', 'Double spiral', 'Long winding road'], 'Ramp shapes':['Straight', 'Curved arc', 'L-shape', 'Wide fan', 'Long narrow'],
+    Roads:['S-curve', 'Zigzag', 'Hairpin', 'Single spiral', 'Double spiral', 'Long winding road'], 'Ramp shapes':['Straight', 'On curves', 'Deep', 'Around spirals', 'Long narrow'],
     'Lane counts':['2 lanes', '3 lanes', '4 lanes', '5 lanes']};
   const got = {}; order.categories.forEach(c => c.groups.forEach(g => { got[g.name || c.name] = g.levels.map(id => levels[id].name); }));
   chk(Object.entries(want).every(([k, v]) => JSON.stringify(got[k]) === JSON.stringify(v)), `${ids.length} levels: every one asked for, in its place`, Object.values(got).map(v => v.length).join(' + '));

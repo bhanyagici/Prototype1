@@ -70,7 +70,8 @@
       "tunnels": [
         {"col": 2, "row": 2, "w": 1, "h": 2, "color": "green", "count": 6}
       ],
-      "cp": 12
+      "at": 28.897,
+      "shape": [[-1.32, -15.45]]
     }
   ],
   "lanes": [

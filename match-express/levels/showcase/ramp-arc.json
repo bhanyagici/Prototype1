@@ -1,7 +1,7 @@
 {
   "format": 2,
   "id": "ramp-arc",
-  "name": "Curved arc",
+  "name": "On curves",
   "road": {
     "points": [
       {"x": 0, "z": -1.3, "y": 0},
@@ -24,10 +24,10 @@
     ]
   },
   "ramps": [
-    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 2.914, "side": -1, "shape": [[-1.15, -4.42], [-1.67, -4.58], [-2.16, -4.81], [-2.61, -5.1], [-3.02, -5.45]]},
-    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 2.857, "side": 1, "shape": [[1.27, -3.71], [1.67, -3.35], [2.02, -2.93], [2.3, -2.47], [2.52, -1.98]]},
-    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 18.057, "side": -1, "shape": [[-2.01, -9.36], [-2.48, -9.62], [-2.91, -9.95], [-3.3, -10.33], [-3.62, -10.76]]},
-    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 24.264, "side": 1, "shape": [[0.12, -15.29], [0.64, -15.42], [1.18, -15.47], [1.72, -15.45], [2.25, -15.35]]}
+    {"rows": 5, "columns": [["blue", "purple", "red", "green", "green"], ["blue", "blue", "red", "red", "green"], ["purple", "purple", "red", "red", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 2.914, "side": -1, "shape": [[-2.8, -4.66]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "green", "green"], ["blue", "purple", "purple", "green", "green"], ["blue", "blue", "red", "green", "green"], ["blue", "blue", "yellow", "green", "green"], ["blue", "blue", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "green", "green"]], "at": 2.857, "side": 1, "shape": [[3.42, -3.26]]},
+    {"rows": 5, "columns": [["purple", "red", "red", "green", "green"], ["blue", "blue", "red", "yellow", "yellow"], ["purple", "purple", "red", "yellow", "green"], ["blue", "purple", "yellow", "yellow", "yellow"], ["purple", "purple", "yellow", "yellow", "green"], ["blue", "purple", "purple", "red", "red"]], "at": 18.057, "side": -1, "shape": [[-3.61, -9.94]]},
+    {"rows": 5, "columns": [["blue", "blue", "red", "red", "green"], ["blue", "blue", "purple", "purple", "green"], ["blue", "purple", "yellow", "green", "green"], ["blue", "purple", "purple", "yellow", "green"], ["blue", "purple", "purple", "green", "green"], ["purple", "purple", "yellow", "yellow", "green"]], "at": 24.264, "side": 1, "shape": [[1.75, -15.94]]}
   ],
   "lanes": [
     [
@@ -55,7 +55,7 @@
   ],
   "meta": {
     "category": "Layouts",
-    "title": "Curved arc",
+    "title": "On curves",
     "group": "Ramp shapes",
     "road": "gspiral",
     "h": 0.981,

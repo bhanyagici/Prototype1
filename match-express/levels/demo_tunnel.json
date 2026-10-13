@@ -70,7 +70,8 @@
         ["blue", "blue", "yellow", "yellow", "yellow", "green"],
         ["green", "green", "yellow", "green", "green", "green"]
       ],
-      "cp": 12
+      "at": 28.897,
+      "shape": [[-1.32, -15.45]]
     }
   ],
   "lanes": [
