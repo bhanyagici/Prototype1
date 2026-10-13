@@ -172,60 +172,97 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
           ov && `ramp ${ov.ramp}: slides ${ov.out.toFixed(2)}, nearest raised road ${ov.clear.toFixed(2)} away`);
       await ctx.close(); }
 
-    /* ---------------- Articulated bus movement ---------------- */
-    console.log('bus movement: Rigid / Articulated');
+    /* ---------------- Jelly bus movement ---------------- */
+    console.log('bus movement: Rigid / Jelly');
     { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
       await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       chk(await p.evaluate(() => __me.move === 'rigid'), 'buses are Rigid by default');
       await p.click('#btnSettings'); await p.click('#btnMove');
-      chk(await p.evaluate(() => __me.move === 'articulated' && window.MESync.loadPrefs().move === 'articulated' && /Articulated/.test(document.getElementById('btnMove').textContent)),
-        'the settings switch them to Articulated (remembered)');
-      chk(await p.evaluate(() => [4, 6, 8, 12].map(c => __me.artLayout(c).n).join() === '1,2,2,3' && [4, 6, 8, 12].every(c => { const A = __me.artLayout(c);
-          return Math.abs(A.secs[0].zf - window.MECore.busLen(c)/2) < 1e-9 && Math.abs(A.secs[A.n - 1].zr + window.MECore.busLen(c)/2) < 1e-9; })),
-        'Articulated: 4 seats = 1 section, 6 and 8 seats = 2, 12 seats = 3, as long as the rigid bus');
+      chk(await p.evaluate(() => __me.move === 'jelly' && window.MESync.loadPrefs().move === 'jelly' && /Jelly/.test(document.getElementById('btnMove').textContent)),
+        'the settings switch them to Jelly (remembered)');
       // a 12-seat bus driven along the whole road (nobody boards it), through the spiral, out of the exit tunnel and back
-      // to a bay: every section keeps its wheelbase (rigid), both its axles stay on the road's centre line and every wheel
-      // on the road; in the yard on its route as drawn
+      // to a bay: a single body; once its wobble has settled every frame of it lies on the road; on a straight stretch it is
+      // perfectly straight; entering and leaving curves it wobbles (overshoots its bend) and settles
       const r = await p.evaluate(() => {
         const C = window.MECore, lv = JSON.parse(JSON.stringify(C.LEVEL_DATA));
         lv.lanes = [[{color:'red', cap:12}], [], []]; lv.ramps.forEach(r => r.columns = r.columns.map(c => c.map(() => 'blue')));
         __me.loadLevel(lv, 'export'); __me.freeze(false);
         const g = __me.game, R = __me.layout.ROAD, sp = R.spirals[0], id = g.lanes[0][0];
-        const dRoad = (x, y, z, s) => { let m = 1e9; for (let i = 0; i < R.n - 1; i++){ if (Math.abs(R.cum[i] - s) > 3) continue;   // to the centre line's segments
-          const ax = R.P[i*3], az = R.P[i*3+2], bx = R.P[i*3+3], bz = R.P[i*3+5], dx = bx - ax, dz = bz - az, l2 = dx*dx + dz*dz || 1e-9, t = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
-          m = Math.min(m, Math.hypot(ax + dx*t - x, az + dz*t - z) + Math.abs(R.P[i*3+1] + (R.P[i*3+4] - R.P[i*3+1])*t - y)); } return m; };
-        __me.tapLane(0); let worstAxle = 0, worstWheel = 0, worstYard = 0, worstWb = 0, nRoad = 0, nYard = 0, maxBend = 0, spiral = 0, straightBay = null, straightQueue = true;
+        const dRoad = (x, z, s) => { let m = 1e9; for (let i = 0; i < R.n - 1; i++){ if (Math.abs(R.cum[i] - s) > 3) continue;
+            const ax = R.P[i*3], az = R.P[i*3+2], dx = R.P[i*3+3] - ax, dz = R.P[i*3+5] - az, l2 = dx*dx + dz*dz || 1e-9, t = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
+            m = Math.min(m, Math.hypot(ax + dx*t - x, az + dz*t - z)); } return m; };
+        const curv = s => { const a = {}, b = {}; C.pathAt(R, s - 0.3, a, 0); C.pathAt(R, s + 0.3, b, 0); return Math.abs(Math.atan2(a.dx*b.dz - a.dz*b.dx, a.dx*b.dx + a.dz*b.dz))/0.6; };
+        __me.tapLane(0); let worstRoad = 0, spiralWorst = 0, nRoad = 0, maxBend = 0, spiral = 0, straightN = 0, straightWorst = 0, flips = 0, lastSign = 0, maxLag = 0, settled = 1e9,
+          straightBay = null, straightQueue = true, chuteStraight = null;
         for (let i = 0; i < 60*60; i++){
-          __me.pump(1/60); const bb = g.buses[id], A = __me.artWheels(id);
-          const wb = A.sections.map(q => Math.abs(Math.hypot(q.front[0] - q.rear[0], q.front[2] - q.rear[2], q.front[1] - q.rear[1]) - q.wb*A.k));
-          if (bb.state === 'road' && bb.rs > bb.len && bb.rs < R.portalS - 1 && A.bent && A.f > 0.99){
-            A.sections.forEach(q => [q.front, q.rear].forEach(a => { worstAxle = Math.max(worstAxle, dRoad(a[0], a[1], a[2], bb.rs)); nRoad++; }));
-            A.wheels.forEach(w => { worstWheel = Math.max(worstWheel, dRoad(w[0], w[1], w[2], bb.rs)); });
-            worstWb = Math.max(worstWb, ...wb);
-            const d0 = A.sections[0], d2 = A.sections[2], h0 = Math.atan2(d0.front[0] - d0.rear[0], d0.front[2] - d0.rear[2]), h2 = Math.atan2(d2.front[0] - d2.rear[0], d2.front[2] - d2.rear[2]);
-            maxBend = Math.max(maxBend, Math.abs(Math.atan2(Math.sin(h0 - h2), Math.cos(h0 - h2))));
-            if (bb.rs > sp.s0 && bb.rs < sp.s1) spiral++; }
-          if ((bb.state === 'toRoad' || bb.state === 'return') && bb.trip && bb.trip.s > bb.len && bb.trip.s < bb.trip.path.len - bb.len && A.bent && A.f > 0.99){
-            const P = bb.trip.path, o = {}, pts = []; for (let s = 0; s <= P.len; s += 0.03){ C.pathAt(P, s, o, 0); pts.push(C.dispPoint(o.x, o.z)); }
-            A.sections.forEach(q => [q.front, q.rear].forEach(a => { let m = 1e9; for (const t of pts) m = Math.min(m, Math.hypot(t[0] - a[0], t[1] - a[2])); worstYard = Math.max(worstYard, m); nYard++; })); }
-          g.lanes.flat().forEach(q => { if (__me.artWheels(q).bent) straightQueue = false; });
-          if (bb.state === 'bay'){ for (let k = 0; k < 60; k++) __me.pump(1/60); straightBay = !__me.artWheels(id).bent; break; }
+          __me.pump(1/60); const bb = g.buses[id], F = __me.jellyFrames(id);
+          if (bb.state === 'road' && bb.rs > bb.len && bb.rs < R.portalS - 1 && F.off){
+            const mid = (F.off.length - 1) >> 1, err = F.off[0][0] - F.tgt[0][0], lag = Math.max(...F.off.map((o, k) => Math.abs(o[0] - F.tgt[k][0]) + Math.abs(o[3] - F.tgt[k][3])));
+            maxLag = Math.max(maxLag, Math.abs(err));
+            if (Math.abs(err) > 0.004){ const sg = Math.sign(err); if (lastSign && sg !== lastSign) flips++; lastSign = sg; }
+            const inSp = bb.rs > sp.s0 && bb.rs < sp.s1;
+            if (lag < 0.03 || inSp){                                  // settled (or in the spiral, wobbling or not): the whole body on the road
+              F.pts.forEach(q => { const d = dRoad(q[0], q[2], bb.rs); if (inSp) spiralWorst = Math.max(spiralWorst, d); else worstRoad = Math.max(worstRoad, d); nRoad++; });
+              if (inSp) spiral++; }
+            const a = F.pts[0], m = F.pts[mid], z = F.pts[F.pts.length - 1];
+            const off = Math.abs(((m[0] - a[0])*(z[2] - a[2]) - (m[2] - a[2])*(z[0] - a[0]))/(Math.hypot(z[0] - a[0], z[2] - a[2]) || 1));
+            maxBend = Math.max(maxBend, off);
+            // a straight stretch under the whole bus, a second after the last curve: perfectly straight
+            let flat = true; for (let s = bb.rs - bb.len - 1.4; s <= bb.rs + bb.len; s += 0.1) if (curv(s) > 0.02) flat = false;
+            if (flat){ straightN++; straightWorst = Math.max(straightWorst, off, ...F.off.map(o => Math.abs(o[0]) + Math.abs(o[3]))); }
+          }
+          g.lanes.flat().forEach(q => { if (__me.jellyFrames(q).bent) straightQueue = false; });
+          if (bb.state === 'bay'){ for (let k = 0; k < 90; k++) __me.pump(1/60); straightBay = !__me.jellyFrames(id).bent; break; }
         }
-        return {worstAxle, worstWheel, worstYard, worstWb, nRoad, nYard, maxBend, spiral, straightBay, straightQueue, half:C.ROAD_HALF};
+        // a full bus on its parachute: straight a second after it leaves the road
+        const lv2 = JSON.parse(JSON.stringify(C.LEVEL_DATA)); __me.loadLevel(lv2, 'export'); __me.freeze(false);
+        for (let i = 0; i < 60*400 && chuteStraight === null; i++){ if (i % 20 === 0){ const a = C.greedyPick(__me.game); if (a) __me.tap(a); } __me.pump(1/60);
+          const v = __me.views.find(w => w.b.state === 'jump' && w.jump && __me.game.t - w.jump.t0 > w.jump.t3 + 1.0); if (v) chuteStraight = !__me.jellyFrames(v.b.id).bent; }
+        return {worstRoad, spiralWorst, nRoad, maxBend, spiral, straightN, straightWorst, flips, maxLag, straightBay, straightQueue, chuteStraight};
       });
-      chk(r.nRoad > 1000 && r.worstAxle < 0.05 && r.spiral > 20, 'Articulated: every section\'s front and rear axle of a 12-seat bus meets the road on its centre line, through the spiral too',
-        `${r.nRoad} axle samples, worst ${r.worstAxle.toFixed(3)} off the centre line, ${r.spiral} frames in the spiral`);
-      chk(r.worstWheel < r.half, 'Articulated: every wheel stays on the road', `worst wheel ${r.worstWheel.toFixed(3)} from the centre line (road half width ${r.half})`);
-      chk(r.worstWb < 0.01, 'Articulated: each section stays rigid (its wheelbase never changes); only the bellows bend and stretch', `worst wheelbase change ${r.worstWb.toFixed(4)}`);
-      chk(r.maxBend > 0.6, 'Articulated: in a curve the bus bends at its joints (first and last sections at an angle)', (r.maxBend*180/Math.PI).toFixed(0) + ' deg');
-      chk(r.nYard > 100 && r.worstYard < 0.05, 'Articulated: on the entry and collector roads every axle stays on the route', `${r.nYard} samples, worst ${r.worstYard.toFixed(3)}`);
-      chk(r.straightBay === true && r.straightQueue, 'Articulated: straight in the queue and once parked in a bay');
+      chk(r.nRoad > 300 && r.worstRoad < 0.1 && r.spiral > 20 && r.spiralWorst < 0.25, 'Jelly: in curves and through the spiral the body bends along the road (every frame on it)',
+        `${r.nRoad} frame samples, worst ${r.worstRoad.toFixed(3)} off the centre line once settled, ${r.spiralWorst.toFixed(3)} in the spiral (${r.spiral} frames)`);
+      chk(r.maxBend > 0.3, 'Jelly: one continuous body bending smoothly (its middle off the line between its ends)', r.maxBend.toFixed(2));
+      chk(r.straightN > 20 && r.straightWorst < 0.01, 'Jelly: on straight road the bus is perfectly straight and rigid', `${r.straightN} frames, worst ${r.straightWorst.toFixed(4)}`);
+      chk(r.flips >= 4 && r.maxLag > 0.02 && r.maxLag <= 0.121, 'Jelly: entering and leaving curves it wobbles softly (overshoots its bend, back and forth) and settles',
+        `${r.flips} swings, largest ${r.maxLag.toFixed(3)}`);
+      chk(r.straightBay === true && r.straightQueue && r.chuteStraight === true, 'Jelly: straight in the queue, in a bay and on the parachute', JSON.stringify({bay:r.straightBay, queue:r.straightQueue, chute:r.chuteStraight}));
       // purely visual: the same level plays the same in both modes
       const same = await p.evaluate(() => { const C = window.MECore, run = m => { __me.setMove(m); __me.loadLevel(JSON.parse(JSON.stringify(C.LEVEL_DATA)), 'export'); __me.freeze(true);
           const g = __me.game; for (let i = 0; i < 400 && !g.result; i++){ if (i % 5 === 0){ const a = C.greedyPick(g); if (a) __me.tap(a); } __me.advance(0.25); }
           return JSON.stringify([g.t.toFixed(2), g.result, g.buses.map(b => [b.state, b.x.toFixed(3), b.z.toFixed(3), b.seated])]); };
-        const a = run('rigid'), b = run('articulated'); __me.setMove('rigid', true); return a === b; });
-      chk(same, 'Articulated is purely visual: the same taps give the same game (times, places, boarding) as Rigid');
+        const a = run('rigid'), b = run('jelly'); __me.setMove('rigid', true); return a === b; });
+      chk(same, 'Jelly is purely visual: the same taps give the same game (times, places, boarding) as Rigid');
+      // the exit and the return tunnel: a 12-seat bus driven into the one and out of the other, Rigid and Jelly. The route
+      // runs straight on inside each opening; inside the stone, every part of the bus stays within the opening; nothing
+      // of it beyond the depth where it stops being drawn lies outside that cut; it is dark when it vanishes and appears
+      const tun = await p.evaluate(() => { const C = window.MECore, res = {};
+        for (const mode of ['rigid', 'jelly']){
+          const lv = JSON.parse(JSON.stringify(C.LEVEL_DATA)); lv.lanes = [[{color:'red', cap:12}], [], []]; lv.ramps.forEach(r => r.columns = r.columns.map(c => c.map(() => 'blue')));
+          __me.setMove(mode); __me.loadLevel(lv, 'export'); __me.freeze(false);
+          const g = __me.game, R = __me.layout.ROAD, id = g.lanes[0][0], TN = __me.tunnels(), o = {side:-9, route:0, shows:0, n:0, darkIn:null, darkOut:null};
+          const rel = (T, q) => { const dx = q[0] - T.x, dz = q[2] - T.z; return [dx*T.dx + dz*T.dz, Math.abs(dx*T.dz - dz*T.dx), q[1] - T.y]; };
+          __me.tapLane(0); let was = null;
+          for (let i = 0; i < 60*60; i++){
+            __me.pump(1/60); const bb = g.buses[id], v = __me.views[id];
+            if (was === 'road' && bb.state === 'tunnel') o.darkIn = v.dark;
+            if (was !== 'return' && bb.state === 'return'){ o.darkOut = v.dark; const P = bb.trip.path, q = {};
+              for (let s = 0; s <= P.len; s += 0.05){ C.pathAt(P, s, q, 0); const [x, z] = C.dispPoint(q.x, q.z), [al, ac] = rel(TN[1], [x, 0, z]); if (al > 0 && al < TN[1].depth) o.route = Math.max(o.route, ac); } }
+            was = bb.state;
+            const k = bb.state === 'road' && bb.rs > R.portalS - 4 ? 0 : bb.state === 'return' ? 1 : -1;
+            if (k >= 0 && v.root.visible){ const F = __me.jellyFrames(id), T = TN[k];
+              F.pts.concat(F.wheels).forEach((q, j) => { const [al, ac, h] = rel(T, q), hw = j < F.pts.length ? 0.505*F.k : 0.1; if (h < -0.6 || h > 1.6) return; o.n++;
+                if (al > 0.05) o.side = Math.max(o.side, ac + hw - T.half);
+                if (al > T.depth && ac + hw > T.cut) o.shows++; }); }
+            if (bb.state === 'bay') break;
+          }
+          for (let s = R.portalS; s <= R.end; s += 0.05){ const q = {}; C.pathAt(R, s, q, 0); const [al, ac] = rel(TN[0], [q.x, 0, q.z]); if (al > 0) o.route = Math.max(o.route, ac); }
+          res[mode] = o; }
+        __me.setMove('rigid'); return res; });
+      for (const m of ['rigid', 'jelly']){ const o = tun[m], M = m[0].toUpperCase() + m.slice(1);
+        chk(o.n > 300 && o.route < 0.06 && o.side < 0 && o.shows === 0, `tunnels (${M}): the road runs straight on inside each opening, and no part of a bus inside shows through or over the stone`,
+          `route ${o.route.toFixed(3)} off the axis; closest to the wall ${(-o.side).toFixed(3)} inside the opening; ${o.shows} points beyond the cut (${o.n} samples)`);
+        chk(o.darkIn > 0.95 && o.darkOut > 0.95, `tunnels (${M}): a bus is dark when it vanishes into the exit tunnel and when it appears in the return tunnel`, JSON.stringify([o.darkIn, o.darkOut])); }
       await ctx.close(); }
 
     /* ---------------- editor: layout, preview, independence ---------------- */

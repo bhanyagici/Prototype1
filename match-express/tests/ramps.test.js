@@ -3,7 +3,8 @@
 // the whole front edge of the platform lies on the road's edge: sampled every few centimetres from one front corner
 // to the other, each point is exactly half a road width from the road's centre line (zero gap, no overlap) - straight
 // along a straight road, bent with a curved one.  Moving the road (a control point) or the ramp (its boarding point)
-// keeps it so, and a ramp placed by a loose point snaps onto the road.
+// keeps it so, and a ramp placed by a loose point snaps onto the road.  Only the front edge follows the road: the back
+// edge is a straight line with square corners, and the rows straighten from the front curve toward the back.
 const fs = require('fs'), path = require('path');
 const C = require('./core.js')();
 let pass = 0, fail = 0;
@@ -26,12 +27,22 @@ function centreDist(R, x, z, s){
 function frontGap(L, r){
   let worst = 0, n = 0;
   const w = r.halfW0, N = Math.max(8, Math.ceil(2*w/0.02));
-  for (let k = 0; k <= N; k++){ const u = -w + 2*w*k/N, e = r.edge(u), d = centreDist(L.ROAD, e[0], e[1], r.s) - C.ROAD_HALF;
+  for (let k = 0; k <= N; k++){ const u = -w + 2*w*k/N, e = r.across(0, u), d = centreDist(L.ROAD, e.x, e.z, r.s) - C.ROAD_HALF;
     if (Math.abs(d) > Math.abs(worst)) worst = d; n++; }
-  // the drawn outline starts with the same front edge
-  const f0 = r.outline[0], f1 = r.outline[r.front.length - 1], e0 = r.edge(-w), e1 = r.edge(w);
-  const ends = Math.max(Math.hypot(f0[0] - e0[0], f0[1] - e0[1]), Math.hypot(f1[0] - e1[0], f1[1] - e1[1]));
+  // the drawn outline starts with the same front edge, corner to corner
+  const f0 = r.outline[0], f1 = r.outline[r.front.length - 1], e0 = r.across(0, -w), e1 = r.across(0, w);
+  const ends = Math.max(Math.hypot(f0[0] - e0.x, f0[1] - e0.z), Math.hypot(f1[0] - e1.x, f1[1] - e1.z));
   return {worst, n, ends};
+}
+/* the back edge: how far its points stray from the straight line between its corners, and how far the corners are
+   from square (the cosine between the back edge and the last stretch of each side) */
+function backShape(r){
+  const B = r.backEdge, a = B[0], b = B[B.length - 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1;
+  let off = 0; for (const q of B) off = Math.max(off, Math.abs(((q[0] - a[0])*dz - (q[1] - a[1])*dx)/l));
+  // each side's direction at the back, from the ramp's own shape a millimetre before the back edge
+  const side = sg => { const u = sg*r.halfWAt(r.length), p = r.across(r.length - 0.001, u), q = r.across(r.length, u), ux = q.x - p.x, uz = q.z - p.z, ul = Math.hypot(ux, uz) || 1;
+    return Math.abs((ux*dx + uz*dz)/(ul*l)); };
+  return {off, square:Math.max(side(1), side(-1)), len:l};
 }
 function levels(){
   const out = [['Level 2', C.LEVEL_DATA]].concat(Object.entries(C.PRESETS));
@@ -59,6 +70,26 @@ console.log('every ramp of every level: the front edge on the road edge');
   chk(!bad.length, `${ramps} ramps in ${levels().length} levels: the whole front edge lies on the road edge (zero gap, no overlap)`,
     `${samples} points every 2 cm, worst ${worst >= 0 ? 'gap' : 'overlap'} ${Math.abs(worst).toFixed(4)} (${at}), tolerance ${TOL}`);
   chk(bent >= 10, 'front edges along a curved stretch of road are bent with it (not a straight chord)', `${bent} curved front edges`);
+}
+
+console.log('every ramp of every level: a straight back edge with square corners');
+{ let ramps = 0, worstOff = 0, worstSq = 0, at = ''; const bad = [];
+  for (const [id, lv] of levels()){ const L = C.buildLayout(clone(lv));
+    for (const r of L.RAMPS){ const b = backShape(r); ramps++;
+      if (b.off > worstOff){ worstOff = b.off; at = `${id} ramp ${r.src + 1}`; }
+      if (!r.spread) worstSq = Math.max(worstSq, b.square);
+      if (b.off > 1e-3 || (!r.spread && b.square > 0.02)) bad.push(`${id} ramp ${r.src + 1}: ${b.off.toFixed(4)} off, corner cos ${b.square.toFixed(3)}`); } }
+  chk(!bad.length, `${ramps} ramps: the back edge is a straight line (only the front edge follows the road)`, bad.length ? bad.slice(0, 5).join('; ') : `worst ${worstOff.toFixed(5)} off the line (${at})`);
+  chk(!bad.length, 'its corners are square (the sides meet the back edge at right angles; a fan ramp widens by design)', `worst cosine ${worstSq.toFixed(4)}`);
+}
+{ // a ramp on a curved stretch: its rows follow the front curve near the road and straighten toward the back
+  let n = 0, ok = 0;
+  for (const [, lv] of levels()){ const L = C.buildLayout(clone(lv));
+    for (const r of L.RAMPS){ const bend = sv => { const a = r.across(sv, -r.halfW0*0.9), b = r.across(sv, r.halfW0*0.9), m = r.across(sv, 0);
+        const ux = b.x - a.x, uz = b.z - a.z, l = Math.hypot(ux, uz) || 1; return Math.abs(((m.x - a.x)*uz - (m.z - a.z)*ux)/l); };
+      const f = bend(0); if (f < 0.05) continue; n++;
+      const rows = Array.from({length:r.rows}, (_, k) => bend(0.34 + k*C.RAMP_SP)); if (rows.every((v, k) => k === 0 || v <= rows[k - 1] + 1e-9) && bend(r.length) < 1e-3) ok++; } }
+  chk(n >= 10 && ok === n, 'on a curve the rows follow the front edge near the road and straighten gradually toward the back', `${ok}/${n} curved ramps`);
 }
 
 console.log('the front stays flush when the road or the ramp moves');

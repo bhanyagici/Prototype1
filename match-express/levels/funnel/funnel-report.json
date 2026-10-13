@@ -2057,13 +2057,13 @@
     0.3
    ],
    "lanes": 3,
-   "h": 0.944,
-   "rate": 0.295,
-   "wins": 59,
+   "h": 0.357,
+   "rate": 0.25,
+   "wins": 50,
    "runs": 200,
    "inBand": true,
-   "greedyT": 131.4,
-   "greedySends": 39,
+   "greedyT": 114.3,
+   "greedySends": 33,
    "notes": [],
    "failFree": null,
    "ramps": [
@@ -2091,7 +2091,7 @@
    "colors": [
     {
      "color": "red",
-     "men": 28
+     "men": 26
     },
     {
      "color": "orange",
@@ -2099,40 +2099,40 @@
     },
     {
      "color": "yellow",
-     "men": 24
-    },
-    {
-     "color": "green",
-     "men": 32
-    },
-    {
-     "color": "cyan",
      "men": 28
     },
     {
+     "color": "green",
+     "men": 26
+    },
+    {
+     "color": "cyan",
+     "men": 26
+    },
+    {
      "color": "blue",
-     "men": 34
+     "men": 36
     },
     {
      "color": "purple",
-     "men": 32
+     "men": 36
     }
    ],
    "buses": {
-    "4": 7,
-    "6": 8,
-    "8": 6,
-    "12": 7
+    "4": 9,
+    "6": 6,
+    "8": 5,
+    "12": 8
    },
    "nBuses": 28,
    "men": 208,
    "road": "double S",
    "rampIdea": "very wide bleachers",
-   "blockers": "3 connected pairs, tunnel (orange, 8)",
+   "blockers": "4 connected pairs, tunnel (green, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
-   "roadLen": 18.9
+   "roadLen": 19.4
   },
   "f32": {
    "id": "f32",
@@ -3117,6 +3117,6 @@
    "roadLen": 38.1
   }
  },
- "generated": "2026-10-09",
- "totalGreedy1x": 4365.5
+ "generated": "2026-10-13",
+ "totalGreedy1x": 4348.400000000001
 }

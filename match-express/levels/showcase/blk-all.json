@@ -33,9 +33,9 @@
         ["green", "green", "purple", "purple", "red", "red"],
         ["blue", "purple", "red", "purple", "green", "red"]
       ],
-      "at": 0.905,
+      "at": 1.031,
       "side": -1,
-      "shape": [[-2.27, -2.2], [-3.8, -2.2]]
+      "shape": [[-3.8, -2.2]]
     },
     {
       "rows": 6,

@@ -90,7 +90,8 @@ module.exports = [
    T:[F(1.4),L(40,3),R(260,3.0),F(0.8)],
    ramps:[{c:8, r:6, kind:'arc', a:15, b:30, anySide:true, side:1, f:0.2}, {c:8, r:6, kind:'perp', anySide:true, side:1, f:0.5}, {c:8, r:7, kind:'arc', a:-15, b:-30, anySide:true, side:1, f:0.8}]},
   {n:29, lanes:3, role:'Challenge', diff:7, colors:7, men:208, sizes:[4, 6, 8, 12], blockers:{tunnel:1, link:'pairs'}, road:'double S', rampIdea:'very wide bleachers',
-   T:[F(0.6),R(60,1.7),F(0.6),L(120,1.7),F(0.8),R(120,1.7),F(0.8),L(120,1.7),F(0.8),R(60,1.7),F(1.2)],
+   // (gentle bends: a very wide ramp is a rectangle with only its front edge bent to the road, so it needs straighter road)
+   T:[F(0.8),R(30,4.0),F(1.6),L(60,4.0),F(1.6),R(60,4.0),F(1.6),L(30,4.0),F(1.4)],
    ramps:[{c:13, r:4, kind:'perp', side:-1, f:0.15}, {c:13, r:4, kind:'perp', side:1, f:0.38}, {c:13, r:4, kind:'perp', side:-1, f:0.62}, {c:13, r:4, kind:'perp', side:1, f:0.85}]},
   {n:30, lanes:3, role:'Milestone', diff:9, colors:7, men:240, sizes:[4, 6, 8, 12], blockers:{tunnel:1, link:'triples', hidden:2}, road:'long road with a spiral', rampIdea:'five ramps, mixed shapes',
    T:[F(1.0),L(60,2.2),F(1.6),R(120,2.2),F(1.8),L(60,2.2),F(1.0),S(1.15,1),R(110,2.4),F(2.2)],

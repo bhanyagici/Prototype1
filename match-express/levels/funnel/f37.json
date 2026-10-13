@@ -38,9 +38,9 @@
         ["green", "green", "purple", "purple", "orange", "blue"],
         ["blue", "purple", "purple", "yellow", "yellow", "blue"]
       ],
-      "at": 16.4,
+      "at": 15.8,
       "side": -1,
-      "tilt": 35
+      "tilt": 45
     },
     {
       "rows": 6,

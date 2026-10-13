@@ -32,9 +32,9 @@
         ["red", "red", "red", "blue", "green", "green"],
         ["green", "green", "blue", "blue", "blue", "red"]
       ],
-      "at": 12.408,
+      "at": 12.508,
       "side": -1,
-      "shape": [[-3.06, -2.05], [-4.4, -1.31]]
+      "shape": [[-3.17, -2.1], [-4.51, -1.36]]
     },
     {
       "rows": 6,

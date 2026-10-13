@@ -6,7 +6,10 @@
 //   screenshots/spiral-persp-390.png         a spiral level in the Perspective camera
 //   screenshots/spiral-ortho-390.png         the same moment in the Orthographic camera
 //   screenshots/parachute-edge-390.png       a full bus's parachute carrying it down past the board's edge
-//   screenshots/articulated-spiral-390.png   a 12-seat articulated bus bending in a spiral
+//   screenshots/jelly-spiral-390.png         a 12-seat bus in Jelly mode bending in a spiral
+//   screenshots/tunnel-exit-390.png          close-up: a bus driving into the exit tunnel's darkness, front first
+//   screenshots/tunnel-return-390.png        close-up: a bus coming out of the return tunnel's darkness
+//   screenshots/ramp-curve-390.png           close-up: a ramp on a curved road (front edge bent to the road, back edge straight)
 //   screenshots/five-lanes-bar-390.png       a 5-lane level with the queue tunnel and the booster bar
 //   node tools/shoot-showcase.js             (needs playwright; CHROMIUM=/path/to/chrome as for the tests)
 const fs = require('fs'), path = require('path'), {pathToFileURL} = require('url'), {chromium} = require('playwright');
@@ -48,16 +51,41 @@ const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'screenshots'), F
       run(id, k); __me.render(); return {id, k}; }
     return null; });
   if (chute) await shot('parachute-edge-390.png'); else { console.error('no parachute exit in view'); process.exitCode = 1; }
-  // a 12-seat articulated bus in a spiral: driven into the single spiral's loop
+  // a 12-seat bus in Jelly mode in a spiral: driven into the single spiral's loop
   await p.evaluate(() => { const C = window.MECore, i = __me.playlist.findIndex(l => l.id === 'road-spiral'), lv = JSON.parse(JSON.stringify(__me.playlist[i]));
-    __me.setTheme('meadow'); __me.setMove('articulated'); __me.openMenu(); __me.goLevel(i); __me.closeMenu();
+    __me.setTheme('meadow'); __me.setMove('jelly'); __me.openMenu(); __me.goLevel(i); __me.closeMenu();
     // the same level with a 12-seat bus put at the front of the middle lane (for the picture), sent straight away
     lv.lanes[1].unshift({color:lv.lanes[1][0].color, cap:12}); __me.loadLevel(lv, 'export'); __me.freeze(false);
     const g = __me.game, R = __me.layout.ROAD, sp = R.spirals[0], id = g.lanes[1][0];
     __me.tapLane(1);
     for (let k = 0; k < 60*60; k++){ __me.pump(1/60); const bb = g.buses[id]; if (bb.state === 'road' && bb.rs >= sp.s0 + (sp.s1 - sp.s0)*0.45) break; }
     __me.freeze(true); __me.render(); });
-  await shot('articulated-spiral-390.png');
+  await shot('jelly-spiral-390.png');
+  // close-ups: the camera zoomed in on a point (a view offset), then back
+  const zoomAt = async (pt, f) => p.evaluate(([pt, f]) => { const c = __me.camera, v = new c.position.constructor(...pt).project(c);
+    const cx = (v.x + 1)/2*900, cy = (1 - v.y)/2*1950, w = 900/f, h = 1950/f; c.setViewOffset(900, 1950, cx - w/2, cy - h/2, w, h); __me.render(); }, [pt, f]);
+  const unzoom = () => p.evaluate(() => { __me.camera.clearViewOffset(); __me.render(); });
+  // the tunnels: a 12-seat bus in a colour nobody waits for drives the whole road into the exit tunnel and comes back out
+  // of the return tunnel
+  const tun = await p.evaluate(() => { const C = window.MECore, i = __me.playlist.findIndex(l => l.id === 'road-spiral'), lv = JSON.parse(JSON.stringify(__me.playlist[i]));
+    __me.setTheme('meadow'); __me.setMove('rigid'); __me.setView('persp'); __me.openMenu(); __me.goLevel(i); __me.closeMenu();
+    const used = new Set(JSON.stringify(lv).match(/"\??([a-z]+)"/g).map(x => x.replace(/["?]/g, ''))), color = C.COLORS.find(c => !used.has(c));
+    lv.lanes[0].unshift({color, cap:12}); __me.loadLevel(lv, 'export'); __me.freeze(true); __me.tapLane(0);
+    const g = __me.game, b = g.buses.find(x => x.color === color), R = __me.layout.ROAD;
+    for (let k = 0; k < 60*120 && !(b.state === 'road' && b.rs >= R.portalS + 0.5); k++) __me.advance(1/60);
+    __me.render(); const E = __me.layout.exit; return {exit:[E.x, E.y + 0.5, E.z], color}; });
+  await zoomAt(tun.exit, 2.5); await shot('tunnel-exit-390.png'); await unzoom();
+  const ret = await p.evaluate(color => { const g = __me.game, b = g.buses.find(x => x.color === color);
+    for (let k = 0; k < 60*120 && !(b.state === 'return' && b.trip && b.trip.s >= 1.4); k++) __me.advance(1/60);
+    __me.render(); const T = __me.layout.TUNNEL, [x, z] = window.MECore.dispPoint(T.x, T.z); return [x, 0.5, z]; }, tun.color);
+  await zoomAt(ret, 2.5); await shot('tunnel-return-390.png'); await unzoom();
+  // a ramp on a curved road: the one in the Medium basics level whose front edge bends the most
+  const ramp = await p.evaluate(() => { const i = __me.playlist.findIndex(l => l.id === 'basics-medium');
+    __me.setTheme('meadow'); __me.openMenu(); __me.goLevel(i); __me.closeMenu(); __me.freeze(true); __me.render();
+    let best = null; for (const r of __me.layout.RAMPS){ const F = r.front, a = F[0], b = F[F.length - 1], m = F[F.length >> 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+      const bend = Math.abs(((m[0] - a[0])*(b[1] - a[1]) - (m[1] - a[1])*(b[0] - a[0]))/l); if (!best || bend > best.bend) best = {bend, r}; }
+    const r = best.r, c = r.across(r.length*0.5, 0); return [c.x, r.y, c.z]; });
+  await zoomAt(ramp, 2); await shot('ramp-curve-390.png'); await unzoom();
   await play('lanes-5', 'town', 'rigid', 10); await shot('five-lanes-bar-390.png');
   await p.evaluate(() => { __me.setTheme('meadow'); __me.setMove('rigid', true); __me.setView('persp', true); });
   await b.close();

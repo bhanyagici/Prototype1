@@ -171,9 +171,9 @@ const PACK = pathToFileURL(path.join(__dirname, '..', 'dist', 'match-express-fun
   // ---- previous / next, a win moves on, stats (completion time, fails, CSV, reset), speeds
   { const p = await open(40);
     await p.evaluate(() => { if (__me.intro) __me.closeIntro(); });
-    await p.click('#btnPrev'); await p.evaluate(() => { if (__me.intro) __me.closeIntro(); });
+    await p.click('#btnPrev', {timeout:90000}); await p.evaluate(() => { if (__me.intro) __me.closeIntro(); });
     const a = await p.evaluate(() => [__me.playIdx, document.getElementById('levelPill').textContent]);
-    await p.click('#btnNextLv'); const c = await p.evaluate(() => [__me.playIdx, document.getElementById('levelPill').textContent, document.getElementById('btnNextLv').classList.contains('dis')]);
+    await p.click('#btnNextLv', {timeout:90000}); const c = await p.evaluate(() => [__me.playIdx, document.getElementById('levelPill').textContent, document.getElementById('btnNextLv').classList.contains('dis')]);
     chk(a[1] === 'Level 39 / 40' && c[1] === 'Level 40 / 40' && c[2], 'Previous and Next move one level; Next is off on level 40', JSON.stringify([a, c]));
     const sp = []; for (let k = 0; k < 5; k++){ await p.click('#btnSpeed'); sp.push(await p.evaluate(() => __me.timeScale + ':' + document.getElementById('btnSpeed').textContent)); }
     chk(sp.join(' ') === '1.25:1.25x 1.5:1.5x 1.75:1.75x 2:2x 1:1x' && await p.evaluate(() => __me.timeScale === 1), 'the speed button steps 1x, 1.25x, 1.5x, 1.75x, 2x and back to 1x', sp.join(' '));

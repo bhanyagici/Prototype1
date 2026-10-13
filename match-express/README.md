@@ -25,9 +25,97 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   [town](screenshots/theme-town-390.png);
 - a spiral level in [Perspective](screenshots/spiral-persp-390.png) and in
   [Orthographic](screenshots/spiral-ortho-390.png);
-- [a 12-seat articulated bus bending in a spiral](screenshots/articulated-spiral-390.png);
+- [a 12-seat bus in Jelly mode bending in a spiral](screenshots/jelly-spiral-390.png);
+- a bus [driving into the dark exit tunnel](screenshots/tunnel-exit-390.png) and [coming out of the return tunnel](screenshots/tunnel-return-390.png) (close-ups);
+- [a ramp on a curved road with its straight back edge](screenshots/ramp-curve-390.png) (close-up);
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
+
+## Polish pass
+
+Gameplay rules are unchanged throughout.
+
+### Bus movement: Rigid or Jelly (replaces Articulated)
+A game setting: ⚙ → *Buses: Rigid / Jelly*, the showcase's settings panel, or
+`index.html?move=jelly`. A saved *Snake* or *Articulated* choice now opens as Jelly. It
+is purely visual: speeds, timings and rules are the same, and the browser test plays the
+same taps in both modes and gets the same game.
+- **The bus:** always looks like a normal single-body bus, with no sections or bellows.
+- **On straight road** it is perfectly straight and rigid.
+- **In curves and spirals** its body bends smoothly along the road's curve, like soft
+  jelly, as one continuous shape. Seats, passengers, wheels and lights follow the bend.
+- **The wobble:** entering and leaving a curve, the body bends and straightens with a small
+  soft wobble, then settles.
+- **In the queue, the bays and on the parachute** the bus is straight. Leaving the road
+  for the parachute, it straightens with the same soft wobble.
+- **How:** 9 frames run from the bus's front to its back. Each frame's target is the
+  bus's path at the frame's own distance from the bus's centre: the main road in 3D, or
+  its route through the yard as drawn.
+  - Each frame follows its target on a lightly damped spring (17 rad/s, damping 0.32).
+    The spring is never more than 0.12 units or 0.2 rad off its target, so the wobble
+    stays small.
+  - A vertex shader carries the body through the frames.
+- **Tested** with a 12-seat bus driven round the built-in level and back to a bay:
+  - every frame lies on the road's centre line once settled (worst 0.024), and within
+    0.13 through the spiral;
+  - it is perfectly straight on straight road;
+  - it swings back and forth entering and leaving curves (at most 0.11 off), then
+    settles;
+  - it is straight in the queue, the bays and on the parachute.
+
+### Tunnels: real dark tunnels
+- **The return tunnel** is drawn where the bus's route comes out of it, facing along the
+  route as drawn on screen. Before, it faced the route's unwarped direction, so buses
+  came out through its side. The exit tunnel faces along the road's end.
+- **Inside:** the road runs on into the tunnel, shaded from clear at the mouth to black
+  deeper in. The inner walls and vault go from the stone's colour at the mouth to black.
+- **Buses** going in darken with their depth, front first, and are black about 0.9 units
+  in. Coming out of the return tunnel, they emerge from the dark the same way.
+- **Clipped:** no part of a bus or a stickman is drawn deeper inside than the tunnel's
+  stone body reaches, so nothing shows through or over the stone.
+- **Straight through the opening:** the yard is drawn squeezed, and the squeeze changes
+  quickly right where the return route leaves its tunnel. A bus faced along the route at
+  its centre, so it sat about 17° across the tunnel and its front corner touched the
+  stone. Coming back from the tunnel, a bus now faces along the line from its back to its
+  front on the drawn route, so it lies straight inside the opening.
+- **Tested** (browser test, Rigid and Jelly), with a 12-seat bus driven into the exit
+  tunnel and out of the return tunnel:
+  - the road runs straight on inside each opening (at most 0.05 off its axis);
+  - every part of the bus inside a tunnel stays within the opening (at least 0.07 clear
+    of the stone);
+  - nothing of the bus deeper than the clipping depth lies outside the clipped band;
+  - the bus is fully dark when it vanishes into the exit tunnel and when it appears in
+    the return tunnel.
+
+### Ramps: only the front edge follows the road
+- **The shape:** a ramp is a rectangle square to its body, whose front edge is cut to
+  fit the road. The front edge snaps to the road edge and takes the road's curve.
+- **The back edge** is a straight line with square corners. The side edges are straight
+  too, along the ramp's body; an arc or L-shaped ramp keeps its intended bend.
+- **The rows:** the front row follows the front curve; each row behind it keeps less of
+  that curve, and the back row and back edge none. Railings and pillars follow the new
+  outline.
+- **Everywhere:** the core builds this, so it applies in the game and the editor alike.
+- **The checker** flags a ramp turned so far against a bend that its front edge cannot
+  span its width (`ramp-road`).
+- **Every existing level is fixed** and free of warnings:
+  - `tools/fix-ramps.js` slid the ramps that now touched the road or each other along the
+    road, keeping their content: crowded-rush, crowded-rush-curve, 7 funnel levels (14, 18,
+    19, 24, 25, 30, 35) and 6 showcase levels;
+  - showcase *L-shape*: its second ramp is now a straight ramp, 2 units earlier, and its
+    fourth ramp 0.7 earlier. Showcase *Long narrow*: its first ramp tilts 50° and moved
+    1.5 on, and its second ramp is on the other side of the road, tilted 35°. Their
+    stickmen are unchanged;
+  - the showcase's *Very Hard* basics level was made again;
+  - funnel level 29's four very wide (13-column) ramps no longer fit its tight double S,
+    so its road now has gentler bends. The level was made again and retuned into its
+    band: 25% random-bot wins, band 18–30%;
+  - funnel level 37's first ramp moved 0.6 along the road and now tilts 45° instead of
+    35°.
+- **Tested:** `tests/ramps.test.js` checks every ramp of every level:
+  - the back edge is a straight line;
+  - its corners are square;
+  - on a curve, the rows straighten from the front curve toward the back.
 
 ## High-up update
 
@@ -184,7 +272,7 @@ checker's rules are the same as before. The 40-level funnel was not retuned or r
 - The choice is remembered with the other game settings (`localStorage`, key
   `match-express:prefs`).
 
-### Bus movement: Rigid or Articulated (replaces Snake)
+### Bus movement: Rigid or Articulated (replaces Snake; replaced by Jelly in the Polish pass)
 A game setting: ⚙ → *Buses: Rigid / Articulated*, the showcase's settings panel, or
 `index.html?move=articulated`. A saved *Snake* choice now opens as Articulated. It is
 purely visual: speeds, timings and rules are the same, and the browser test plays the
@@ -226,7 +314,7 @@ same taps in both modes and gets the same game.
 One self-contained file (double-click, no server, no network) to try everything.
 - **Start menu:** level cards in categories. Each card shows the level's picture, its
   name and tags: difficulty, lanes and blockers.
-- **Settings panel** (from the menu and in play): theme, bus movement (Rigid / Articulated), camera (Perspective / Orthographic),
+- **Settings panel** (from the menu and in play): theme, bus movement (Rigid / Jelly), camera (Perspective / Orthographic),
   speed (1x–2x) and sound on / off. The last settings are remembered (`localStorage`).
 - **In play:**
   - back to the menu (🏠), which marks the last card picked;
@@ -1127,11 +1215,13 @@ node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, send
                               #   the exit tunnel anywhere along the top edge, the exit-road warning
 node tests/shared.test.js     # 74 checks: level format, layout builder, warnings (incl. the target zone), difficulty, links, bundled levels and level orders
 node tests/camera.test.js     # 10 checks: both cameras (Perspective / Orthographic): every level in the screen zones, sizes
-node tests/ramps.test.js      # 6 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
-                              #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so
+node tests/ramps.test.js      # 9 checks: every ramp of every level (built-in, presets, funnel, showcase) lies flush on the road edge,
+                              #   sampled every 2 cm along its whole front edge; moving the road or the ramp keeps it so; its back
+                              #   edge is a straight line with square corners; its rows straighten from the front curve to the back
 node tests/browser.test.js    # 106 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-2x, the booster bar,
-                              #   the camera setting, articulated buses (every axle on the road's centre line and on the yard's routes,
-                              #   every wheel on the road, rigid sections, straight in the queue and the bays, the same game as Rigid)
+                              #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
+                              #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
+                              #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)
 node tests/showcase.test.js   # 24 checks: the 27 showcase levels (categories, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
                               #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
 node tests/editor.test.js     # 63 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,

@@ -89,9 +89,9 @@
         ["purple", "purple", "blue", "blue", "yellow", "blue"],
         ["green", "green", "red", "red", "yellow", "blue"]
       ],
-      "at": 22.47,
+      "at": 22.37,
       "side": 1,
-      "shape": [[1.04, -15.16], [0.93, -16.38]]
+      "shape": [[1.16, -15.13], [1.05, -16.35]]
     },
     {
       "rows": 6,
