@@ -47,6 +47,18 @@ chk(at('tutorial') === '1:first-sends 3:bay-resend', 'tutorials on levels 1 and 
 chk(at('popup') === '7:hidden 13:connected 26:tunnel 32:lock', 'intro popups on levels 7, 13, 26 and 32 only', at('popup'));
 chk(at('hint') === '17:triple', 'a short hint on level 17 only', at('hint'));
 chk(C.normalizeLevel(JSON.parse(JSON.stringify(LV.f07))).meta.popup === 'hidden', 'the core keeps a level\'s meta through normalizeLevel');
+// blockers: the intro levels lean on their blocker and stay easy; from level 21 on the levels carry more of them
+{ const cnt = lv => { const fl = lv.lanes.flat(), g = {}; fl.forEach(b => { if (b.link) g[b.link] = (g[b.link] || 0) + 1; });
+    return {hidden:fl.filter(b => b.hidden).length, pairs:Object.values(g).filter(n => n === 2).length, triples:Object.values(g).filter(n => n === 3).length,
+      tunnels:lv.ramps.reduce((a, r) => a + (r.tunnels || []).length, 0), locks:lv.ramps.reduce((a, r) => a + (r.boxes || []).filter(b => b.lock != null).length, 0)}; };
+  const K = Object.fromEntries(order.map(i => [i, cnt(LV[i])])), total = c => c.hidden + c.pairs + c.triples + c.tunnels + c.locks;
+  const rate = i => { let w = 0; for (let r = 0; r < 100; r++) if (C.simulate(JSON.parse(JSON.stringify(LV[i])), C.randomPick, C.mulberry32(1000 + r), C.SIM_DT, 1500).result === 'win') w++; return w/100; };
+  const intro = [['f07', 'hidden', 4], ['f13', 'pairs', 4], ['f17', 'triples', 3], ['f26', 'tunnels', 3], ['f32', 'locks', 2]].map(([i, k, n]) => ({i, k, n, has:K[i][k], rate:rate(i)}));
+  chk(intro.every(o => o.has >= o.n && o.rate >= 0.6), 'the blocker intro levels (7, 13, 17, 26, 32) use their blocker a lot and stay easy (the random bot wins 60% or more)',
+    intro.map(o => `${o.i}: ${o.has} ${o.k}, ${Math.round(o.rate*100)}%`).join('; '));
+  const avg = (a, b) => order.slice(a - 1, b).reduce((s, i) => s + total(K[i]), 0)/(b - a + 1);
+  chk(avg(21, 40) >= 2*avg(1, 20) && order.slice(20).every(i => total(K[i]) >= 1), 'more blockers after level 20: every level from 21 on has some, twice as many per level as levels 1-20',
+    `${avg(21, 40).toFixed(1)} per level from 21, ${avg(1, 20).toFixed(1)} before`); }
 // no two consecutive levels look alike: road description or ramp idea changes every level
 const same = SPECS.slice(1).filter((s, k) => s.road === SPECS[k].road && s.rampIdea === SPECS[k].rampIdea).map(s => s.n);
 chk(!same.length, 'no two consecutive levels share both road and ramp shape', same.join(','));

@@ -1,5 +1,5 @@
 # dist/ is build output (node tools/build-standalone.js, node tools/export-demo-pack.js, node tools/build-funnel.js,
-# node tools/build-showcase.js);
+# node tools/build-showcase.js, node tools/export-levels.js);
 # the single-file deliverables are committed so they can be downloaded from GitHub
 dist/*
 !dist/match-express-editor.html
@@ -10,3 +10,5 @@ dist/*
 !dist/match-express-funnel-40.html
 !dist/funnel.xlsx
 !dist/match-express-showcase.html
+!dist/all-levels.json
+!dist/funnel-40.json

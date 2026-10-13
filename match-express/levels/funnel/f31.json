@@ -29,9 +29,9 @@
     [
       {"color": "green", "cap": 12},
       {"color": "green", "cap": 8},
-      {"color": "red", "cap": 12},
+      {"color": "red", "cap": 12, "hidden": true},
       {"color": "red", "cap": 8},
-      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 12, "hidden": true},
       {"color": "purple", "cap": 8},
       {"color": "yellow", "cap": 8},
       {"color": "orange", "cap": 12},

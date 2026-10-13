@@ -28,40 +28,43 @@
     {
       "rows": 4,
       "columns": [
-        ["green", "green", "green", null],
-        ["red", "red", "red", null],
-        ["yellow", "yellow", "yellow", null],
-        ["purple", "purple", "purple", null],
-        ["orange", "orange", "orange", "orange"],
-        ["purple", "purple", "purple", "purple"],
-        ["yellow", "yellow", "cyan", null],
-        ["yellow", "yellow", "yellow", "yellow"],
-        ["yellow", "yellow", "yellow", null],
-        ["blue", "blue", "cyan", "cyan"],
-        ["blue", "blue", "blue", "blue"],
-        ["yellow", "yellow", "yellow", "yellow"],
-        ["orange", "orange", "orange", "orange"]
+        ["orange", "purple", "cyan", "cyan"],
+        ["yellow", "yellow", "blue", null],
+        ["red", "red", "green", null],
+        ["blue", "blue", "blue", null],
+        ["yellow", "yellow", "blue", null],
+        ["cyan", "yellow", null, null],
+        ["blue", "blue", "cyan", null],
+        ["orange", "purple", "green", "green"],
+        ["orange", "orange", "green", null],
+        ["cyan", "cyan", "green", null],
+        ["yellow", "yellow", "purple", null],
+        ["cyan", "cyan", "green", null],
+        ["yellow", "purple", "purple", "red"]
       ],
       "at": 3.708,
       "side": -1,
-      "shape": [[-1.86, -6.03]]
+      "shape": [[-1.86, -6.03]],
+      "tunnels": [
+        {"col": 5, "row": 2, "w": 1, "h": 2, "color": "blue", "count": 8}
+      ]
     },
     {
       "rows": 4,
       "columns": [
-        ["green", "green", "green", "cyan"],
-        ["yellow", "purple", "purple", "purple"],
-        ["blue", "blue", "blue", "blue"],
+        ["orange", "purple", "purple", "purple"],
+        ["cyan", "cyan", "green", "red"],
+        ["yellow", "purple", "green", "green"],
         ["red", "red", "red", "purple"],
-        ["red", "purple", "purple", "blue"],
-        ["green", "green", "green", "green"],
-        ["red", "purple", "purple", "cyan"],
-        ["blue", "blue", "blue", "blue"],
-        ["yellow", "yellow", "yellow", "blue"],
-        ["purple", "purple", "purple", "purple"],
-        ["green", "green", "green", "blue"],
-        ["orange", "orange", "orange", "orange"],
-        ["purple", "purple", "green", "green"]
+        ["cyan", "yellow", "yellow", "purple"],
+        ["cyan", "cyan", "blue", "blue"],
+        ["red", "red", "blue", "red"],
+        ["red", "red", "green", "green"],
+        ["orange", "yellow", "yellow", "red"],
+        ["yellow", "yellow", "red", "red"],
+        ["yellow", "yellow", "blue", "blue"],
+        ["yellow", "yellow", "yellow", "red"],
+        ["orange", "purple", "green", "green"]
       ],
       "at": 8.967,
       "side": 1,
@@ -70,83 +73,83 @@
     {
       "rows": 4,
       "columns": [
-        ["purple", "cyan", null, null],
-        ["orange", "orange", "orange", "blue"],
-        ["orange", "orange", "orange", "orange"],
-        ["yellow", "yellow", "yellow", "blue"],
-        ["red", "red", "red", "orange"],
-        ["orange", "orange", "orange", "red"],
-        ["blue", "blue", "blue", "blue"],
-        ["green", "purple", "purple", "purple"],
-        ["blue", "cyan", "cyan", "cyan"],
-        ["orange", "orange", "orange", "blue"],
-        ["orange", "cyan", "cyan", "cyan"],
-        ["cyan", "cyan", "cyan", "blue"],
-        ["orange", "cyan", "cyan", "cyan"]
+        ["orange", "orange", "blue", "red"],
+        ["orange", "orange", "blue", "blue"],
+        ["orange", "yellow", "yellow", "purple"],
+        ["yellow", "yellow", "green", "purple"],
+        ["cyan", "cyan", "purple", "purple"],
+        ["cyan", "yellow", "yellow", "purple"],
+        ["orange", "orange", "red", "red"],
+        ["red", "purple", "purple", "purple"],
+        ["cyan", "cyan", "blue", "blue"],
+        ["red", "red", "purple", "purple"],
+        ["cyan", "cyan", "purple", "purple"],
+        ["yellow", "yellow", "cyan", "cyan"],
+        ["orange", "orange", "green", "green"]
       ],
       "at": 14.82,
       "side": -1,
-      "shape": [[-2.07, -16.46]],
-      "tunnels": [
-        {"col": 0, "row": 2, "w": 1, "h": 2, "color": "green", "count": 8}
-      ]
+      "shape": [[-2.07, -16.46]]
     },
     {
       "rows": 4,
       "columns": [
-        ["purple", "cyan", "cyan", "cyan"],
-        ["blue", "blue", "blue", "red"],
-        ["cyan", "cyan", "cyan", "orange"],
-        ["red", "red", "red", "blue"],
-        ["red", "red", "red", "blue"],
-        ["red", "red", "red", "blue"],
-        ["purple", "purple", "purple", "purple"],
-        ["blue", "blue", "blue", "orange"],
-        ["yellow", "yellow", "yellow", "yellow"],
-        ["purple", "purple", "purple", "purple"],
-        ["yellow", "green", "green", "blue"],
-        ["red", "red", "red", "red"],
-        ["cyan", "cyan", "purple", "purple"]
+        ["orange", "yellow", null, null],
+        ["orange", "purple", "blue", "blue"],
+        ["orange", "yellow", "yellow", "yellow"],
+        ["cyan", "cyan", "green", null],
+        ["blue", "yellow", "green", null],
+        ["orange", "purple", "purple", null],
+        ["orange", "orange", "red", "red"],
+        ["cyan", "purple", "green", "green"],
+        ["orange", "orange", "green", "green"],
+        ["blue", "blue", "cyan", "purple"],
+        ["yellow", "purple", "purple", "red"],
+        ["blue", "purple", "blue", "red"],
+        ["orange", "orange", "green", "green"]
       ],
       "at": 4,
       "side": 1,
-      "shape": [[3.91, -3.79]]
+      "shape": [[3.91, -3.79]],
+      "tunnels": [
+        {"col": 0, "row": 2, "w": 1, "h": 2, "color": "red", "count": 8}
+      ]
     }
   ],
   "lanes": [
     [
-      {"color": "orange", "cap": 6},
+      {"color": "purple", "cap": 6},
+      {"color": "purple", "cap": 12, "hidden": true},
+      {"color": "orange", "cap": 8, "link": "G2"},
+      {"color": "cyan", "cap": 12, "link": "G1"},
+      {"color": "cyan", "cap": 8, "link": "G1"},
+      {"color": "yellow", "cap": 4},
       {"color": "yellow", "cap": 12},
-      {"color": "red", "cap": 6, "link": "G1"},
-      {"color": "purple", "cap": 4, "link": "G3"},
-      {"color": "yellow", "cap": 12},
-      {"color": "green", "cap": 4},
-      {"color": "cyan", "cap": 12},
-      {"color": "cyan", "cap": 8},
-      {"color": "cyan", "cap": 6},
-      {"color": "purple", "cap": 6}
+      {"color": "blue", "cap": 12},
+      {"color": "blue", "cap": 4},
+      {"color": "blue", "cap": 8}
     ],
     [
-      {"color": "orange", "cap": 12},
-      {"color": "yellow", "cap": 4, "link": "G2"},
-      {"color": "red", "cap": 4, "link": "G2"},
-      {"color": "purple", "cap": 4, "link": "G1"},
-      {"color": "purple", "cap": 8, "link": "G3"},
-      {"color": "blue", "cap": 12, "link": "G4"},
-      {"color": "blue", "cap": 8, "link": "G4"},
+      {"color": "orange", "cap": 4},
+      {"color": "orange", "cap": 4, "link": "G2", "hidden": true},
+      {"color": "orange", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "purple", "cap": 4},
+      {"color": "red", "cap": 6},
+      {"color": "red", "cap": 4},
+      {"color": "red", "cap": 12}
+    ],
+    [
       {"color": "green", "cap": 12},
-      {"color": "green", "cap": 6}
-    ],
-    [
+      {"color": "purple", "cap": 6},
+      {"color": "orange", "cap": 6},
+      {"color": "blue", "cap": 4},
       {"color": "red", "cap": 12},
       {"color": "blue", "cap": 4},
-      {"color": "orange", "cap": 8},
-      {"color": "purple", "cap": 6},
-      {"color": "purple", "cap": 8},
-      {"color": "green", "cap": 4},
-      {"color": "red", "cap": 4},
-      {"color": "blue", "cap": 12},
-      {"color": "orange", "cap": 4}
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 6},
+      {"color": "green", "cap": 12},
+      {"color": "cyan", "cap": 6}
     ]
   ],
   "meta": {

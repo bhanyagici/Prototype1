@@ -197,4 +197,19 @@ console.log('demo levels: checker, bots and cheering');
         `${lv.id}: clean checker, greedy wins, cheering = boarders in every lap of 12 bot games`, `greedy ${gr.sends} sends, ${laps} laps, ${miss + lapBad} mismatches`);
   }
 }
+console.log('a level that ends on a connected group: one win');
+{ // the buses of a connected group jump in the same step: the last group of a level sends one 'win', not one per bus
+  const dir = path.join(__dirname, '..', 'levels', 'funnel'), ends = [];
+  for (const f of fs.readdirSync(dir).filter(f => /^f\d\d\.json$/.test(f)).sort()){
+    const g = C.createGame(JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')), {}); let wins = 0, last = null; const jumps = [];
+    let think = 0;
+    while (!g.result && g.t < 1500){ think -= C.SIM_DT; if (think <= 0){ think += C.BOT_THINK; const a = C.greedyPick(g); if (a) C.applyAction(g, a); } C.step(g, C.SIM_DT);
+      for (const e of g.events){ if (e.type === 'win') wins++; if (e.type === 'jump') jumps.push(e); } g.events.length = 0; }
+    for (let k = 0; k < 10; k++){ C.step(g, C.SIM_DT); for (const e of g.events) if (e.type === 'win') wins++; g.events.length = 0; }
+    last = jumps.filter(e => e.t === jumps[jumps.length - 1].t).length;
+    ends.push({id:f.slice(0, 3), res:g.result, wins, last}); }
+  const grp = ends.filter(e => e.last > 1);
+  chk(grp.length >= 1 && ends.every(e => e.res === 'win' && e.wins === 1), 'every greedy game sends exactly one win event, also when the last buses to leave are a connected group',
+    `${grp.length} levels end on a group (${grp.map(e => e.id + ' x' + e.last).join(', ')}); win events: ${ends.filter(e => e.wins !== 1 || e.res !== 'win').map(e => e.id + ':' + e.res + ':' + e.wins).join(', ') || 'one per game'}`);
+}
 console.log(fail ? `\n${fail} FAILED, ${pass} passed` : `\nALL ${pass} CHECKS PASS`); process.exitCode = fail ? 1 : 0;

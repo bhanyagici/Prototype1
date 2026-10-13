@@ -183,6 +183,8 @@ function queueBlockers(spec, gen, rng, gk){
   const nb = lanes.flat().length, wide = NL >= 4 ? 1.8 : 1, k = n => Math.max(1, Math.round(n*gk*wide));
   const want = B.link === 'pairs' ? {2:k(Math.max(2, nb/9)), 3:0} : B.link === 'triple' ? {2:NL >= 4 ? k(nb/12) : 0, 3:1}
              : B.link === 'triples' ? {2:NL >= 4 ? k(nb/14) : 0, 3:k(Math.max(2, nb/14))} : B.link === 'pairs+triples' ? {2:k(2), 3:k(2)} : {2:0, 3:0};
+  // linkN: exactly this many groups of the level's kind (an intro level that uses its blocker a lot, whatever the tuner asks)
+  if (B.linkN){ if (B.link === 'pairs') want[2] = B.linkN; else if (B.link === 'triple' || B.link === 'triples') want[3] = B.linkN; }
   let gid = 0;
   const shapes = {2:[[[0, 0], [1, 0]], [[0, 0], [0, 1]], [[0, 0], [1, 1]], [[0, 1], [1, 0]]], 3:[[[0, 0], [1, 0], [2, 0]], [[0, 0], [0, 1], [0, 2]], [[0, 0], [1, 0], [1, 1]], [[0, 0], [0, 1], [1, 1]]]};
   const teachLink = spec.popup === 'connected' || spec.hint === 'triple';
@@ -206,34 +208,38 @@ function queueBlockers(spec, gen, rng, gk){
   // the bays are still empty - never at a decisive moment late in the level
   const nHid = B.hidden || 0, teachHid = spec.popup === 'hidden';
   for (let k = 0; k < nHid; k++){
-    const opts = []; lanes.forEach((ln, l) => ln.forEach((b, i) => { if (!b.hidden && i >= 1 && (teachHid ? i === 1 : hard ? i <= 1 : i <= 4)) opts.push([l, i]); }));
+    // (the popup's level: its first hidden bus second in a lane, right where the popup points; the others anywhere early)
+    const opts = []; lanes.forEach((ln, l) => ln.forEach((b, i) => { if (!b.hidden && i >= 1 && (teachHid && k === 0 ? i === 1 : hard ? i <= 1 : i <= 4)) opts.push([l, i]); }));
     if (!opts.length) return false;
     const [l, i] = opts[Math.floor(rng()*opts.length)]; lanes[l][i].hidden = true;
   }
   return true;
 }
-/* a lock box over cells the plan needs late, its key on an earlier bus near a lane front */
+/* lock boxes (blockers.lock of them, each on a ramp of its own) over cells the plan needs late, each key on an earlier
+   bus near a lane front; the popup's level puts its first box on the first ramp */
 function lockBox(spec, gen, rng){
-  const {level} = gen, L = C.buildLayout(JSON.parse(JSON.stringify(level))), teach = spec.popup === 'lock';
-  const ramps = L.RAMPS.slice(0, teach ? 1 : 2);
-  let best = null;
-  for (const r of ramps){ const rd = level.ramps[r.src]; if ((rd.tunnels || []).length) continue;
-    for (let w = 2; w <= 3; w++) for (let c0 = 0; c0 + w <= rd.columns.length; c0++) for (let row = 1; row <= rd.rows - 2; row++){
-      const h = Math.min(2, rd.rows - row); let minP = 99, men = 0;
-      for (let c = c0; c < c0 + w; c++){ const own = gen.ownerAt[r.src + ':' + c]; if (!own){ minP = -1; break; }
-        for (let k = row; k < rd.rows; k++){ if (rd.columns[c][k]){ men++; minP = Math.min(minP, own[k]); } } }
-      if (men < 4) continue;
-      const score = minP*2 - row - (teach ? 0 : rng()*2) + men*0.05;
-      if (!best || score > best.score) best = {src:r.src, c0, w, row, h, minP, score};
-    } }
-  if (!best || best.minP < 2) return false;
-  // the key: on a bus planned before the box's stickmen are needed, as near a lane front as possible
-  const cand = []; level.lanes.forEach((ln, l) => ln.forEach((b, i) => { if (b.plan < best.minP && !b.link) cand.push({b, l, i}); }));
-  if (!cand.length) return false;
-  cand.sort((a, b) => a.i - b.i || b.b.plan - a.b.plan);
-  const kb = teach ? cand[0] : cand[Math.floor(rng()*Math.min(3, cand.length))];
-  kb.b.key = 'K1';
-  const rd = level.ramps[best.src]; rd.boxes = [{col:best.c0, row:best.row, w:best.w, h:best.h, lock:'K1'}];
+  const {level} = gen, L = C.buildLayout(JSON.parse(JSON.stringify(level))), teach = spec.popup === 'lock', n = Math.max(1, +spec.blockers.lock || 1), used = new Set();
+  for (let q = 0; q < n; q++){
+    const ramps = L.RAMPS.filter(r => !used.has(r.src)).slice(0, teach && q === 0 ? 1 : 2 + q);
+    let best = null;
+    for (const r of ramps){ const rd = level.ramps[r.src]; if ((rd.tunnels || []).length) continue;
+      for (let w = 2; w <= 3; w++) for (let c0 = 0; c0 + w <= rd.columns.length; c0++) for (let row = 1; row <= rd.rows - 2; row++){
+        const h = Math.min(2, rd.rows - row); let minP = 99, men = 0;
+        for (let c = c0; c < c0 + w; c++){ const own = gen.ownerAt[r.src + ':' + c]; if (!own){ minP = -1; break; }
+          for (let k = row; k < rd.rows; k++){ if (rd.columns[c][k]){ men++; minP = Math.min(minP, own[k]); } } }
+        if (men < 4) continue;
+        const score = minP*2 - row - (teach && q === 0 ? 0 : rng()*2) + men*0.05;
+        if (!best || score > best.score) best = {src:r.src, c0, w, row, h, minP, score};
+      } }
+    if (!best || best.minP < 2){ if (q === 0) return false; break; }   // the first box is the design; more are best effort
+    // the key: on a bus planned before the box's stickmen are needed, as near a lane front as possible
+    const cand = []; level.lanes.forEach((ln, l) => ln.forEach((b, i) => { if (b.plan < best.minP && !b.link && !b.key) cand.push({b, l, i}); }));
+    if (!cand.length){ if (q === 0) return false; break; }
+    cand.sort((a, b) => a.i - b.i || b.b.plan - a.b.plan);
+    const kb = teach && q === 0 ? cand[0] : cand[Math.floor(rng()*Math.min(3, cand.length))], lock = 'K' + (q + 1);
+    kb.b.key = lock; used.add(best.src);
+    const rd = level.ramps[best.src]; rd.boxes = (rd.boxes || []).concat([{col:best.c0, row:best.row, w:best.w, h:best.h, lock}]);
+  }
   return true;
 }
 /* the core's rules for connected buses (as checkLevel reports them), on the queue alone: 2-3 buses that touch, and

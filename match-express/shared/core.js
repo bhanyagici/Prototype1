@@ -1763,7 +1763,8 @@ function jump(g, b){
     if (lk && !g.ramps[lk.ramp].boxes[lk.box].open){ g.keyFallbacks++; g.timers.push({t:g.t + KEY_FALLBACK_DELAY, kind:'key', bus:b.id, lock:b.key});
       emit(g, 'keyFallback', {bus:b.id, lock:b.key, ramp:lk.ramp}); }
     b.key = null; }
-  if (g.landed === g.men.length){ g.result = 'win'; g.resultT = g.t; emit(g, 'win', {bus:b.id}); }
+  // (once: the buses of a connected group all jump in the same step, the last of them completing the level)
+  if (g.landed === g.men.length && g.result !== 'win'){ g.result = 'win'; g.resultT = g.t; emit(g, 'win', {bus:b.id}); }
   openCountBoxes(g);
 }
 function jumpGroup(g, grp){

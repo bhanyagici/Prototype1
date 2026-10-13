@@ -42,11 +42,23 @@ function blockersOf(lv){
   if (N.ramps.some(r => (r.boxes || []).some(x => x.count != null && !x.lock))) out.push('Count box');
   return out;
 }
+// the 40-level funnel as a category of its own, played in order (numbered tiles; its tutorials, popups and hint come
+// from each level's meta, as in the 40-level file)
+const FDIR = path.join(ROOT, 'levels', 'funnel'), forder = JSON.parse(fs.readFileSync(path.join(FDIR, 'funnel-order.json'), 'utf8'));
+const freport = JSON.parse(fs.readFileSync(path.join(FDIR, 'funnel-report.json'), 'utf8')).levels;
+const funnel = forder.levels.map((id, k) => {
+  const lv = JSON.parse(fs.readFileSync(path.join(FDIR, id + '.json'), 'utf8'));
+  if (lv.id !== id) throw new Error(`${id}.json has id ${lv.id}`);
+  const ck = C.checkLevel(clone(lv)); if (!ck.balanced || ck.warnings.length) throw new Error(`${id}: not balanced or has warnings`);
+  cards[id] = {num:k + 1, role:((lv.meta && lv.meta.role) || '').split(/[ (]/)[0] || null, diff:freport[id] ? C.difficulty(freport[id].rate) : null, blockers:blockersOf(lv)};
+  return Object.assign(lv, {name:'Level ' + (k + 1)});
+});
+const categories = order.categories.concat([{name:'Funnel: 40 levels in order', ordered:true, groups:[{name:null, levels:forder.levels}]}]);
 const game = B.inlineGame(read('index.html'), {core:read('shared/core.js'), sync:read('shared/sync.js'), three:read('vendor/three.module.min.js')});
 const title = 'Match Express — Showcase';
-const html = B.withShare(game, {levels, nosim:true, noSaved:true, nav:true, stats:true, statsKey:'showcase', title,
-  showcase:{categories:order.categories, cards, thumbs}}, title);
+const html = B.withShare(game, {levels:levels.concat(funnel), nosim:true, noSaved:true, nav:true, stats:true, statsKey:'showcase', title,
+  showcase:{categories, cards, thumbs}}, title);
 fs.mkdirSync(OUT, {recursive:true});
 const file = path.join(OUT, 'match-express-showcase.html');
 fs.writeFileSync(file, html);
-console.log(`dist/match-express-showcase.html  ${(fs.statSync(file).size/1024).toFixed(0)} KB, ${levels.length} levels in ${order.categories.length} categories`);
+console.log(`dist/match-express-showcase.html  ${(fs.statSync(file).size/1024).toFixed(0)} KB, ${levels.length} showcase levels in ${order.categories.length} categories and the ${funnel.length}-level funnel`);

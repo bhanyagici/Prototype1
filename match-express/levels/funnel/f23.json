@@ -27,42 +27,101 @@
     ]
   },
   "ramps": [
-    {"rows": 6, "columns": [["red", "red", "yellow", "yellow", "orange", "orange"], ["green", "green", "yellow", "yellow", "purple", "purple"], ["green", "green", "blue", "blue", "purple", "purple"], ["red", "yellow", "yellow", "blue", "blue", "orange"], ["red", "red", "yellow", "yellow", "yellow", "orange"], ["green", "green", "yellow", "yellow", "yellow", "orange"], ["green", "green", "yellow", "yellow", "orange", "orange"]], "at": 4.549, "side": -1, "shape": [[-4.77, -2.38]]},
-    {"rows": 6, "columns": [["orange", "green", "green", "purple", "purple", "orange"], ["orange", "yellow", "yellow", "yellow", "purple", "purple"], ["green", "green", "green", "blue", "blue", "orange"], ["orange", "orange", "orange", "red", "red", "orange"], ["green", "green", "green", "blue", "blue", "blue"], ["orange", "orange", "orange", "blue", "blue", "orange"], ["red", "red", "purple", "purple", "purple", "orange"]], "at": 8.779, "side": 1, "shape": [[0.63, -5.18]]},
-    {"rows": 6, "columns": [["green", "purple", "purple", "blue", "blue", "orange"], ["red", "red", "red", "blue", "blue", "orange"], ["red", "red", "yellow", "yellow", "purple", "purple"], ["red", "red", "purple", "blue", "orange", "orange"], ["orange", "orange", "red", "red", "blue", "blue"], ["green", "purple", "purple", "blue", "blue", "blue"], ["red", "red", "red", "blue", "purple", "purple"]], "at": 13.818, "side": -1, "shape": [[-3.64, -8.62]]},
-    {"rows": 6, "columns": [["green", "green", "green", "blue", "blue", "blue"], ["green", "green", "yellow", "yellow", "purple", "purple"], ["red", "yellow", "yellow", "blue", "blue", "orange"], ["orange", "orange", "blue", "blue", "blue", "orange"], ["orange", "orange", "red", "red", "purple", "purple"], ["green", "green", "green", "red", "red", "orange"], ["green", "green", "yellow", "blue", "blue", "orange"]], "at": 18.647, "side": 1, "shape": [[1.21, -12.27]]}
+    {
+      "rows": 6,
+      "columns": [
+        ["green", "green", "blue", "blue", "green", "yellow"],
+        ["green", "purple", "purple", "yellow", "yellow", "yellow"],
+        ["green", "blue", "blue", "yellow", "red", null],
+        ["purple", "purple", "blue", "blue", "red", null],
+        ["purple", "purple", "purple", "red", "red", null],
+        ["green", "green", "orange", "yellow", "yellow", null],
+        ["purple", "purple", "blue", "yellow", "yellow", "orange"]
+      ],
+      "at": 4.549,
+      "side": -1,
+      "shape": [[-4.77, -2.38]]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["green", "green", "orange", "yellow", "orange", null],
+        ["purple", "purple", "blue", "yellow", "yellow", null],
+        ["purple", "purple", null, null, "yellow", "yellow"],
+        ["green", "green", "orange", "orange", "red", "yellow"],
+        ["purple", "purple", "blue", "blue", "red", "yellow"],
+        ["purple", "purple", "blue", "yellow", "yellow", "yellow"],
+        ["purple", "purple", "purple", "yellow", "orange", "yellow"]
+      ],
+      "at": 8.779,
+      "side": 1,
+      "shape": [[0.63, -5.18]],
+      "tunnels": [
+        {"col": 2, "row": 2, "w": 1, "h": 2, "color": "orange", "count": 8}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["purple", "blue", "orange", "orange", "red", "yellow"],
+        ["purple", "purple", "blue", "blue", "red", "red"],
+        ["purple", "purple", "blue", "blue", "red", "red"],
+        ["green", "purple", "purple", "yellow", "red", "yellow"],
+        ["green", "green", "orange", "orange", "red", "red"],
+        ["purple", "blue", "blue", "orange", "orange", "yellow"],
+        ["purple", "purple", "blue", "yellow", "red", "yellow"]
+      ],
+      "at": 13.818,
+      "side": -1,
+      "shape": [[-3.64, -8.62]]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["green", "green", "blue", "blue", "green", "green"],
+        ["purple", "purple", "blue", "blue", "red", "orange"],
+        ["green", "green", "blue", "orange", "orange", "green"],
+        ["purple", "purple", "blue", "blue", "red", "red"],
+        ["green", "purple", "blue", "blue", "red", "red"],
+        ["green", "green", "blue", "blue", "red", "red"],
+        ["purple", "blue", "blue", "yellow", "red", "red"]
+      ],
+      "at": 18.647,
+      "side": 1,
+      "shape": [[1.21, -12.27]]
+    }
   ],
   "lanes": [
     [
-      {"color": "purple", "cap": 12, "link": "G4"},
-      {"color": "purple", "cap": 4, "hidden": true},
-      {"color": "yellow", "cap": 12},
-      {"color": "blue", "cap": 6},
-      {"color": "blue", "cap": 6, "link": "G5"},
-      {"color": "orange", "cap": 12},
-      {"color": "orange", "cap": 8}
-    ],
-    [
-      {"color": "purple", "cap": 4, "link": "G4"},
-      {"color": "orange", "cap": 8, "link": "G1"},
-      {"color": "purple", "cap": 4},
-      {"color": "blue", "cap": 8, "link": "G5"}
-    ],
-    [
-      {"color": "red", "cap": 6},
-      {"color": "orange", "cap": 6, "link": "G1", "hidden": true},
-      {"color": "green", "cap": 4, "link": "G3"},
-      {"color": "green", "cap": 8, "link": "G2"},
-      {"color": "green", "cap": 12, "link": "G2"},
-      {"color": "red", "cap": 8, "link": "G6"},
-      {"color": "blue", "cap": 4, "link": "G6"}
-    ],
-    [
       {"color": "red", "cap": 12},
-      {"color": "green", "cap": 4, "link": "G3"},
+      {"color": "yellow", "cap": 12, "hidden": true},
+      {"color": "purple", "cap": 4, "link": "G2"},
+      {"color": "green", "cap": 12, "link": "G5"},
+      {"color": "orange", "cap": 12},
+      {"color": "orange", "cap": 4, "link": "G1"},
+      {"color": "yellow", "cap": 4}
+    ],
+    [
       {"color": "yellow", "cap": 12},
+      {"color": "green", "cap": 4, "link": "G2"},
+      {"color": "purple", "cap": 8, "link": "G5"},
+      {"color": "purple", "cap": 6},
+      {"color": "blue", "cap": 12, "link": "G4"},
+      {"color": "blue", "cap": 4, "link": "G4"},
+      {"color": "orange", "cap": 4, "link": "G1"}
+    ],
+    [
+      {"color": "purple", "cap": 12, "link": "G3"},
+      {"color": "red", "cap": 6, "hidden": true},
+      {"color": "green", "cap": 4, "link": "G6"},
+      {"color": "orange", "cap": 4, "link": "G6"}
+    ],
+    [
+      {"color": "green", "cap": 4},
+      {"color": "purple", "cap": 6, "link": "G3", "hidden": true},
+      {"color": "blue", "cap": 12},
       {"color": "blue", "cap": 4},
-      {"color": "blue", "cap": 4}
+      {"color": "red", "cap": 6}
     ]
   ],
   "laneCount": 4,

@@ -16,6 +16,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 console.log('showcase levels');
 const order = JSON.parse(fs.readFileSync(path.join(DIR, 'showcase-order.json'), 'utf8'));
 const ids = order.categories.flatMap(c => c.groups.flatMap(g => g.levels));
+const FUNNEL = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'funnel', 'funnel-order.json'), 'utf8')).levels;   // (the funnel's 40 come after them)
 const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(path.join(DIR, id + '.json'), 'utf8'))]));
 { const cats = order.categories.map(c => c.name), lay = order.categories.find(c => c.name === 'Layouts');
   chk(cats.join() === 'Basics,Blockers,Layouts,Jumps' && lay && lay.groups.map(g => g.name).join() === 'Roads,Ramp shapes,Lane counts',
@@ -60,9 +61,12 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   console.log('the start menu');
   const m = await p.evaluate(() => ({open:document.getElementById('menuPanel').classList.contains('show'),
     cats:[...document.querySelectorAll('#menuList .mcat')].map(e => e.textContent), grps:[...document.querySelectorAll('#menuList .mgrp')].map(e => e.textContent),
-    cards:[...document.querySelectorAll('#menuList .mcard')].map(c => ({id:c.dataset.id, img:/^data:image\/jpeg;base64,/.test(c.querySelector('img').src) && c.querySelector('img').naturalWidth > 0,
+    tiles:[...document.querySelectorAll('#menuList .mcard.num')].map(c => ({id:c.dataset.id, num:c.querySelector('.mnum').textContent, next:c.classList.contains('nextup')})),
+    cards:[...document.querySelectorAll('#menuList .mcard:not(.num)')].map(c => ({id:c.dataset.id, img:/^data:image\/jpeg;base64,/.test(c.querySelector('img').src) && c.querySelector('img').naturalWidth > 0,
       name:c.querySelector('b').textContent, tags:[...c.querySelectorAll('.tag')].map(t => t.textContent)}))}));
-  chk(m.open && m.cats.join() === 'Basics,Blockers,Layouts,Jumps' && m.grps.join() === 'Roads,Ramp shapes,Lane counts', 'the showcase opens on its menu: categories and groups', m.cats.join(', ') + ' / ' + m.grps.join(', '));
+  chk(m.open && m.cats.join() === 'Basics,Blockers,Layouts,Jumps,Funnel: 40 levels in order' && m.grps.join() === 'Roads,Ramp shapes,Lane counts', 'the showcase opens on its menu: categories and groups', m.cats.join(', ') + ' / ' + m.grps.join(', '));
+  chk(m.tiles.length === 40 && m.tiles.every((t, k) => t.id === 'f' + String(k + 1).padStart(2, '0') && t.num === String(k + 1)) && m.tiles[0].next && m.tiles.filter(t => t.next).length === 1,
+    'the funnel is a category of its own: 40 numbered tiles in order, the first one to play next', m.tiles.length);
   chk(m.cards.length === ids.length && m.cards.every(c => c.img && c.name && c.tags.some(t => /^(Easy|Medium|Hard|Very Hard)$/.test(t)) && c.tags.some(t => /^\d lanes$/.test(t))),
     `a card for each of the ${ids.length} levels: its picture, name and tags (difficulty, lanes)`, m.cards.filter(c => !c.img).map(c => c.id).join(','));
   { const t = id => (m.cards.find(c => c.id === id) || {tags:[]}).tags;
@@ -107,7 +111,7 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   chk(await p.evaluate(() => __me.move === 'rigid' && __me.timeScale === 1 && document.getElementById('btnSpeed').textContent === '1x'), 'changes apply at once (the speed button shows the speed)');
   await p.click('#btnSetStats');
   const st = await p.evaluate(() => ({show:document.getElementById('statsPanel').classList.contains('show'), rows:document.querySelectorAll('#statsBody tr').length, head:document.querySelector('#statsBody tr').textContent}));
-  chk(st.show && st.rows === ids.length + 2 && /Time/.test(st.head) && /Fails/.test(st.head) && /Fail at/.test(st.head), 'the stats panel: completion time, fails and the second of each fail, per level', JSON.stringify(st));
+  chk(st.show && st.rows === ids.length + FUNNEL.length + 2 && /Time/.test(st.head) && /Fails/.test(st.head) && /Fail at/.test(st.head), 'the stats panel: completion time, fails and the second of each fail, per level', JSON.stringify(st));
   await p.click('#btnStatsClose');
   // a fail and a win land in the stats
   { const r = await p.evaluate(() => { __me.openMenu(); __me.goLevel(__me.playlist.findIndex(l => l.id === 'basics-easy')); const g = __me.game;   // from the menu: any category
@@ -117,6 +121,20 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   await p.click('#btnPause'); await p.click('#pmMenu');
   const back = await p.evaluate(() => ({menu:document.getElementById('menuPanel').classList.contains('show'), last:(document.querySelector('#menuList .mcard.last') || {}).dataset}));
   chk(back.menu && back.last && back.last.id === 'road-hairpin', 'Back to menu (pause menu) goes back to the menu, the last card picked is marked', JSON.stringify(back));
+  console.log('the funnel inside the showcase: played in order, tutorials and popups');
+  { await p.evaluate(() => __me.openMenu()); await p.evaluate(() => document.querySelector('#menuList .mcard[data-id="f01"]').click());
+    const t1 = await p.evaluate(() => ({id:__me.LEVEL.id, name:__me.LEVEL.name, tut:__me.tutorial && __me.tutorial.kind}));
+    chk(t1.id === 'f01' && t1.name === 'Level 1' && t1.tut === 'first-sends', 'its first tile plays level 1 with its tutorial', JSON.stringify(t1));
+    const w = await p.evaluate(() => { __me.goLevel(__me.playlist.findIndex(l => l.id === 'f02')); const g = __me.game;
+      for (let i = 0; i < 3000 && !g.result; i++){ const a = window.MECore.greedyPick(g); if (a) __me.tap(a); __me.advance(0.2); } __me.advance(3); return g.result; });
+    await p.evaluate(() => { const b = document.getElementById('btnNext'); if (b.offsetParent) b.click(); else __me.nextLevel(); });
+    const n3 = await p.evaluate(() => __me.LEVEL.id);
+    chk(w === 'win' && n3 === 'f03', 'a won funnel level goes on to the next one in order', `${w}, then ${n3}`);
+    await p.evaluate(() => __me.goLevel(__me.playlist.findIndex(l => l.id === 'f07')));
+    chk(await p.evaluate(() => __me.intro) === 'hidden', 'level 7 opens with its popup (the hidden bus)');
+    await p.evaluate(() => { __me.closeIntro(); __me.openMenu(); });
+    const tl = await p.evaluate(() => ({won:[...document.querySelectorAll('#menuList .mcard.num.won')].map(c => c.dataset.id), next:[...document.querySelectorAll('#menuList .mcard.nextup')].map(c => c.dataset.id)}));
+    chk(tl.won.join() === 'f02' && tl.next.join() === 'f01', 'the tiles mark the won levels and the next one to play', JSON.stringify(tl)); }
   chk(!errs.length && !net.length, 'no page errors, nothing fetched from the network', errs.concat(net).slice(0, 3).join(' | '));
   await browser.close(); done();
 })().catch(e => { chk(false, 'exception: ' + e.message.split('\n')[0]); done(); });

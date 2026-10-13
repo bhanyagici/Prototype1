@@ -92,13 +92,16 @@
       ],
       "at": 25.6,
       "side": 1,
-      "shape": [[-4.58, -11.9]]
+      "shape": [[-4.58, -11.9]],
+      "boxes": [
+        {"col": 3, "row": 10, "w": 2, "h": 2, "lock": "K2"}
+      ]
     }
   ],
   "lanes": [
     [
       {"color": "purple", "cap": 4, "link": "G13"},
-      {"color": "red", "cap": 8, "link": "G13"},
+      {"color": "red", "cap": 8, "link": "G13", "hidden": true},
       {"color": "red", "cap": 12, "link": "G4"},
       {"color": "blue", "cap": 8, "link": "G3"},
       {"color": "yellow", "cap": 6, "link": "G11"},
@@ -114,7 +117,7 @@
       {"color": "yellow", "cap": 12, "link": "G2"},
       {"color": "cyan", "cap": 12, "link": "G7"},
       {"color": "red", "cap": 6, "link": "G5"},
-      {"color": "red", "cap": 4},
+      {"color": "red", "cap": 4, "key": "K2"},
       {"color": "yellow", "cap": 6},
       {"color": "green", "cap": 12}
     ],
@@ -129,7 +132,7 @@
     ],
     [
       {"color": "blue", "cap": 8, "link": "G6"},
-      {"color": "cyan", "cap": 12, "link": "G10"},
+      {"color": "cyan", "cap": 12, "link": "G10", "hidden": true},
       {"color": "orange", "cap": 8, "link": "G1"},
       {"color": "red", "cap": 4, "link": "G8"},
       {"color": "yellow", "cap": 6, "link": "G9"},

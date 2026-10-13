@@ -85,6 +85,9 @@ function worker(){
     lv.meta = meta(spec);
     const ck = C.checkLevel(JSON.parse(JSON.stringify(lv)));
     if (!ck.balanced || ck.warnings.length) return null;
+    // 4-5 queue lanes with connected buses: plenty of groups, most of them across lanes (tests/lanes.test.js)
+    if ((spec.lanes || 3) >= 4 && spec.blockers && spec.blockers.link){ const G = C.linkGroups(C.normalizeLevel(JSON.parse(JSON.stringify(lv))));
+      if (G.length < 6 || G.filter(x => new Set(x.members.map(m => m.l)).size > 1).length < 3) return null; }
     return lv;
   }
   // quick: a random game still unfinished after 3x the greedy time (at least 600 s) counts as unfinished at once (the
@@ -102,7 +105,7 @@ function worker(){
      milestone, finale and practice levels must land in the band; the others may be easier than it */
   function searchLevel(spec){
     const t0 = Date.now(), b = base(spec), band = BANDS[spec.diff], must = /^(Challenge|Milestone|Finale|Practice)/.test(spec.role);
-    const pass = +(process.env.FUNNEL_PASS || 1), saved = pass > 1 ? savedLevel(spec) : null;
+    const pass = +(process.env.FUNNEL_PASS || 1), saved = pass > 1 && !process.env.FUNNEL_FRESH ? savedLevel(spec) : null;   // FUNNEL_FRESH: never keep the saved one
     const link = spec.blockers && spec.blockers.link, rng = C.mulberry32(spec.n*977 + 13 + (pass - 1)*7919);
     const dist = r => must ? bandDist(r, band) : (r < band[0] ? band[0] - r : 0);
     // a later pass on a level still too easy draws only from the hard end
@@ -234,7 +237,7 @@ function worker(){
     if (g2) out.push(`${g2} connected pair${g2 > 1 ? 's' : ''}`); if (g3) out.push(`${g3} connected triple${g3 > 1 ? 's' : ''}`);
     const tun = lv.ramps.flatMap(r => r.tunnels || []), box = lv.ramps.flatMap(r => r.boxes || []);
     if (tun.length) out.push(tun.map(t => `tunnel (${t.color}, ${t.count})`).join(', '));
-    if (box.length) out.push(`lock & key`);
+    if (box.length) out.push(box.length > 1 ? `${box.length} lock boxes & keys` : `lock & key`);
     return out.join(', ') || '-';
   }
   /* level 1: one ramp, the front two rows red, the back two blue; the red bus first (the tutorial points at it) */

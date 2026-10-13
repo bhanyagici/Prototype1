@@ -51,7 +51,8 @@ const TYPES = {'.html':'text/html', '.js':'text/javascript', '.json':'applicatio
     console.log(`  ${w.step}: ${w.name}: ${w.res}, offers "${w.next}"`);
     if (!w.win || w.next !== (k + 1 < ORDER.length ? 'Next level' : 'Finish')) throw new Error('the pack did not offer the next level');
     if (k === 0) await g.screenshot({path: path.join(ROOT, 'screenshots', 'pack-level-complete.png')});
-    await g.click('#btnNext');
+    // (pressed from the page: a real mouse click on a pack rendering in software WebGL can take 10-30 s or more to land)
+    await g.evaluate(() => document.getElementById('btnNext').click());
   }
   await g.evaluate(() => { __me.advance(0.5); __me.render(); }); await g.waitForTimeout(600);
   if (!await g.evaluate(() => document.getElementById('donePanel').classList.contains('show') && /All levels complete/.test(document.getElementById('donePanel').textContent)))

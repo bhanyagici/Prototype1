@@ -29,7 +29,7 @@
   "lanes": [
     [
       {"color": "green", "cap": 12},
-      {"color": "blue", "cap": 8},
+      {"color": "blue", "cap": 8, "hidden": true},
       {"color": "blue", "cap": 8},
       {"color": "purple", "cap": 8},
       {"color": "purple", "cap": 12},
