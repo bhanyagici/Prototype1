@@ -31,6 +31,34 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
 - [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
 
+## Pause, level timer, round boosters
+
+- **Pause:** the round button in the top-right corner (or <kbd>P</kbd>) pauses the game and
+  opens the pause menu. Paused, the core, every animation and the level timer stand still.
+  The menu has:
+  - **Resume**;
+  - **Restart**;
+  - **Settings**: the settings panel in the showcase, the settings popover elsewhere. The
+    game stays paused, and closing the settings brings the pause menu back;
+  - **Back to menu**, in the showcase only.
+
+  Restart and the settings gear moved from the top bar into this menu. Where older sections
+  below say ⚙, that is now *pause → Settings*. Once a level is won or lost it can no longer
+  be paused.
+- **Level timer:** a pill in the top bar, between the level name and the speed button. It
+  shows the level's own clock in m:ss. It stops while the game is paused or held (popups,
+  stats), stops at the level's end, and starts again at 0:00 on a restart. It counts game
+  time, so at 2x it runs twice as fast, the same clock the stats use for completion times.
+- **Round boosters:** the three booster buttons in the bottom bar are round. They are
+  still placeholders with no effect.
+- **Tested** (`tests/browser.test.js`, *pause, timer, boosters*):
+  - Paused, the game time, the buses and the timer stand still; Resume carries on.
+  - The menu items are right; <kbd>P</kbd> toggles the pause.
+  - Restart sets the timer back to 0:00, and the timer stops at the end of a level.
+  - The top bar order is level name, timer, speed, pause, and the booster buttons are round.
+
+  `tests/showcase.test.js` checks *Back to menu* in the showcase's pause menu.
+
 ## Gaps and jumps
 
 The road can be cut into pieces. Buses jump the gaps.
@@ -1434,11 +1462,11 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
 node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
                               #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
                               #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
-node tests/browser.test.js    # 130 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
+node tests/browser.test.js    # 140 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
                               #   the camera setting, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)
-node tests/showcase.test.js   # 24 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
+node tests/showcase.test.js   # 25 checks: the 32 showcase levels (categories incl. Jumps, labels, greedy wins, the zone, 70% with spirals) and the showcase file from
                               #   file:// at 390x844: menu cards, settings (remembered), play, previous / next, home, stats, offline
 node tests/editor.test.js     # 63 checks: editor shortcuts, selection, copy / paste / duplicate / nudge, context menu, queue lanes,
                               #   Add bus, cross-lane connections, the exit tunnel, level card, unsaved dot, drafts, empty states

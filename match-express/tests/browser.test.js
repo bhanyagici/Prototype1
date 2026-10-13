@@ -70,13 +70,13 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       // 2x also speeds animation timers (a parachute's flight is keyed to game time)
       const anim = await p.evaluate(() => { __me.setSpeed(2); const v = __me.views[0], t0 = __me.game.t; for (let i=0;i<60;i++) __me.pump(1/60); const d = __me.game.t - t0; __me.setSpeed(1); return d; });
       chk(Math.abs(anim - 2) < 0.05, 'one real second at 2x is two seconds of game and animation time', anim.toFixed(2));
-      // mute from the settings button, remembered
-      await p.click('#btnSettings'); await sleep(400);
-      chk(await p.evaluate(() => document.getElementById('settings').classList.contains('open')), 'the settings button opens the settings panel');
+      // mute from the settings (in the pause menu), remembered
+      await p.click('#btnPause'); await p.click('#pmSettings'); await sleep(400);
+      chk(await p.evaluate(() => document.getElementById('settings').classList.contains('open')), 'Settings in the pause menu opens the settings panel');
       await p.click('#btnMute');
       chk(await p.evaluate(() => __me.muted === true && document.getElementById('btnMute').textContent === 'Sound: Off'), 'the mute toggle in settings mutes the game');
       chk(await p.evaluate(() => JSON.parse(localStorage.getItem('match-express:prefs')).muted === true), 'mute is remembered');
-      await p.click('#btnMute');
+      await p.click('#btnMute'); await p.evaluate(() => { document.getElementById('settings').classList.remove('open'); __me.closePause(); });
       // the game never loads editor levels: old "current level", saved slots and a level order are all ignored
       await p.evaluate(() => { const lv = JSON.parse(JSON.stringify(__me.C.LEVEL_DATA)); lv.name = 'Saved Test'; localStorage.setItem('match-express:current-level', JSON.stringify(lv));
         localStorage.setItem('match-express:level-slots', JSON.stringify({x:{name:'Saved Test', level:Object.assign(lv, {id:'x'})}})); localStorage.setItem('match-express:level-order', '["x"]'); });
@@ -177,7 +177,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
       await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
       chk(await p.evaluate(() => __me.move === 'rigid'), 'buses are Rigid by default');
-      await p.click('#btnSettings'); await p.click('#btnMove');
+      await p.click('#btnPause'); await p.click('#pmSettings'); await p.click('#btnMove'); await p.evaluate(() => { document.getElementById('settings').classList.remove('open'); __me.closePause(); });
       chk(await p.evaluate(() => __me.move === 'jelly' && window.MESync.loadPrefs().move === 'jelly' && /Jelly/.test(document.getElementById('btnMove').textContent)),
         'the settings switch them to Jelly (remembered)');
       // a 12-seat bus driven along the whole road (nobody boards it), through the spiral, out of the exit tunnel and back
@@ -424,6 +424,41 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       chk(d < 0.1, 'editor: a road edit keeps the gap where it is on the ground', d.toFixed(3));
       await ed.keyboard.press('Escape'); [mx, my] = await toScreen(await ed.evaluate(() => __ed.level.road.gaps[0].at)); await ed.mouse.click(mx, my); await ed.keyboard.press('Delete');
       chk(await ed.evaluate(() => !(__ed.level.road.gaps || []).length), 'editor: Delete removes the selected gap');
+      await ctx.close(); }
+
+    /* ---------------- pause menu, level timer, round boosters ---------------- */
+    console.log('pause, timer, boosters');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const secs = txt => { const m = /^(\d+):(\d\d)$/.exec(txt || ''); return m ? +m[1]*60 + +m[2] : -1; };
+      const a = await p.evaluate(() => { if (__me.intro) __me.closeIntro(); __me.freeze(false); __me.tapLane(0); for (let i = 0; i < 150; i++) __me.pump(1/60);
+        return {t:__me.game.t, txt:__me.timerText}; });
+      await p.click('#btnPause');
+      const b = await p.evaluate(() => { const t0 = __me.game.t, txt0 = __me.timerText, s0 = JSON.stringify(__me.views.map(v => [v.p.x, v.p.z, v.bob])); for (let i = 0; i < 120; i++) __me.pump(1/60);
+        return {paused:__me.paused, panel:document.getElementById('pausePanel').classList.contains('show'), dt:__me.game.t - t0, still:JSON.stringify(__me.views.map(v => [v.p.x, v.p.z, v.bob])) === s0,
+          txt:__me.timerText, txt0, items:[...document.querySelectorAll('#pausePanel button')].filter(x => getComputedStyle(x).display !== 'none').map(x => x.textContent)}; });
+      chk(b.paused && b.panel && b.dt === 0 && b.still && b.txt === b.txt0, 'the pause button stops the game, every animation and the level timer, and opens the pause menu', JSON.stringify(b));
+      chk(b.items.join(',') === 'Resume,Restart,Settings', 'the pause menu: Resume, Restart, Settings (and Back to menu in the showcase)', b.items.join(','));
+      await p.click('#pmResume');
+      const c = await p.evaluate(() => { const t0 = __me.game.t; for (let i = 0; i < 60; i++) __me.pump(1/60); return {paused:__me.paused, dt:__me.game.t - t0, t:__me.game.t, txt:__me.timerText}; });
+      chk(!c.paused && Math.abs(c.dt - 1) < 0.05, 'Resume carries on where it stopped', JSON.stringify(c));
+      chk(secs(a.txt) === Math.floor(a.t) && secs(c.txt) === Math.floor(c.t) && secs(c.txt) > secs(a.txt), 'the level timer counts the level\'s seconds (m:ss)', `${a.txt} -> ${c.txt}`);
+      await p.keyboard.press('p'); const k1 = await p.evaluate(() => __me.paused); await p.keyboard.press('p'); const k2 = await p.evaluate(() => __me.paused);
+      chk(k1 && !k2, 'P pauses and resumes');
+      await p.click('#btnPause'); await p.click('#pmRestart');
+      const d = await p.evaluate(() => ({paused:__me.paused, t:__me.game.t, counter:__me.game.counter, txt:__me.timerText}));
+      chk(!d.paused && d.t < 1 && d.counter === 0 && d.txt === '0:00', 'Restart in the pause menu starts the level again (the timer at 0:00)', JSON.stringify(d));
+      // the end of a level stops the timer; no pause once the level is over
+      const e = await p.evaluate(() => { const g = __me.game; for (let i = 0; i < 3000 && !g.result; i++){ const a = window.MECore.greedyPick(g); if (a) __me.tap(a); __me.advance(0.2); }
+        const t1 = __me.timerText; for (let i = 0; i < 180; i++) __me.pump(1/60); return {res:g.result, t1, t2:__me.timerText, end:Math.floor(g.t)}; });
+      await p.click('#btnPause', {force:true}); const ep = await p.evaluate(() => __me.paused);
+      chk(e.res === 'win' && e.t1 === e.t2 && !ep, 'at the end of the level the timer stops, and the game can no longer be paused', JSON.stringify(e));
+      // the top bar: the timer between the level name and the speed and pause buttons; round booster buttons
+      const lay = await p.evaluate(() => { const r = id => document.getElementById(id).getBoundingClientRect(), T = r('timer'), P = r('levelPill'), Sp = r('btnSpeed'), Pa = r('btnPause');
+        const B = [...document.querySelectorAll('.boost')].map(b => { const cs = getComputedStyle(b); return [b.offsetWidth, b.offsetHeight, cs.borderTopLeftRadius]; });
+        return {row:T.top < P.bottom && T.bottom > P.top, order:P.right <= T.left && T.right <= Sp.left && Sp.right <= Pa.left + 3, B, x:[P.left, P.right, T.left, T.right, Sp.left, Sp.right, Pa.left, Pa.right].map(Math.round)}; });
+      chk(lay.row && lay.order, 'the level timer sits in the top bar: level name, timer, speed, pause', JSON.stringify(lay));
+      chk(lay.B.length === 3 && lay.B.every(([w, h, br]) => w === h && br === '50%'), 'the booster buttons are round', JSON.stringify(lay.B));
       await ctx.close(); }
 
     /* ---------------- editor: layout, preview, independence ---------------- */

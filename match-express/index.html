@@ -31,6 +31,13 @@
     animation:drop .5s cubic-bezier(.34,1.6,.5,1) both}
   .rbtn svg{position:relative;width:50px;height:50px;filter:drop-shadow(0 4px 0 rgba(10,60,140,.85))}
   #btnRestart{right:232px;animation-delay:.05s} #btnSpeed{right:132px;animation-delay:.1s} #btnSettings{right:32px;animation-delay:.15s}
+  /* the top bar: restart and settings live in the pause menu; the pause button takes the corner and the level timer sits
+     left of the speed button */
+  #btnRestart,#btnSettings{display:none} #btnPause{right:32px;animation-delay:.15s}
+  #timer{right:242px;top:44px;width:150px;height:74px;box-sizing:border-box;border-radius:37px;display:flex;align-items:center;justify-content:center;gap:8px;
+    color:#fff;font-size:36px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:.5px;background:rgba(16,30,64,.62);border:5px solid rgba(255,207,58,.9);
+    box-shadow:0 6px 0 rgba(150,100,10,.8),0 10px 16px rgba(0,0,0,.25);text-shadow:0 3px 0 rgba(0,0,0,.35);pointer-events:none;animation:drop .5s cubic-bezier(.34,1.6,.5,1) .12s both}
+  #timer svg{width:30px;height:30px;flex:none} #timer.paused{border-color:#fff;background:rgba(16,30,64,.82)} #timer.paused b{opacity:.55}
   #btnSpeed{font-size:38px;font-weight:900;text-shadow:0 4px 0 #0c4a9c,0 0 2px #0c4a9c;letter-spacing:-1px}
   #btnSpeed.long{font-size:27px;letter-spacing:-1.5px}
   #btnSpeed.on{background:radial-gradient(circle at 50% 30%,#ffe98e,#ffb21f 58%,#ea8400);text-shadow:0 4px 0 #a35a00;border-color:#fff4c2;
@@ -52,12 +59,12 @@
   #boosters{box-sizing:border-box;left:0;right:0;bottom:0;height:136px;display:flex;align-items:center;justify-content:center;gap:64px;z-index:6;
     background:linear-gradient(#34477c,#26355f 55%,#1e2a4d);border-top:6px solid #ffcf3a;border-radius:44px 44px 0 0;
     box-shadow:0 -10px 24px rgba(0,0,0,.22),inset 0 6px 0 rgba(255,255,255,.12)}
-  .boost{position:relative;width:112px;height:104px;border-radius:32px;margin-top:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  .boost{position:relative;width:112px;height:112px;border-radius:50%;margin-top:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;
     background:linear-gradient(#7acbff,#2584ee 58%,#1a68cf);border:7px solid #ffcf3a;
     box-shadow:0 8px 0 #c48410,0 12px 18px rgba(0,0,0,.3),inset 0 -7px 0 rgba(8,52,128,.38),inset 0 4px 0 rgba(255,255,255,.4);filter:saturate(.72) brightness(.97)}
-  .boost::before{content:'';position:absolute;left:12%;right:12%;top:7%;height:36%;border-radius:22px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.05));pointer-events:none}
+  .boost::before{content:'';position:absolute;left:16%;right:16%;top:7%;height:36%;border-radius:999px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.05));pointer-events:none}
   .boost svg{position:relative;width:60px;height:60px;filter:drop-shadow(0 4px 0 rgba(10,60,140,.85))}
-  .boost i{position:absolute;right:-14px;top:-14px;width:44px;height:44px;border-radius:50%;background:#e9edf5;border:5px solid #ffcf3a;color:#55617c;
+  .boost i{position:absolute;right:-10px;top:-10px;width:44px;height:44px;border-radius:50%;background:#e9edf5;border:5px solid #ffcf3a;color:#55617c;
     font:900 26px/34px inherit;font-style:normal;text-align:center;box-shadow:0 4px 0 #c48410}
   .boost.wob{animation:wob .45s cubic-bezier(.3,1.6,.5,1)}
   @keyframes wob{0%{transform:rotate(0)}25%{transform:rotate(-9deg) scale(.94)}55%{transform:rotate(7deg)}100%{transform:none}}
@@ -87,6 +94,11 @@
   .card button{font:inherit;font-size:50px;font-weight:900;color:#fff;padding:20px 80px;border-radius:40px;
     background:linear-gradient(#7be35b,#3fae2a);border:6px solid #fff;box-shadow:0 8px 0 #23801a;cursor:pointer}
   .card button + button{margin-top:22px}
+  #pausePanel{z-index:40} #pausePanel .card{width:560px;padding:44px 40px 50px}
+  #pausePanel button{display:block;width:100%;box-sizing:border-box;padding:18px 20px;font-size:44px}
+  #pausePanel button + button{margin-top:20px}
+  #pmRestart,#pmSettings{background:linear-gradient(#5ec1ff,#1f7ae6)!important;box-shadow:0 8px 0 #1559b0!important}
+  #pmMenu{background:linear-gradient(#ffb74d,#f08a12)!important;box-shadow:0 8px 0 #b05f00!important}
   #btnNext + #btnReplay{font-size:34px;padding:12px 50px;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 6px 0 #1559b0}
   #levelStep{left:30px;top:124px;padding:4px 16px;border-radius:16px;background:rgba(16,24,38,.55);color:#fff;font-size:26px;font-weight:800;display:none}
   /* ---- debug ---- */
@@ -99,7 +111,8 @@
   #app.nav .rbtn{box-sizing:border-box;width:84px;height:84px;top:36px;z-index:21}   /* above the win / fail / done panels */
   #app.nav #levelPill{z-index:21} #introPanel,#statsPanel{z-index:30}
   #app.nav .rbtn svg{width:44px;height:44px}
-  #app.nav #btnSettings{right:20px} #app.nav #btnSpeed{right:110px;font-size:34px} #app.nav #btnRestart{right:200px} #app.nav #btnStats{right:290px}
+  #app.nav #btnSettings{right:20px} #app.nav #btnSpeed{right:110px;font-size:34px} #app.nav #btnRestart{right:200px} #app.nav #btnStats{right:298px}
+  #app.nav #btnPause{right:20px} #app.nav #timer{right:198px;top:42px;width:96px;height:72px;font-size:30px;padding:0 4px} #app.nav #timer svg{display:none}
   #app.nav #btnPrev{left:20px} #app.nav #btnNextLv{left:430px}
   #app.nav #levelPill{box-sizing:border-box;left:112px;width:310px;max-width:310px;height:84px;padding:0 14px;justify-content:center;font-size:40px}
   .rbtn.dis{filter:grayscale(1) brightness(.85);opacity:.55;pointer-events:none}
@@ -128,7 +141,8 @@
   #app.sc .rbtn svg{width:40px;height:40px}
   #app.sc #btnHome{left:18px} #app.sc #btnPrev{left:102px;width:64px;height:64px;top:45px} #app.sc #btnNextLv{left:460px;width:64px;height:64px;top:45px}
   #app.sc #levelPill{box-sizing:border-box;left:172px;width:282px;max-width:282px;height:78px;top:38px;padding:0 12px;justify-content:center;font-size:36px;z-index:21}
-  #app.sc #btnStats{right:290px} #app.sc #btnRestart{right:200px} #app.sc #btnSpeed{right:110px;font-size:30px} #app.sc #btnSettings{right:20px}
+  #app.sc #btnStats{right:298px} #app.sc #btnRestart{right:200px} #app.sc #btnSpeed{right:110px;font-size:30px} #app.sc #btnSettings{right:20px}
+  #app.sc #btnPause{right:20px} #app.sc #timer{right:198px;top:42px;width:96px;height:70px;font-size:30px;padding:0 4px} #app.sc #timer svg{display:none}
   #app.sc #btnSpeed.long{font-size:23px}
   #app:not(.sc) #btnHome{display:none}
   #menuPanel{z-index:40;display:none;flex-direction:column;align-items:stretch;justify-content:flex-start;
@@ -214,6 +228,8 @@
   <div class="ui rbtn spring nav" id="btnStats" title="Stats"><svg viewBox="0 0 48 48"><rect x="7" y="25" width="9" height="16" rx="2.5" fill="#fff"/><rect x="20" y="15" width="9" height="26" rx="2.5" fill="#fff"/><rect x="33" y="7" width="9" height="34" rx="2.5" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnRestart" title="Restart"><svg viewBox="0 0 48 48"><path d="M24 9a15 15 0 1 1-13.6 8.7" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M5 9l6.5 10.5L20 11z" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnSpeed" title="Game speed">1x</div>
+  <div class="ui" id="timer" title="Level time"><svg viewBox="0 0 48 48"><circle cx="24" cy="26" r="17" fill="none" stroke="#fff" stroke-width="5"/><path d="M24 17v10l6 4" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 5h10" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><b>0:00</b></div>
+  <div class="ui rbtn spring" id="btnPause" title="Pause (P)"><svg viewBox="0 0 48 48"><rect x="12" y="9" width="9" height="30" rx="3" fill="#fff"/><rect x="27" y="9" width="9" height="30" rx="3" fill="#fff"/></svg></div>
   <div class="ui rbtn spring" id="btnSettings" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div>
   <div class="ui" id="settings">
     <button id="btnMute" class="spring">Sound: On</button>
@@ -251,6 +267,9 @@
     <div class="srow"><span>Speed</span><div class="seg" id="segSpeed"></div></div>
     <div class="srow"><span>Sound</span><div class="seg" id="segSound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
     <div class="row"><button id="btnSetStats" class="spring">Stats</button><button id="btnSetClose" class="spring">Done</button></div></div></div>
+  <div class="panel" id="pausePanel"><div class="card"><h1>Paused</h1>
+    <button id="pmResume" class="spring">Resume</button><button id="pmRestart" class="spring">Restart</button>
+    <button id="pmSettings" class="spring">Settings</button><button id="pmMenu" class="spring">Back to menu</button></div></div>
   <div class="panel" id="failPanel"><div class="card fail"><h1>Out of Space</h1><p>A returning bus had nowhere to park.</p><button id="btnRetry" class="spring">Retry</button></div></div>
 </div>
 
@@ -1732,6 +1751,7 @@ function updateBlockers(t){
   BLK.qIM.count = BLK.nq; BLK.qIM.instanceMatrix.needsUpdate = true;
 }
 function resetGame(){
+  if (pauseOpen) closePause();
   views.forEach(v => { removeChute(v); v.dispose(); });
   stopHum();
   game = C.createGame(LEVEL);
@@ -2403,8 +2423,8 @@ const INTRO = {
 };
 const HINTS = {triple: 'Buses can be linked in <b>threes</b> too: all three leave together.'};
 const SEEN_KEY = 'me-intro-seen';
-let introOpen = false, hintTimer = 0, introKind = null;
-const held = () => introOpen || $('statsPanel').classList.contains('show');
+let introOpen = false, hintTimer = 0, introKind = null, pauseOpen = false;
+const held = () => introOpen || pauseOpen || $('statsPanel').classList.contains('show');
 function levelIntro(){
   const m = LEVEL.meta || {};
   clearTimeout(hintTimer); $('hint').classList.remove('show');
@@ -2556,7 +2576,37 @@ addEventListener('keydown', e => {
   if (k === 'd'){ DEBUG = !DEBUG; WD.dbgGroup.visible = DEBUG; $('dbg').style.display = DEBUG ? 'block' : 'none'; }
   if (k === 'b') setBot(!botOn);
   if (k === 'r') resetGame();
+  if (k === 'p' || (k === 'escape' && pauseOpen)) pauseOpen ? closePause() : openPause();
 });
+/* ---- pause: the pause button (or P) holds the game - the core, the animations and the level timer - and opens a menu:
+   resume, restart, settings and (in the showcase) back to the menu.  Settings opened from it keep the game paused;
+   when they close the pause menu is back ---- */
+function canPause(){ return !!game && !game.result && !introOpen && !menuOpen && !$('statsPanel').classList.contains('show'); }
+function openPause(){
+  if (pauseOpen || !canPause()) return false;
+  pauseOpen = true; $('settings').classList.remove('open'); $('pmMenu').style.display = SC ? '' : 'none';
+  $('pausePanel').classList.add('show'); updateTimer(); return true;
+}
+function closePause(){ pauseOpen = false; $('pausePanel').classList.remove('show'); updateTimer(); }
+function pauseWatch(){                              // settings opened from the pause menu have closed: back to the menu
+  if (pauseOpen && !$('pausePanel').classList.contains('show') && !$('settings').classList.contains('open') && !$('setPanel').classList.contains('show') && !$('statsPanel').classList.contains('show'))
+    $('pausePanel').classList.add('show');
+}
+$('btnPause').addEventListener('click', () => { audio(); pauseOpen ? closePause() : openPause(); });
+$('pmResume').addEventListener('click', () => { audio(); closePause(); });
+$('pmRestart').addEventListener('click', () => { audio(); closePause(); cancelAuto(); resetGame(); });
+$('pmSettings').addEventListener('click', () => { audio(); $('pausePanel').classList.remove('show'); if (SC) openSettings(); else $('settings').classList.add('open'); });
+$('pmMenu').addEventListener('click', () => { audio(); closePause(); if (SC) openMenu(); });
+/* the level timer: the game's own clock (it stops while the game is paused or held, and at the level's end); m:ss */
+let timerShown = '', timerGame = null, timerEnd = null;
+function updateTimer(){
+  if (!game) return;
+  if (timerGame !== game){ timerGame = game; timerEnd = null; }
+  if (game.result && timerEnd == null) timerEnd = game.t;
+  const t = Math.floor(timerEnd != null ? timerEnd : game.t), txt = Math.floor(t/60) + ':' + String(t % 60).padStart(2, '0'), el = $('timer');
+  el.classList.toggle('paused', pauseOpen);
+  if (txt !== timerShown){ timerShown = txt; el.querySelector('b').textContent = txt; }
+}
 function placeCounter(){
   const [cx, cz] = C.dispPoint((L ? L.Y.X_SIDE : C.X_SIDE) + 1.5, 2.5), [, y] = screenOf(cx, 0.9, cz);
   Object.assign($('counter').style, {left: (L && L.TUNNEL.side < 0 ? 66 : DW - 66) + 'px', top: y + 'px'});
@@ -2579,6 +2629,7 @@ function pump(dt){                                    // advance by `dt` real se
   const gdt = dt*effectiveScale();
   if (!frozen && !held()){ acc += gdt; let n = 0; while (acc >= FIXED && n < 20){ tick(); acc -= FIXED; n++; } if (n === 20) acc = 0; }
   updateScene(frozen || held() ? 0 : gdt);
+  updateTimer(); pauseWatch();
   updateHum();
 }
 function frame(now){
@@ -2625,7 +2676,7 @@ function buildMenu(){
   }
 }
 function openMenu(){
-  cancelAuto(); ['winPanel', 'failPanel', 'donePanel', 'statsPanel', 'setPanel'].forEach(id => $(id).classList.remove('show'));
+  cancelAuto(); if (pauseOpen) closePause(); ['winPanel', 'failPanel', 'donePanel', 'statsPanel', 'setPanel'].forEach(id => $(id).classList.remove('show'));
   buildMenu(); $('menuPanel').classList.add('show'); menuOpen = true;
   const cur = $('menuList').querySelector('.mcard.last'); if (cur) cur.scrollIntoView({block:'center'});
 }
@@ -2668,7 +2719,7 @@ window.__me = {
   C, get game(){ return game; }, get LEVEL(){ return LEVEL; }, get levelSource(){ return levelSource; }, get layout(){ return L; },
   get timeScale(){ return timeScale; }, get muted(){ return muted; }, get views(){ return views; }, get crash(){ return crash; },
   get serial(){ return levelSerial; }, get cheering(){ return cheer.size; }, cheerSet(){ return [...cheer.keys()]; }, EXIT, ROAD_HALF:C.ROAD_HALF, get camera(){ return camera; }, get view(){ return view; }, setView, scene, renderer, get CAM(){ return CAM; }, applyCamera, pump, setSpeed, setMuted, loadLevel,
-  advance(sec){ const n = Math.round(sec/FIXED); for (let i=0;i<n;i++){ tick(); if (i % 4 === 0) updateScene(FIXED*4); } updateScene(FIXED); },
+  advance(sec){ const n = Math.round(sec/FIXED); for (let i=0;i<n;i++){ tick(); if (i % 4 === 0) updateScene(FIXED*4); } updateScene(FIXED); updateTimer(); },
   tapLane(l){ return C.tapLane(game, l); }, tapBay(k){ return C.tapBay(game, k); }, pick, screenOf, busScreenBox,
   get playIdx(){ return playIdx; }, get playlist(){ return PLAYLIST; }, get embed(){ return EMBED; }, nextLevel, goLevel,
   /* a player's tap (the tutorial's filter applies, as for the pointer); tutorial, popup and stats state */
@@ -2677,6 +2728,7 @@ window.__me = {
   get intro(){ return introOpen ? introKind : null; }, closeIntro, showIntro, get held(){ return held(); },
   stats(){ return JSON.parse(JSON.stringify(STATS)); }, statsCsv, openStats, get nav(){ return NAV; }, AUTO_MS, get menIM(){ return menIM; },
   get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; },
+  get paused(){ return pauseOpen; }, openPause, closePause, get timerText(){ return timerShown; },
   groundAt(x, z){ const rc = new THREE.Raycaster(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0)); rc.camera = camera; const hit = rc.intersectObject(world, true)
     .find(h => { if (h.object.isSprite) return false; for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
     return hit ? hit.point.y : null; },   // the height of the first surface straight down at (x, z) (buses and stickmen aside) SPEEDS,

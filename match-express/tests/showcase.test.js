@@ -94,11 +94,15 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   await p.click('#btnNextLv', {force:true}); const e2 = await p.evaluate(() => __me.LEVEL.name);
   chk(e1.name === '5 lanes' && e1.next && e2 === '5 lanes', 'next stops at the end of the category', JSON.stringify(e1));
   { const before = await p.evaluate(() => { __me.tapLane(0); __me.pump(0.5); return __me.game.counter; });
-    await p.click('#btnRestart'); const after = await p.evaluate(() => [__me.game.counter, __me.game.t]);
-    chk(before === 1 && after[0] === 0 && after[1] < 0.5, 'restart starts the level again', `${before} -> ${after[0]}`); }
+    await p.click('#btnPause'); await p.click('#pmRestart'); const after = await p.evaluate(() => [__me.game.counter, __me.game.t]);
+    chk(before === 1 && after[0] === 0 && after[1] < 0.5, 'Restart in the pause menu starts the level again', `${before} -> ${after[0]}`); }
+  { await p.click('#btnPause');
+    const pm = await p.evaluate(() => ({paused:__me.paused, items:[...document.querySelectorAll('#pausePanel button')].filter(x => getComputedStyle(x).display !== 'none').map(x => x.textContent)}));
+    chk(pm.paused && pm.items.join(',') === 'Resume,Restart,Settings,Back to menu', 'the pause menu in the showcase: Resume, Restart, Settings, Back to menu', pm.items.join(','));
+    await p.click('#pmResume'); }
   console.log('settings and stats in play, back to the menu');
-  await p.click('#btnSettings');
-  chk(await p.evaluate(() => document.getElementById('setPanel').classList.contains('show') && !document.getElementById('settings').classList.contains('open')), 'the gear in play opens the same settings panel');
+  await p.click('#btnPause'); await p.click('#pmSettings');
+  chk(await p.evaluate(() => document.getElementById('setPanel').classList.contains('show') && !document.getElementById('settings').classList.contains('open')), 'Settings in the pause menu opens the same settings panel');
   await p.click('#segMove button[data-v="rigid"]'); await p.click('#segSpeed button[data-v="1"]');
   chk(await p.evaluate(() => __me.move === 'rigid' && __me.timeScale === 1 && document.getElementById('btnSpeed').textContent === '1x'), 'changes apply at once (the speed button shows the speed)');
   await p.click('#btnSetStats');
@@ -109,9 +113,10 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   { const r = await p.evaluate(() => { __me.openMenu(); __me.goLevel(__me.playlist.findIndex(l => l.id === 'basics-easy')); const g = __me.game;   // from the menu: any category
       for (let i = 0; i < 2000 && !g.result; i++){ const a = window.MECore.greedyPick(g); if (a) __me.tap(a); __me.advance(0.4); } __me.advance(4); return {res:g.result, name:__me.LEVEL.name, s:__me.stats()['basics-easy']}; });
     chk(r.res === 'win' && r.s && r.s.time > 0 && r.s.wins === 1 && r.name === 'Easy', 'a win records the completion time', JSON.stringify(r)); }
-  await p.click('#btnHome');
+  await p.evaluate(() => { __me.openMenu(); __me.goLevel(__me.playlist.findIndex(l => l.id === 'road-hairpin')); });   // (from the menu: any category)
+  await p.click('#btnPause'); await p.click('#pmMenu');
   const back = await p.evaluate(() => ({menu:document.getElementById('menuPanel').classList.contains('show'), last:(document.querySelector('#menuList .mcard.last') || {}).dataset}));
-  chk(back.menu && back.last && back.last.id === 'road-hairpin', 'home goes back to the menu, the last card picked is marked', JSON.stringify(back));
+  chk(back.menu && back.last && back.last.id === 'road-hairpin', 'Back to menu (pause menu) goes back to the menu, the last card picked is marked', JSON.stringify(back));
   chk(!errs.length && !net.length, 'no page errors, nothing fetched from the network', errs.concat(net).slice(0, 3).join(' | '));
   await browser.close(); done();
 })().catch(e => { chk(false, 'exception: ' + e.message.split('\n')[0]); done(); });
