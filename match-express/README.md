@@ -28,8 +28,59 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
 - [a 12-seat bus in Jelly mode bending in a spiral](screenshots/jelly-spiral-390.png);
 - a bus [driving into the dark exit tunnel](screenshots/tunnel-exit-390.png) and [coming out of the return tunnel](screenshots/tunnel-return-390.png) (close-ups);
 - [a ramp on a tight curve: a regular grid of stickmen, a small curved apron to the road edge](screenshots/ramp-curve-390.png) (close-up);
-- [a parachute carrying a full bus down over the board's edge](screenshots/parachute-edge-390.png);
-- [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png).
+- [a full bus under its parachute, out past the board's edge](screenshots/parachute-edge-390.png);
+- [a 5-lane level with the booster bar](screenshots/five-lanes-bar-390.png);
+- [stickmen at 1.3x](screenshots/stickmen-1.3-390.png), and [close up](screenshots/stickmen-1.3-close-390.png);
+- [connected buses side by side in the queue, the leading one a little ahead](screenshots/connected-queue-390.png) (close-up);
+- [a connected group parachuting together](screenshots/connected-parachute-390.png), and [close up](screenshots/connected-parachute-close-390.png);
+- the Bridge terrain: [an S-curve](screenshots/bridge-390.png) and [a double spiral](screenshots/bridge-spiral-390.png);
+- [a bus in the air over a gap, between its take-off and landing ramps](screenshots/gap-jump-390.png) (close-up), and
+  [the whole level](screenshots/gap-jump-wide-390.png);
+- [the pause menu](screenshots/pause-menu-390.png);
+- [the camera zoomed out to a 45° field of view](screenshots/camera-zoom-45-390.png);
+- [the funnel's numbered tiles in the menu](screenshots/showcase-funnel-390.png);
+- the editor inside the showcase: [its level picker](screenshots/editor-picker-390.png), [the editor on a phone](screenshots/editor-in-showcase-390.png)
+  (laid out 1280 px wide and scaled down to fit), [the editor at 1440 × 900](screenshots/editor-in-showcase.png) after a save
+  (`f30_1`), and [My Levels in the menu](screenshots/my-levels-390.png).
+
+## Tests, screenshots and builds
+
+- **Every suite passes** (the commands are under *Verification*):
+
+  | suite | checks | | suite | checks |
+  |---|---|---|---|---|
+  | rules | 37 | | gaps | 70 |
+  | blockers | 44 | | browser | 148 |
+  | layout | sweep OK | | funnel | 46 |
+  | lanes | 59 | | showcase | 38 |
+  | shared | 74 | | editor | 63 |
+  | camera | 10 | | standalone | 18 |
+  | ramps | 21 | | | |
+
+- **New this round:** `tests/gaps.test.js`; in `tests/browser.test.js` the stickmen size, connected buses
+  and parachutes, terrain, jumps, pause / timer / boosters and camera zoom blocks; in `tests/funnel.test.js`
+  the blocker intro levels and the blockers after 20; in `tests/showcase.test.js` the funnel category and the
+  editor with My Levels; in `tests/blockers.test.js` one win event per game. `tests/ramps.test.js` checks
+  every level's stickmen for overlaps.
+- **Fixed while testing and taking the screenshots:**
+  - Zoomed out (the camera zoom), the view could run past the ground's edge, and the queued buses past the
+    queue tunnel showed as dark shapes. The ground below now goes on, plain, past its detailed patch, and a
+    queued bus wholly inside the queue tunnel is hidden. Two browser checks cover it (both cameras at the
+    widest zoom).
+  - The editor inside the showcase on a phone is laid out 1280 px wide and scaled down to fit, instead of
+    being cut off.
+  - The editor keeps the middle of its map view in the middle when its window changes size (before, the
+    road could end up off the view until *Fit view*).
+  - My Levels: the card's Edit / Export / Delete buttons wrap to fit the card.
+  - The browser test's tool panel check now knows the *Cut road* tool (G).
+- **Screenshots** (390 × 844 unless noted, `node tools/shoot-showcase.js`): the list is at the top of this
+  file. Since Phase 2 a parachuting bus glides off the screen sideways while still above the board, so the
+  parachute shot now shows a bus out past the board's edge rather than below it.
+- **Card pictures:** all 32 showcase thumbnails were taken again (`node tools/shoot-showcase-thumbs.js`); 27
+  changed (larger stickmen), the 5 *Jumps* ones were already current.
+- **Builds:** every single file in `dist/` was rebuilt (`build-standalone`, `export-demo-pack`, `build-funnel`,
+  `build-showcase`), and the level packs `dist/all-levels.json` and `dist/funnel-40.json` were written again
+  (`export-levels`).
 
 ## Camera zoom
 
@@ -48,6 +99,8 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   - It is the same single-file editor as `dist/match-express-editor.html`, carried inside
     the showcase as base64. It has every editor feature, including the cut-road tool, the
     stickmen size and the phone preview. It makes the showcase file about 4.8 MB (2.1 MB without it).
+  - It is laid out for a desktop window. In a narrower one (a phone) it is laid out 1280 px wide and scaled down
+    to the window's width, so every part of it stays on the screen, small.
   - *Showcase* (top left) goes back to the menu. *File → Open a showcase level…*
     (<kbd>Ctrl O</kbd>) brings the list back.
 - **The originals never change.** *Save* (<kbd>Ctrl S</kbd>) stores a copy under the next
@@ -565,6 +618,9 @@ the bottom of the screen):**
   - **Only the 3D scene zooms.** The top bar and the booster bar stay as they are; the
     counter sign stays beside the yard as it moves. Taps go through the zoomed camera, and
     the levels and rules are unchanged.
+  - **Zoomed out**, the ground below goes on, plain, past its detailed patch (so the view never runs off
+    the world), and the queued buses wholly inside the queue tunnel are hidden (they are dark there anyway;
+    zoomed out, the camera would see them past the tunnel's far end).
 - **The same screen zones in both views:**
   - The orthographic camera is sized and centred so the target zone's ground spans the
     same screen rows, 7% to 61% of the height (z -23.184 to -0.489 on y = 0).
@@ -1589,7 +1645,7 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
 node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
                               #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
                               #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
-node tests/browser.test.js    # 146 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
+node tests/browser.test.js    # 148 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
                               #   the camera setting and its zoom, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

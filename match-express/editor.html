@@ -513,7 +513,11 @@ function fitView(){
   const w = cv.clientWidth, h = cv.clientHeight, X0 = Math.min(x0, -x1) - 1.4, X1 = -X0, Z0 = z0 - 2.2, Z1 = 6.2;
   VIEW.s = Math.min(w/(X1 - X0), h/(Z1 - Z0)); VIEW.ox = w/2 - (X0 + X1)/2*VIEW.s; VIEW.oy = h/2 - (Z0 + Z1)/2*VIEW.s; VIEW.fitted = true;
 }
-function resize(){ const r = devicePixelRatio || 1; cv.width = cv.clientWidth*r; cv.height = cv.clientHeight*r; if (!VIEW.fitted && L) fitView(); draw(); }
+// a new size keeps the middle of the view in the middle (a hidden canvas, size 0, changes nothing)
+let cvW = 0, cvH = 0;
+function resize(){ const r = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  if (cvW && VIEW.fitted){ VIEW.ox += (w - cvW)/2; VIEW.oy += (h - cvH)/2; } cvW = w; cvH = h;
+  cv.width = w*r; cv.height = h*r; if (!VIEW.fitted && L) fitView(); draw(); }
 new ResizeObserver(resize).observe(cv);
 const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
 const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];

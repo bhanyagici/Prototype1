@@ -484,7 +484,13 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
       await slide(50); await p.evaluate(() => { __me.setView('persp'); __me.loadLevel(JSON.parse(JSON.stringify(window.MECore.PRESETS['crowded-rush'])), 'export'); });
       const f = await st(); await p.reload(); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000}); const g = await st();
       chk(f.pfov === 50 && g.fov === 50 && g.pfov === 50 && g.saved === 50, 'the zoom applies to every level and is remembered with the settings', `${f.pfov}, after a reload ${g.pfov}`);
-      await p.evaluate(() => __me.setZoom(30, true));
+      // zoomed all the way out, in both cameras: the ground fills the view, and no queued bus shows past the queue tunnel
+      const far = await p.evaluate(() => ['persp', 'ortho'].map(m => { __me.setView(m); __me.setZoom(60); for (let i = 0; i < 6; i++) __me.pump(1/60);
+        const lanes = __me.views.filter(v => v.b.state === 'lane' && v.root.visible), past = lanes.filter(v => v.p.z - v.b.len*v.root.scale.x/2 > __me.queueTunnelZ + 0.06).length;
+        return {m, miss:__me.viewMisses(9), lanes:lanes.length, past}; }));
+      chk(far.every(r => r.miss === 0), 'zoomed out to 60° (or the same orthographic size) the ground fills the view: no edge of the world in sight', JSON.stringify(far));
+      chk(far.every(r => r.lanes > 0 && r.past === 0), 'zoomed out, no queued bus shows past the queue tunnel', JSON.stringify(far));
+      await p.evaluate(() => { __me.setView('persp'); __me.setZoom(30, true); });
       await ctx.close(); }
     { const ctx = await newCtx({width:1440, height:900}), ed = await ctx.newPage(); watch(ed);
       await ed.goto(base + '/editor.html'); await ed.waitForFunction(() => window.__ed, null, {timeout:60000});

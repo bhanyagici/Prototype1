@@ -160,8 +160,8 @@
   .mcard.won .mnum{background:linear-gradient(#8fe07a,#3fae2a 60%,#2b8a1c);text-shadow:0 6px 0 #1d6612}
   .mcard.won .mnum::after{content:'✓';position:absolute;right:16px;top:10px;font-size:44px}
   .mcard.nextup{border-color:#ff8a1f;box-shadow:0 7px 0 #c45f00,0 0 0 6px rgba(255,138,31,.35),0 12px 20px rgba(30,50,90,.25)}
-  .mtools{display:flex;gap:8px;padding:0 12px 14px} .mtools button,.mcathead button{font:inherit;font-size:20px;font-weight:900;color:#fff;border:3px solid #fff;
-    border-radius:14px;padding:6px 10px;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 4px 0 #1559b0;cursor:pointer}
+  .mtools{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 14px} .mtools button,.mcathead button{font:inherit;font-size:17px;font-weight:900;color:#fff;border:3px solid #fff;
+    border-radius:14px;padding:6px 7px;background:linear-gradient(#5ec1ff,#1f7ae6);box-shadow:0 4px 0 #1559b0;cursor:pointer}
   .mtools button.del{background:linear-gradient(#ff8a65,#e0483a);box-shadow:0 4px 0 #a8321f}
   .mcathead{display:flex;align-items:center;justify-content:space-between;gap:16px} .mcathead button{font-size:24px;padding:8px 16px}
   #menuList{flex:1;overflow-y:auto;padding:0 30px 60px;touch-action:pan-y}
@@ -3133,6 +3133,10 @@ function buildGround(add, L, F){
   const tex = groundTexture(L, F); tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const mesh = new THREE.Mesh(g, cliffMat(new THREE.MeshStandardMaterial({map:tex, roughness:0.96})));
   mesh.receiveShadow = true; mesh.castShadow = true; add(mesh);
+  // the ground below goes on, plain, well past the detailed patch: zoomed out (the camera zoom), the view never runs off it
+  const far = new THREE.Mesh(new THREE.PlaneGeometry(320, 420).rotateX(-Math.PI/2).translate(0, GLOW - 0.02, -50),
+    cliffMat(new THREE.MeshStandardMaterial({color:col(TH.low), roughness:0.96})));                   // (the same haze as the ground)
+  far.receiveShadow = true; add(far);
   return {H, W, nx, nz, at:(x, z) => { const i = clamp(Math.round((x - GX0)/GST), 0, nx), j = clamp(Math.round((z - GZ0)/GST), 0, nz); return H[j*W + i]; }};
 }
 /* the cliffs' look: steep faces take the theme's stone in soft horizontal strata, darker toward their foot; the ground
@@ -3202,6 +3206,7 @@ function groundTexture(L, F){
 /* ---- a simple rounded stone tunnel: a chunky arch with soft bevelled edges, a rounded body behind it and a dark
    inside.  Local frame: mouth at the origin facing +z, the inside runs along -z; `w` widens it (the queue's) ---- */
 const TUN = {Rin:0.86, Rout:1.22, LEG:0.34, DEP:0.44, D:2.6};
+let QTZ = 99;                                        // where the queue tunnel's mouth is (z), set as the world is built
 const tunnelShadeTex = canvasTex(4, 128, x => { const g = x.createLinearGradient(0, 0, 0, 128);   // alpha: black inside (top), clear at the mouth
   g.addColorStop(0, '#fff'); g.addColorStop(0.5, '#fff'); g.addColorStop(0.85, '#888'); g.addColorStop(1, '#222'); x.fillStyle = g; x.fillRect(0, 0, 4, 128); }, true);
 function archShape(R, leg, bottom, w = 0){
@@ -3526,7 +3531,7 @@ function buildWorld(L){
   const l = Math.hypot(E.dx, E.dz) || 1;
   TUN_U.uTun.value[0].set(E.x, E.z, E.dx/l, E.dz/l); TUN_U.uTunY.value[0].set(E.y, 1, 1.05, TUN.D - 0.35);
   TUN_U.uTun.value[1].set(GT.x, GT.z, -GT.dx, -GT.dz); TUN_U.uTunY.value[1].set(0, 1, 1.05*0.92*GT.k, (TUN.D - 0.35)*0.92*GT.k);
-  { const q = queueTunnelAt(Y); TUN_U.uTun.value[2].set(0, q.z + 0.15, 0, 1); TUN_U.uTunY.value[2].set(0, 1, q.w + TUN.Rin, 99); }
+  { const q = queueTunnelAt(Y); QTZ = q.z; TUN_U.uTun.value[2].set(0, q.z + 0.15, 0, 1); TUN_U.uTunY.value[2].set(0, 1, q.w + TUN.Rin, 99); }
   WD = {L, bayGlow, rampTops, badges, dbgGroup, ringIM, lamps};
 }
 
@@ -4443,6 +4448,9 @@ function updateBus(v, t, vdt){
   if (b.state === 'return' && b.trip) dark = 1 - smooth(0.0, 0.4, b.trip.s);
   v.dark = dark; v.mat.color.setScalar(1 - dark);
   const [tx, ty, tz, tvx, tvz] = busTarget(b), dd = C.dispDir(b.dx, b.dz, b.z); let hT = Math.atan2(dd[0], dd[1]);
+  // a queued bus wholly past the queue tunnel's mouth is dark under its roof: hidden (zoomed out, the camera would
+  // otherwise see it beyond the tunnel's far end)
+  if (b.state === 'lane' && tz - b.len*v.root.scale.x/2 > QTZ + 0.05){ v.root.visible = false; v.init = false; return; }
   // back from the return tunnel: the route as drawn bends where the yard's squeeze changes, so the bus faces along the
   // line from its back to its front on that route (straight along the tunnel while it is inside, not across it)
   if (b.state === 'return'){ const P = skPathOf(v); if (P){ const hl = b.len/2*C.BUS_DRAW*C.dispScale(b.z), f = P.q(P.at + hl, _skA), r = P.q(P.at - hl, _skB);
@@ -5183,11 +5191,17 @@ function openEditor(level, mine){
     const bin = atob(src.textContent.trim()), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     const html = new TextDecoder().decode(bytes).replace('<head>', '<head><script>window.ME_EDITOR_HOST = "showcase";<\/script>');
     const f = document.createElement('iframe'); f.id = 'edFrame'; f.title = 'Level editor'; host.append(f); f.srcdoc = html; }
-  host.classList.add('show'); closeMenu();
+  host.classList.add('show'); closeMenu(); edFit();
   edPending = {level:JSON.parse(JSON.stringify(level)), mine:!!mine}; delete edPending.level.mine;
   if (edReady) edSend();
   return true;
 }
+// the editor is laid out for a desktop window: in a narrower one (a phone) it is laid out 1280 px wide and scaled down
+// to the window's width, so every part of it stays on the screen
+const ED_W = 1280;
+function edFit(){ const f = $('edFrame'); if (!f) return; const k = Math.min(1, innerWidth/ED_W);
+  Object.assign(f.style, k < 1 ? {width:ED_W + 'px', height:innerHeight/k + 'px', transform:`scale(${k})`, transformOrigin:'0 0'} : {width:'', height:'', transform:'', transformOrigin:''}); }
+addEventListener('resize', edFit);
 function edSend(){ if (!edPending) return; $('edFrame').contentWindow.postMessage({source:'me-showcase', type:'open', level:edPending.level, mine:edPending.mine}, '*'); edPending = null; }
 function closeEditor(){ const h = $('edHost'); if (h) h.classList.remove('show'); $('edPick').classList.remove('show'); openMenu(); }
 function openPicker(){                              // every level of the showcase (and My Levels): pick one to edit
@@ -5266,6 +5280,10 @@ window.__me = {
   get theme(){ return themeId; }, setTheme, THEMES:THEME_IDS, GD, get showcase(){ return SC; }, openMenu, closeMenu, openSettings, get menuOpen(){ return menuOpen; }, catRange, get move(){ return busMove; }, setMove, get terrain(){ return terrain; }, setTerrain, get boardMask(){ return BM; },
   get paused(){ return pauseOpen; }, openPause, closePause, get timerText(){ return timerShown; },
   get camFov(){ return camFov; }, setZoom, ZOOM, orthoSize, get perspCam(){ return perspCam; }, get orthoCam(){ return orthoCam; },
+  get queueTunnelZ(){ return QTZ; },
+  viewMisses(n){ camera.updateMatrixWorld(); const rc = new THREE.Raycaster(), q = new THREE.Vector2(); let miss = 0;   // points of an n x n grid over the 3D view (between
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++){ q.set(-0.98 + 1.96*i/(n - 1), 0.84 - 1.6*j/(n - 1)); rc.setFromCamera(q, camera);   // the top bar and the booster
+      if (!rc.intersectObject(world, true).some(h => !h.object.isSprite)) miss++; } return miss; },                                             // bar) whose ray meets nothing
   groundAt(x, z){ const rc = new THREE.Raycaster(new THREE.Vector3(x, 40, z), new THREE.Vector3(0, -1, 0)); rc.camera = camera; const hit = rc.intersectObject(world, true)
     .find(h => { if (h.object.isSprite) return false; for (let o = h.object; o; o = o.parent) if (!o.visible) return false; return true; });
     return hit ? hit.point.y : null; },   // the height of the first surface straight down at (x, z) (buses and stickmen aside)
