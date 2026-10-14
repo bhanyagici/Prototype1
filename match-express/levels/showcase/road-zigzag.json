@@ -67,7 +67,7 @@
     "road": "zigzag",
     "h": 0.991,
     "difficulty": "Easy",
-    "random": 0.94,
+    "random": 0.985,
     "greedyT": 97.1
   },
   "manScale": 1.25

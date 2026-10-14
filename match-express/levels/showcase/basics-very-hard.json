@@ -77,8 +77,8 @@
     "road": "zspiral",
     "h": 0.797,
     "difficulty": "Very Hard",
-    "random": 0,
-    "greedyT": 207.3
+    "random": 0.035,
+    "greedyT": 201.7
   },
   "manScale": 1.05
 }

@@ -66,7 +66,7 @@
     "road": "scurve",
     "h": 0.991,
     "difficulty": "Easy",
-    "random": 0.935,
+    "random": 1,
     "greedyT": 89.6
   },
   "manScale": 1.2

@@ -43,6 +43,115 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   (laid out 1280 px wide and scaled down to fit), [the editor at 1440 × 900](screenshots/editor-in-showcase.png) after a save
   (`f30_1`), and [My Levels in the menu](screenshots/my-levels-390.png).
 
+## Road counter: an unfilled bus stops counting at the exit tunnel
+
+One rule change. Nothing else about the rules or the look changes.
+
+- **The rule.**
+  - A bus that finishes its lap without filling now leaves the road counter (−1) the moment it enters the
+    top exit tunnel. Before, it left only when it parked in a static bay.
+  - A connected group drops by its size when its last member has entered the tunnel.
+  - The rest of the return is the same: the bus comes out of the return tunnel and parks in the leftmost
+    free bay. The fail check still happens when it comes out of the return tunnel and finds no free bay.
+- **The send check** (`canRoad`, `legalSends`, a group's room check) still asks for room on the counter. The
+  counter now frees up earlier, so you can send a bus while unfilled buses are still in the tunnels or driving
+  back to a bay.
+- **The cheering prediction** needed no change. It plans the boarding of the buses heading to the road and on
+  it, and a bus in the tunnel has nothing left to board. The rule tests check it in every lap of 120 bot games:
+  the cheering set fixed at send always equals the stickmen who then board.
+- **The bots.**
+  - The random bot sends any legal bus, so it now sends more often.
+  - The greedy bot keeps at most 5 buses on their way at once (`inCirculation`): on the road or heading to it,
+    in the tunnel, or going back to a bay. Each of those may still need a bay. Limited only by the new counter,
+    it failed 5 funnel levels (10, 12, 23, 38, 40): a returning bus found the bays full.
+  - With that limit it plays exactly the games it played before (same sends, same times) and wins every level.
+- **Rule tests** (`tests/rules.test.js`, 38 checks):
+  - the counter drops when the bus enters the top tunnel, and not again when it comes out or parks;
+  - a connected pair drops by 2 when its last member enters;
+  - counter = buses heading to the road + buses on it, at every step of 120 bot games;
+  - the fail example now reads: send 5; as 2 of them enter the top tunnel the counter drops to 3/5, with the
+    bays still empty; send 2 (5/5); the first 5 park (bays 5/5, no fail); the 6th to come back fails, unless
+    a parked bus was sent back first, in which case it takes the freed bay.
+
+### Difficulty after the change
+
+Random-bot win rate over 200 games (seeds 1000–1199), the same levels under the old and the new rule.
+
+**Why most levels got easier.** Under the old rule, unfilled buses on their way back kept their road slots.
+Random play often filled the counter with them, and a connected pair or triple then never had room to go.
+The game stalled: unfinished, counted as not won. Now those slots free up as the buses enter the tunnel:
+- over the 72 showcase and funnel levels, unfinished random games fell from 879 to 145;
+- Connected triples went from 191 unfinished to 200 wins;
+- funnel level 23 went from 140 unfinished to 179 wins.
+
+**Showcase.** Labels that changed:
+
+| level | old rule | new rule |
+|---|---|---|
+| Basics: Hard | Hard, 10.5% | **Medium**, 28.5% |
+| Blockers: Connected pairs | Medium, 22.5% | **Easy**, 92.0% |
+| Blockers: Connected triples | Very Hard, 4.5% | **Easy**, 100% |
+| Lane counts: 4 lanes | Medium, 31.5% | **Easy**, 61.5% |
+
+The others keep their label but are easier:
+- by 18 to 40 points: All combined 57.5 → 97.5%, Long narrow 51 → 88.5%, Hidden stickmen 70.5 → 96%,
+  Spiral and gap 73 → 97.5%, Hidden bus 64.5 → 88%, Long winding road 51 → 74.5%, Basics: Medium 21 → 44%,
+  5 lanes 46.5 → 69%, Long jump 56 → 74.5%;
+- by 2 to 15 points: the rest of the Easy levels, and Basics: Very Hard 0 → 3.5%;
+- unchanged at 100%: Basics: Easy, First jump, Take-off ramps, 2 lanes.
+
+The showcase was not retuned. Each card shows its new measured label, stored in the level's `meta`. The Basics
+still run from Easy (100%) to Very Hard (3.5%), each harder than the one before, but "Hard" now measures Medium.
+
+**Bundled levels.**
+- Level 2: 34 → 81 of 200 (Medium).
+- Crowded Rush: 10 → 31 (Hard → **Medium**).
+- Crowded Rush Curve: 11 → 24 (Hard).
+- Demo: Connected Buses: 48 → 189 (Medium → **Easy**).
+- The other demos stay Easy.
+
+**Funnel.** Levels whose rate moved by more than 1.5 points, with the retune:
+
+| Lv | Role | Band | Old rule | New rule | After the retune |
+|---|---|---|---|---|---|
+| 8 | Practice | 35–50% | 92.0% (out) | 99.5% | not retuned: out of band before |
+| 10 | Milestone | 25–40% | 60.0% (out) | 88.0% | not retuned (Milestone) |
+| 11 | Relax | 55–75% | 72.5% | 100% | easier (allowed) |
+| 12 | Challenge | 25–40% | 61.5% (out) | 80.5% | not retuned: out of band before |
+| 14 | Practice | 25–40% | 38.5% | 80.5% | **38.0%** |
+| 16 | Challenge | 18–30% | 22.0% | 50.0% | **30.0%** |
+| 17 | Teach | 45–60% | 90.5% | 99.0% | easier (allowed) |
+| 19 | Practice | 25–40% | 27.5% | 60.5% | **27.5%** |
+| 20 | Milestone | 12–22% | 20.0% | 57.5% | not retuned (Milestone): out |
+| 21 | Teach | 35–50% | 98.5% | 100% | easier (allowed) |
+| 23 | Challenge | 18–30% | 21.5% | 89.5% | **27.0%** |
+| 25 | Challenge | 12–22% | 16.5% | 53.5% | **22.0%** |
+| 27 | Practice | 25–40% | 25.5% | 66.0% | 47.0%: still out, closest version kept |
+| 29 | Challenge | 18–30% | 28.5% | 94.0% | **19.0%** |
+| 30 | Milestone | 8–15% | 11.5% | 37.5% | not retuned (Milestone): out |
+| 33 | Practice | 25–40% | 34.5% | 57.5% | **39.0%** |
+| 34 | Fun | 45–60% | 90.0% | 99.5% | easier (allowed) |
+| 35 | Challenge | 12–22% | 15.0% | 23.5% | **17.5%** |
+| 37 | Practice | 18–30% | 24.0% | 41.5% | **28.5%** |
+| 38 | Challenge | 12–22% | 13.5% | 25.5% | **12.0%** |
+| 40 | Finale | 8–15% | 9.0% | 40.5% | not retuned (Finale): out |
+
+**The retune** used the same rules as before:
+- only the content was made again: the stickmen order, the bus order and sizes, the blockers' placement and
+  the number of connected groups;
+- every level keeps its road, ramps, lane count, blocker kinds, tutorial, popup and hint;
+- the greedy bot must win;
+- `tools/make-funnel.js --search` passes, then `--refine` (50-game estimates, the best checked over 200 games).
+
+Of the 11 Challenge and Practice levels that left their band, 10 are back in it. Level 27 (2 hidden buses, two
+tunnels, no connected buses) came down only from 66% to 47% after 14 search passes and 3 refine passes, so its
+closest version is kept. Without connected buses, a returning bus can rarely block the road now.
+
+Overall: 14 of 40 levels in band, against 19 before; must-land levels 10 of 18, against 14. The 4 that dropped
+out are the Milestones 20 and 30 and the Finale 40, which this change did not retune, and level 27. The
+greedy bot wins all 40, and the funnel now takes 76.8 min at 1x (38.4 min at 2x), against 73.7. The full
+table is under *Difficulty, measured*; `dist/funnel.xlsx` and `levels/funnel/funnel-bots.json` are rebuilt.
+
 ## Connected trains, hidden members, full-bus exits
 
 Three fixes. Nothing else about the rules or the look changes.
@@ -99,7 +208,8 @@ Three fixes. Nothing else about the rules or the look changes.
   random games per funnel level with connected buses, the random bot's win rate moves by at most 1 point
   (17: 89.5 to 90.5%, 29: 28 to 28.5%, 30: 12 to 11.5%, 37: 23.5 to 24%, 38: 13 to 13.5%, 40: 10 to 9%; the others
   unchanged). Every level stays in its band, and the greedy bot's times hardly change. The table under
-  *Difficulty, measured* is from before these fixes.
+  *Difficulty, measured* was from before these fixes; it has since been measured again under the road-counter
+  rule (see *Road counter: an unfilled bus stops counting at the exit tunnel*).
 
 ## Tests, screenshots and builds
 
@@ -817,7 +927,8 @@ Every showcase level:
 
 The Basics are tuned to their labels by the random bot's win rate (200 games): Easy
 100%, Medium 44%, Hard 8.5%, Very Hard 0.5%. The other cards show their measured
-difficulty.
+difficulty. (Since the road-counter rule they measure Easy 100%, Medium 44%, Medium 28.5% for "Hard" and
+Very Hard 3.5%; see *Road counter: an unfilled bus stops counting at the exit tunnel*.)
 
 How it is made:
 - `tools/showcase/specs.js` holds the level specs.
@@ -1266,7 +1377,8 @@ across lanes or bays.
 - **Sending:** a group can go only when, in every lane it uses, its topmost member is the
   front bus. A member at the front waiting for its partners blocks its lane. Tapping any
   sendable member sends the whole group. The road must have room for all of them, and each
-  member counts on the road counter.
+  member counts on the road counter until the group leaves the road (it jumps off, or its
+  last member enters the top tunnel).
 - **On the road:** the leftmost lane's bus leads, then left to right, front to back within
   a lane. The members keep one fixed gap and the whole group stops while any member boards.
   Each member boards its own colour; a full member stops boarding but stays in the group.
@@ -1390,6 +1502,8 @@ Random-bot win rate over 200 games (the target bands: 1–2 ≥ 70%, 3: 55–75%
 6: 25–40%, 7: 18–30%, 8: 12–22%, 9: 8–15%). Challenge, Milestone, Finale and Practice levels must land in
 their band; Relax, Fun and Teach levels may be easier. Measured diff places the win rate on the same scale
 (band centres, a straight line between them). The greedy bot wins all 40; levels 1–5 cannot be lost.
+Measured under the road-counter rule, after its retune (see *Road counter: an unfilled bus stops counting at
+the exit tunnel*).
 
 | Lv | Role | Lanes | Blockers | Target diff | Band | Random wins / fails / unfinished | Win rate | Measured diff | In band | Greedy 1x | Greedy 2x |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1398,52 +1512,59 @@ their band; Relax, Fun and Teach levels may be easier. Measured diff places the 
 | 3 | Tutorial (bay re-send) | 2 | - | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 38.7 s | 19.4 s |
 | 4 | Teach (bus sizes) | 2 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 33.8 s | 16.9 s |
 | 5 | Fun | 2 | - | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 33.9 s | 17.0 s |
-| 6 | Challenge | 3 | - | 5 | 35–50% | 197 / 3 / 0 | 98.5% | 1.1 | **no** | 71.9 s | 35.9 s |
+| 6 | Challenge | 3 | - | 5 | 35–50% | 199 / 1 / 0 | 99.5% | 1.0 | **no** | 71.9 s | 35.9 s |
 | 7 | Teach + POPUP | 3 | 5 hidden buses | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 46.1 s | 23.1 s |
-| 8 | Practice | 3 | 2 hidden buses | 5 | 35–50% | 184 / 16 / 0 | 92.0% | 1.5 | **no** | 63.9 s | 31.9 s |
+| 8 | Practice | 3 | 2 hidden buses | 5 | 35–50% | 199 / 1 / 0 | 99.5% | 1.0 | **no** | 63.9 s | 31.9 s |
 | 9 | Relax | 2 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 65.3 s | 32.6 s |
-| 10 | Milestone | 3 | 3 hidden buses | 6 | 25–40% | 120 / 80 / 0 | 60.0% | 3.4 | **no** | 91.2 s | 45.6 s |
-| 11 | Relax | 3 | - | 3 | 55–75% | 145 / 55 / 0 | 72.5% | 2.6 | yes | 75.6 s | 37.8 s |
-| 12 | Challenge | 3 | 2 hidden buses | 6 | 25–40% | 123 / 77 / 0 | 61.5% | 3.3 | **no** | 77.3 s | 38.6 s |
+| 10 | Milestone | 3 | 3 hidden buses | 6 | 25–40% | 176 / 24 / 0 | 88.0% | 1.8 | **no** | 91.2 s | 45.6 s |
+| 11 | Relax | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 75.6 s | 37.8 s |
+| 12 | Challenge | 3 | 2 hidden buses | 6 | 25–40% | 161 / 39 / 0 | 80.5% | 2.2 | **no** | 77.3 s | 38.6 s |
 | 13 | Teach + POPUP | 3 | 4 connected pairs | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 75.4 s | 37.7 s |
-| 14 | Practice | 3 | 6 connected pairs | 6 | 25–40% | 77 / 123 / 0 | 38.5% | 5.4 | yes | 105.4 s | 52.7 s |
+| 14 | Practice | 3 | 5 connected pairs | 6 | 25–40% | 76 / 124 / 0 | 38.0% | 5.5 | yes | 119.4 s | 59.7 s |
 | 15 | Fun | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 53.0 s | 26.5 s |
-| 16 | Challenge | 4 | 2 hidden buses, 6 connected pairs | 7 | 18–30% | 44 / 156 / 0 | 22.0% | 7.3 | yes | 132.2 s | 66.1 s |
-| 17 | Teach (no popup, short hint) | 3 | 3 connected triples | 4 | 45–60% | 179 / 21 / 0 | 89.5% | 1.7 | easier (allowed) | 116.7 s | 58.3 s |
+| 16 | Challenge | 4 | 2 hidden buses, 9 connected pairs | 7 | 18–30% | 60 / 140 / 0 | 30.0% | 6.3 | yes | 142.3 s | 71.2 s |
+| 17 | Teach (no popup, short hint) | 3 | 3 connected triples | 4 | 45–60% | 198 / 2 / 0 | 99.0% | 1.1 | easier (allowed) | 116.7 s | 58.3 s |
 | 18 | Relax | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 70.7 s | 35.3 s |
-| 19 | Practice | 3 | 2 connected pairs, 2 connected triples | 6 | 25–40% | 55 / 68 / 77 | 27.5% | 6.6 | yes | 136.8 s | 68.4 s |
-| 20 | Milestone | 4 | 2 hidden buses, 1 connected pair, 6 connected triples | 8 | 12–22% | 40 / 160 / 0 | 20.0% | 7.6 | yes | 161.3 s | 80.6 s |
-| 21 | Teach (combo, no popup) | 3 | 3 hidden buses, 6 connected pairs | 5 | 35–50% | 197 / 3 / 0 | 98.5% | 1.1 | easier (allowed) | 94.1 s | 47.0 s |
+| 19 | Practice | 3 | 1 connected pair, 6 connected triples | 6 | 25–40% | 55 / 145 / 0 | 27.5% | 6.6 | yes | 218.7 s | 109.3 s |
+| 20 | Milestone | 4 | 2 hidden buses, 1 connected pair, 6 connected triples | 8 | 12–22% | 115 / 85 / 0 | 57.5% | 3.6 | **no** | 161.3 s | 80.7 s |
+| 21 | Teach (combo, no popup) | 3 | 3 hidden buses, 6 connected pairs | 5 | 35–50% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 93.6 s | 46.8 s |
 | 22 | Relax | 2 | 1 hidden bus | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 72.8 s | 36.4 s |
-| 23 | Challenge | 4 | 3 hidden buses, 6 connected pairs, tunnel (orange, 8) | 7 | 18–30% | 43 / 17 / 140 | 21.5% | 7.4 | yes | 119.5 s | 59.8 s |
+| 23 | Challenge | 4 | 3 hidden buses, 9 connected pairs, tunnel (red, 8) | 7 | 18–30% | 54 / 146 / 0 | 27.0% | 6.6 | yes | 149.3 s | 74.6 s |
 | 24 | Fun | 3 | 2 connected pairs | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 95.6 s | 47.8 s |
-| 25 | Challenge | 3 | 3 hidden buses, 3 connected triples, tunnel (green, 8) | 8 | 12–22% | 33 / 41 / 126 | 16.5% | 8.1 | yes | 228.7 s | 114.4 s |
+| 25 | Challenge | 3 | 3 hidden buses, 4 connected triples, tunnel (yellow, 8) | 8 | 12–22% | 44 / 156 / 0 | 22.0% | 7.3 | yes | 218.5 s | 109.2 s |
 | 26 | Teach + POPUP | 3 | tunnel (blue, 6), tunnel (purple, 6), tunnel (blue, 6) | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 82.0 s | 41.0 s |
-| 27 | Practice | 3 | 2 hidden buses, tunnel (green, 8), tunnel (orange, 8) | 6 | 25–40% | 51 / 149 / 0 | 25.5% | 6.8 | yes | 139.7 s | 69.8 s |
+| 27 | Practice | 3 | 2 hidden buses, tunnel (red, 8), tunnel (yellow, 8) | 6 | 25–40% | 94 / 106 / 0 | 47.0% | 4.6 | **no** | 107.3 s | 53.6 s |
 | 28 | Relax | 3 | tunnel (yellow, 6), tunnel (green, 6) | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 78.6 s | 39.3 s |
-| 29 | Challenge | 3 | 2 hidden buses, 2 connected pairs, tunnel (blue, 8), tunnel (red, 8) | 7 | 18–30% | 56 / 18 / 126 | 28.0% | 6.5 | yes | 123.2 s | 61.6 s |
-| 30 | Milestone | 3 | 3 hidden buses, 6 connected triples, tunnel (cyan, 8), tunnel (cyan, 8) | 9 | 8–15% | 24 / 119 / 57 | 12.0% | 8.9 | yes | 255.4 s | 127.7 s |
+| 29 | Challenge | 3 | 2 hidden buses, 5 connected pairs, tunnel (purple, 8), tunnel (purple, 8) | 7 | 18–30% | 38 / 162 / 0 | 19.0% | 7.7 | yes | 147.0 s | 73.5 s |
+| 30 | Milestone | 3 | 3 hidden buses, 6 connected triples, tunnel (cyan, 8), tunnel (cyan, 8) | 9 | 8–15% | 75 / 125 / 0 | 37.5% | 5.5 | **no** | 255.4 s | 127.7 s |
 | 31 | Relax | 2 | 2 hidden buses | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 73.2 s | 36.6 s |
 | 32 | Teach + POPUP | 3 | 2 lock boxes & keys | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 93.6 s | 46.8 s |
-| 33 | Practice | 3 | 2 hidden buses, 2 lock boxes & keys | 6 | 25–40% | 69 / 131 / 0 | 34.5% | 5.8 | yes | 147.2 s | 73.6 s |
-| 34 | Fun | 3 | 5 connected pairs, tunnel (blue, 6), tunnel (blue, 6) | 4 | 45–60% | 180 / 20 / 0 | 90.0% | 1.7 | easier (allowed) | 126.9 s | 63.4 s |
-| 35 | Challenge | 4 | 2 hidden buses, 13 connected pairs, 2 lock boxes & keys | 8 | 12–22% | 30 / 170 / 0 | 15.0% | 8.4 | yes | 225.8 s | 112.9 s |
+| 33 | Practice | 3 | 2 hidden buses, 2 lock boxes & keys | 6 | 25–40% | 78 / 122 / 0 | 39.0% | 5.3 | yes | 180.3 s | 90.1 s |
+| 34 | Fun | 3 | 5 connected pairs, tunnel (blue, 6), tunnel (blue, 6) | 4 | 45–60% | 199 / 1 / 0 | 99.5% | 1.0 | easier (allowed) | 126.9 s | 63.4 s |
+| 35 | Challenge | 4 | 2 hidden buses, 13 connected pairs, 2 lock boxes & keys | 8 | 12–22% | 35 / 165 / 0 | 17.5% | 7.9 | yes | 231.2 s | 115.6 s |
 | 36 | Relax | 3 | 1 hidden bus, lock & key | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 101.8 s | 50.9 s |
-| 37 | Practice | 3 | 3 hidden buses, 7 connected pairs, tunnel (red, 8), tunnel (purple, 8) | 7 | 18–30% | 47 / 138 / 15 | 23.5% | 7.1 | yes | 242.1 s | 121.0 s |
-| 38 | Challenge | 5 | 2 hidden buses, 11 connected pairs, tunnel (pink, 8), 2 lock boxes & keys | 8 | 12–22% | 26 / 169 / 5 | 13.0% | 8.7 | yes | 215.3 s | 107.6 s |
+| 37 | Practice | 3 | 3 hidden buses, 8 connected pairs, tunnel (orange, 8), tunnel (cyan, 8) | 7 | 18–30% | 57 / 143 / 0 | 28.5% | 6.5 | yes | 234.2 s | 117.1 s |
+| 38 | Challenge | 5 | 2 hidden buses, 17 connected pairs, tunnel (yellow, 8), 2 lock boxes & keys | 8 | 12–22% | 24 / 176 / 0 | 12.0% | 8.9 | yes | 255.3 s | 127.6 s |
 | 39 | Fun | 3 | 8 connected pairs, tunnel (blue, 6), tunnel (blue, 6) | 5 | 35–50% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 132.6 s | 66.3 s |
-| 40 | Finale | 5 | 3 hidden buses, 4 connected pairs, 4 connected triples, tunnel (purple, 8), tunnel (purple, 8), 2 lock boxes & keys | 9 | 8–15% | 20 / 180 / 0 | 10.0% | 9.1 | yes | 294.2 s | 147.1 s |
-| | **Total** | | | | | | | | **19 / 40** (must-land: 14 / 18) | **73.7 min** | **36.9 min** |
+| 40 | Finale | 5 | 3 hidden buses, 4 connected pairs, 4 connected triples, tunnel (purple, 8), tunnel (purple, 8), 2 lock boxes & keys | 9 | 8–15% | 81 / 119 / 0 | 40.5% | 5.2 | **no** | 294.1 s | 147.1 s |
+| | **Total** | | | | | | | | **14 / 40** (must-land: 10 / 18) | **76.8 min** | **38.4 min** |
 
-**Out of band, closest version kept (4 levels).** The tuning may only change the stickmen order in the
-columns, the bus order and sizes in the lanes and the blocker placement; the search passes (up to 240
-candidates each, the best checked over 200 games) got these as close as they go:
-- **6 (98.5%), 8 (92.0%), 10 (60.0%), 12 (61.5%)**: small or medium 3-lane levels without
-  connected buses. Under the current rules (5 on the road, 5 bays, unlimited re-sends) the random bot only
-  loses when 6 unfilled buses are out at once; a bus sent out of order still takes whatever stickmen of its
-  colour are open, and parked buses are re-sent as often as lane buses, so the bays drain. Connected groups
-  are what make a level hard (a returning group needs a free bay for every member), and these levels have
-  none in their design row.
+**Out of band.** Measured under the road-counter rule (an unfilled bus stops counting as it enters the top
+tunnel; see *Road counter: an unfilled bus stops counting at the exit tunnel*). The tuning may only change
+the stickmen order in the columns, the bus order and sizes in the lanes and the blocker placement. The search
+passes (the best candidates checked over 200 games) got these as close as they go:
+- **6 (99.5%), 8 (99.5%), 12 (80.5%)**: already out of band before the counter rule, and not retuned for it.
+  They are small or medium 3-lane levels without connected buses. Under the current rules (5 on the road,
+  5 bays, unlimited re-sends) the random bot only loses when 6 unfilled buses are out at once. A bus sent
+  out of order still takes whatever stickmen of its colour are open, and parked buses are re-sent as often
+  as lane buses, so the bays drain. Connected groups are what make a level hard (a returning group needs a
+  free bay for every member), and these levels have none in their design row.
+- **27 (47.0%, band 25–40%)**: it left its band with the counter rule (66%) and was retuned. Fourteen search
+  passes and three refine passes got it down to 47%, and its closest version is kept. It has no connected
+  buses either.
+- **Milestones 10 (88.0%), 20 (57.5%), 30 (37.5%) and the Finale 40 (40.5%)**: they left their band (level 10:
+  moved further from it) with the counter rule. They were not retuned, because that round retuned only the
+  Challenge and Practice levels.
 - **Level 4** (band 55–75%) is fail-free by the rule "no fail before level 6", so it is at 100% (allowed:
   a Teach level may be easier).
 
@@ -1452,7 +1573,9 @@ candidates each, the best checked over 200 games) got these as close as they go:
 connected pair or triple. That is not a dead end for a player, who can wait for the road to clear (the
 core's no-deadlock rule holds); under the agreed metric it counts as "not won". Wins / fails /
 unfinished are listed separately here and in the spreadsheet. On level 20, for example, the random bot
-never fails and 158 of 200 games stay unfinished, so a person will find it easier than its 21% suggests.
+never failed and 158 of 200 games stayed unfinished, so a person would find it easier than its 21% suggested.
+Since the road-counter rule (an unfilled bus frees its road slot as it enters the top tunnel), no funnel
+level has an unfinished random game.
 
 **Exit tunnels out in the open.** On the levels whose road ends heading down toward the yard (7, 11, 17, 28,
 36) the exit tunnel sits in its own mound mid-screen: the hill stops short of the yard plateau, the tunnel's
@@ -1582,8 +1705,9 @@ back to the road when the counter is below 5; at 5/5 it does a handbrake lurch.
 **The road counter** (the sign on the right):
 - +1 the moment a bus is sent to the road, from the queue or from a bay;
 - -1 when a full bus jumps off the road;
-- a bus that finishes its lap unfilled keeps counting through the tunnel and on its
-  way back, and is subtracted only once it has parked in a static bay.
+- -1 the moment a bus that finishes its lap unfilled enters the top exit tunnel. In the
+  tunnel and on its way back to a bay it no longer counts. A connected group drops by its
+  size when its last member has entered the tunnel.
 
 **Static bays** are only for buses that come back from a lap unfilled.
 
@@ -1643,15 +1767,18 @@ colour. A Web Worker then replays both bots on the frozen level:
 ```
 [level] seed 11 — the game loads the frozen LEVEL_DATA
 [level] seats vs stickmen per colour: red 24/24 ... pink 24/24 -> ALL MATCH
-[sim] greedy bot: WIN — 51 sends, 192/192 boarded, 188.4 s of game time
+[sim] greedy bot: WIN — 51 sends, 192/192 boarded, 218.1 s of game time
 [sim] greedy moves: L0:red4>road L0:pink12>road L0:orange6>road ...
-[sim] random bot: 35/200 wins (17.5%) — difficulty Medium
+[sim] random bot: 81/200 wins (40.5%) — difficulty Medium
 ```
 
 **Bots.** Both bots only ever send buses to the main road, as the rules now require:
 the front bus of a queue lane, or a parked bus sent back, and only while the counter
 is below 5. They never parked a queue bus even under the old rule, so their results
-did not change. The **greedy bot** sends the available bus whose colour
+did not change. Since an unfilled bus stops counting as it enters the top tunnel, the
+**greedy bot** also keeps at most 5 buses on their way at once: on the road or heading
+to it, in the tunnel, or going back to a bay (`inCirculation`). Each of those needs a
+free bay, so it plays as carefully as before. It sends the available bus whose colour
 has the most stickmen in the front rows. It waits while that score is 0 and traffic
 is still moving. On a tie at 0 it takes a lane front, to dig into the queue; on a
 positive tie it takes a parked bus, to free a bay. Without that tie-break it could
@@ -1691,7 +1818,7 @@ height.
 ## Verification
 
 ```
-node tests/rules.test.js      # 37 rule checks: sending, counter, fail example, re-send, cheering
+node tests/rules.test.js      # 38 rule checks: sending, counter, fail example, re-send, cheering
 node tests/blockers.test.js   # 44 checks: every blocker, the checker rules for them, the demo levels (bots + cheering), one win event per game
 node tests/layout.test.js     # yard clearance sweep (both yard presets, 2-5 lanes) + the drawn queue: >= 3 eight-seat buses per lane on 390 x 844
 node tests/lanes.test.js      # 59 checks: 2-5 queue lanes (format, layout, sending, sides), connected buses across 4-5 lanes,
@@ -1774,12 +1901,15 @@ ramps lie flush on the road:
     is clear of the road (clear at 1.23, hop at 1.41). A bus filled under the
     overpass hops with no road above it.
 
-- Headless rule suite (37 checks), all passing:
+- Headless rule suite (38 checks), all passing:
   - queue taps only ever go to the road; 5/5 refuses a queue tap (shake, no fail);
   - the counter math, including an invariant checked at every step of 120 bot games;
-  - the fail example, both versions: send 5, 2 return (3/5, bays 2/5), send 2 (5/5),
-    3 return (bays 5/5, no fail), then the 4th to return fails, unless a parked bus
-    was sent back first, in which case it takes the freed bay;
+  - the fail example, both versions: send 5; as 2 of them enter the top tunnel the counter
+    drops to 3/5 (bays still empty), send 2 (5/5); the first 5 park (bays 5/5, no fail),
+    then the 6th to come back fails, unless a parked bus was sent back first, in which case
+    it takes the freed bay;
+  - an unfilled bus stops counting the moment it enters the top tunnel, not later; a
+    connected pair drops by 2 when its last member enters;
   - static re-send: a lurch at 5/5, back to the road (+1) below it;
   - cheering: 10 matching stickmen and an 8-seat bus give 8 cheering; 4 reachable give
     4; a hidden one who will board cheers; the next bus never takes stickmen promised

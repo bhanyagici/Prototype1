@@ -60,7 +60,7 @@
     "road": "gspiral",
     "h": 0.981,
     "difficulty": "Easy",
-    "random": 0.915,
-    "greedyT": 103.3
+    "random": 0.965,
+    "greedyT": 98.2
   }
 }

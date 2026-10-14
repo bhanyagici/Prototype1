@@ -69,7 +69,7 @@
     "road": "sspiral",
     "h": 0.963,
     "difficulty": "Medium",
-    "random": 0.205,
-    "greedyT": 127.5
+    "random": 0.44,
+    "greedyT": 127.6
   }
 }

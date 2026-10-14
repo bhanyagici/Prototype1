@@ -61,7 +61,7 @@
     "road": "dspiral",
     "h": 0.981,
     "difficulty": "Easy",
-    "random": 0.92,
-    "greedyT": 146.6
+    "random": 0.985,
+    "greedyT": 145.8
   }
 }

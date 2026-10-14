@@ -57,7 +57,7 @@
     "title": "Hidden bus",
     "road": "sspiral",
     "difficulty": "Easy",
-    "random": 0.62,
+    "random": 0.88,
     "greedyT": 115
   }
 }

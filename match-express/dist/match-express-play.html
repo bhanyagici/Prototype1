@@ -320,7 +320,7 @@
 const BUS_SPEED          = 3.4;   // main-road cruise speed (world units / s)
 const BOARD_RATE         = 8;     // stickmen leaving a front row per second (chains speed up)
 const COLUMN_SHIFT_TIME  = 0.22;  // seconds for a column to step forward one place
-const ROAD_CAPACITY      = 5;     // road counter: +1 when a bus is sent to the road, -1 when a full bus jumps off or a returning bus parks
+const ROAD_CAPACITY      = 5;     // road counter: +1 when a bus is sent to the road, -1 when a full bus jumps off or an unfilled bus enters the top exit tunnel
 const STATIC_SLOTS       = 5;     // parking bays in the static row
 const PARACHUTE_DURATION = 2.6;   // seconds a full bus glides before leaving the screen
 const RETURN_TUNNEL_TIME = 2.0;   // seconds between the top tunnel and the return tunnel
@@ -2033,7 +2033,6 @@ function stepTrips(g, dt){
       } else {
         T.splice(i, 1); i--; b.trip = null; b.v = 0;
         const k = b.bay; g.bays[k] = b.id; g.bayRes[k] = -1; b.retBay = -1;
-        if (b.state === 'return') g.counter--;
         b.state = 'bay';
         emit(g, 'park', {bus:b.id, bay:k});
       }
@@ -2180,7 +2179,7 @@ function stepRoad(g, dt){
     if (b.rs >= g.L.ROAD.end){
       R.splice(i, 1); i--;
       dropCheer(g, b, () => false, 'finished the lap without them');
-      b.state = 'tunnel'; b.tExit = g.t + RETURN_TUNNEL_TIME; g.tunnel.push(b);
+      b.state = 'tunnel'; b.tExit = g.t + RETURN_TUNNEL_TIME; g.tunnel.push(b); g.counter--;   // off the road count the moment it enters the tunnel
       emit(g, 'tunnelIn', {bus:b.id});
       continue;
     }
@@ -2233,6 +2232,7 @@ function stepGroup(g, grp, i, dt){
   // the lap ends for the whole group when its last member reaches the tunnel
   if (tail.rs >= END && grp.members.every(id => g.buses[id].state === 'road')){
     R.splice(i, ms.length);
+    g.counter -= ms.length;                       // the whole group stops counting as its last member enters the tunnel
     for (const m of ms){
       dropCheer(g, m, () => false, 'finished the lap without them');
       m.state = 'tunnel'; m.tExit = g.t + RETURN_TUNNEL_TIME; g.tunnel.push(m);
@@ -2305,15 +2305,22 @@ function legalSends(g){
   }
   return a;
 }
+/* the buses on their way: on the road or heading to it, in the tunnel, or going back to a bay (the road counter holds only
+   the first of these since an unfilled bus stops counting as it enters the tunnel) */
+const inCirculation = g => g.counter + g.tunnel.length + g.trips.filter(b => b.trip.kind === 'return').length;
 function greedyPick(g){
-  const acts = legalSends(g); if (!acts.length) return null;
+  // the greedy player keeps at most ROAD_CAPACITY buses on their way at once, the ones going back to a bay included: it
+  // plays as carefully as before the road counter let go of them (each of them needs a free bay)
+  const circ = inCirculation(g);
+  const acts = legalSends(g).filter(a => { const b = g.buses[a.bus]; return circ + (b.group ? b.group.members.length : 1) <= ROAD_CAPACITY; });
+  if (!acts.length) return null;
   const fc = frontColors(g); let best = null, bestScore = -1;
   const score = b => b.group ? b.group.members.reduce((s, id) => s + fc[g.buses[id].color], 0) : fc[b.color];
   for (const a of acts){                         // ties: free a bay when something matches, dig into the queue when nothing does
     const sc = score(g.buses[a.bus]);
     if (sc > bestScore || (sc === bestScore && sc === 0 && a.kind === 'lane' && best.kind === 'bay')){ best = a; bestScore = sc; }
   }
-  if (bestScore === 0 && g.counter > 0) return null;   // nothing matches yet: let traffic clear first
+  if (bestScore === 0 && circ > 0) return null;   // nothing matches yet: let traffic clear first
   return best;
 }
 function randomPick(g, rng){ const acts = legalSends(g); return acts.length ? acts[Math.floor(rng()*acts.length)] : null; }
@@ -2670,7 +2677,7 @@ root.MECore = {
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
-  routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn, followRoute,
+  routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn, followRoute, inCirculation,
   normalizeLevel, buildLayout, buildRamp, parseCell, cellStr, checkLevel, difficulty, testLevel,
   createGame, step, tapLane, tapBay, canRoad, freeBay, frontColors, legalSends,
   greedyPick, randomPick, applyAction, simulate, lapBoarders, groupReady, linkGroups, queueDeadlock, rampEmpty, KEY_FALLBACK_DELAY, validateLevel, generateLevel, evaluateLevel, searchSeed, mulberry32

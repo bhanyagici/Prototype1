@@ -108,7 +108,7 @@
     "title": "Lock & key box",
     "road": "spiralHi",
     "difficulty": "Easy",
-    "random": 0.91,
+    "random": 0.995,
     "greedyT": 76.5
   }
 }

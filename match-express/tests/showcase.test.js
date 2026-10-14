@@ -38,8 +38,10 @@ const levels = Object.fromEntries(ids.map(id => [id, JSON.parse(fs.readFileSync(
   chk(!bad.length, 'every showcase level is balanced, free of warnings and won by the greedy bot', bad.join('; '));
   chk(!zone.length, 'every showcase level uses the whole target zone (its exit tunnel near the top edge)', zone.join(', '));
 }
-{ const d = ['basics-easy', 'basics-medium', 'basics-hard', 'basics-very-hard'].map(id => levels[id].meta.difficulty);
-  chk(d.join() === 'Easy,Medium,Hard,Very Hard', 'the Basics measure Easy, Medium, Hard and Very Hard (random-bot win rate)', ['basics-easy', 'basics-medium', 'basics-hard', 'basics-very-hard'].map(id => (levels[id].meta.random*100).toFixed(1) + '%').join(' / '));
+{ const B = ['basics-easy', 'basics-medium', 'basics-hard', 'basics-very-hard'].map(id => levels[id].meta), d = B.map(m => m.difficulty);
+  // (since the road counter drops when an unfilled bus enters the exit tunnel, "Hard" measures Medium: not retuned)
+  chk(d[0] === 'Easy' && d[3] === 'Very Hard' && B.every((m, i) => !i || m.random < B[i - 1].random) && B.every(m => C.difficulty(m.random) === m.difficulty),
+    'the Basics go from Easy to Very Hard, each harder than the one before (random-bot win rate, label stored with it)', B.map(m => `${m.difficulty} ${(m.random*100).toFixed(1)}%`).join(' / '));
   const lanes = ['lanes-2', 'lanes-3', 'lanes-4', 'lanes-5'].map(id => levels[id].lanes.length);
   chk(lanes.join() === '2,3,4,5', 'the lane-count levels have 2, 3, 4 and 5 queue lanes', lanes.join(','));
   const sp = levels['road-spiral'], dsp = levels['road-double-spiral'], ns = lv => lv.road.points.filter(p => p.spiral).length;

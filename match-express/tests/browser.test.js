@@ -891,7 +891,7 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
     await ed.evaluate(lv => __ed.setLevel(lv), CLASSIC);
     await ed.click('#testBtn');
     const t = await until(() => ed.evaluate(() => __ed.lastTest && !__ed.lastTest.pending && __ed.lastTest), 120000, 300);
-    chk(t && t.greedy.result === 'win' && t.greedy.sends === 52 && t.wins === 31 && t.label === 'Medium', 'Test runs greedy + 200 random bots in the background worker (classic layout: the baseline numbers)', t && `${t.greedy.result} ${t.greedy.sends} sends, ${t.wins}/200 ${t.label}`);
+    chk(t && t.greedy.result === 'win' && t.greedy.sends === 52 && t.wins === require('./baseline.json').random && t.label === 'Medium', 'Test runs greedy + 200 random bots in the background worker (classic layout: the baseline numbers)', t && `${t.greedy.result} ${t.greedy.sends} sends, ${t.wins}/200 ${t.label}`);
     chk(await ed.evaluate(() => /Medium/.test(document.getElementById('testOut').textContent)), 'the difficulty label is shown in the checks panel');
     await ed.click('#watchBtn');
     chk(await until(() => frame.evaluate(() => document.getElementById('botTag').style.display === 'block' && __me.game.sends > 0), 30000), '"Watch" plays the greedy bot in the preview');

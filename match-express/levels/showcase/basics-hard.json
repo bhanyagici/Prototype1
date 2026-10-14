@@ -74,8 +74,8 @@
     "title": "Hard",
     "road": "spiralHi",
     "h": 0.978,
-    "difficulty": "Hard",
-    "random": 0.105,
+    "difficulty": "Medium",
+    "random": 0.285,
     "greedyT": 165.9
   },
   "manScale": 1.1

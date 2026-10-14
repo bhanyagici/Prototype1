@@ -25,32 +25,33 @@ function custom(lanes, ramps){ return {seed:0, ramps, lanes}; }
 const noRed=(n)=>[0,1,2,3].map(c=>Array.from({length:n},(_,i)=>["orange","yellow","cyan","purple","pink","green"][(i*2+c)%6]));
 const noRedRamps=[{columns:noRed(10)},{columns:noRed(9)},{columns:noRed(10)},{columns:noRed(9)},{columns:noRed(10)}];
 const redLanes=()=>[0,1,2].map(()=>Array.from({length:4},()=>({color:"red",cap:4})));   // nobody boards: every bus returns
-/* the example from the rule: send 5, 2 return (3/5, bays 2/5), send 2 (5/5), 3 return (bays 5/5, no fail yet),
-   then a 4th returning bus fails - unless a parked bus was sent back to the road in the meantime */
+/* the example from the rule: send 5; the moment 2 of them enter the top tunnel the road counter drops to 3/5 (the bays
+   are still empty: they are on their way back); send 2 more (5/5); the first 5 park (bays 5/5, no fail yet), then the 6th
+   returning bus comes out of the return tunnel with no free bay = fail - unless a parked bus was sent back to the road first */
 function failExample(saveIt){
   const g=C.createGame({seed:0, ramps:noRedRamps, lanes:redLanes()},{}), log={};
   const nBays=()=>g.bays.filter(x=>x>=0).length;
   for(let i=0;i<5;i++) C.tapLane(g,i%3);
-  let parks=0, fourth=null;
-  const tick=()=>{ C.step(g,dt); for(const e of g.events){ if(e.type==='park') parks++;
-      if(parks>=5 && !fourth && (e.type==='tunnelOut' || e.type==='crash')) fourth={event:e.type, bus:e.bus, bay:e.bay, result:g.result}; } g.events.length=0; };
-  while(parks<2 && g.t<120) tick();
-  log.after2={counter:g.counter, bays:nBays()};
+  let ins=0, parks=0, sixth=null;
+  const tick=()=>{ C.step(g,dt); for(const e of g.events){ if(e.type==='tunnelIn') ins++; if(e.type==='park') parks++;
+      if(parks>=5 && !sixth && (e.type==='tunnelOut' || e.type==='crash')) sixth={event:e.type, bus:e.bus, bay:e.bay, result:g.result}; } g.events.length=0; };
+  while(ins<2 && g.t<120) tick();
+  log.in2={counter:g.counter, bays:nBays()};
   C.tapLane(g,0); C.tapLane(g,1); log.sent2={counter:g.counter, bays:nBays()};
   while(parks<5 && !g.result && g.t<240) tick();
   log.after5={counter:g.counter, bays:nBays(), result:g.result};
   if(saveIt){ const r=C.tapBay(g,0); log.resend={res:r, counter:g.counter, bays:nBays()}; }
-  while(!fourth && g.t<360) tick();                 // the 4th of the returning buses comes out of the tunnel
-  log.fourth=fourth;
+  while(!sixth && g.t<360) tick();                  // the 6th returning bus comes out of the tunnel
+  log.sixth=sixth;
   return log;
 }
 { const A=failExample(false), B=failExample(true);
-  chk(A.after2.counter===3 && A.after2.bays===2, 'send 5, two return and park: road 3/5, bays 2/5 (a returning bus counts until it has parked)', JSON.stringify(A.after2));
-  chk(A.sent2.counter===5 && A.sent2.bays===2, 'send 2 more: road 5/5, bays 2/5', JSON.stringify(A.sent2));
-  chk(A.after5.bays===5 && A.after5.counter===2 && A.after5.result===null, 'three of them return: bays 5/5, road 2/5, no fail', JSON.stringify(A.after5));
-  chk(A.fourth && A.fourth.event==='crash' && A.fourth.result==='fail', 'a 4th returning bus with all 5 bays full = fail', JSON.stringify(A.fourth));
-  chk(B.resend.res==='road' && B.resend.counter===3 && B.resend.bays===4 && B.fourth && B.fourth.event==='tunnelOut' && B.fourth.bay===0 && B.fourth.result===null,
-      'the same, but a parked bus is sent back to the road first: the 4th takes the freed bay, no fail', JSON.stringify([B.resend, B.fourth]));
+  chk(A.in2.counter===3 && A.in2.bays===0, 'send 5; as two of them enter the top tunnel the road counter drops to 3/5 at once (bays still 0/5: they are on their way back)', JSON.stringify(A.in2));
+  chk(A.sent2.counter===5 && A.sent2.bays===0, 'send 2 more: road 5/5', JSON.stringify(A.sent2));
+  chk(A.after5.bays===5 && A.after5.counter<=2 && A.after5.result===null, 'the first five park: bays 5/5, no fail yet (only the two later buses still count)', JSON.stringify(A.after5));
+  chk(A.sixth && A.sixth.event==='crash' && A.sixth.result==='fail', 'the 6th returning bus comes out of the return tunnel with all 5 bays full = fail', JSON.stringify(A.sixth));
+  chk(B.resend.res==='road' && B.resend.counter===A.after5.counter+1 && B.resend.bays===4 && B.sixth && B.sixth.event==='tunnelOut' && B.sixth.bay===0 && B.sixth.result===null,
+      'the same, but a parked bus is sent back to the road first: the 6th takes the freed bay, no fail', JSON.stringify([B.resend, B.sixth]));
 }
 // static re-send: road or handbrake lurch, counter +1
 { const g=C.createGame({seed:0, ramps:noRedRamps, lanes:redLanes()},{});
@@ -93,16 +94,28 @@ function failExample(saveIt){
 }
 // ---------- 5. lap, tunnel, return to leftmost bay, keeps passengers ----------
 { const lv={seed:0, ramps:noRedRamps, lanes:[[{color:"red",cap:8}],[{color:"orange",cap:6}],[{color:"blue",cap:4}]]};
-  const g=C.createGame(lv,{}); C.tapLane(g,1); C.tapLane(g,0); const b=g.buses[0]; let tin=null,tout=null,park=null,cAt=[];
-  run(g,60,g=>{ for(const e of g.events){ if(e.bus===b.id){ if(e.type==='tunnelIn'){tin=e.t; cAt.push(['in',g.counter]);} if(e.type==='tunnelOut'){tout=e.t; cAt.push(['out',g.counter]);} if(e.type==='park'){park=e; cAt.push(['park',g.counter]);} } } g.events.length=0; });
+  const g=C.createGame(lv,{}); C.tapLane(g,1); C.tapLane(g,0); const b=g.buses[0]; let tin=null,tout=null,park=null,cAt=[], c0=g.counter;
+  run(g,60,g=>{ const other=g.events.some(e=>e.bus!==b.id && ['send','jump','tunnelIn'].includes(e.type));     // (the counter's change in this very step)
+    for(const e of g.events){ if(e.bus===b.id){ if(e.type==='tunnelIn'){tin=e.t; cAt.push(['in',g.counter-c0,other]);} if(e.type==='tunnelOut'){tout=e.t; cAt.push(['out',g.counter-c0,other]);} if(e.type==='park'){park=e; cAt.push(['park',g.counter-c0,other]);} } }
+    c0=g.counter; g.events.length=0; });
   const orange=g.buses[1];
   chk(tin!==null && tout!==null && Math.abs(tout-tin-C.RETURN_TUNNEL_TIME)<0.02, 'an unfilled bus comes out of the return tunnel RETURN_TUNNEL_TIME later', tin&&tout&&(tout-tin).toFixed(2)+'s');
   chk(park && g.bays[park.bay]===b.id && park.bay===(g.bays[0]===orange.id?1:0), 'it parks in the leftmost free bay', park&&('bay '+park.bay+', orange '+orange.state+' '+orange.seated+'/6'));
-  chk(cAt.length===3 && cAt[0][1]>=1 && cAt[1][1]>=1, 'the bus still counts while in the tunnel and on its way back', JSON.stringify(cAt));
+  chk(cAt.length===3 && cAt[0][1]===-1 && !cAt[0][2] && cAt[1][1]===0 && cAt[2][1]===0, 'the bus stops counting the moment it enters the top tunnel (counter -1 right then), not when it comes out or parks', JSON.stringify(cAt));
   chk(Math.abs(b.z-C.parkZ(b.len))<1e-6 && b.dz<-0.99, 'parked from below facing up, at the top end of the bay', 'z '+b.z.toFixed(2));
   const k=g.bays.indexOf(b.id), seated=orange.seated; 
   chk(orange.seated>0 && orange.state==='bay', 'a partly filled bus keeps its seated stickmen while parked', orange.seated+'/6');
   C.tapBay(g,g.bays.indexOf(orange.id)); run(g,3); chk(orange.seated===seated && orange.state!=='bay', 'it continues from that state when sent again', orange.state+' '+orange.seated+'/6');
+}
+// a connected group that finishes its lap unfilled stops counting the moment its last member enters the top tunnel
+{ const lv={seed:0, ramps:noRedRamps, lanes:[[{color:"red",cap:4,link:"P"}],[{color:"red",cap:4,link:"P"}],[{color:"blue",cap:4}]]};
+  const g=C.createGame(lv,{}), r=C.tapLane(g,0), log=[]; let c0=g.counter, before=null;
+  run(g,60,g=>{ const ins=g.events.filter(e=>e.type==='tunnelIn').map(e=>e.bus);
+    if(ins.length) log.push({ids:ins.join(), from:c0, to:g.counter});
+    if(!before && g.buses.some(b=>b.state==='road' && b.rs>g.L.ROAD.portalS)) before=g.counter;     // a member already in the tunnel's mouth
+    c0=g.counter; g.events.length=0; });
+  chk(r==='road' && before===2 && log.length===1 && log[0].ids==='0,1' && log[0].from===2 && log[0].to===0,
+      'a connected pair keeps counting until its last member enters the top tunnel, then the counter drops by 2 at once', JSON.stringify({r, before, log}));
 }
 // ---------- 6. cheering at send time = exactly who then boards that bus ----------
 { // ramp 1: ten reds reachable (front rows and the chains behind), one of them hidden; nothing red further on
@@ -149,7 +162,7 @@ function failExample(saveIt){
     const g=C.createGame(L,{}), rng=C.mulberry32(500+run_); let think=0; const stuck=new Map(), lap=new Map();
     while(!g.result && g.t<1500){ think-=1/30; if(think<=0){ think+=C.BOT_THINK; const a=run_%3===0?C.greedyPick(g):C.randomPick(g,rng); if(a) C.applyAction(g,a); }
       C.step(g,1/30);
-      const cnt=g.buses.filter(b=>b.state==='toRoad'||b.state==='road'||b.state==='tunnel'||b.state==='return').length; if(!g.result && cnt!==g.counter) badCounter++;
+      const cnt=g.buses.filter(b=>b.state==='toRoad'||b.state==='road').length; if(!g.result && cnt!==g.counter) badCounter++;
       for(const e of g.events){                   // cheering set at send vs who then boards during that lap
         if(e.type==='send'){ const b=g.buses[e.bus]; if(e.cheer.length>b.cap-b.seated) overSeats++; lap.set(e.bus,{pred:e.cheer.slice().sort((x,y)=>x-y),got:[]}); }
         if(e.type==='board'){ const q=lap.get(e.bus); if(q) q.got.push(e.man); else lapBad++; }
@@ -163,7 +176,7 @@ function failExample(saveIt){
     games++; if(!g.result) timeouts++;
   }
   chk(minD>-0.03, 'no two buses overlap anywhere in the yard (120 bot games, separating-axis test)', 'closest '+minD.toFixed(3)+' ('+worst+')');
-  chk(badCounter===0, 'counter = buses sent to / on the main road + in the tunnel + returning, at every step of every game', badCounter+' mismatches');
+  chk(badCounter===0, 'counter = buses on their way to the main road or on it (not in the tunnel, not returning), at every step of every game', badCounter+' mismatches');
   chk(laps>1000 && lapBad===0 && misses===0 && overSeats===0, 'in every lap of every game the cheering set (fixed at send) equals the stickmen who then board that bus, never more than its free seats', laps+' laps, '+lapBad+' mismatches');
   chk(timeouts===0, 'no deadlocks: every bot game ends in a win or a fail', timeouts+' timeouts');
   console.log('      longest single wait of a yard bus: '+maxWait.toFixed(1)+'s');

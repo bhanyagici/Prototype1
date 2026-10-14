@@ -63,8 +63,8 @@
     "title": "Connected triples",
     "road": "zspiral",
     "h": 0.963,
-    "difficulty": "Hard",
-    "random": 0.135,
-    "greedyT": 144.2
+    "difficulty": "Easy",
+    "random": 1,
+    "greedyT": 128.6
   }
 }

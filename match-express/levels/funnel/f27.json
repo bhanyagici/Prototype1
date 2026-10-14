@@ -26,39 +26,39 @@
     {
       "rows": 4,
       "columns": [
-        ["red", "red", "purple", null],
-        ["green", "orange", "orange", null],
-        ["green", "orange", "orange", null],
-        ["blue", "blue", "purple", null],
-        ["red", "green", "green", null],
-        ["green", "green", "orange", null],
-        ["red", "red", "purple", "purple"],
-        ["blue", "green", "purple", "purple"],
-        ["blue", null, null, "yellow"],
-        ["red", "red", "purple", "yellow"],
-        ["blue", "blue", "orange", "yellow"]
+        ["blue", "green", "green", null],
+        ["orange", "orange", "red", null],
+        ["blue", "blue", "red", null],
+        ["blue", "blue", "yellow", null],
+        ["orange", "orange", "red", null],
+        ["orange", "orange", "yellow", "yellow"],
+        ["blue", "green", "green", "purple"],
+        ["orange", "orange", "red", "purple"],
+        ["green", "green", "red", "red"],
+        ["blue", "yellow", "red", "red"],
+        ["blue", "green", null, null]
       ],
       "at": 4.089,
       "side": -1,
       "shape": [[-0.95, -7.19]],
       "tunnels": [
-        {"col": 8, "row": 1, "w": 1, "h": 2, "color": "green", "count": 8}
+        {"col": 10, "row": 2, "w": 1, "h": 2, "color": "red", "count": 8}
       ]
     },
     {
       "rows": 4,
       "columns": [
-        ["red", "red", "purple", "yellow"],
-        ["red", "green", "green", "yellow"],
-        ["blue", "blue", "orange", "orange"],
-        ["blue", "blue", "orange", "yellow"],
-        ["blue", "blue", "purple", "purple"],
-        ["red", "red", "purple", "yellow"],
-        ["green", "green", "purple", "yellow"],
-        ["red", "green", "green", "yellow"],
-        ["red", "red", "orange", "purple"],
-        ["blue", "green", "purple", "yellow"],
-        ["blue", "blue", "orange", "yellow"]
+        ["orange", "orange", "red", "red"],
+        ["orange", "orange", "red", "red"],
+        ["blue", "blue", "yellow", "yellow"],
+        ["green", "green", "green", "purple"],
+        ["green", "red", "red", "purple"],
+        ["blue", "blue", "red", "red"],
+        ["blue", "blue", "yellow", "yellow"],
+        ["orange", "green", "green", "purple"],
+        ["orange", "orange", "red", "red"],
+        ["orange", "orange", "red", "purple"],
+        ["green", "green", "yellow", "yellow"]
       ],
       "at": 5.237,
       "side": 1,
@@ -68,31 +68,31 @@
       "rows": 4,
       "columns": [
         ["blue", "blue", "purple", "purple"],
-        ["green", "orange", "orange", "yellow"],
-        ["red", "green", "purple", "purple"],
-        ["blue", "green", null, null],
-        ["blue", "green", "purple", "purple"],
-        ["red", "red", "green", "green"],
-        ["red", "red", "purple", "purple"],
-        ["red", "red", "purple", "yellow"],
-        ["blue", "green", "green", "yellow"],
-        ["red", "red", "orange", "yellow"],
-        ["blue", "green", "purple", "purple"]
+        ["orange", "orange", null, null],
+        ["orange", "green", "green", "purple"],
+        ["orange", "green", "red", "red"],
+        ["blue", "blue", "yellow", "yellow"],
+        ["orange", "orange", "purple", "purple"],
+        ["blue", "green", "green", "purple"],
+        ["orange", "orange", "orange", "purple"],
+        ["blue", "blue", "green", "purple"],
+        ["green", "green", "yellow", "yellow"],
+        ["green", "green", "green", "purple"]
       ],
       "at": 10.488,
       "side": 1,
       "shape": [[4.53, -12.31]],
       "tunnels": [
-        {"col": 3, "row": 2, "w": 1, "h": 2, "color": "orange", "count": 8}
+        {"col": 1, "row": 2, "w": 1, "h": 2, "color": "yellow", "count": 8}
       ]
     },
     {
       "rows": 11,
       "columns": [
-        ["blue", "blue", "purple", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow"],
-        ["blue", "blue", "purple", "purple", "yellow", "yellow", "yellow", null, null, null, null],
-        ["red", "red", "green", "green", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow", "yellow"],
-        ["blue", "green", "orange", "orange", "yellow", "yellow", "yellow", "yellow", "yellow", null, null]
+        ["blue", "green", "green", "purple", "purple", "purple", "blue", "blue", null, null, null],
+        ["orange", "orange", "red", "purple", "purple", "purple", "purple", "purple", "purple", "purple", "purple"],
+        ["orange", "orange", "yellow", "yellow", "purple", "purple", "purple", "purple", "blue", "blue", null],
+        ["orange", "orange", "red", "red", "purple", "purple", "blue", "blue", null, null, null]
       ],
       "at": 14.104,
       "side": -1
@@ -100,30 +100,33 @@
   ],
   "lanes": [
     [
-      {"color": "yellow", "cap": 8},
-      {"color": "yellow", "cap": 6},
-      {"color": "red", "cap": 6},
-      {"color": "red", "cap": 12},
-      {"color": "blue", "cap": 8},
+      {"color": "purple", "cap": 12},
+      {"color": "purple", "cap": 12},
+      {"color": "blue", "cap": 4},
       {"color": "blue", "cap": 6},
-      {"color": "orange", "cap": 12},
-      {"color": "green", "cap": 12},
-      {"color": "green", "cap": 6}
-    ],
-    [
-      {"color": "yellow", "cap": 4},
-      {"color": "yellow", "cap": 12, "hidden": true},
-      {"color": "blue", "cap": 12},
-      {"color": "green", "cap": 12},
-      {"color": "purple", "cap": 12}
-    ],
-    [
-      {"color": "red", "cap": 8},
-      {"color": "green", "cap": 4},
       {"color": "orange", "cap": 12, "hidden": true},
+      {"color": "orange", "cap": 12},
+      {"color": "blue", "cap": 12},
+      {"color": "orange", "cap": 4},
+      {"color": "yellow", "cap": 12},
+      {"color": "red", "cap": 12}
+    ],
+    [
+      {"color": "orange", "cap": 4},
+      {"color": "green", "cap": 8},
+      {"color": "green", "cap": 6},
+      {"color": "green", "cap": 6, "hidden": true},
+      {"color": "red", "cap": 4},
+      {"color": "red", "cap": 4}
+    ],
+    [
+      {"color": "purple", "cap": 4},
+      {"color": "yellow", "cap": 4},
+      {"color": "green", "cap": 8},
+      {"color": "red", "cap": 12},
       {"color": "yellow", "cap": 8},
       {"color": "purple", "cap": 4},
-      {"color": "purple", "cap": 12}
+      {"color": "blue", "cap": 6}
     ]
   ],
   "meta": {

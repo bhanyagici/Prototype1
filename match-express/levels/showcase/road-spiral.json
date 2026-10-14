@@ -62,7 +62,7 @@
     "road": "spiral",
     "h": 0.963,
     "difficulty": "Easy",
-    "random": 0.915,
+    "random": 0.975,
     "greedyT": 89.2
   },
   "manScale": 1.05

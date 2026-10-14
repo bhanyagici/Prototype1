@@ -68,8 +68,8 @@
     "group": "Lane counts",
     "road": "dspiral2",
     "h": 0.925,
-    "difficulty": "Medium",
-    "random": 0.31,
-    "greedyT": 119.7
+    "difficulty": "Easy",
+    "random": 0.615,
+    "greedyT": 126.4
   }
 }

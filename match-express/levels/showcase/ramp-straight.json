@@ -60,8 +60,8 @@
     "road": "gentle",
     "h": 0.981,
     "difficulty": "Easy",
-    "random": 0.88,
-    "greedyT": 99.5
+    "random": 0.98,
+    "greedyT": 110.3
   },
   "manScale": 1.3
 }

@@ -65,7 +65,7 @@
     "road": "winding",
     "h": 0.981,
     "difficulty": "Easy",
-    "random": 0.485,
-    "greedyT": 98.6
+    "random": 0.745,
+    "greedyT": 99
   }
 }

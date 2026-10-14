@@ -74,7 +74,7 @@
     "road": "hairpin",
     "h": 0.991,
     "difficulty": "Easy",
-    "random": 0.97,
+    "random": 0.99,
     "greedyT": 111.6
   },
   "manScale": 1.1

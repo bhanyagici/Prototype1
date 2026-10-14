@@ -58,8 +58,8 @@
     "category": "Blockers",
     "title": "Connected pairs",
     "road": "gspiral",
-    "difficulty": "Medium",
-    "random": 0.31,
+    "difficulty": "Easy",
+    "random": 0.92,
     "greedyT": 145.2
   },
   "manScale": 1.05

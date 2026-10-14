@@ -59,8 +59,8 @@
     "group": "Ramp shapes",
     "road": "spiralLow",
     "h": 0.925,
-    "difficulty": "Medium",
-    "random": 0.445,
-    "greedyT": 125
+    "difficulty": "Easy",
+    "random": 0.885,
+    "greedyT": 127.7
   }
 }

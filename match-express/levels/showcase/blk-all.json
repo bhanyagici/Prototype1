@@ -109,7 +109,7 @@
     "title": "All combined",
     "road": "dspiral",
     "difficulty": "Easy",
-    "random": 0.6,
-    "greedyT": 147.9
+    "random": 0.975,
+    "greedyT": 135.9
   }
 }

@@ -4,8 +4,10 @@
 const C = require('./core.js')();
 const B = require('./baseline.json');
 // The original (pre-compaction) layout of the built-in level: same stickmen and buses, the wide road
-// and the "classic" yard.  It must still replay bit for bit against the pre-editor baseline, which shows
-// the rules did not change; the geometry tests below that edit road points by index also use it.
+// and the "classic" yard.  The greedy bot must still replay bit for bit against the pre-editor baseline, which
+// shows the rules did not change for it; the random bot's count is the one after the road counter began to let go
+// of an unfilled bus as it enters the top tunnel (31/200 before: more sends allowed, more wins).  The geometry tests
+// below that edit road points by index also use it.
 const CL = require('./fixtures/level2-classic.json');
 let pass = 0, fail = 0;
 const chk = (ok, name, info = '') => { ok ? pass++ : fail++; console.log((ok ? '  PASS  ' : '  FAIL  ') + name + (info ? '  -> ' + info : '')); };

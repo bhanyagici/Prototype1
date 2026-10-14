@@ -69,7 +69,7 @@
     "road": "zspiral",
     "h": 0.991,
     "difficulty": "Easy",
-    "random": 0.73,
+    "random": 0.975,
     "greedyT": 127
   }
 }

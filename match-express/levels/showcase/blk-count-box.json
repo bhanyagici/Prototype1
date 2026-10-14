@@ -106,7 +106,7 @@
     "title": "Count box",
     "road": "dspiralW",
     "difficulty": "Easy",
-    "random": 0.86,
+    "random": 0.98,
     "greedyT": 100.8
   }
 }
