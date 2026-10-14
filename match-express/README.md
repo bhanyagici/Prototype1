@@ -43,6 +43,64 @@ update* and *Showcase update*). **Editor:** `dist/match-express-editor.html`. Sc
   (laid out 1280 px wide and scaled down to fit), [the editor at 1440 × 900](screenshots/editor-in-showcase.png) after a save
   (`f30_1`), and [My Levels in the menu](screenshots/my-levels-390.png).
 
+## Connected trains, hidden members, full-bus exits
+
+Three fixes. Nothing else about the rules or the look changes.
+
+- **A connected group drives as one train.** The leading bus (the group's first member, the one drawn a
+  little ahead in the queue and the bays) takes its own route. Every other member first moves into that
+  route behind it, then follows it exactly, in single file with the bellows between them:
+  - from the queue: up its own lane to the collector road, along it into the leader's route, then the
+    leader's side lane, entry road and main road. A member in the leader's own lane just drives straight on
+    into it. All members use the leader's side lane.
+  - from the bays: up from its bay onto the entry road, along it into the leader's route, then into the
+    main road (a member in the middle bay goes straight up into it).
+  - From the join on, a follower's route is the leader's route point for point (`followRoute` in
+    `shared/core.js`). Members wait for the bus ahead to pass before they join, and they reach the main road
+    in order, the leader first.
+- **A hidden member stays visible.** In Jelly mode, a hidden bus that is revealed as it joins the main road
+  (a group member sent from behind, in a pair or a triple) vanished. Its reveal "pop" starts from a flat
+  body, which broke the Jelly bend (its frames turned into NaN). The bend is now computed without the pop, and
+  the pop starts from half height. The member shows its colour the moment it joins the main road, with the
+  sparkle, and drives on visibly with its group.
+- **The full-bus exit:**
+  - The full bus speeds up and drives sideways off the road on the nearest free side. That is, of its left
+    and right, a side with nothing in the way: no ramp or its rail, no overpass or other stretch of road, no
+    tunnel. If both are free, it takes the one facing the nearer left or right edge of the screen.
+    - It is rare that neither side is free: ramps facing each other across the road, or a group stopped in
+      the exit tunnel's mouth. Then it takes the milder way. An overpass to slide out from under, or a road
+      far below, is mildest; then a ramp's crowd to lift over; then a road at the same level; then tunnel
+      stone. It takes the side away from its ramp if both are alike.
+  - It hops off the road edge, and its parachute opens only once it has left the road.
+  - It then glides straight across toward the left or right edge of the screen, on the side it jumped, until
+    it has fully left the screen. If it jumped mostly up or down the screen (a road running across), it goes
+    toward the nearer edge. It never heads for the top or the bottom, and it is never hidden while on screen.
+  - It sinks gently and rises over anything in its way (road decks, ramp crowds, tunnels).
+  - A completed connected group does all of this together: one side, one glide, each bus keeping its place.
+- **Tested:**
+  - `tests/groups.test.js` (8 checks) watches every connected-group send in 130 games on 26 levels, from the
+    queue and from the bays, with 2 to 5 lanes and pairs and triples, across lanes and within one. The checks:
+    - each follower's route is the leader's from the join on;
+    - all members use one side lane;
+    - followers stay on the leader's path, step by step;
+    - no member overlaps or passes the one ahead;
+    - the order onto the road is the leader first;
+    - the greedy bot still wins every level;
+    - `followRoute` works for every pair of lanes and bays.
+  - `tests/browser.test.js`, *connected trains, hidden members, full-bus exits*:
+    - every member of every pair and triple is hidden in turn (leader, middle, last), in Rigid and Jelly;
+    - in random games the groups also leave the bays;
+    - the hidden member is visible every frame, and is revealed on joining the road with the sparkle;
+    - followers are drawn on the leader's route;
+    - on 10 levels (Rigid and Jelly, Plateau and Bridge), every exit takes a free side whenever there is
+      one, opens its parachute only off the road, and leaves through the left or right edge on its side;
+    - the glide goes straight across, and every group leaves together.
+- **Difficulty:** the train routing changes connected groups' trips through the yard a little. Over 200
+  random games per funnel level with connected buses, the random bot's win rate moves by at most 1 point
+  (17: 89.5 to 90.5%, 29: 28 to 28.5%, 30: 12 to 11.5%, 37: 23.5 to 24%, 38: 13 to 13.5%, 40: 10 to 9%; the others
+  unchanged). Every level stays in its band, and the greedy bot's times hardly change. The table under
+  *Difficulty, measured* is from before these fixes.
+
 ## Tests, screenshots and builds
 
 - **Every suite passes** (the commands are under *Verification*):
@@ -315,8 +373,9 @@ Drawn only: the rules, the queue, the bays and the timings are unchanged.
 - **A group parachutes together.** When a connected group is complete, every bus starts
   its exit at the same moment, in the leading bus's direction. Each bus keeps its place
   in the group: the group never splits, fans out or crosses itself.
-- **No bus vanishes mid-air.** A parachuting bus glides outward and gently down past the
-  board's edge. It stays well above the ground far below and never lands or fades. It is
+- **No bus vanishes mid-air.** A parachuting bus glides straight across toward the left or
+  right edge of the screen, on the side it jumped, gently down and over anything in its way
+  (see *Connected trains, hidden members, full-bus exits*). It never lands or fades. It is
   hidden only once its whole box, parachute included, has left the screen.
 - **Jelly bellows.** In Jelly mode each bus bends smoothly. The bellows run from the
   leader's rear to the follower's front, taken on the bent bodies. They stretch and bend
@@ -1496,11 +1555,12 @@ through `normalizeLevel` (and so the editor keeps it too):
   - Columns step forward in a staggered wave. Idle stickmen breathe, sway and look
     around, each a little differently.
   - **A full bus first drives straight sideways**, perpendicular to the road, off
-    the edge on the side away from its ramp, with a dust puff. Only when it is
-    completely off the road does it crouch and hop. Under the elevated U-turn
-    (ramp 5) it slides further, until no road is overhead. The parachute in its colour
-    unfolds with an overshoot, and the bus swings like a pendulum while drifting
-    down and away, its passengers waving with both arms.
+    the edge on the nearest free side (no ramp, rail, overpass, other road or tunnel
+    there), with a dust puff. Only when it is completely off the road does it crouch
+    and hop. If no side is free it takes the milder way, and under a raised road it
+    slides further, until no road is overhead. The parachute in its colour unfolds with
+    an overshoot, and the bus swings like a pendulum while gliding straight across
+    toward the left or right edge of the screen, its passengers waving with both arms.
   - The ramp check badge pops with an overshoot and a sparkle.
   - A crash plays in slow motion, then the dominoes fall and the stickmen tumble.
   - Buttons and panels spring.
@@ -1513,7 +1573,8 @@ through `normalizeLevel` (and so the editor keeps it too):
 ## Playing
 
 **Sending.** Every tap on the front bus of a queue lane sends it to the main road
-(collector road, nearer side lane, entry road). A queue bus never goes to a static
+(collector road, nearer side lane, entry road). A connected group goes in single file:
+its other members follow the leading bus's route. A queue bus never goes to a static
 bay. The road holds at most 5 buses: at 5/5 a queue tap is refused, so the bus shakes
 and nothing else happens (not a fail). A bus parked in a bay can be tapped to send it
 back to the road when the counter is below 5; at 5/5 it does a handbrake lurch.
@@ -1645,7 +1706,10 @@ node tests/ramps.test.js      # 21 checks: every ramp of every level (built-in, 
 node tests/gaps.test.js       # 70 checks: road gaps (format, level ends, no pillar under a gap, the checker), the gap code idle on a level without
                               #   gaps, and whole games of every gap level watched step by step (no overtaking, one bus or group over
                               #   a gap at a time, waiting at the edge, never stopping over a gap, the run-up boost only near a gap)
-node tests/browser.test.js    # 148 checks: game + editor in Chromium (needs `npm i playwright`): incl. the speeds 1x-3x, the booster bar,
+node tests/groups.test.js     # 8 checks: connected groups leave as a train - followers move into the leading bus's route and follow it
+                              #   exactly (queue and bays, 2-5 lanes, pairs and triples), single file, in order
+node tests/browser.test.js    # 158 checks: game + editor in Chromium (needs `npm i playwright`): incl. connected trains, hidden members and
+                              #   full-bus exits (a free side, the parachute off the road, out through the left or right edge), the speeds 1x-3x, the booster bar,
                               #   the camera setting and its zoom, Jelly buses (on the road when settled and through the spiral, straight on straight
                               #   road, a small wobble that settles, straight in the queue / bays / parachute, the same game as Rigid),
                               #   the tunnels (the route straight inside, buses within the opening, dark as they vanish and appear)

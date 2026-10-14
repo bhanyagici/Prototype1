@@ -1015,7 +1015,8 @@ function pathAt(path, s, o, hint){
   return i;
 }
 /* yard routes: corner points [x,z] joined with rounded (quadratic) corners */
-function filletPath(raw, r){
+function filletPath(raw, r){ return makePath(filletPts(raw, r)); }
+function filletPts(raw, r){
   const P = [];
   for (const p of raw) if (!P.length || Math.hypot(p[0]-P[P.length-1][0], p[1]-P[P.length-1][1]) > 1e-6) P.push(p);
   for (let i=1;i<P.length-1;i++){       // drop collinear corners
@@ -1032,7 +1033,7 @@ function filletPath(raw, r){
       out.push([w0*t1[0]+w1*b[0]+w2*t2[0], 0, w0*t1[1]+w1*b[1]+w2*t2[1]]); }
   }
   out.push([P[P.length-1][0],0,P[P.length-1][1]]);
-  return makePath(out);
+  return out;
 }
 
 /* ============================ LEVEL FORMAT ============================ */
@@ -1296,6 +1297,39 @@ function routeLaneToBay(x, z, k, len, Y){ const bx = (Y || YARD).BAY_X[k];
   return filletPath([[x,z],[x,Z_COLL],[bx,Z_COLL],[bx,parkZ(len)]], 0.6); }
 function routeReturn(k, len, T, Y){ Y = Y || YARD; T = T || Y.TUNNEL_R; const bx = Y.BAY_X[k];
   return filletPath([[T.x - T.nx*T.depth, T.z - T.nz*T.depth],[T.x, T.z],[bx,Z_COLL],[bx,parkZ(len)]], 0.8); }
+/* A connected group leaves in single file, like a train.  The leading bus takes its own route; every other member
+   drives straight ahead to the row that route runs along (zr: the collector road from the queue, the entry road from
+   the bays), along that row onto the route behind the leader, and from there on follows exactly the leader's route
+   (its very points, rounded corners and all).  A member whose own column the route runs up (the same lane, or the
+   yard's middle line from a bay) just drives straight on into it. */
+function followRoute(lead, x, z, zr){
+  const {P, n, cum} = lead, X = i => P[i*3], Z = i => P[i*3+2], EPS = 1e-6;
+  const rest = (jx, jz) => {                       // the leader's route on from the point (jx, jz) on it
+    let best = Infinity, sj = 0;
+    for (let i = 0; i < n - 1; i++){ const L = cum[i+1] - cum[i]; if (L <= 0) continue;
+      const u = clamp(((jx - X(i))*(X(i+1) - X(i)) + (jz - Z(i))*(Z(i+1) - Z(i)))/(L*L), 0, 1);
+      const d = Math.hypot(X(i) + (X(i+1) - X(i))*u - jx, Z(i) + (Z(i+1) - Z(i))*u - jz);
+      if (d < best - 1e-12){ best = d; sj = cum[i] + u*L; } }
+    const out = []; for (let i = 0; i < n; i++) if (cum[i] > sj + EPS) out.push([X(i), 0, Z(i)]);
+    return out; };
+  for (let i = 0; i < n - 1; i++)                   // straight on: the route runs up this very column, ahead
+    if (Math.abs(X(i) - x) < EPS && Math.abs(X(i+1) - x) < EPS && Z(i) < z - EPS) return makePath([[x, 0, z], [x, 0, Z(i)]].concat(rest(x, Z(i))));
+  const on = []; for (let i = 0; i < n; i++) if (Math.abs(Z(i) - zr) < EPS) on.push(i);
+  let raw, J;
+  if (on.length){                                   // the leader runs along the row from (xa) to (xb)
+    const ia = on[0], ib = on[on.length - 1], xa = X(ia), xb = X(ib);
+    const dir = Math.sign(xb - xa) || Math.sign(X(Math.min(n - 1, ib + 1)) - X(Math.max(0, ia - 1))) || 1;
+    if ((x - xa)*dir <= EPS){ raw = [[x, z], [x, zr], [xa, zr]]; J = [xa, zr]; }                    // behind it: along the row into it
+    else if ((xb - x)*dir > EPS){ const xq = x + dir*Math.min(1.2, (xb - x)*dir); raw = [[x, z], [x, zr], [xq, zr]]; J = [xq, zr]; }   // turn in behind it
+    else { let c = ib + 1;                           // past where it turns off the row: into its route where it runs straight again
+      while (c < n - 1 && Math.abs(X(c+1) - X(c)) > EPS && Math.abs(Z(c+1) - Z(c)) > EPS) c++;
+      raw = [[x, z], [x, zr], [X(c), zr], [X(c), Z(c)]]; J = [X(c), Z(c)]; }
+  } else {                                          // its route crosses the row straight on (from the middle bay)
+    let xl = X(0); for (let i = 0; i < n - 1; i++) if ((Z(i) - zr)*(Z(i+1) - zr) <= 0 && Z(i) !== Z(i+1)){ xl = X(i) + (X(i+1) - X(i))*(zr - Z(i))/(Z(i+1) - Z(i)); break; }
+    raw = [[x, z], [x, zr], [xl, zr], [xl, zr - 0.6]]; J = [xl, zr - 0.6];
+  }
+  return makePath(filletPts(raw, 0.6).concat(rest(J[0], J[1])));
+}
 function seatLocal(i, len){                        // seat i (front row first) in bus space, +z forward
   const row = Math.floor(i/2);
   return {x: (i%2 ? 0.21 : -0.21), y: 0.52, z: len/2 - 0.31 - row*ROW_PITCH};
@@ -1472,9 +1506,12 @@ function startTrip(g, b, kind, path){
   for (const e of g.trips){ const c = pairConflict(b, e); if (c) b.trip.conf.push(c); }
   b.v = 0; g.trips.push(b);
 }
-function sendToRoad(g, b, from, idx){
+function sendToRoad(g, b, from, idx, lead){
   let path;
-  if (from === 'lane'){
+  if (lead){                                         // a connected member follows its group's leading bus (see followRoute)
+    path = followRoute(lead.trip.path, b.x, b.z, from === 'lane' ? Z_COLL : Z_ENTRY);
+    if (from === 'lane'){ b.side = lead.side; g.sideUse[b.side > 0 ? 1 : 0]++; }
+  } else if (from === 'lane'){
     const mid = (g.lanes.length - 1)/2;             // lanes left of the middle use the left side lane, right of it the right one
     const side = idx < mid ? -1 : idx > mid ? 1 : (g.sideUse[1] < g.sideUse[0] ? 1 : -1);
     b.side = side; g.sideUse[side > 0 ? 1 : 0]++;
@@ -1568,11 +1605,12 @@ function groupReady(g, grp){
     return ids.every((id, i) => q[i] === id || ids.includes(q[i])) && ids.every(id => q.indexOf(id) < ids.length); });
 }
 const groupParked = (g, grp) => grp.members.every(id => g.buses[id].state === 'bay');
-function sendGroup(g, grp, from){
-  const lastInLane = {};
+function sendGroup(g, grp, from){                  // the leading bus (the first member) takes its route, the others follow it
+  const lastInLane = {}; let lead = null;
   for (const id of grp.members){ const b = g.buses[id];
-    if (from === 'lane'){ const q = g.lanes[b.lane]; q.splice(q.indexOf(id), 1); lastInLane[b.lane] = id; sendToRoad(g, b, 'lane', b.lane); }
-    else { const k = b.bay; g.bays[k] = -1; b.bay = -1; sendToRoad(g, b, 'bay', k); } }
+    if (from === 'lane'){ const q = g.lanes[b.lane]; q.splice(q.indexOf(id), 1); lastInLane[b.lane] = id; sendToRoad(g, b, 'lane', b.lane, lead); }
+    else { const k = b.bay; g.bays[k] = -1; b.bay = -1; sendToRoad(g, b, 'bay', k, lead); }
+    if (!lead) lead = b; }
   Object.keys(lastInLane).forEach(l => afterLaneShift(g, +l, lastInLane[l]));
 }
 function tapLane(g, l){
@@ -2320,7 +2358,7 @@ root.MECore = {
   LEVEL_DATA, PRESETS, RAMP_TILT, COLORS, HEX, BUS_PLAN, RAMP_ROWS, BUS_W, ROW_PITCH, ROAD_HALF, busLen,
   Z_ENTRY, Z_ROAD0, BAY_X, Z_BAY_TOP, Z_BAY_BOT, Z_COLL, Z_LANE_TOP, LANE_X, LANE_MIN, LANE_MAX, laneXs, X_SIDE, TUNNEL_X, TUNNEL, TUNNEL_L, TUNNEL_R, YARDS, YARD,
   parkZ, laneSlotZ, ROAD, RAMPS, seatLocal, pathAt, makePath, catmullRom, project,
-  routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn,
+  routeToRoad, routeBayToRoad, routeLaneToBay, routeReturn, followRoute,
   normalizeLevel, buildLayout, buildRamp, parseCell, cellStr, checkLevel, difficulty, testLevel,
   createGame, step, tapLane, tapBay, canRoad, freeBay, frontColors, legalSends,
   greedyPick, randomPick, applyAction, simulate, lapBoarders, groupReady, linkGroups, queueDeadlock, rampEmpty, KEY_FALLBACK_DELAY, validateLevel, generateLevel, evaluateLevel, searchSeed, mulberry32

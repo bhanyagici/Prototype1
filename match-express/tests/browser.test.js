@@ -340,6 +340,121 @@ async function until(fn, ms = 20000, step = 150){ const t0 = Date.now(); let v; 
         `${r.jumps} parachutes, ${r.gone} left the screen, ${r.vanished} vanished on screen (games: ${r.result})`);
       await ctx.close(); }
 
+    /* ---------------- connected trains, hidden members, full-bus exits ---------------- */
+    console.log('connected trains, hidden members, full-bus exits');
+    { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
+      await p.goto(base + '/index.html?nosim'); await p.waitForFunction(() => window.__me && __me.game, null, {timeout:90000});
+      const SC = id => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'levels', 'showcase', id + '.json'), 'utf8'));
+      // a hidden member of a pair or a triple: one game, every frame from the moment it is sent until it leaves the road
+      const hidRun = (lv, hide, move, seed) => p.evaluate(([lv, hide, move, seed]) => {
+        const C = window.MECore; __me.setMove(move); __me.loadLevel(lv, 'export'); __me.freeze(true);
+        const g = __me.game, rng = seed ? C.mulberry32(seed) : null, ids = hide.map(([l, i]) => g.lanes[l][i]);
+        const res = {sends:{lane:0, bay:0}, bad:[], hiddenSent:0, reveals:[], drawnOff:0, drawnN:0, roles:{}};
+        const st = new Map(), trains = [];
+        for (let k = 0; k < 30*900 && !g.result; k++){
+          if (k % 6 === 0){ const a = rng ? C.randomPick(g, rng) : C.greedyPick(g); if (a) __me.tap(a); }
+          __me.advance(1/30);
+          for (const id of ids){ const b = g.buses[id], v = __me.views[id], s = st.get(id) || {state:b.state, rev:b.revealed}; st.set(id, s);
+            if (b.state === 'toRoad' && s.state !== 'toRoad'){ const from = s.state === 'bay' ? 'bay' : 'lane'; res.sends[from]++;
+              res.roles[b.group.members.indexOf(id) + '/' + b.group.members.length] = 1;
+              if (!b.revealed){ res.hiddenSent++; s.watchReveal = true; } }
+            if (s.watchReveal && b.revealed){ s.watchReveal = false;
+              const sp = __me.sparkles.filter(q => Math.abs(q.t - g.t) < 0.05 && Math.hypot(q.x - v.p.x, q.z - v.p.z) < 1.0).length;
+              res.reveals.push({onRoad:b.state === 'road' && s.state === 'toRoad', q:!!v.q, sparkle:sp > 0}); }
+            if (['toRoad', 'road'].includes(b.state)){
+              v.root.updateMatrixWorld(true);
+              const q = v.root.position, fin = [q.x, q.y, q.z].every(Number.isFinite) && v.body.matrixWorld.elements.every(Number.isFinite);
+              const sk = v.U.uSk.value.every(f => [f.x, f.y, f.z, f.w].every(Number.isFinite)) && v.U.uSkP.value.every(Number.isFinite);
+              const near = b.state === 'road' && b.rs > g.L.ROAD.portalS - 1.5;           // going into the exit tunnel's darkness
+              if (!near && !(v.root.visible && v.body.visible && v.mesh.visible && fin && sk && v.body.scale.y > 0.3 && v.dark < 0.9))
+                res.bad.push(`${g.t.toFixed(2)} ${b.state} vis=${v.root.visible} fin=${fin} sk=${sk} sy=${v.body.scale.y.toFixed(2)} dark=${v.dark.toFixed(2)}`); }
+            s.state = b.state; s.rev = b.revealed; }
+          // the train as drawn: once on the leader's route, a follower drives along the leader's route as drawn
+          for (const G of g.groups){ const lead = g.buses[G.members[0]];
+            if (lead.state === 'toRoad' && lead.trip && !trains.some(T => T.trip === lead.trip)){ const P = lead.trip.path, o = {}, pts = [];
+              for (let s = 0; s <= P.len; s += 0.05){ C.pathAt(P, s, o, 0); pts.push(C.dispPoint(o.x, o.z)); } trains.push({trip:lead.trip, G, P, pts}); }
+          }
+          for (const T of trains) for (const id of T.G.members.slice(1)){ const b = g.buses[id], v = __me.views[id]; if (b.state !== 'toRoad' || !v.init) continue;
+            let dc = 9, o = {}; for (let s = 0; s <= T.P.len; s += 0.05){ C.pathAt(T.P, s, o, 0); dc = Math.min(dc, Math.hypot(o.x - b.x, o.z - b.z)); }
+            if (dc > 1e-3) continue;                                   // not on the leader's route yet
+            let dd = 9; for (const [x, z] of T.pts) dd = Math.min(dd, Math.hypot(x - v.p.x, z - v.p.z));
+            res.drawnN++; if (dd > 0.25) res.drawnOff++; }
+        }
+        res.result = g.result; res.bad = res.bad.slice(0, 3).concat(res.bad.length > 3 ? [`(+${res.bad.length - 3})`] : []); return res; }, [lv, hide, move, seed]);
+      // every member of every group in the pairs and the triples levels hidden in turn (leader, middle, last), both bus modes
+      const H = {sends:{lane:0, bay:0}, bad:[], hidden:0, reveals:[], drawnOff:0, drawnN:0, roles:new Set(), games:0};
+      const add = (r, tag) => { H.games++; H.sends.lane += r.sends.lane; H.sends.bay += r.sends.bay; H.hidden += r.hiddenSent; H.reveals.push(...r.reveals);
+        H.drawnOff += r.drawnOff; H.drawnN += r.drawnN; Object.keys(r.roles).forEach(k => H.roles.add(k)); if (r.bad.length) H.bad.push(tag + ': ' + r.bad.join(', ')); };
+      for (const id of ['blk-connected-pairs', 'blk-connected-triples']){ const lv = SC(id);
+        const spots = {}; lv.lanes.forEach((ln, l) => ln.forEach((x, i) => { if (x.link) (spots[x.link] = spots[x.link] || []).push([l, i]); }));
+        for (const move of ['rigid', 'jelly']) for (const sp of Object.values(spots)) for (const s of sp){
+          const v = JSON.parse(JSON.stringify(lv)); v.lanes[s[0]][s[1]].hidden = true; add(await hidRun(v, [s], move, 0), `${id} ${move} ${s}`); }
+        // random play with every member hidden: the groups also park and leave the bays again
+        const all = Object.values(spots).flat(), v = JSON.parse(JSON.stringify(lv)); all.forEach(([l, i]) => { v.lanes[l][i].hidden = true; });
+        for (const seed of [11, 12, 13]) add(await hidRun(v, all, 'jelly', seed), `${id} random ${seed}`); }
+      chk(H.sends.lane >= 26 && H.sends.bay >= 4 && ['0/2', '1/2', '0/3', '1/3', '2/3'].every(k => H.roles.has(k)) && H.hidden >= 8,
+        'hidden members of pairs and triples (as leader, middle and last member) are sent from the queue and from the bays, in Rigid and Jelly',
+        `${H.games} games: ${H.sends.lane} sends from the queue, ${H.sends.bay} from the bays, ${H.hidden} still hidden when sent; roles ${[...H.roles].sort().join(' ')}`);
+      chk(!H.bad.length, 'a hidden member stays visible every frame on its way to the road and with its group on the road (Rigid and Jelly)', H.bad.slice(0, 2).join(' | '));
+      chk(H.reveals.length === H.hidden && H.reveals.every(r => r.onRoad && !r.q && r.sparkle), 'a member still hidden when sent shows its colour the moment it joins the main road, with the sparkle',
+        `${H.reveals.filter(r => r.onRoad && !r.q && r.sparkle).length}/${H.reveals.length} revealed on joining, ${H.hidden} sent hidden`);
+      chk(H.drawnN > 500 && H.drawnOff === 0, 'as drawn, every follower drives along the leader\'s route once it has moved into it', `${H.drawnN} frames, ${H.drawnOff} off the route`);
+
+      // full buses: off the road on a free side, the parachute only once off the road, then straight across and out
+      // through the left or right edge of the screen on the side it jumped; groups together
+      const exitRun = (lv, move, terr) => p.evaluate(([lv, move, terr]) => {
+        const C = window.MECore; __me.setMove(move); __me.setTerrain(terr); __me.loadLevel(lv, 'export'); __me.freeze(true);
+        const g = __me.game, cam = __me.camera, V = new cam.position.constructor(), T = new Map(), R = __me.layout.ROAD, o = {};
+        const res = {jumps:0, freeSide:0, noFree:0, wrongPick:0, stripHit:0, early:0, vanish:0, offEarly:0, wrongEdge:0, edgeTB:0, maxDy:0, maxBack:0, sideRule:0, groups:0, groupApart:0, L:0, R:0};
+        const ndc = (x, y, z) => { V.set(x, y, z).project(cam); return [V.x, V.y]; };
+        for (let k = 0; k < 60*700; k++){
+          if (k % 12 === 0 && !g.result){ const a = C.greedyPick(g); if (a) __me.tap(a); }
+          __me.advance(1/60);
+          for (const v of __me.views){ const J = v.jump; if (!J || v.b.state !== 'jump') continue; let s = T.get(v.b.id);
+            if (!s){ s = {J}; T.set(v.b.id, s); res.jumps++; res[J.gx < 0 ? 'L' : 'R']++;
+              const sides = __me.exitSides(v);                     // (for a group: both sides, for all its members)
+              if (sides.some(x => !x.why)){ res.freeSide++; if (J.why || !sides.some(x => !x.why && x.ex === J.ex && x.ez === J.ez)) res.wrongPick++; } else res.noFree++;
+              if (Math.abs(J.ex) >= 0.3 && Math.sign(J.ex) !== J.gx) res.sideRule++;
+              // independently: on a free side the strip it slides across holds no ramp and no other stretch of road
+              if (!J.why){ const hx = Math.sin(J.h), hz = Math.cos(J.h), hl = v.b.len/2*v.root.scale.x;
+                for (let d = C.ROAD_HALF; d <= J.out + 0.5 && !s.hit; d += 0.1) for (let a = -hl; a <= hl && !s.hit; a += 0.2){
+                  const px = J.x + J.ex*d + hx*a, pz = J.z + J.ez*d + hz*a;
+                  if (__me.layout.RAMPS.some(r => C.polyDist(r.outline, px, pz) < 0.05)) s.hit = 'ramp';
+                  for (let i = 0; i < R.n && !s.hit; i++){ if (Math.abs(R.cum[i] - v.b.rs) < hl + C.ROAD_HALF + 0.8) continue;
+                    if (Math.hypot(R.P[i*3] - px, R.P[i*3+2] - pz) < C.ROAD_HALF - 0.05) s.hit = 'road'; } }
+                if (s.hit) res.stripHit++; } }
+            if (s.done) continue;
+            const q = v.root.position;
+            if (!s.chute && v.chute && v.chute.visible){ s.chute = true; let dmin = 9;
+              for (let a = v.b.rs - 3; a <= v.b.rs + 3; a += 0.05){ C.pathAt(R, Math.max(0, Math.min(R.len, a)), o, 0); dmin = Math.min(dmin, Math.hypot(o.x - q.x, o.z - q.z)); }
+              if (dmin < C.ROAD_HALF + C.BUS_W/2*v.root.scale.x - 0.02) res.early++; }
+            if (J.gone){ s.done = true; const n = s.last;
+              if (!n || Math.sign(n[0]) !== J.gx || Math.abs(n[0]) < 0.8) res.wrongEdge++; if (n && Math.abs(n[1]) > 0.98) res.edgeTB++;
+              if (!J.goneAt || !__me.offScreen(...J.goneAt, v.b.len)) res.offEarly++; continue; }
+            if (!v.root.visible){ res.vanish++; s.done = true; continue; }
+            const n = ndc(q.x, q.y + 0.4, q.z); s.last = n;
+            if (g.t - J.t0 > J.t3 + 0.3){ s.y0 = s.y0 == null ? n[1] : s.y0; res.maxDy = Math.max(res.maxDy, Math.abs(n[1] - s.y0));
+              if (s.px != null) res.maxBack = Math.max(res.maxBack, -(n[0] - s.px)*J.gx); s.px = n[0]; } }
+          if (g.result && k > 60*4 && [...T.values()].every(s => s.done)) break; }
+        for (const G of g.groups){ const Js = G.members.map(id => (T.get(id) || {}).J).filter(Boolean); if (Js.length < 2) continue; res.groups++;
+          if (Js.some(J => J.gx !== Js[0].gx || J.ex !== Js[0].ex || J.ez !== Js[0].ez || J.t0 !== Js[0].t0)) res.groupApart++; }
+        res.unfinished = [...T.values()].filter(s => !s.done).length; res.result = g.result; __me.setTerrain('plateau'); return res; }, [lv, move, terr]);
+      const X = {}; const tot = r => Object.keys(r).forEach(k => { if (typeof r[k] === 'number') X[k] = k.startsWith('max') ? Math.max(X[k] || 0, r[k]) : (X[k] || 0) + r[k]; });
+      for (const [id, move, terr] of [['road-spiral', 'rigid', 'plateau'], ['road-hairpin', 'rigid', 'plateau'], ['road-double-spiral', 'jelly', 'plateau'], ['ramp-straight', 'rigid', 'plateau'],
+          ['blk-connected-triples', 'jelly', 'plateau'], ['blk-all', 'rigid', 'plateau'], ['lanes-5', 'rigid', 'plateau'], ['jump-spiral', 'rigid', 'plateau'], ['road-s-curve', 'rigid', 'bridge'], ['blk-connected-pairs', 'rigid', 'bridge']])
+        tot(await exitRun(SC(id), move, terr));
+      chk(X.jumps > 120 && X.L > 20 && X.R > 20 && X.groups >= 6 && !X.unfinished, 'full buses and connected groups leave in Rigid and Jelly, on the Plateau and a Bridge, toward both edges',
+        `${X.jumps} exits (${X.L} left, ${X.R} right), ${X.groups} groups`);
+      chk(!X.wrongPick && !X.stripHit, 'a full bus drives sideways off the road on a free side whenever it has one: no ramp, rail, overpass, other road or tunnel there',
+        `${X.freeSide} with a free side, ${X.wrongPick} took a blocked one, ${X.stripHit} free strips not clear; ${X.noFree} with nothing free on either side (ramps facing each other, a group in the tunnel mouth: the milder way)`);
+      chk(!X.early, 'its parachute opens only once the bus has left the road', `${X.early} opened over the road`);
+      chk(!X.vanish && !X.offEarly && !X.wrongEdge && !X.edgeTB && !X.sideRule,
+        'every parachute glides out through the left or right edge of the screen on the side it jumped (never the top or bottom), visible until it has fully left the screen',
+        `${X.wrongEdge} out the other way, ${X.edgeTB} through the top or bottom, ${X.vanish} vanished on screen, ${X.offEarly} hidden still on screen`);
+      chk(X.maxDy < 0.2 && X.maxBack < 0.005, 'the glide goes straight across: no turning back, hardly any drift up or down', `up/down drift ${X.maxDy.toFixed(3)} of the screen half-height, largest step back ${X.maxBack.toFixed(4)}`);
+      chk(!X.groupApart, 'a completed connected group leaves on one side together and glides off the screen on that side', `${X.groups} groups, ${X.groupApart} apart`);
+      await ctx.close(); }
+
     /* ---------------- terrain: Plateau or Bridge ---------------- */
     console.log('terrain');
     { const ctx = await newCtx(), p = await ctx.newPage(); watch(p);
