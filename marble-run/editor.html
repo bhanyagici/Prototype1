@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marble Run — Level Editor</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{--bg:#171c29;--panel:#1f2636;--panel2:#283149;--line:#36405a;--text:#e8ecf6;--mute:#97a1ba;--accent:#4aa8ff;--accent2:#ffc531;
+    --ok:#3fbf62;--bad:#ff5a5f;--warn:#ffb020;--hover:#9fd0ff}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+  button,select,input,textarea{font:inherit;color:inherit}
+  button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:transform .25s cubic-bezier(.34,1.9,.5,1),background .12s,border-color .12s}
+  button:hover{background:#34405e;border-color:#4b5778} button:active{transform:scale(.94);transition:transform .06s}
+  button:disabled{opacity:.4;cursor:default}
+  button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary{background:linear-gradient(#5ec1ff,#1f7ae6);border-color:#1f7ae6;color:#fff;font-weight:700}
+  button.danger:hover{background:#5a2a33;border-color:#a3434c}
+  button.ghost{background:transparent;border-color:transparent} button.ghost:hover{background:#2c3550}
+  svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  input[type=text],input[type=number],select,textarea{background:#141927;border:1px solid var(--line);border-radius:7px;padding:5px 7px}
+  input[type=number]{width:70px}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  #app{display:grid;grid-template-columns:190px minmax(320px,1fr) 224px 280px auto;grid-template-rows:50px minmax(0,1fr);height:100%}
+  /* ---- top toolbar ---- */
+  #bar{grid-column:1/-1;display:flex;align-items:center;gap:6px;padding:0 10px;background:#11151f;border-bottom:1px solid var(--line)}
+  #bar .logo{font-weight:800;font-size:15px;margin-right:6px;white-space:nowrap} #bar .logo b{color:var(--accent2)}
+  #bar .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+  #bar .sp{flex:1}
+  #levelId{width:110px;font-family:ui-monospace,Menlo,monospace} #levelName{width:170px}
+  #saveState{font-size:11px;color:var(--mute);white-space:nowrap;min-width:84px}
+  #saveState.dirty{color:var(--warn)}
+  .menu{position:relative}
+  .menu > .items{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:250px;z-index:40;background:#1b2131;border:1px solid var(--line);
+    border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+  .menu.right > .items{left:auto;right:0}
+  .menu.open > .items{display:block;animation:drop .14s ease-out}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .menu .items button{display:flex;width:100%;justify-content:flex-start;background:transparent;border:0;border-radius:7px;padding:7px 9px}
+  .menu .items button:hover{background:#2c3550}
+  .menu .items kbd{margin-left:auto}
+  .menu .items hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+  kbd{font:11px ui-monospace,Menlo,monospace;padding:1px 5px;border-radius:4px;background:#0f1320;border:1px solid var(--line);color:var(--mute)}
+  #status{color:var(--mute);font-size:11px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+  /* ---- left palette ---- */
+  #palette{background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:8px}
+  .grp{margin:0 0 10px} .grp h3{margin:4px 2px 6px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+  .tool{display:flex;width:100%;justify-content:flex-start;margin:2px 0;padding:6px 8px;background:transparent;border-color:transparent}
+  .tool:hover{background:#2a3350;border-color:#3a4566}
+  .tool.on{background:#25426b;border-color:var(--accent);color:#fff}
+  .tool kbd{margin-left:auto}
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:4px 0}
+  .sw{height:26px;border-radius:7px;border:2px solid transparent;cursor:pointer;position:relative}
+  .sw:hover{border-color:#fff8}
+  .sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+  .sw small{position:absolute;right:3px;bottom:0;font-size:10px;color:#0008;font-weight:800}
+  .caps{display:flex;gap:4px} .caps button{flex:1;justify-content:center;padding:4px 0}
+  /* ---- centre view ---- */
+  #stage{position:relative;min-width:0;background:#c9a674;overflow:hidden}
+  #view{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+  #modeTag{position:absolute;left:10px;top:8px;background:rgba(10,14,24,.6);padding:4px 10px;border-radius:12px;font-size:12px;pointer-events:none}
+  #hint{position:absolute;left:10px;bottom:8px;right:10px;color:#fff;font-size:12px;text-shadow:0 1px 2px #000;pointer-events:none;opacity:.9}
+  /* ---- queue pane ---- */
+  #queuePane{display:flex;flex-direction:column;min-height:0;background:#1a2030;border-left:1px solid var(--line)}
+  #queuePane header{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px;padding:8px 10px 4px} #queuePane header .ghost{padding:3px 5px}
+  #queuePane header h3{margin:0;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);flex:1}
+  #queueScroll{flex:1;overflow:auto;padding:0 6px 8px}
+  #queueSvg{display:block}
+  #queueSvg .qbox{cursor:grab} #queueSvg .qbox.drag{cursor:grabbing;opacity:.55}
+  #queueSvg .qbox:not(.sel):hover > rect:first-of-type{stroke:var(--hover);stroke-width:3}
+  #queueFoot{display:flex;gap:4px;padding:6px;border-top:1px solid var(--line)} #queueFoot button{flex:1;justify-content:center;padding:5px 2px;font-size:12px}
+  /* ---- inspector ---- */
+  #inspector{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-left:1px solid var(--line)}
+  #insp{flex:1;overflow:auto;padding:8px 10px}
+  .card{background:var(--panel2);border-radius:10px;padding:10px;margin:0 0 8px;animation:appear .2s ease-out}
+  @keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .card h2{margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:7px}
+  .card h4{margin:8px 0 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:5px 0}
+  .row > label:first-child{min-width:78px;color:var(--mute)}
+  .hint{color:var(--mute);font-size:12px}
+  .stepper{display:inline-flex;align-items:center;gap:3px} .stepper b{min-width:22px;text-align:center} .stepper button{padding:2px 8px}
+  .pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:700}
+  .pill.ok{background:#1f4d2e;color:#9be7ad} .pill.bad{background:#5a2a33;color:#ffb4b4}
+  #checks{border-top:1px solid var(--line);padding:8px 10px 10px;max-height:44%;overflow:auto;background:#1b2131}
+  #checks h3{margin:2px 0 6px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:6px}
+  .cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+  .cc{display:flex;align-items:center;gap:4px;padding:2px 5px;border-radius:6px;font-size:11px;background:#141927;border:1px solid transparent}
+  .cc.ok{border-color:rgba(63,191,98,.55)} .cc.bad{border-color:var(--bad);background:#3a1f26}
+  .cc i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .warn{color:#ffb4b4;font-size:12px;margin:3px 0;cursor:pointer;display:flex;gap:5px} .warn:hover{color:#fff}
+  .okline{color:#9be7ad;font-size:12px}
+  #testOut{font-size:12px;margin-top:6px;white-space:pre-wrap}
+  .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-weight:700;font-size:12px;color:#111}
+  /* ---- preview dock ---- */
+  #previewDock{display:flex;flex-direction:column;align-items:center;padding:8px 10px;background:#11151f;border-left:1px solid var(--line);min-height:0}
+  #previewDock.hide{display:none}
+  #phone{position:relative;border-radius:46px;background:#0b0e15;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.5),inset 0 0 0 2px #2c3448;transform-origin:top center}
+  #phoneInner{width:390px;height:844px;border-radius:34px;overflow:hidden;position:relative;background:#000}
+  #preview{width:390px;height:844px;border:0;display:block}
+  #camSeg{display:flex;gap:0;margin:0 0 8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+  #camSeg button{border:0;border-radius:0;padding:4px 10px;font-size:12px;background:transparent;color:inherit;cursor:pointer}
+  #camSeg button.on{background:#2f6fde;color:#fff}
+  #zoomRow{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:12px;flex:none;width:100%;max-width:330px}
+  #zoomRow input{flex:1;min-width:0;accent-color:#2f6fde} #zoomRow b{min-width:74px;text-align:center;font-variant-numeric:tabular-nums}
+  #zoomRow button{padding:2px 8px;font-size:12px}
+  /* ---- modals ---- */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(6,9,16,.6)}
+  .modal.show{display:flex;animation:fadein .15s}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.55);max-height:88vh;display:flex;flex-direction:column}
+  .sheet > header{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .sheet > header h2{margin:0;font-size:16px;flex:1}
+  #levelsModal .sheet{width:min(1080px,94vw);height:min(720px,86vh)}
+  .cols2{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;padding:12px;min-height:0;flex:1}
+  .col{display:flex;flex-direction:column;min-height:0;background:#1a2030;border-radius:10px;padding:10px}
+  .col h3{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:6px}
+  .list{flex:1;overflow:auto;margin:6px 0}
+  .lrow{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;margin:3px 0;background:#222a3d;border:1px solid transparent}
+  .lrow:hover{border-color:#3d4a6c}
+  .lrow.cur{border-color:var(--accent)} .lrow.sel{background:#2c3a5c;box-shadow:inset 3px 0 0 var(--accent)}
+  .lrow code{font:12px ui-monospace,Menlo,monospace;color:#cfe3ff;overflow:hidden;text-overflow:ellipsis}
+  .lrow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lrow .acts{display:flex;gap:3px} .lrow .acts button{padding:3px 6px;font-size:12px}
+  .orow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;margin:3px 0;background:#222a3d;border:1px solid transparent;cursor:grab;user-select:none}
+  .orow.bad{border-color:var(--bad);background:#3a1f26}
+  .orow .n{width:22px;text-align:right;color:var(--mute)} .orow code{font:12px ui-monospace,Menlo,monospace;flex:1}
+  .orow .nm{color:var(--mute);font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .orow.dragging{opacity:.4} .orow.over{box-shadow:0 -3px 0 var(--accent)}
+  .owarn{color:#ffb4b4;font-size:12px;margin:2px 0}
+  #helpModal .sheet{width:min(820px,94vw)}
+  .keys{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 24px;padding:14px 18px;overflow:auto}
+  .keys div{display:flex;align-items:center;gap:10px;padding:3px 0;border-bottom:1px dashed #2c3550}
+  .keys div span{flex:1}
+  .guide{padding:0 18px 16px;color:var(--mute);font-size:12px;line-height:1.5}
+  textarea{width:100%;font:12px ui-monospace,Menlo,monospace;resize:vertical}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(30px);opacity:0;background:#0f1422;border:1px solid var(--line);
+    padding:8px 16px;border-radius:12px;z-index:70;transition:transform .3s cubic-bezier(.34,1.7,.5,1),opacity .2s;pointer-events:none}
+  .toast.show{transform:translateX(-50%);opacity:1}
+  /* ---- context menu, add-bus popover, lane stepper, unsaved dot, empty states ---- */
+  #ctx{position:fixed;z-index:60;min-width:220px;background:#1b2131;border:1px solid var(--line);border-radius:10px;padding:5px;box-shadow:0 12px 30px rgba(0,0,0,.5);display:none}
+  #ctx.show{display:block;animation:drop .12s ease-out}
+  #ctx button{display:flex;width:100%;justify-content:flex-start;background:transparent;border:0;border-radius:7px;padding:6px 9px;font-size:13px}
+  #ctx button:hover:not(:disabled){background:#2c3550} #ctx button kbd{margin-left:auto} #ctx hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+  #ctx .ttl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);padding:4px 9px 2px}
+  #boxPop{position:fixed;z-index:55;width:236px;background:#1b2131;border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 14px 34px rgba(0,0,0,.5);display:none}
+  #boxPop.show{display:block;animation:drop .12s ease-out}
+  #boxPop h4{margin:0 0 6px;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+  #boxPop .lanesel{display:flex;gap:4px} #boxPop .lanesel button{flex:1;justify-content:center;padding:4px 0}
+  #boxPop .row > label:first-child{min-width:52px}
+  #qLanes{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:var(--mute)} #qLanes b{color:var(--text);min-width:12px;text-align:center} #qLanes button{padding:1px 7px}
+  #queueFoot .primary{flex:2}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--warn);margin-right:2px;box-shadow:0 0 0 3px rgba(255,176,32,.2);visibility:hidden}
+  .dot.on{visibility:visible}
+  .iwarn{background:#3a1f26;border:1px solid var(--bad);color:#ffd0d0;border-radius:8px;padding:6px 8px;margin:0 0 8px;font-size:12px}
+  .iwarn b{color:#fff}
+  #qWarn{padding:0 8px} #qWarn .iwarn{margin:6px 0 0;cursor:pointer}
+  #emptyView{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);background:rgba(10,14,24,.72);border:1px solid var(--line);border-radius:12px;padding:10px 14px;
+    color:#e8ecf6;font-size:13px;display:none;align-items:center;gap:8px;pointer-events:none}
+  #emptyView button{pointer-events:auto}
+  #emptyView.show{display:flex}
+  [data-tip]{position:relative}
+  @media (max-width:1560px){ #status{display:none} }
+  @media (max-width:1300px){ #bar .logo b{display:none} #levelName{width:130px} }
+</style>
+<style>
+  .toyk{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin:4px 0}
+  .toyk button{justify-content:flex-start;padding:4px 6px;font-size:12px} .toyk button i{width:10px;height:10px;border-radius:3px;display:inline-block;flex:none}
+  #queueSvg .qbox{cursor:grab} #queueSvg .qbox.drag{cursor:grabbing;opacity:.55}
+  #queueSvg .qbox:not(.sel):hover > rect:first-of-type{stroke:var(--hover);stroke-width:3}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="bar">
+    <div class="logo">Marble Run <b>Editor</b></div>
+    <div class="menu" id="fileMenu"><button data-menu title="File: new, levels, save, import">ICON:file File</button>
+      <div class="items">
+        <button data-act="new">ICON:plus New level <kbd>Ctrl N</kbd></button>
+        <button data-act="levels">ICON:list Open · levels &amp; level order… <kbd>Ctrl O</kbd></button>
+        <hr><button data-act="save">ICON:save Save <kbd>Ctrl S</kbd></button>
+        <button data-act="saveAs">ICON:copy Save as new level… <kbd>Ctrl Shift S</kbd></button>
+        <button data-act="dupLevel">ICON:copy Duplicate this level</button>
+        <hr><button data-act="import">ICON:upload Import level JSON…</button>
+      </div></div>
+    <button id="undoBtn" title="Undo (Ctrl Z)">ICON:undo</button>
+    <button id="redoBtn" title="Redo (Ctrl Shift Z or Ctrl Y)">ICON:redo</button>
+    <div class="sep"></div>
+    <span class="dot" id="dirtyDot" title="Unsaved changes (a draft is kept automatically)"></span>
+    <input type="text" id="levelId" title="Level id: unique, letters, digits, _ and - (e.g. lvl_001)" spellcheck="false">
+    <input type="text" id="levelName" title="Level name (shown in the game)">
+    <span id="saveState"></span>
+    <div class="sp"></div>
+    <span id="status">preview: waiting…</span>
+    <button id="runBtn" class="primary" title="Restart the preview with this level (Ctrl Enter)">ICON:play Run</button>
+    <button id="autoBtn" title="Restart the preview after every edit">ICON:refresh Auto</button>
+    <button id="watchBtn" title="Play the greedy bot's game in the preview">ICON:robot Watch</button>
+    <button id="testBtn" title="Run the greedy bot and 200 random bots in the background">ICON:flask Test</button>
+    <div class="sep"></div>
+    <div class="menu right" id="exportMenu"><button data-menu title="Export">ICON:download Export</button>
+      <div class="items">
+        <button data-act="exportJSON">ICON:file Level JSON (with its id) <kbd>Ctrl E</kbd></button>
+        <button data-act="exportHtmlLevel">ICON:play Playable HTML — this level <kbd>Ctrl Shift E</kbd></button>
+        <button data-act="exportHtmlOrder">ICON:list Playable HTML — level order</button>
+        <hr><button data-act="exportOrder">ICON:list Level order JSON</button>
+        <button data-act="playTab">ICON:external Play this level in a new tab</button>
+      </div></div>
+    <button id="previewBtn" class="on" title="Show / hide the phone preview">ICON:phone</button>
+    <button id="helpBtn" title="Keyboard shortcuts and help (?)">ICON:help</button>
+  </header>
+
+  <aside id="palette"></aside>
+  <main id="stage"><canvas id="view"></canvas><div id="modeTag"></div><div id="hint"></div><div id="emptyView"></div></main>
+  <section id="queuePane">
+    <header><h3>Box lanes</h3><span id="qLanes" title="Number of box lanes (2-5)">Lanes <button id="qLaneMinus" title="Remove the last lane">−</button><b id="qLaneN">3</b><button id="qLanePlus" title="Add a lane">+</button></span>
+      <button class="ghost" id="qLinkBtn" title="Connect the selected boxes (L)">ICON:link</button><button class="ghost" id="qUnlinkBtn" title="Disconnect the selected boxes">ICON:unlink</button></header>
+    <div id="qWarn"></div>
+    <div id="queueScroll"><svg id="queueSvg"></svg></div>
+    <div id="queueFoot"><button id="addBoxBtn" class="primary" title="Add a box: lane, colour, holes, hidden">ICON:plus Add box</button></div>
+  </section>
+  <aside id="inspector"><div id="insp"></div><div id="checks"></div></aside>
+  <aside id="previewDock"><div id="camSeg" title="Preview camera"><button data-v="persp">Perspective</button><button data-v="ortho">Orthographic</button></div>
+    <div id="zoomRow" title="Camera zoom, the same setting as the game's"><span>Zoom</span><input type="range" id="edZoom" min="80" max="125" step="5"><b id="edZoomVal"></b><button id="edZoomReset">Reset</button></div><div id="phone"><div id="phoneInner"><iframe id="preview" title="Game preview"></iframe></div></div></aside>
+</div>
+
+<div class="modal" id="levelsModal"><div class="sheet">
+  <header><h2>Levels &amp; level order</h2><button id="levelsClose" title="Close (Esc)">ICON:x</button></header>
+  <div class="cols2">
+    <div class="col"><h3>ICON:list Saved levels <span class="sp" style="flex:1"></span><input type="text" id="levelSearch" placeholder="Search id or name" style="width:180px"></h3>
+      <div class="list" id="levelList"></div>
+      <div class="row"><button id="lvNew">ICON:plus New level</button><button id="lvSave">ICON:save Save current level</button><button id="lvImport">ICON:upload Import JSON…</button></div></div>
+    <div class="col"><h3>ICON:order Level order</h3>
+      <div class="row"><input type="text" id="orderAdd" list="orderIds" placeholder="level id" style="flex:1"><datalist id="orderIds"></datalist><button id="orderAddBtn">ICON:plus Add</button></div>
+      <div id="orderWarn"></div>
+      <div class="list" id="orderList"></div>
+      <div class="row"><button id="orderExport">ICON:download Export order JSON</button><button id="orderImport">ICON:upload Import order JSON…</button><button id="orderHtml" class="primary">ICON:play Playable HTML</button></div></div>
+  </div></div></div>
+
+<div class="modal" id="helpModal"><div class="sheet">
+  <header><h2>Keyboard shortcuts</h2><button id="helpClose" title="Close (Esc)">ICON:x</button></header>
+  <div class="keys" id="keysList"></div>
+  <div class="guide">
+    <b>Slide</b>: drag its points; with the slide tool, click the slide to add one (it lands inside the slide zone). The first point is the start tower;
+    after the last point the slide runs on by itself, down its fixed tail into the sorter. A point can turn the stretch after it into a spiral that passes over itself.
+    <b>Trays</b>: each tray is a straight wooden tray holding a regular grid of marbles. Drag the front node (diamond) along the slide: it always snaps to the
+    slide's edge and becomes the merge point; drag the back node (square) to turn the tray. <b>Blockers</b>: pick the dispenser, lock crate or count crate tool and drag
+    across the cells of a tray. <b>Gaps</b>: with the cut tool (<kbd>G</kbd>) click the slide to cut it; marbles jump the gap. <b>Toy pieces</b>: with the toy tool
+    (<kbd>Y</kbd>) pick a piece (xylophone, bells, paddle wheel, staircase, vortex, loop) and click the slide; they are decorative and never change the rules.
+    Drag a gap or a toy along the slide; the inspector sets its length. <b>Box lanes</b>: 2–5 lanes (− / +); <i>Add box</i> picks lane, colour, holes and hidden;
+    drag boxes within and between lanes; Shift-click two or three touching boxes (also across neighbouring lanes) and press <kbd>L</kbd> to connect them.
+    <b>Everywhere</b>: right-click for a menu; copy, paste, duplicate, delete and the arrow keys work on whatever is selected.
+    Exports are frozen copies: later edits never change an exported file or the game page.
+  </div></div></div>
+<div id="ctx"></div>
+<div id="boxPop"><h4>Add box</h4>
+  <div class="row"><label>Lane</label><div class="lanesel" id="bpLanes" style="flex:1"></div></div>
+  <div class="row"><label>Colour</label><div class="swatches" id="bpColors" style="flex:1;grid-template-columns:repeat(4,1fr)"></div></div>
+  <div class="row"><label>Holes</label><div class="caps" id="bpSizes" style="flex:1"></div></div>
+  <div class="row"><label>Hidden</label><button id="bpHidden">ICON:hidden Visible</button></div>
+  <div class="row"><button class="primary" id="bpAdd" style="flex:1;justify-content:center">ICON:plus Add</button><button id="bpClose">Close</button></div></div>
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+<div class="toast" id="toast"></div>
+
+<script src="shared/core.js"></script>
+<script src="shared/sync.js"></script>
+<script src="shared/bundle.js"></script>
+<script>
+'use strict';
+const C = window.MRCore, S = window.MRSync, B = window.MRBundle;
+const $ = id => document.getElementById(id);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
+/* inside the showcase (it opens this editor over the game with window.MR_EDITOR_HOST = 'showcase'): see HOST below */
+const IN_SHOWCASE = window.MR_EDITOR_HOST === 'showcase' && window.parent !== window;
+const KEY_DRAFT = IN_SHOWCASE ? 'marble-run:showcase-editor-draft' : 'marble-run:editor-draft';
+const RAD = C.RO, ID_RE = /^[A-Za-z0-9_-]{1,40}$/, ZONE_Y = 1.6;     // (the slide zone is drawn at a typical slide height)
+const round = (v, d = 2) => +(+v).toFixed(d);
+const TOY_NAME = {xylophone:'Xylophone', bells:'Bells', wheel:'Paddle wheel', stairs:'Zig-zag stairs', vortex:'Vortex', loop:'Loop'};
+const TOY_COL = {xylophone:'#e94f9a', bells:'#f2b705', wheel:'#2f8fff', stairs:'#45a83a', vortex:'#9b59ff', loop:'#ff5a2a'};
+
+/* ================================ ICONS ================================ */
+const ICON_PATHS = {
+  file:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>', plus:'<path d="M12 5v14M5 12h14"/>', list:'<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>',
+  save:'<path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/>', copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  upload:'<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>', download:'<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v4h16v-4"/>',
+  undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>', redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
+  play:'<path d="M7 4l13 8-13 8z"/>', refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>', robot:'<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/>',
+  flask:'<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/>', phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17h.01"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  external:'<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v6H4V6h6"/>', select:'<path d="M5 3l13 8-6 1.5L9 19z"/>',
+  slide:'<path d="M4 20C8 16 6 10 10 7s8-1 10-4"/><path d="M6 21C10 17 8 11 12 8s7-1 9-3" opacity=".5"/><circle cx="10" cy="7" r="1.5"/>',
+  tray:'<path d="M3 15l12-7 6 4-12 7z"/><circle cx="10" cy="13" r="1"/><circle cx="13" cy="11.2" r="1"/><circle cx="12.5" cy="14.5" r="1"/><path d="M5 16v4M17 12v4"/>',
+  brush:'<path d="M14 4l6 6-8 8-6-6z"/><path d="M6 12l-3 6 6-3"/>',
+  eraser:'<path d="M4 15l9-9 7 7-6 6H8z"/><path d="M14 19h7"/>', hidden:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7v.5M12 17h.01"/>',
+  disp:'<circle cx="12" cy="9" r="6"/><path d="M9 15l1 5h4l1-5"/><circle cx="10.5" cy="8" r="1"/><circle cx="13.5" cy="10" r="1"/>', lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 15v2"/>',
+  count:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M10 9l-1 7M15 9l-1 7M8 11h8M7.5 14h8"/>', box:'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="10" cy="8" r="1.3"/><circle cx="14" cy="8" r="1.3"/><circle cx="10" cy="13" r="1.3"/><circle cx="14" cy="13" r="1.3"/>',
+  link:'<path d="M10 13a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1"/><path d="M14 11a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/>',
+  unlink:'<path d="M10 13a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6"/><path d="M14 11a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6"/><path d="M3 3l18 18"/>',
+  key:'<circle cx="7.5" cy="14.5" r="3.5"/><path d="M10 12l9-9M15 7l3 3M17 5l2 2"/>', trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  fit:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>', order:'<path d="M7 4v16M4 17l3 3 3-3M14 6h7M14 12h5M14 18h3"/>', shuffle:'<path d="M3 7h4l10 10h4M17 7h4M3 17h4l3-3M18 4l3 3-3 3M18 14l3 3-3 3"/>',
+  node:'<path d="M12 3l9 9-9 9-9-9z"/>', gap:'<path d="M2 9h7l1 2M22 9h-7l-1 2M2 15h7M15 15h7"/><path d="M8 19l1-2M16 19l-1-2" stroke-dasharray="1 2"/>', spiral:'<path d="M12 12a2 2 0 1 1 2-2 4 4 0 1 1-4-4 6 6 0 1 1-6 6"/>',
+  toy:'<path d="M3 16h18"/><rect x="4" y="10" width="3" height="6"/><rect x="8.5" y="8" width="3" height="8"/><rect x="13" y="6" width="3" height="10"/><rect x="17.5" y="4" width="3" height="12"/>'};
+const icon = (name, extra = '') => `<svg class="i" viewBox="0 0 24 24" ${extra}>${ICON_PATHS[name] || ''}</svg>`;
+document.body.innerHTML = document.body.innerHTML.replace(/ICON:([a-z]+)/g, (m, n) => icon(n));
+
+/* ================================ STATE ================================ */
+let lvl, L, check, undoStack = [], redoStack = [], undoSel = [], redoSel = [], savedJSON = null;   // (the selection with each snapshot)
+let tool = 'select', color = 'red', size = 6, sel = {kind:'level'}, hover = null, highlight = null;
+const GAP_DEF = {len:1.0, ramp:'flat'};               // a new gap: the length and ends last chosen in the inspector
+const TOY_DEF = {kind:'xylophone'};                    // the toy piece the toy tool places
+let autoRun = false, autoTimer = null, msgSeq = 0, lastTest = null, testRun = 0;
+const TOOLS = [
+  {g:'Edit', id:'select', icon:'select', label:'Select / move', key:'V', tip:'Select and drag slide points, tray nodes, blockers, gaps and toy pieces'},
+  {g:'Edit', id:'slide', icon:'slide', label:'Slide points', key:'P', tip:'Click the slide to add a point, drag to move, right-click to delete'},
+  {g:'Edit', id:'tray', icon:'tray', label:'Add tray', key:'R', tip:'Click near the slide to add a tray there'},
+  {g:'Edit', id:'gap', icon:'gap', label:'Cut slide', key:'G', noDigit:true, tip:'Click the slide to cut a gap there (marbles jump it); drag a gap to slide it along'},
+  {g:'Edit', id:'toy', icon:'toy', label:'Toy piece', key:'Y', noDigit:true, tip:'Click the slide to place the chosen toy piece there (decorative); drag one to move it along'},
+  {g:'Marbles', id:'paint', icon:'brush', label:'Paint', key:'B', tip:'Paint marbles of the selected colour'},
+  {g:'Marbles', id:'erase', icon:'eraser', label:'Eraser', key:'E', tip:'Empty cells'},
+  {g:'Marbles', id:'hide', icon:'hidden', label:'Hide marbles', key:'H', tip:'Brush: grey "?" marbles that show their colour once they reach the front'},
+  {g:'Tray blockers', id:'disp', icon:'disp', label:'Marble dispenser', key:'D', tip:'Drag across tray cells: a dispenser releasing marbles of the selected colour'},
+  {g:'Tray blockers', id:'lock', icon:'lock', label:'Lock crate', key:'K', tip:'Drag across tray cells: a crate opened by its key box'},
+  {g:'Tray blockers', id:'count', icon:'count', label:'Count crate', key:'N', tip:'Drag across tray cells: a crate opened after N completed boxes'},
+  {g:'Box lanes', id:'link', icon:'link', label:'Connect boxes', key:'L', tip:'Select 2-3 boxes in the lanes and press L (or this button) to connect them'}];
+const DIGIT_TOOLS = TOOLS.filter(t => !t.noDigit);       // number keys 1-9, 0
+function draftLoad(){ try { const s = localStorage.getItem(KEY_DRAFT); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function draftSave(){ try { localStorage.setItem(KEY_DRAFT, JSON.stringify(lvl)); } catch (e) {} }
+function setLevel(raw, keepHistory){
+  lvl = clone(C.normalizeLevel(clone(raw))); if (!lvl.id) lvl.id = nextId();
+  L = C.buildLayout(lvl); check = C.checkLevel(lvl);
+  if (!keepHistory){ undoStack = []; redoStack = []; undoSel = []; redoSel = []; }
+  if (sel.kind !== 'level' && !selValid()) sel = {kind:'level'};
+  const slots = S.loadSlots(); savedJSON = slots[lvl.id] ? JSON.stringify(clone(C.normalizeLevel(clone(slots[lvl.id].level)))) : null;
+  if (!keepHistory){ try { if (cv.clientWidth) fitView(); } catch (e) {} }
+  draftSave(); renderAll();
+  if (!keepHistory) run(); else if (autoRun) scheduleAuto();     // a newly opened level restarts the preview at once
+}
+/* every edit: snapshot for undo, mutate a fresh copy, rebuild layout + checks */
+function edit(fn, opts){
+  opts = opts || {};
+  if (!opts.noUndo) pushUndo();
+  const next = clone(lvl); fn(next);
+  // a fresh copy: the core caches each object it normalizes, and an edit may have measured the level mid-way
+  lvl = clone(C.normalizeLevel(clone(next))); L = C.buildLayout(lvl); check = C.checkLevel(lvl);
+  if (!selValid()) sel = {kind:'level'};
+  draftSave(); renderAll(opts.light);
+  if (autoRun) scheduleAuto();
+}
+const editLive = fn => edit(fn, {noUndo:true, light:true});
+function pushUndo(){ undoStack.push(JSON.stringify(lvl)); undoSel.push(clone(sel)); if (undoStack.length > 300){ undoStack.shift(); undoSel.shift(); } redoStack = []; redoSel = []; }
+/* undo / redo bring back the level and what was selected with it (a redone paste is selected again) */
+function undo(){ if (!undoStack.length) return; redoStack.push(JSON.stringify(lvl)); redoSel.push(clone(sel)); const s0 = undoSel.pop(); sel = s0 || sel; setLevel(JSON.parse(undoStack.pop()), true); toast('Undo'); }
+function redo(){ if (!redoStack.length) return; undoStack.push(JSON.stringify(lvl)); undoSel.push(clone(sel)); const s0 = redoSel.pop(); sel = s0 || sel; setLevel(JSON.parse(redoStack.pop()), true); toast('Redo'); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1600); }
+function selValid(){
+  const r = sel.tray != null ? lvl.trays[sel.tray] : null;
+  if (sel.kind === 'point') return ptList().length > 0 && ptList().every(i => !!lvl.slide.points[i]);
+  if (sel.kind === 'tray') return trayList().length > 0 && trayList().every(i => !!lvl.trays[i]);
+  if (sel.kind === 'disp' || sel.kind === 'crate'){ const key = sel.kind === 'disp' ? 'dispensers' : 'crates';
+    return blkList().every(o => lvl.trays[o.tray] && lvl.trays[o.tray][key] && lvl.trays[o.tray][key][o.i]); }
+  if (sel.kind === 'cells') return !!r && sel.cells.length > 0 && sel.cells.every(([c, k]) => c < r.columns.length && k < r.rows);
+  if (sel.kind === 'box') return sel.list.length > 0 && sel.list.every(([l, i]) => lvl.lanes[l] && lvl.lanes[l][i]);
+  if (sel.kind === 'gap') return !!(lvl.slide.gaps && lvl.slide.gaps[sel.i]);
+  if (sel.kind === 'toy') return !!(lvl.slide.toys && lvl.slide.toys[sel.i]);
+  return true;
+}
+const isDirty = () => savedJSON !== JSON.stringify(lvl);
+
+/* ============================= LEVEL STORE =============================
+   Saved levels live in localStorage keyed by their unique id; the level order is a list of ids. */
+function nextId(){ const slots = S.loadSlots(); let n = 1; while (slots['lvl_' + String(n).padStart(3, '0')]) n++; return 'lvl_' + String(n).padStart(3, '0'); }
+function migrateAndSeed(){
+  S.forgetOldCurrent();
+  const slots = S.loadSlots(), out = {}, prefs = S.loadPrefs();
+  Object.keys(slots).forEach(k => { const sl = slots[k]; if (!sl || !sl.level) return;
+    let id = sl.level.id || k.replace(/[^A-Za-z0-9_-]/g, '_');
+    while (out[id]) id += '_2';
+    sl.level.id = id; out[id] = {name:sl.name || sl.level.name, level:sl.level, updated:sl.updated || Date.now()}; });
+  const seeded = prefs.seededPresets || [];
+  const bundled = [['marble-run', Object.assign(clone(C.LEVEL_DATA), {id:'marble-run'})]].concat(Object.entries(C.PRESETS).map(([id, lv]) => [id, Object.assign(clone(lv), {id})]));
+  bundled.forEach(([id, lv]) => { if (seeded.includes(id) || out[id]) { if (!seeded.includes(id)) seeded.push(id); return; }
+    out[id] = {name:lv.name, level:lv, updated:Date.now() - 1000}; seeded.push(id); });
+  S.saveSlots(out); S.savePrefs({seededPresets:seeded});
+}
+function saveLevel(asNew){
+  if (IN_SHOWCASE){ hostPost({type:'save', level:clone(lvl)}); return true; }     // the showcase keeps it under a new id
+  const slots = S.loadSlots();
+  if (asNew){ const id = prompt('Id for the new level (letters, digits, _ and -):', nextId()); if (!id) return false;
+    if (!ID_RE.test(id)){ toast('Ids use letters, digits, _ and -'); return false; } if (slots[id]){ toast(`"${id}" is already used`); return false; }
+    edit(n => { n.id = id; }); }
+  const lv = clone(lvl); slots[lv.id] = {name:lv.name, level:lv, updated:Date.now()};
+  S.saveSlots(slots); savedJSON = JSON.stringify(lvl); renderBar(); renderLevels(); toast(`Saved "${lv.id}"`); return true;
+}
+function renameId(newId){
+  newId = newId.trim(); if (newId === lvl.id) return true;
+  if (!ID_RE.test(newId)){ toast('Ids use letters, digits, _ and - (max 40)'); return false; }
+  const slots = S.loadSlots(); if (slots[newId]){ toast(`"${newId}" is already used by another level`); return false; }
+  const old = lvl.id, wasSaved = !!slots[old];
+  if (wasSaved){ slots[newId] = slots[old]; slots[newId].level.id = newId; delete slots[old]; S.saveSlots(slots);
+    S.saveOrder(S.loadOrder().map(x => x === old ? newId : x)); }
+  edit(n => { n.id = newId; });
+  if (wasSaved) savedJSON = JSON.stringify(lvl);
+  renderBar(); renderLevels(); toast(`Id is now "${newId}"`); return true;
+}
+function openLevel(id){
+  const sl = S.loadSlots()[id]; if (!sl) return false;
+  if (isDirty() && !confirm(`Discard the unsaved changes to "${lvl.id}"?`)) return false;
+  setLevel(sl.level); toast(`Opened "${id}"`); return true;
+}
+function newLevel(){                                // the built-in level's slide (one spiral, inside the slide zone), no trays, empty lanes
+  if (isDirty() && !confirm(`Discard the unsaved changes to "${lvl.id}"?`)) return;
+  setLevel({format:1, type:'marble-run-level', id:nextId(), name:'New level', slide:{points:clone(C.LEVEL_DATA.slide.points)}, trays:[], lanes:[[], [], []]});
+}
+function duplicateLevel(id){
+  const slots = S.loadSlots(), sl = slots[id]; if (!sl) return; let nid = id + '_copy', k = 2; while (slots[nid]) nid = id + '_copy' + (k++);
+  const lv = Object.assign(clone(sl.level), {id:nid, name:sl.name + ' copy'}); slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots);
+  lvSelId = nid; renderLevels(); toast(`Duplicated "${id}" as "${nid}"`); return nid;
+}
+function deleteLevel(id){
+  if (!confirm(`Delete the saved level "${id}"?`)) return; const slots = S.loadSlots(); delete slots[id]; S.saveSlots(slots);
+  if (id === lvl.id) savedJSON = null; renderLevels(); renderBar();
+}
+/* level order: ids; warnings for unknown and duplicate ids */
+function orderState(){
+  const ids = S.loadOrder(), slots = S.loadSlots(), seen = {}, bad = new Set(), warns = [];
+  ids.forEach((id, i) => { if (!slots[id]){ bad.add(i); warns.push(`"${id}" is not a saved level`); }
+    if (seen[id] != null){ bad.add(i); warns.push(`"${id}" is in the order twice`); } else seen[id] = i; });
+  return {ids, slots, bad, warns};
+}
+function orderAdd(id){ id = (id || '').trim(); if (!id) return; const o = S.loadOrder(); o.push(id); S.saveOrder(o); renderLevels(); }
+function orderRemove(i){ const o = S.loadOrder(); o.splice(i, 1); S.saveOrder(o); renderLevels(); }
+function orderMove(from, to){ const o = S.loadOrder(); const [x] = o.splice(from, 1); o.splice(to > from ? to - 1 : to, 0, x); S.saveOrder(o); renderLevels(); }
+function orderJSON(){ return JSON.stringify({type:'marble-run-level-order', version:1, levels:S.loadOrder()}, null, 2); }
+function importOrder(txt){
+  let o; try { o = JSON.parse(txt); } catch (e) { toast('Not JSON: ' + e.message); return false; }
+  const ids = Array.isArray(o) ? o : o && Array.isArray(o.levels) ? o.levels : null;
+  if (!ids){ toast('A level order is {"levels": ["id", ...]}'); return false; }
+  S.saveOrder(ids.map(String)); renderLevels(); toast(`Level order: ${ids.length} levels`); return true;
+}
+
+/* ============================== EXPORTS ==============================
+   Every export is a frozen copy: a JSON file, or a single self-contained HTML game (code, three.js and
+   the levels inside). Nothing exported reads the editor's storage, so later edits never change it. */
+function download(name, text, type){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+const fileBase = s => String(s || 'level').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() || 'level';
+function levelJSON(){ return JSON.stringify(lvl, null, 2); }
+function exportLevelJSON(){ download(fileBase(lvl.id) + '.json', levelJSON(), 'application/json'); toast(`Exported ${lvl.id}.json`); }
+function exportOrderJSON(){ download('level-order.json', orderJSON(), 'application/json'); toast('Exported level-order.json'); }
+let TEMPLATE = null;
+async function gameTemplate(){
+  if (TEMPLATE) return TEMPLATE;
+  const el = $('mr-game-template');                 // the single-file editor carries the packed game inside
+  if (el){ const bin = atob(el.textContent.trim()), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return (TEMPLATE = new TextDecoder().decode(bytes)); }
+  const get = f => fetch(f, {cache:'no-store'}).then(r => { if (!r.ok) throw new Error(f + ' ' + r.status); return r.text(); });
+  const [html, core, sync, three] = await Promise.all(['index.html', 'shared/core.js', 'shared/sync.js', 'vendor/three.module.min.js'].map(get));
+  return (TEMPLATE = B.inlineGame(html, {core, sync, three}));
+}
+async function playableHTML(levels, title){ return B.playable(await gameTemplate(), {levels, title}); }
+async function exportHtml(which){
+  try {
+    if (which === 'level'){ const html = await playableHTML([lvl], lvl.name); download(fileBase(lvl.id) + '.html', html, 'text/html'); toast(`Exported ${fileBase(lvl.id)}.html`); return html; }
+    const st = orderState();
+    if (!st.ids.length){ toast('The level order is empty'); return null; }
+    if (st.warns.length){ toast('Fix the level order first: ' + st.warns[0]); openLevels(); return null; }
+    const levels = st.ids.map(id => Object.assign(clone(st.slots[id].level), {id}));
+    const html = await playableHTML(levels, 'Level pack (' + levels.length + ' levels)');
+    download('marble-run-levels.html', html, 'text/html'); toast(`Exported ${levels.length} levels in one HTML file`); return html;
+  } catch (e){ toast('Export needs the game files: open the editor from a web server or use the single-file editor (' + e.message + ')'); return null; }
+}
+async function playInTab(){
+  try { const html = await playableHTML([lvl], lvl.name); window.open(URL.createObjectURL(new Blob([html], {type:'text/html'})), '_blank'); }
+  catch (e){ toast('Could not build the game: ' + e.message); }
+}
+
+/* ============================ PREVIEW ============================ */
+const preview = $('preview');
+(async function bootPreview(){
+  // the single-file editor has no index.html beside it: the preview is its own copy of the packed game
+  if ($('mr-game-template')){ const t = await gameTemplate(); preview.srcdoc = t.replace('<script>/* shared/core.js (inlined) */', '<script>window.MR_EMBED = true;<\/script>\n<script>/* shared/core.js (inlined) */'); }
+  else preview.src = 'index.html?embed=1&nosim';
+})();
+function send(type){ const msg = {type, id:'ed' + Date.now() + '-' + (++msgSeq), level:clone(lvl)}; try { preview.contentWindow.postMessage(msg, '*'); } catch (e) {} return msg.id; }
+function run(){ clearTimeout(autoTimer); autoTimer = null; send('run'); $('status').textContent = 'preview: running…'; }
+function scheduleAuto(){ clearTimeout(autoTimer); autoTimer = setTimeout(run, 500); }
+addEventListener('message', e => {
+  if (e.source !== preview.contentWindow) return;
+  const d = e.data; if (!d || typeof d !== 'object') return;
+  if (d.type === 'hello'){ send('run'); setPreviewCam(S.loadPrefs().view, true); }
+  if (d.type === 'game-status') $('status').textContent = `preview: "${d.name}" · ${d.marbles} marbles · ${d.boxes} boxes`;
+});
+
+/* ============================ VIEW (canvas) ============================
+   A plan view of the table from above (x right, z down the screen as in the game).  The game's slide zone - the
+   part of the phone screen the slide and its trays must stay in - is drawn as a yellow frame at a typical slide
+   height; the checker tests the real 3D positions in both cameras. */
+const cv = $('view'), ctx = cv.getContext('2d');
+const VIEW = {s:20, ox:0, oy:0, fitted:false};
+function n3(v){ const l = Math.hypot(...v) || 1; return v.map(c => c/l); }
+function screenFootprint(CAM, y = 0, rect = [0, 0, CAM.w, CAM.h]){
+  const P = CAM.pos, f = n3([CAM.look[0]-P[0], CAM.look[1]-P[1], CAM.look[2]-P[2]]), r = n3([-f[2], 0, f[0]]);
+  const u = [r[1]*f[2]-r[2]*f[1], r[2]*f[0]-r[0]*f[2], r[0]*f[1]-r[1]*f[0]], t = Math.tan(CAM.fov*Math.PI/360), asp = CAM.w/CAM.h;
+  const ray = (sx, sy) => { const xs = sx/CAM.w*2 - 1, ys = 1 - sy/CAM.h*2;
+    const d = [f[0] + r[0]*xs*t*asp + u[0]*ys*t, f[1] + r[1]*xs*t*asp + u[1]*ys*t, f[2] + r[2]*xs*t*asp + u[2]*ys*t], k = (y - P[1])/d[1];
+    return [P[0] + d[0]*k, P[2] + d[2]*k]; };
+  const [u0, v0, u1, v1] = rect, U = i => u0 + (u1 - u0)*i/10, V = i => v0 + (v1 - v0)*i/10, pts = [];
+  for (let i=0;i<=10;i++) pts.push(ray(U(i), v0)); for (let i=0;i<=10;i++) pts.push(ray(u1, V(i)));
+  for (let i=10;i>=0;i--) pts.push(ray(U(i), v1)); for (let i=10;i>=0;i--) pts.push(ray(u0, V(i)));
+  return pts;
+}
+const SC = C.SCREEN, ZONE_RECT = [SC.MARGIN, SC.TOP*SC.h, SC.w - SC.MARGIN, SC.SLIDE_BOT*SC.h];
+let ZONE = null, FOOT = null; const zoneFrame = () => ZONE || (ZONE = screenFootprint(C.SCREEN_CAM, ZONE_Y, ZONE_RECT));
+const footprint = () => FOOT || (FOOT = screenFootprint(C.SCREEN_CAM, 0));
+const inZone = (x, y, z) => C.inZoneBoth(x, y, z);
+/* a new slide point outside the zone is pulled in toward the zone's middle */
+function clampToZone(x, z, y){
+  const ok = (px, pz) => inZone(px, ZONE_Y + 0.3, pz) && inZone(px, ZONE_Y - 0.4, pz);
+  if (y != null ? inZone(x, y + 0.3, z) && inZone(x, y - RAD, z) : ok(x, z)) return [x, z];      // (at the slide's own height where it is known)
+  const zf = zoneFrame(), cx = zf.reduce((a, p) => a + p[0], 0)/zf.length, cz = zf.reduce((a, p) => a + p[1], 0)/zf.length; let lo = 0, hi = 1;
+  for (let k = 0; k < 30; k++){ const m = (lo + hi)/2, px = x + (cx - x)*m, pz = z + (cz - z)*m; if (ok(px, pz)) hi = m; else lo = m; }
+  const m = Math.min(1, hi + 0.04); return [x + (cx - x)*m, z + (cz - z)*m];
+}
+/* fit the level itself (slide, trays, sorter, slots, lanes) so cells and blockers are readable */
+function fitView(){
+  let x0 = -4.6, x1 = 4.6, z0 = -2;
+  const add = (x, z) => { x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); };
+  const SL = L.SLIDE; for (let i = 0; i < SL.n; i += 3) add(SL.P[i*3], SL.P[i*3+2]);
+  L.TRAYS.forEach(r => r.outline.forEach(q => add(q[0], q[1])));
+  const w = cv.clientWidth, h = cv.clientHeight, X0 = Math.min(x0, -x1) - 0.8, X1 = -X0, Z0 = z0 - 1.2, Z1 = C.CHEST_Z + 0.8;
+  VIEW.s = Math.min(w/(X1 - X0), h/(Z1 - Z0)); VIEW.ox = w/2 - (X0 + X1)/2*VIEW.s; VIEW.oy = h/2 - (Z0 + Z1)/2*VIEW.s; VIEW.fitted = true;
+}
+// a new size keeps the middle of the view in the middle (a hidden canvas, size 0, changes nothing)
+let cvW = 0, cvH = 0;
+function resize(){ const r = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  if (cvW && VIEW.fitted){ VIEW.ox += (w - cvW)/2; VIEW.oy += (h - cvH)/2; } cvW = w; cvH = h;
+  cv.width = w*r; cv.height = h*r; if (!VIEW.fitted && L) fitView(); draw(); }
+new ResizeObserver(resize).observe(cv);
+const W2S = (x, z) => [VIEW.ox + x*VIEW.s, VIEW.oy + z*VIEW.s];
+const S2W = (sx, sy) => [(sx - VIEW.ox)/VIEW.s, (sy - VIEW.oy)/VIEW.s];
+const trayOf = src => L.TRAYS.find(r => r.src === src);
+/* the four corners of a block of cells on a tray (for dispensers, crates and rubber-band selection) */
+function cellQuad(r, col, row, w, h){
+  const hp = r.sp/2, t = r.across, d = r.dir, P = (c, k, a, b) => { const q = r.slots[c][k]; return [q.x + t[0]*a*hp + d[0]*b*hp, q.z + t[1]*a*hp + d[1]*b*hp]; };
+  return [P(col, row, -1, -1), P(col + w - 1, row, 1, -1), P(col + w - 1, row + h - 1, 1, 1), P(col, row + h - 1, -1, 1)];
+}
+const SEL = '#ffc531', HOV = '#5fb4ff';
+function poly(pts, width, color, dash){ ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+  ctx.lineWidth = width*VIEW.s; ctx.strokeStyle = color; ctx.setLineDash(dash || []); ctx.stroke(); ctx.setLineDash([]); }
+function path(pts){ ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = W2S(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); }
+const sameHover = (a, b) => a && b && a.kind === b.kind && a.tray === b.tray && a.i === b.i;
+/* the slide's centre line between two arc lengths (through the toy pieces' bends, as the marbles go) */
+function slideLine(s0, s1, step){ const o = {}, pts = []; step = step || 0.06;
+  for (let s = s0; s < s1 + step/2; s += step){ C.slidePos(L.SLIDE, Math.min(s, s1), o, 0); pts.push([o.x, o.z, o.y]); } return pts; }
+function draw(){
+  if (!L) return;
+  const dpr = devicePixelRatio || 1; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = cv.clientWidth, h = cv.clientHeight, s = VIEW.s, SL = L.SLIDE;
+  ctx.fillStyle = '#c9a674'; ctx.fillRect(0, 0, w, h);
+  // wood grain
+  ctx.strokeStyle = 'rgba(120,80,40,.10)'; ctx.lineWidth = 1; for (let gy = (VIEW.oy % 18); gy < h; gy += 18){ ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy + 4); ctx.stroke(); }
+  // the phone screen (faint) and the slide zone frame
+  path(footprint()); ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fill(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+  const zf = zoneFrame(); path(zf); ctx.fillStyle = 'rgba(255,214,64,.08)'; ctx.fill(); ctx.strokeStyle = '#ffd640'; ctx.lineWidth = 3; ctx.stroke();
+  { const mid = zf[5], [lx, ly] = W2S(mid[0], mid[1]); ctx.fillStyle = '#8a6500'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText('SLIDE ZONE', lx, ly - 4); }
+  // the sorter (vortex bowl and rail with its flip gates), the slot tray, the box lanes and the toy chest
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  { const B = C.BOWL, [bx, by] = W2S(B.x, B.z); ctx.beginPath(); ctx.arc(bx, by, B.r*s, 0, 7); ctx.fillStyle = '#e9e4da'; ctx.fill(); ctx.strokeStyle = '#8d7a62'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(bx, by, B.r*0.35*s, 0, 7); ctx.fillStyle = '#6b5a45'; ctx.fill(); }
+  poly([[C.RAIL.x0, C.RAIL.z], [C.RAIL.x1, C.RAIL.z]], 0.16, '#f1ece2');
+  for (let k = 0; k < C.SLOT_N; k++){ const x = C.slotX(k), [x0, y0] = W2S(x - C.SLOT_W/2, -C.SLOT_L/2), [x1, y1] = W2S(x + C.SLOT_W/2, C.SLOT_L/2);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+    const [gx, gy] = W2S(C.gateX(k), C.RAIL.z); ctx.fillStyle = '#ff8a2a'; ctx.fillRect(gx - 4, gy - 4, 8, 8); }
+  { const [lx, ly] = W2S(C.slotX(2), 0); ctx.fillStyle = 'rgba(80,55,30,.55)'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('5 SLOTS', lx, ly); }
+  L.laneX.forEach(x => { const lw = C.BOX_W*C.QS + 0.2, [x0, y0] = W2S(x - lw/2, C.LANE_Z0 - 0.1), [x1, y1] = W2S(x + lw/2, C.CHEST_Z);
+    ctx.fillStyle = 'rgba(80,55,30,.10)'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); });
+  poly([[-4.4, C.CHEST_Z], [4.4, C.CHEST_Z]], 0.22, '#a5552f');
+  { const [lx, ly] = W2S(0, C.CHEST_Z + 0.35); ctx.fillStyle = 'rgba(80,40,20,.7)'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('BOX LANES · TOY CHEST', lx, ly); }
+  ctx.fillStyle = '#f7f5f0'; L.pillars.forEach(p => { const [x, y] = W2S(p.x, p.z); ctx.beginPath(); ctx.arc(x, y, Math.max(2, 0.12*s), 0, 7); ctx.fill(); });
+  // the slide in two layers: the lower stretches, then the decks that pass over them (with a soft shadow), each
+  // drawn as whole runs (rim, then the white half-pipe, then its orange inside) so it reads as one smooth track
+  { const highS = SL.cross.map(c => c.s0), runs = [[], []]; let cur = null, curH = null;
+    for (let i = 0; i < SL.n; i += 2){ const sv = SL.cum[i], hi = highS.some(hs => Math.abs(sv - hs) < 0.35) ? 1 : 0, q = [SL.P[i*3], SL.P[i*3+2], sv];
+      if (hi !== curH){ if (cur) cur.push(q); cur = cur ? [cur[cur.length - 1], q] : [q]; runs[hi].push(cur); curH = hi; } else cur.push(q); }
+    const tailOf = run => { const a = [], b = []; run.forEach(q => (q[2] >= SL.tailS ? b : a).push(q)); if (a.length && b.length) b.unshift(a[a.length - 1]); return [a, b]; };
+    [0, 1].forEach(layer => {
+      if (layer) runs[1].forEach(r => poly(r.map(q => [q[0] + 0.12, q[1] + 0.16]), RAD*2 + 0.1, 'rgba(60,35,10,.28)'));
+      runs[layer].forEach(r => poly(r, RAD*2 + 0.12, '#8f7558'));
+      runs[layer].forEach(r => { const [a, b] = tailOf(r); if (a.length > 1) poly(a, RAD*2 + 0.02, '#fbf4e6'); if (b.length > 1) poly(b, RAD*2 + 0.02, '#e7dccb'); });
+      runs[layer].forEach(r => { const [a, b] = tailOf(r); if (a.length > 1) poly(a, C.RI*2, '#ff8a2a'); if (b.length > 1) poly(b, C.RI*2, '#e9a45f'); }); }); }
+  // toy pieces: the stretch they take, in their colour, through their bend (the vortex circles out sideways)
+  (SL.toys || []).forEach((T, i) => { const pts = slideLine(T.s0, T.s1), isSel = sel.kind === 'toy' && sel.i === i, isHov = sameHover(hover, {kind:'toy', i}), bad = check.warnings.some(w => w.toy === i);
+    poly(pts, RAD*2 + 0.16, bad ? '#ff3b3b' : isSel ? SEL : isHov ? HOV : 'rgba(255,255,255,.9)'); poly(pts, RAD*2 - 0.04, TOY_COL[T.kind]);
+    const o = {}; C.pathAt(SL, T.at, o, 0); const [lx, ly] = W2S(o.x - o.dz*(RAD + 0.75), o.z + o.dx*(RAD + 0.75)); label(lx, ly, TOY_NAME[T.kind], bad ? '#c62828' : TOY_COL[T.kind]); });
+  // gaps: the slide cut (dark), striped ends; take-off and landing ramps as yellow wedges pointing over the gap
+  (SL.gaps || []).forEach((q, i) => { const o = {}, pts = [];
+    for (let a = q.s0; a < q.s1 + 0.025; a += 0.05){ C.pathAt(SL, Math.min(a, q.s1), o, 0); pts.push([o.x, o.z]); }
+    const isSel = sel.kind === 'gap' && sel.i === i, isHov = sameHover(hover, {kind:'gap', i}), bad = check.warnings.some(w => w.gap === i);
+    poly(pts, RAD*2 + 0.32, bad ? '#ff3b3b' : isSel ? SEL : isHov ? HOV : '#ffffff'); poly(pts, RAD*2 + 0.2, '#3b3226');
+    for (const [e, dir] of [[q.s0, -1], [q.s1, 1]]){ C.pathAt(SL, e, o, 0); const nx = -o.dz, nz = o.dx, ex = o.x, ez = o.z, tx = o.dx, tz = o.dz;
+      poly([[ex - nx*RAD, ez - nz*RAD], [ex + nx*RAD, ez + nz*RAD]], 0.1, '#ffc93c', [0.08*s, 0.08*s]);
+      if (q.ramp === 'updown'){ const b = [ex + tx*dir*0.45, ez + tz*dir*0.45]; ctx.beginPath();
+        [[b[0] - nx*0.24, b[1] - nz*0.24], [ex + tx*dir*0.06, ez + tz*dir*0.06], [b[0] + nx*0.24, b[1] + nz*0.24]].forEach((p, k) => { const [px, py] = W2S(p[0], p[1]); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+        ctx.closePath(); ctx.fillStyle = 'rgba(255,201,60,.9)'; ctx.fill(); } }
+    C.pathAt(SL, q.at, o, 0); const [lx, ly] = W2S(o.x - o.dz*(RAD + 0.5), o.z + o.dx*(RAD + 0.5)); label(lx, ly, 'G' + (i + 1), bad ? '#c62828' : '#3b3226'); });
+  // where the slide leaves the slide zone: red
+  { let run_ = []; const flush = () => { if (run_.length > 1) poly(run_, RAD*2 + 0.1, 'rgba(255,59,59,.75)'); run_ = []; };
+    for (let i = 0; i < SL.n; i += 2){ if (SL.cum[i] >= SL.tailS) break; const x = SL.P[i*3], y = SL.P[i*3+1], z = SL.P[i*3+2];
+      if (!inZone(x, y + 0.3, z) || !inZone(x, y - RAD, z)) run_.push([x, z]); else flush(); } flush(); }
+  // the start tower (the slide's first point)
+  { const st = L.start, [x, y] = W2S(st.x, st.z), r = 0.5*s, bad = check.warnings.some(w => w.kind === 'zone-start');
+    ctx.fillStyle = bad ? '#ff3b3b' : '#e9e2d4'; ctx.fillRect(x - r, y - r, 2*r, 2*r); ctx.strokeStyle = '#7a6a55'; ctx.lineWidth = 2; ctx.strokeRect(x - r, y - r, 2*r, 2*r);
+    ctx.fillStyle = '#e8473c'; ctx.beginPath(); ctx.moveTo(x + r*0.2, y - r*1.6); ctx.lineTo(x + r*1.3, y - r*1.25); ctx.lineTo(x + r*0.2, y - r*0.9); ctx.fill();
+    ctx.fillStyle = '#4a3b2a'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText('start', x, y + r + 3); }
+  // trays
+  L.TRAYS.forEach(r => {
+    const rd = lvl.trays[r.src], selR = trayList().includes(r.src) || (sel.tray === r.src && ['disp', 'crate', 'cells'].includes(sel.kind)), hovR = hover && hover.tray === r.src;
+    const warnR = check.warnings.some(w => w.tray === r.src);
+    poly([r.lip, [r.merge.x, r.merge.z]], 0.16, '#d9c3a0');                                  // the chute onto the slide
+    path(r.outline); ctx.fillStyle = '#e2c79b'; ctx.fill();
+    ctx.lineWidth = selR ? 3 : hovR ? 2.5 : 1.5; ctx.strokeStyle = warnR ? '#ff3b3b' : selR ? SEL : hovR ? HOV : '#8a6a42'; ctx.stroke();
+    const cells = rd.columns, rad = Math.max(2.5, C.R_M*0.88*s*r.marbleK);
+    for (let c = 0; c < r.cols; c++) for (let k = 0; k < r.rows; k++){
+      const sl = r.slots[c][k], [x, y] = W2S(sl.x, sl.z), cell = C.parseCell(cells[c][k]);
+      ctx.beginPath(); ctx.arc(x, y, rad, 0, 7);
+      if (cell){ ctx.fillStyle = cell.hidden ? '#9aa1ad' : C.HEX[cell.color]; ctx.fill();
+        if (cell.hidden){ ctx.lineWidth = Math.max(1.5, rad*0.4); ctx.strokeStyle = C.HEX[cell.color]; ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.max(8, rad*1.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 0.5); }
+        else { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(x - rad*0.35, y - rad*0.35, rad*0.28, 0, 7); ctx.fill(); } }
+      else { ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(90,60,30,.45)'; ctx.stroke(); }
+    }
+    if (sel.kind === 'cells' && sel.tray === r.src) sel.cells.forEach(([c, k]) => { const sl = r.slots[c] && r.slots[c][k]; if (!sl) return; const [x, y] = W2S(sl.x, sl.z);
+      ctx.beginPath(); ctx.arc(x, y, rad + 3, 0, 7); ctx.lineWidth = 2.5; ctx.strokeStyle = SEL; ctx.stroke(); });
+    // blockers
+    (rd.dispensers || []).forEach((t, i) => { if (t.col + t.w > r.cols || t.row + t.h > r.rows) return;
+      const q = cellQuad(r, t.col, t.row, t.w, t.h), isSel = sel.kind === 'disp' && blkList().some(o => o.tray === r.src && o.i === i), isHov = sameHover(hover, {kind:'disp', tray:r.src, i});
+      path(q); ctx.fillStyle = 'rgba(235,245,255,.85)'; ctx.fill(); ctx.lineWidth = isSel ? 3 : 2; ctx.strokeStyle = isSel ? SEL : isHov ? HOV : C.HEX[t.color] || '#999'; ctx.stroke();
+      const cx = q.reduce((a, p) => a + p[0], 0)/4, cz = q.reduce((a, p) => a + p[1], 0)/4, [x, y] = W2S(cx, cz);
+      ctx.beginPath(); ctx.arc(x, y, Math.max(6, 0.28*s), 0, 7); ctx.fillStyle = C.HEX[t.color] || '#999'; ctx.fill();
+      label(x, y + Math.max(10, 0.4*s), String(t.count), '#1d2333'); });
+    (rd.crates || []).forEach((b, i) => { if (b.col + b.w > r.cols || b.row + b.h > r.rows) return;
+      const q = cellQuad(r, b.col, b.row, b.w, b.h), isSel = sel.kind === 'crate' && blkList().some(o => o.tray === r.src && o.i === i), isHov = sameHover(hover, {kind:'crate', tray:r.src, i});
+      path(q); ctx.fillStyle = 'rgba(176,118,62,.92)'; ctx.fill(); ctx.lineWidth = isSel ? 3 : 2; ctx.strokeStyle = isSel ? SEL : isHov ? HOV : '#5b3818'; ctx.stroke();
+      const cx = q.reduce((a, p) => a + p[0], 0)/4, cz = q.reduce((a, p) => a + p[1], 0)/4, [x, y] = W2S(cx, cz);
+      label(x, y, b.lock != null ? '🔒 ' + b.lock : '#' + b.count, '#5b3818'); });
+    // nodes: the front node (diamond) on the slide's edge, the back node (square) turns the tray
+    const showNodes = selR || hovR || tool === 'select';
+    if (showNodes){
+      const [bx, by] = W2S(r.lip[0], r.lip[1]), front = sel.kind === 'node' && sel.tray === r.src && sel.i === 0;
+      ctx.save(); ctx.translate(bx, by); ctx.rotate(Math.PI/4); ctx.fillStyle = '#3fbf62'; ctx.fillRect(-6, -6, 12, 12);
+      ctx.strokeStyle = front ? SEL : '#fff'; ctx.lineWidth = 2; ctx.strokeRect(-6, -6, 12, 12); ctx.restore();
+      if (selR || hovR){ const [x, y] = W2S(r.tip[0], r.tip[1]); ctx.fillStyle = '#fff'; ctx.fillRect(x - 5, y - 5, 10, 10);
+        ctx.strokeStyle = sameHover(hover, {kind:'node', tray:r.src, i:1}) ? HOV : '#ff2d6f'; ctx.lineWidth = 2; ctx.strokeRect(x - 5, y - 5, 10, 10); }
+    }
+    const bd = [r.tip[0] + r.dir[0]*0.45, r.tip[1] + r.dir[1]*0.45], [lx, ly] = W2S(bd[0], bd[1]);
+    ctx.beginPath(); ctx.arc(lx, ly, 10, 0, 7); ctx.fillStyle = '#ffc531'; ctx.fill(); ctx.fillStyle = '#1d2333'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(r.src + 1), lx, ly + 0.5);
+  });
+  // rubber band for blocker tools
+  if (drag && drag.kind === 'block' && drag.c1){ const r = trayOf(drag.tray), b = blockRect(drag); if (r && b){ path(cellQuad(r, b.col, b.row, b.w, b.h));
+    ctx.fillStyle = drag.ok ? 'rgba(74,168,255,.35)' : 'rgba(255,59,59,.35)'; ctx.fill(); ctx.strokeStyle = drag.ok ? '#4aa8ff' : '#ff3b3b'; ctx.lineWidth = 2; ctx.stroke(); } }
+  // snap indicator while dragging a tray's front node
+  if (drag && drag.kind === 'front' && drag.started && drag.snap){ const sn = drag.snap, [px, py] = W2S(drag.x, drag.z), [sx, sy] = W2S(sn.x, sn.z), t = performance.now()/300;
+    ctx.beginPath(); ctx.arc(sx, sy, 11 + 3*Math.sin(t), 0, 7); ctx.strokeStyle = '#3fbf62'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(sx, sy); ctx.strokeStyle = '#3fbf62'; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+    label(sx, sy - 22, 'merges here', '#1f6b35'); }
+  // slide control points
+  lvl.slide.points.forEach((p, i) => {
+    const [x, y] = W2S(p.x, p.z), isSel = ptList().includes(i), isHov = sameHover(hover, {kind:'point', i});
+    const sp = L.SLIDE.pointS[i], o = {}; C.pathAt(L.SLIDE, sp, o, 0);
+    ctx.beginPath(); ctx.arc(x, y, isSel || isHov ? 8 : 6, 0, 7);
+    const out = !inZone(p.x, o.y + 0.3, p.z);
+    ctx.fillStyle = out ? '#ff3b3b' : i === 0 ? '#e8473c' : p.spiral ? '#a77bff' : '#ffffff'; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = isSel ? SEL : isHov ? HOV : '#1d2333'; ctx.stroke();
+    if (p.spiral){ ctx.strokeStyle = '#a77bff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.stroke(); }
+    if (p.y != null){ ctx.fillStyle = '#1d2333'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText('↕' + p.y.toFixed(1), x + 9, y - 8); }
+  });
+  // warnings: a red ring where the problem is and a short note next to it (tray problems without a spot: at the tray's
+  // number badge); the full text is in the Checks list
+  const placed = [];
+  check.warnings.forEach(wn => { let wx = wn.x, wz = wn.z, ring = true;
+    if (wx == null || !isFinite(wx)){ const r = wn.tray != null ? trayOf(wn.tray) : null; if (!r) return; wx = r.tip[0]; wz = r.tip[1]; ring = false; }
+    const [x, y] = W2S(wx, wz), hl = highlight === wn;
+    if (ring){ ctx.beginPath(); ctx.arc(x, y, (hl ? 1.1 : 0.75)*s, 0, 7); ctx.lineWidth = hl ? 4 : 2.5; ctx.strokeStyle = '#ff3b3b'; ctx.stroke(); ctx.fillStyle = 'rgba(255,59,59,.15)'; ctx.fill(); }
+    let ly = y + (ring ? 0.75*s + 14 : 22); while (placed.some(q => Math.abs(q[0] - x) < 140 && Math.abs(q[1] - ly) < 18)) ly += 18; placed.push([x, ly]);
+    label(x, ly, '⚠ ' + shortWarn(wn), hl ? '#d81f26' : 'rgba(170,25,32,.92)'); });
+  if (drag && (drag.kind === 'band' || drag.kind === 'cellband') && drag.sx1 != null){
+    const x0 = Math.min(drag.sx0, drag.sx1), y0 = Math.min(drag.sy0, drag.sy1), bw = Math.abs(drag.sx1 - drag.sx0), bh = Math.abs(drag.sy1 - drag.sy0);
+    ctx.fillStyle = 'rgba(74,168,255,.14)'; ctx.fillRect(x0, y0, bw, bh); ctx.setLineDash([5, 4]); ctx.strokeStyle = '#2f7fe0'; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, bw, bh); ctx.setLineDash([]); }
+}
+const WARN_SHORT = {'zone-slide':'slide leaves the slide zone', 'zone-start':'start tower outside the zone', 'slide-tight':'bend too tight', 'slide-sorter':'slide runs over the sorter',
+  'slide-clear':'overpass too low', 'tray-slide':'tray overlaps the slide', 'tray-apron':'slide bends too much for its width (move it or narrow it)', 'tray-tray':'trays overlap',
+  'tray-sorter':'tray runs into the sorter', 'tray-start':'tray runs into the start tower', 'zone-tray':'tray leaves the slide zone', 'tray-spiral':'merge point on a spiral',
+  'gap-ends':'gap too near the slide\'s ends', 'gap-spiral':'gap on a spiral', 'gap-gap':'gaps too close', 'gap-merge':'merge point on or just after a gap',
+  'toy-ends':'toy too near the slide\'s ends', 'toy-spiral':'toy on a spiral', 'toy-overpass':'toy where the slide crosses itself', 'toy-toy':'toys too close', 'toy-gap':'toy runs into a gap',
+  'toy-merge':'toy at a merge point', 'blocker-bounds':'blocker leaves the tray', 'blocker-overlap':'two blockers in a column',
+  'disp-front':'dispenser needs a free cell in front', 'disp-count':'dispenser needs marbles', 'disp-cells':'dispenser sits on marbles', 'count-range':'count out of range',
+  'lock-dup':'lock id used twice', 'lock-keys':'several key boxes', 'lock-no-key':'no key box', 'key-no-lock':'key without a lock', 'lock-deadlock':'key box locked out',
+  'link-single':'link with one box', 'link-size':'link too big', 'link-shape':'linked boxes must touch', 'link-deadlock':'connected boxes block each other', 'no-trays':'no trays'};
+const shortWarn = w => WARN_SHORT[w.kind] || (w.msg.length > 40 ? w.msg.slice(0, 38) + '…' : w.msg);
+function label(x, y, text, bg){ ctx.font = 'bold 11px sans-serif'; const w = ctx.measureText(text).width + 10; ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(x - w/2, y - 9, w, 18, 8); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y + 0.5); }
+
+/* ========================== VIEW INTERACTION ========================== */
+/* the slide spot nearest (x, z) before its fixed tail; where the slide passes over itself the upper deck wins (it is
+   the one drawn on top).  While something is dragged along the slide (sPref: where it is now), the stretch it is on
+   wins over another stretch passing close by, so a drag past an overpass never jumps to the other deck. */
+function nearestSlideS(x, z, sMax, sPref){
+  const SL = L.SLIDE, top = sMax != null ? sMax : SL.tailS; let best = 1e9;
+  const ds = [];
+  for (let i=0;i<SL.n;i++){ if (SL.cum[i] > top) break; const d = Math.hypot(SL.P[i*3] - x, SL.P[i*3+2] - z); ds.push(d); if (d < best) best = d; }
+  let bi = ds.indexOf(best);
+  if (sPref != null){ for (let i = 0; i < ds.length; i++) if (ds[i] < best + 0.45 && Math.abs(SL.cum[i] - sPref) < Math.abs(SL.cum[bi] - sPref) - 0.5) bi = i;
+    // (then the nearest point of that stretch)
+    for (let i = 0; i < ds.length; i++) if (Math.abs(SL.cum[i] - SL.cum[bi]) < 1.2 && ds[i] < ds[bi]) bi = i; }
+  else for (let i = 0; i < ds.length; i++) if (ds[i] < best + 0.12 && SL.P[i*3+1] > SL.P[bi*3+1] + 0.3) bi = i;
+  return {s:SL.cum[bi], d:ds[bi], x:SL.P[bi*3], z:SL.P[bi*3+2]};
+}
+function hitPoint(x, z, rad){ let best = -1, bd = rad; lvl.slide.points.forEach((p, i) => { const d = Math.hypot(p.x - x, p.z - z); if (d < bd){ bd = d; best = i; } }); return best; }
+function hitTray(x, z){ for (const r of L.TRAYS) if (C.inPoly(r.outline, x, z)) return r.src; return -1; }
+function hitCell(r, x, z, rad){ let best = null, bd = rad || 0.2; for (let c=0;c<r.cols;c++) for (let k=0;k<r.rows;k++){ const sl = r.slots[c][k], d = Math.hypot(sl.x - x, sl.z - z); if (d < bd){ bd = d; best = [c, k]; } } return best; }
+const trayNodes = r => [r.lip, r.tip];
+function hitNode(x, z, rad){
+  for (const r of L.TRAYS){ const showAll = (sel.tray === r.src && ['tray', 'disp', 'crate', 'node'].includes(sel.kind)) || (hover && hover.tray === r.src);
+    const nodes = trayNodes(r);
+    for (let k = 0; k < nodes.length; k++){ if (k > 0 && !showAll) continue; const p = nodes[k]; if (Math.hypot(p[0] - x, p[1] - z) < rad) return {tray:r.src, i:k}; } }
+  return null;
+}
+function hitBlocker(x, z){
+  for (const r of L.TRAYS){ const cell = hitCell(r, x, z, r.sp*0.75); if (!cell) continue; const rd = lvl.trays[r.src], [c, k] = cell;
+    const inR = o => c >= o.col && c < o.col + o.w && k >= o.row && k < o.row + o.h;
+    const ti = (rd.dispensers || []).findIndex(inR); if (ti >= 0) return {kind:'disp', tray:r.src, i:ti};
+    const bi = (rd.crates || []).findIndex(inR); if (bi >= 0) return {kind:'crate', tray:r.src, i:bi}; }
+  return null;
+}
+/* slide edits keep every tray, gap and toy piece where it was on the ground: remember their spots, find them again
+   on the new slide */
+function slideSpots(n){
+  const o = {}, at = s => { C.pathAt(L.SLIDE, s, o, 0); return [o.x, o.z]; };
+  return {trays:L.TRAYS.slice().sort((a, b) => a.src - b.src).map(r => [r.x, r.z]), gaps:(n.slide.gaps || []).map(g => at(g.at)), toys:(n.slide.toys || []).map(t => at(t.at))};
+}
+function resnap(n, spots){
+  const Lp = C.buildLayout(clone(n)), SL = Lp.SLIDE;
+  const near = sp => { let best = 1e9, bs = 0; for (let i = 0; i < SL.n; i++){ if (SL.cum[i] > SL.tailS) break; const d = Math.hypot(SL.P[i*3] - sp[0], SL.P[i*3+2] - sp[1]); if (d < best){ best = d; bs = SL.cum[i]; } } return bs; };
+  n.trays.forEach((rd, k) => { const sp = spots.trays[k]; if (!sp) return; rd.at = round(near(sp), 3); delete rd.cp; });
+  (n.slide.gaps || []).forEach((g, k) => { const sp = spots.gaps[k]; if (sp) g.at = round(near(sp), 2); });
+  (n.slide.toys || []).forEach((t, k) => { const sp = spots.toys[k]; if (sp) t.at = round(near(sp), 2); });
+}
+function slideEdit(fn, live){
+  const wrap = n => { const sp = slideSpots(n); fn(n); resnap(n, sp); };
+  live ? editLive(wrap) : edit(wrap);
+}
+function deletePoint(i){
+  if (lvl.slide.points.length <= 3){ toast('The slide needs at least 3 points'); return; }
+  slideEdit(n => { n.slide.points.splice(i, 1); }); sel = {kind:'level'}; renderAll();
+}
+function deleteTray(i){ edit(n => { n.trays.splice(i, 1); }); sel = {kind:'level'}; renderAll(); }
+/* gaps and toy pieces: the one under the cursor (on the slide, within its length), adding one, sliding one along */
+function hitAlong(list, x, z){
+  if (!list || !list.length) return -1; const near = nearestSlideS(x, z); if (near.d > RAD + 0.3) return -1;
+  return list.findIndex(q => near.s > q.s0 - 0.2 && near.s < q.s1 + 0.2);
+}
+const hitGap = (x, z) => hitAlong(L.SLIDE.gaps, x, z), hitToy = (x, z) => hitAlong(L.SLIDE.toys, x, z);
+function addGapAt(s){
+  const at = round(Math.max(1, Math.min(L.SLIDE.tailS - 1, s)), 2);
+  edit(n => { n.slide.gaps = (n.slide.gaps || []).concat([{at, len:GAP_DEF.len, ramp:GAP_DEF.ramp}]); });
+  const i = (lvl.slide.gaps || []).findIndex(g => g.at === at); sel = i >= 0 ? {kind:'gap', i} : {kind:'level'}; renderAll();
+  const w = check.warnings.find(q => q.gap === i); toast(w ? 'Gap added (warning: ' + w.msg + ')' : 'Gap added: marbles jump it');
+}
+function addToyAt(s, kind){
+  kind = kind || TOY_DEF.kind; const at = round(Math.max(1, Math.min(L.SLIDE.tailS - 1, s)), 2);
+  edit(n => { n.slide.toys = (n.slide.toys || []).concat([{kind, at, len:C.TOY_KINDS[kind]}]); });
+  const i = (lvl.slide.toys || []).findIndex(t => t.at === at && t.kind === kind); sel = i >= 0 ? {kind:'toy', i} : {kind:'level'}; renderAll();
+  const w = check.warnings.find(q => q.toy === i); toast(w ? TOY_NAME[kind] + ' added (warning: ' + w.msg + ')' : TOY_NAME[kind] + ' added');
+}
+function slideAlong(key, i, s, live){
+  const G = lvl.slide[key] || [], g = G[i]; if (!g) return;
+  // never past a neighbour (the order stays)
+  const lo = i > 0 ? G[i - 1].at + (G[i - 1].len + g.len)/2 + 0.2 : 1, hi = i < G.length - 1 ? G[i + 1].at - (G[i + 1].len + g.len)/2 - 0.2 : L.SLIDE.tailS - 1;
+  const fn = n => { n.slide[key][i].at = round(Math.max(lo, Math.min(hi, s)), 2); };
+  live ? editLive(fn) : edit(fn);
+}
+const slideGap = (i, s, live) => slideAlong('gaps', i, s, live), slideToy = (i, s, live) => slideAlong('toys', i, s, live);
+function gapAction(a, i){
+  if (a === 'del'){ edit(n => { n.slide.gaps.splice(i, 1); }); sel = {kind:'level'}; renderAll(); toast('Gap deleted'); return; }
+  edit(n => { const g = n.slide.gaps[i];
+    if (a === 'len-' || a === 'len+') g.len = round(Math.max(C.GAP_LEN[0], Math.min(C.GAP_LEN[1], g.len + (a === 'len+' ? 0.2 : -0.2))), 1);
+    else if (a === 'flat' || a === 'updown') g.ramp = a;
+    GAP_DEF.len = g.len; GAP_DEF.ramp = g.ramp; });
+}
+function toyAction(a, i){
+  if (a === 'del'){ edit(n => { n.slide.toys.splice(i, 1); }); sel = {kind:'level'}; renderAll(); toast('Toy piece deleted'); return; }
+  edit(n => { const t = n.slide.toys[i];
+    if (a === 'len-' || a === 'len+') t.len = round(Math.max(0.8, Math.min(4, t.len + (a === 'len+' ? 0.2 : -0.2))), 1);
+    else if (C.TOY_KINDS[a]){ t.kind = a; t.len = C.TOY_KINDS[a]; TOY_DEF.kind = a; } });
+}
+/* where a tray's front node lands: always on the slide - the nearest slide spot (its merge point s) and the side of
+   the slide the pointer is on; the tray's front edge then follows that slide edge */
+function snapFront(x, z, sPref){
+  const nr = nearestSlideS(x, z, null, sPref);
+  const o = {}; C.pathAt(L.SLIDE, nr.s, o, 0); const side = ((x - o.x)*(-o.dz) + (z - o.z)*o.dx) >= 0 ? 1 : -1;
+  return {s:Math.min(Math.max(nr.s, 0.8), L.SLIDE.tailS - 0.6), side, x:o.x - o.dz*side*C.EDGE, z:o.z + o.dx*side*C.EDGE};
+}
+function blockRect(d){ if (!d.c1) return null; const col = Math.min(d.c0[0], d.c1[0]), row = Math.min(d.c0[1], d.c1[1]);
+  return {col, row, w:Math.abs(d.c0[0] - d.c1[0]) + 1, h:Math.abs(d.c0[1] - d.c1[1]) + 1}; }
+function blockOk(d){ const b = blockRect(d), rd = lvl.trays[d.tray]; if (!b) return false;
+  if (d.tool === 'disp' && b.row < 1) return false;
+  const others = (rd.dispensers || []).concat(rd.crates || []);
+  return !others.some(o => o.col < b.col + b.w && b.col < o.col + o.w); }
+let drag = null, press = null, spaceDown = false, focusPane = 'view';
+const touches = new Map();                          // two fingers: pinch to zoom, move to pan
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });      // middle button pans (no autoscroll)
+cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my);
+  const k = Math.exp(-e.deltaY*(e.ctrlKey ? 0.01 : 0.0015)); VIEW.s = Math.max(4, Math.min(240, VIEW.s*k)); VIEW.ox = mx - x*VIEW.s; VIEW.oy = my - z*VIEW.s; draw(); }, {passive:false});
+const PAINT = ['paint', 'erase', 'hide'], BLOCK = ['disp', 'lock', 'count'];
+cv.addEventListener('pointerdown', e => {
+  focusPane = 'view'; closeCtx(); closeBoxPop();
+  try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my), hr = 12/VIEW.s;
+  if (e.pointerType === 'touch'){ touches.set(e.pointerId, [mx, my]);
+    if (touches.size === 2){ clearTimeout(press && press.longTimer); const [a, b] = [...touches.values()];
+      drag = {kind:'pinch', d0:Math.hypot(a[0] - b[0], a[1] - b[1]), s0:VIEW.s, c0:[(a[0] + b[0])/2, (a[1] + b[1])/2], ox:VIEW.ox, oy:VIEW.oy}; press = {mx, my, moved:true}; return; } }
+  press = {mx, my, x, z, moved:false, button:e.button, type:e.pointerType};
+  const multi = e.shiftKey || e.ctrlKey || e.metaKey;
+  if (e.button === 1 || spaceDown){ drag = {kind:'pan', ox:VIEW.ox, oy:VIEW.oy}; return; }
+  if (e.button === 2){ press = null; ctxAt(e.clientX, e.clientY, x, z, hr); return; }
+  if (PAINT.includes(tool)){ const ri = hitTray(x, z); if (ri >= 0){ sel = {kind:'tray', tray:ri}; drag = {kind:'paint', tray:ri, done:new Set(), hiddenOn:null}; paintAt(x, z); renderInspector(); return; } }
+  if (BLOCK.includes(tool)){ for (const R of L.TRAYS){ const c = hitCell(R, x, z, R.sp*0.8); if (c){ drag = {kind:'block', tool, tray:R.src, c0:c, c1:c}; drag.ok = blockOk(drag); draw(); return; } } }
+  if (tool === 'tray'){ addTrayAt(x, z); press = null; return; }
+  if (tool === 'gap' || tool === 'toy'){ const isGap = tool === 'gap', gi = isGap ? hitGap(x, z) : hitToy(x, z), key = isGap ? 'gaps' : 'toys';
+    if (gi >= 0){ sel = {kind:tool, i:gi}; renderAll(); drag = {kind:tool, i:gi, ds:nearestSlideS(x, z).s - lvl.slide[key][gi].at}; return; }
+    const near = nearestSlideS(x, z); if (near.d < RAD + 0.3){ isGap ? addGapAt(near.s) : addToyAt(near.s); press = null; return; } }
+  let pi = hitPoint(x, z, hr);
+  const nd0 = tool === 'select' ? hitNode(x, z, hr*1.1) : null;
+  if (nd0 && pi >= 0 && nodeFirst(nd0, pi, x, z)) pi = -1;          // a tray node on top of a slide point: the node wins
+  if (pi >= 0 && (tool === 'select' || tool === 'slide')){
+    if (multi){ toggleSel('point', pi); press = null; return; }
+    if (!(sel.kind === 'point' && ptList().includes(pi))) sel = {kind:'point', i:pi};
+    else sel = Object.assign({}, sel, {i:pi});
+    renderAll();
+    const list = ptList(), at = {}; list.forEach(i => { at[i] = [lvl.slide.points[i].x, lvl.slide.points[i].z]; });
+    drag = {kind:'point', i:pi, list, at, x0:x, z0:z};
+    if (e.pointerType !== 'mouse') press.longTimer = setTimeout(() => { if (press && !press.moved){ deletePoint(pi); drag = null; press = null; } }, 550);
+    return; }
+  if (tool === 'select'){
+    // a tray's back node sits on its marbles: over a blocker, the blocker wins unless that tray is selected
+    const nd1 = hitNode(x, z, hr*1.1), blk = nd1 && nd1.i > 0 && !(sel.kind === 'tray' && trayList().includes(nd1.tray)) ? hitBlocker(x, z) : null, nd = blk ? null : nd1;
+    if (nd){ if (multi){ toggleSel('tray', nd.tray); press = null; return; }
+      sel = {kind:'tray', tray:nd.tray}; renderAll(); drag = nd.i === 0 ? {kind:'front', tray:nd.tray, x, z} : {kind:'back', tray:nd.tray}; return; }
+    const bl = hitBlocker(x, z); if (bl){ if (multi) toggleSel(bl.kind, {tray:bl.tray, i:bl.i}); else { sel = bl; renderAll(); } press = multi ? null : press; return; }
+    const gi = hitGap(x, z); if (gi >= 0){ sel = {kind:'gap', i:gi}; renderAll(); drag = {kind:'gap', i:gi, ds:nearestSlideS(x, z).s - lvl.slide.gaps[gi].at}; return; }
+    const ti = hitToy(x, z); if (ti >= 0){ sel = {kind:'toy', i:ti}; renderAll(); drag = {kind:'toy', i:ti, ds:nearestSlideS(x, z).s - lvl.slide.toys[ti].at}; return; }
+    const ri = hitTray(x, z);
+    if (ri >= 0){ if (multi){ toggleSel('tray', ri); press = null; return; }
+      if (!(sel.kind === 'tray' && trayList().includes(ri))){ sel = {kind:'tray', tray:ri}; renderAll(); }
+      const R = trayOf(ri), c = hitCell(R, x, z, R.sp*0.8);
+      drag = {kind:'cellband', tray:ri, c0:c, sx0:mx, sy0:my}; return; }
+  }
+  drag = {kind:'band', sx0:mx, sy0:my, multi, deselect:!multi};    // empty space: a band selects; a click deselects
+});
+cv.addEventListener('pointermove', e => {
+  const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top, [x, z] = S2W(mx, my);
+  if (e.pointerType === 'touch' && touches.has(e.pointerId)){ touches.set(e.pointerId, [mx, my]);
+    if (drag && drag.kind === 'pinch' && touches.size === 2){ const [a, b] = [...touches.values()], c = [(a[0] + b[0])/2, (a[1] + b[1])/2];
+      const s1 = Math.max(4, Math.min(240, drag.s0*Math.hypot(a[0] - b[0], a[1] - b[1])/Math.max(1, drag.d0))), wx = (drag.c0[0] - drag.ox)/drag.s0, wz = (drag.c0[1] - drag.oy)/drag.s0;
+      VIEW.s = s1; VIEW.ox = c[0] - wx*s1; VIEW.oy = c[1] - wz*s1; draw(); return; } }
+  if (!press){ updateHover(x, z); return; }
+  if (Math.hypot(mx - press.mx, my - press.my) > 4){ press.moved = true; clearTimeout(press.longTimer); }
+  if (!drag || !press.moved) return;
+  const first = !drag.started; drag.started = true;
+  if (drag.kind === 'pan'){ VIEW.ox = drag.ox + mx - press.mx; VIEW.oy = drag.oy + my - press.my; draw(); return; }
+  if (drag.kind === 'band' || drag.kind === 'cellband'){ drag.sx1 = mx; drag.sy1 = my; draw(); return; }
+  if (drag.kind === 'point'){ const dx = x - drag.x0, dz = z - drag.z0;
+    slideEdit(n => { drag.list.forEach(i => { if (!n.slide.points[i]) return; n.slide.points[i].x = round(drag.at[i][0] + dx); n.slide.points[i].z = round(drag.at[i][1] + dz); }); }, !first); return; }
+  if (drag.kind === 'paint'){ paintAt(x, z); return; }
+  if (drag.kind === 'gap' || drag.kind === 'toy'){ const cur = lvl.slide[drag.kind === 'gap' ? 'gaps' : 'toys'][drag.i];
+    (drag.kind === 'gap' ? slideGap : slideToy)(drag.i, nearestSlideS(x, z, null, cur ? cur.at + drag.ds : null).s - drag.ds, !first); return; }
+  if (drag.kind === 'block'){ const R = trayOf(drag.tray), c = hitCell(R, x, z, R.sp*1.5); if (c){ drag.c1 = c; drag.ok = blockOk(drag); } draw(); return; }
+  if (drag.kind === 'front'){ drag.x = x; drag.z = z; drag.snap = snapFront(x, z, drag.snap ? drag.snap.s : trayOf(drag.tray).s); moveFront(drag, !first); return; }
+  if (drag.kind === 'back'){ const src = drag.tray;      // the back node: the way the tray points from its merge point
+    const fn = n => { const rd = n.trays[src]; rd.shape = [[round(x), round(z)]]; delete rd.tilt; };
+    first ? edit(fn) : editLive(fn); return; }
+});
+/* the front node moved along the slide: a tray turned by its back node keeps its angle to the slide; a tilted one
+   (or the default) keeps its angle on screen */
+function moveFront(d, live){
+  const src = d.tray;
+  const fn = n => { const rd = n.trays[src], old = trayOf(src), had = rd.shape && rd.tilt == null;
+    rd.at = round(d.snap.s, 3); rd.side = d.snap.side; delete rd.cp; delete rd.push;
+    if (!had) return;
+    const o0 = {}, o1 = {}; C.pathAt(L.SLIDE, old.s, o0, 0); C.pathAt(L.SLIDE, d.snap.s, o1, 0);
+    const n0 = [-o0.dz*old.side, o0.dx*old.side], n1 = [-o1.dz*d.snap.side, o1.dx*d.snap.side];
+    const a = Math.atan2(n0[0]*old.dir[1] - n0[1]*old.dir[0], n0[0]*old.dir[0] + n0[1]*old.dir[1])*(d.snap.side === old.side ? 1 : -1), ca = Math.cos(a), sa = Math.sin(a);
+    const dir = [n1[0]*ca - n1[1]*sa, n1[0]*sa + n1[1]*ca], ax = o1.x + n1[0]*C.EDGE, az = o1.z + n1[1]*C.EDGE, l = old.length + 0.4;
+    rd.shape = [[round(ax + dir[0]*l), round(az + dir[1]*l)]]; };
+  live ? editLive(fn) : edit(fn);
+}
+const endTouch = e => { if (e && e.pointerType === 'touch'){ touches.delete(e.pointerId); if (drag && drag.kind === 'pinch'){ if (!touches.size){ drag = null; press = null; } return true; } } return false; };
+cv.addEventListener('pointercancel', e => { endTouch(e); });
+cv.addEventListener('pointerup', e => {
+  if (endTouch(e)) return;
+  if (!press) return; clearTimeout(press.longTimer);
+  const wasClick = !press.moved, {x, z} = press;
+  if (drag && drag.kind === 'block'){ finishBlock(drag); }
+  else if (drag && drag.kind === 'band' && !wasClick){ bandSelect(drag); }
+  else if (drag && drag.kind === 'cellband' && !wasClick && drag.sx1 != null){ cellBandSelect(drag); }
+  else if (wasClick && tool === 'slide' && (!drag || drag.kind === 'band')){
+    const near = nearestSlideS(x, z);
+    if (near.d < RAD + 0.15 && hitPoint(x, z, 12/VIEW.s) < 0) addPointAt(x, z, near.s);
+    else if (drag && drag.deselect){ sel = {kind:'level'}; renderAll(); }
+  } else if (wasClick && drag && drag.deselect){ sel = {kind:'level'}; renderAll(); }
+  const dragged = drag && drag.started && !['pan', 'band', 'cellband'].includes(drag.kind);
+  drag = null; press = null; draw();
+  if (dragged) renderInspector();                    // live drags skip the inspector; bring it up to date once
+});
+/* a new slide point where the slide was clicked, in slide order (pulled inside the slide zone) */
+function addPointAt(x, z, s){
+  const sArr = L.SLIDE.pointS; let i = 0; while (i < sArr.length - 1 && sArr[i+1] < s) i++;
+  const o = {}; C.pathAt(L.SLIDE, s, o, 0); const [px, pz] = clampToZone(x, z, o.y);
+  slideEdit(n => { n.slide.points.splice(i + 1, 0, {x:round(px), z:round(pz)}); }); sel = {kind:'point', i:i + 1}; renderAll();
+}
+/* a tray node and a slide point under the cursor: the selected tray's node wins, otherwise the nearer one */
+function nodeFirst(nd, pi, x, z){
+  if (['tray', 'disp', 'crate'].includes(sel.kind) && sel.tray === nd.tray) return true;
+  const n = trayNodes(trayOf(nd.tray))[nd.i], p = lvl.slide.points[pi];
+  return Math.hypot(n[0] - x, n[1] - z) <= Math.hypot(p.x - x, p.z - z);
+}
+function updateHover(x, z){
+  const hr = 12/VIEW.s; let h = null;
+  const pi = hitPoint(x, z, hr), nd = tool === 'slide' ? null : hitNode(x, z, hr*1.1);
+  if (pi >= 0 && !(nd && nodeFirst(nd, pi, x, z))) h = {kind:'point', i:pi};
+  if (!h && nd) h = {kind:'node', tray:nd.tray, i:nd.i};
+  if (!h) h = hitBlocker(x, z);
+  if (!h && (tool === 'select' || tool === 'gap')){ const gi = hitGap(x, z); if (gi >= 0) h = {kind:'gap', i:gi}; }
+  if (!h && (tool === 'select' || tool === 'toy')){ const ti = hitToy(x, z); if (ti >= 0) h = {kind:'toy', i:ti}; }
+  if (!h){ const ri = hitTray(x, z); if (ri >= 0){ h = {kind:'tray', tray:ri}; const c = hitCell(trayOf(ri), x, z, trayOf(ri).sp*0.8); if (c) h.cell = c; } }
+  const key = JSON.stringify(h); if (key === JSON.stringify(hover)) return;
+  hover = h; cv.style.cursor = h ? (['point', 'node', 'gap', 'toy'].includes(h.kind) ? 'grab' : 'pointer') : (PAINT.concat(BLOCK).includes(tool) ? 'crosshair' : 'default'); draw();
+}
+cv.addEventListener('pointerleave', () => { if (hover){ hover = null; draw(); } });
+/* right-click: select what is under the cursor (keeping a selection it belongs to) and open the menu for it */
+function ctxAt(cx, cy, x, z, hr){
+  const pi = hitPoint(x, z, hr*1.2);
+  if (pi >= 0){ if (!(sel.kind === 'point' && ptList().includes(pi))) sel = {kind:'point', i:pi}; renderAll(); openCtx(cx, cy, 'point', {x, z}); return; }
+  const nd = hitNode(x, z, hr*1.1); if (nd){ if (!(sel.kind === 'tray' && trayList().includes(nd.tray))) sel = {kind:'tray', tray:nd.tray}; renderAll(); openCtx(cx, cy, 'tray', {x, z}); return; }
+  const bl = hitBlocker(x, z); if (bl){ if (!(sel.kind === bl.kind && blkList().some(o => o.tray === bl.tray && o.i === bl.i))) sel = bl; renderAll(); openCtx(cx, cy, bl.kind, {x, z}); return; }
+  const gi = hitGap(x, z); if (gi >= 0){ sel = {kind:'gap', i:gi}; renderAll(); openCtx(cx, cy, 'gap', {x, z}); return; }
+  const ti = hitToy(x, z); if (ti >= 0){ sel = {kind:'toy', i:ti}; renderAll(); openCtx(cx, cy, 'toy', {x, z}); return; }
+  const ri = hitTray(x, z);
+  if (ri >= 0){ const c = hitCell(trayOf(ri), x, z, trayOf(ri).sp*0.8);
+    if (c && sel.kind === 'cells' && sel.tray === ri && sel.cells.some(q => q[0] === c[0] && q[1] === c[1])){ openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
+    if (c && PAINT.includes(tool)){ sel = {kind:'cells', tray:ri, cells:[c]}; renderAll(); openCtx(cx, cy, 'cells', {x, z, cell:c}); return; }
+    if (!(sel.kind === 'tray' && trayList().includes(ri))) sel = {kind:'tray', tray:ri}; renderAll(); openCtx(cx, cy, 'tray', {x, z, cell:c}); return; }
+  openCtx(cx, cy, 'view', {x, z});
+}
+function paintAt(x, z){
+  const r = trayOf(drag.tray); if (!r) return; const cell = hitCell(r, x, z, r.sp*0.6); if (!cell) return;
+  const key = cell.join(','); if (drag.done.has(key)) return; drag.done.add(key);
+  const rd = lvl.trays[r.src]; if ((rd.dispensers || []).some(t => cell[0] >= t.col && cell[0] < t.col + t.w && cell[1] >= t.row && cell[1] < t.row + t.h)) return;   // dispenser cells stay empty
+  const cur = C.parseCell(rd.columns[cell[0]][cell[1]]);
+  let val;
+  if (tool === 'paint') val = C.cellStr({color, hidden:cur ? cur.hidden : false});
+  else if (tool === 'erase') val = null;
+  else { if (!cur) return; if (drag.hiddenOn === null) drag.hiddenOn = !cur.hidden; val = C.cellStr({color:cur.color, hidden:drag.hiddenOn}); }
+  const fn = n => { n.trays[r.src].columns[cell[0]][cell[1]] = val; };
+  drag.done.size === 1 ? edit(fn) : editLive(fn);
+}
+const nextLock = n => { const used = new Set(n.trays.flatMap(r => (r.crates || []).map(x => x.lock)).filter(Boolean)); let k = 1; while (used.has('K' + k)) k++; return 'K' + k; };
+function finishBlock(d){
+  const b = blockRect(d); if (!b){ draw(); return; }
+  if (!blockOk(d)){ toast(d.tool === 'disp' && b.row < 1 ? 'A dispenser needs at least one cell in front of it' : 'One blocker per column: this overlaps another'); draw(); return; }
+  const src = d.tray;
+  if (d.tool === 'disp'){
+    edit(n => { const rd = n.trays[src]; for (let c = b.col; c < b.col + b.w; c++) for (let k = b.row; k < b.row + b.h; k++) rd.columns[c][k] = null;
+      rd.dispensers = (rd.dispensers || []).concat([Object.assign({}, b, {color, count:Math.max(2, b.w*b.h*2)})]); });
+    sel = {kind:'disp', tray:src, i:lvl.trays[src].dispensers.length - 1};
+  } else {
+    edit(n => { const rd = n.trays[src]; rd.crates = (rd.crates || []).concat([Object.assign({}, b, d.tool === 'lock' ? {lock:nextLock(n)} : {count:Math.min(3, Math.max(1, check.boxes))})]); });
+    sel = {kind:'crate', tray:src, i:lvl.trays[src].crates.length - 1};
+    if (d.tool === 'lock') toast('Lock crate added: pick its key box in the inspector');
+  }
+  renderAll();
+}
+function addTrayAt(x, z){
+  // the default tray (3 columns of 6, at the game's default angle) at the slide spot nearest the click, on the clicked
+  // side; if it would overlap something or leave the slide zone, try the free stretches of slide instead
+  const make = (at, side) => ({at:round(at, 3), side, rows:6, columns:[0,1,2].map(() => new Array(6).fill(null))});
+  const BAD = ['zone-tray', 'tray-slide', 'tray-tray', 'tray-spiral', 'tray-apron', 'tray-sorter', 'tray-start', 'gap-merge', 'toy-merge'];
+  // (a spot is good when the new tray brings no new warning of those kinds - an overlap may be reported on the other tray)
+  const had = new Set(check.warnings.map(w => w.kind + '|' + w.msg));
+  const ok = (at, side) => { const t = clone(lvl); t.trays.push(make(at, side)); return !C.checkLevel(t).warnings.some(w => BAD.includes(w.kind) && !had.has(w.kind + '|' + w.msg)); };
+  const sn = snapFront(x, z), top = L.SLIDE.tailS - 0.6;
+  let pick = null;
+  for (const f of [0, -0.3, 0.3, -0.6, 0.6, -1, 1]){ const at = Math.min(Math.max(sn.s + f, 0.8), top); if (ok(at, sn.side)){ pick = make(at, sn.side); break; } }
+  if (!pick){ const ss = L.TRAYS.map(r => r.s).filter(isFinite).concat([0.8, top]).sort((a, b) => a - b), gaps = [];
+    for (let i=0;i<ss.length-1;i++) gaps.push([ss[i+1] - ss[i], (ss[i] + ss[i+1])/2]); gaps.sort((a, b) => b[0] - a[0]);
+    for (const [, mid] of gaps){ for (const side of [sn.side, -sn.side]) if (ok(mid, side)){ pick = make(mid, side); break; } if (pick) break; } }
+  for (let at = 1.2; !pick && at < top; at += 0.4) for (const side of [sn.side, -sn.side]) if (ok(at, side)){ pick = make(at, side); break; }   // anywhere on the slide
+  if (!pick){ pick = make(sn.s, sn.side); toast('No free spot inside the slide zone: check the warnings'); }
+  edit(n => { n.trays.push(pick); }); sel = {kind:'tray', tray:lvl.trays.length - 1}; renderAll();
+}
+function trayAction(a, i){
+  i = i == null ? sel.tray : i; if (i == null || !lvl.trays[i]) return;
+  if (a === 'del') return deleteTray(i);
+  edit(n => { const r = n.trays[i], lr = trayOf(i);
+    if (a === 'c+' && r.columns.length < 10) r.columns.push(new Array(r.rows).fill(null));
+    if (a === 'c-' && r.columns.length > 1){ r.columns.pop(); ['dispensers', 'crates'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.col + o.w <= r.columns.length); }); }
+    if (a === 'r+' && r.rows < 12){ r.rows++; r.columns.forEach(c => c.push(null)); }
+    if (a === 'r-' && r.rows > 1){ r.rows--; r.columns.forEach(c => c.pop()); ['dispensers', 'crates'].forEach(k => { if (r[k]) r[k] = r[k].filter(o => o.row + o.h <= r.rows); }); }
+    if (a === 'flip'){ r.at = lr.s; delete r.cp; r.side = -lr.side; delete r.shape; }
+    if (a === 'default'){ delete r.shape; delete r.tilt; }
+    if (a === 'square'){ const o = {}; C.pathAt(L.SLIDE, lr.s, o, 0); const nx = -o.dz*lr.side, nz = o.dx*lr.side;
+      r.shape = [[round(lr.lip[0] + nx*(lr.length + 0.4)), round(lr.lip[1] + nz*(lr.length + 0.4))]]; delete r.tilt; }
+    if (a === 't+' || a === 't-'){ const cur = r.tilt != null ? r.tilt : Math.round(Math.atan2(-lr.dir[1], Math.abs(lr.dir[0]))*180/Math.PI);
+      r.tilt = Math.max(-45, Math.min(90, cur + (a === 't+' ? 5 : -5))); delete r.shape; }
+    if (a === 'p+' || a === 'p-'){ const v = round(Math.max(0, Math.min(1.5, (r.push || 0) + (a === 'p+' ? 0.1 : -0.1))), 1); if (v > 0) r.push = v; else delete r.push; }
+    if (a === 'clear') r.columns = r.columns.map(col => col.map(() => null));
+    if (a === 'fill'){ const used = [...new Set(lvl.trays.flatMap(x => x.columns.flat()).map(c => C.parseCell(c)).filter(Boolean).map(c => c.color))];
+      const pal = used.length >= 2 ? used : C.COLORS.slice(0, 4), cover = (c, k) => (r.dispensers || []).some(t => c >= t.col && c < t.col + t.w && k >= t.row && k < t.row + t.h);
+      r.columns = r.columns.map((col, c) => { const out = []; let prev = null;
+        while (out.length < r.rows){ const cand = pal.filter(x => x !== prev), cc = cand[Math.floor(Math.random()*cand.length)], n_ = 1 + Math.floor(Math.random()*3);
+          for (let k = 0; k < n_ && out.length < r.rows; k++) out.push(cover(c, out.length) ? null : cc); prev = cc; }
+        return out; }); }
+  });
+}
+
+/* =============================== BOX LANES ===============================
+   The level's 2-5 lanes drawn as boxes (length = holes), hidden boxes grey with a "?" (their colour on the rim), key
+   boxes with a key, connected boxes joined by bellows.  Click to select (Shift/Ctrl/Cmd adds), drag a band over empty
+   space to select several, drag a box to reorder it or move it to another lane, double-click toggles hidden,
+   right-click for the menu.  The pane widens for 4-5 lanes. */
+const QK = 28, QTOP = 26;
+let QW = 58, QX = [8, 84, 160];
+function queueGeom(){
+  const n = lvl.lanes.length; QW = n >= 4 ? 50 : 58; QX = Array.from({length:n}, (_, l) => 8 + l*(QW + 18));
+  const w = QX[n - 1] + QW + 8, pane = Math.max(258, w + 14);     // (wide enough for the header on one line)
+  if ($('app').dataset.qw !== String(pane)){ $('app').dataset.qw = pane; $('app').style.gridTemplateColumns = `190px minmax(320px,1fr) ${pane}px 280px auto`; setTimeout(() => { resize(); fitPhone(); }, 0); }
+  return w;
+}
+function queueLayout(){
+  queueGeom();
+  const out = []; lvl.lanes.forEach((lane, l) => { let y = QTOP; lane.forEach((b, i) => { const h = C.boxLen(b.size)*QK + 10; out.push({l, i, b, x:QX[l], y, w:QW, h}); y += h + 8; }); });
+  return out;
+}
+let qDrag = null;
+function renderQueue(){
+  const svg = $('queueSvg'), items = queueLayout(), W = queueGeom(), H = Math.max(200, ...items.map(q => q.y + q.h + 30));
+  svg.setAttribute('width', W); svg.setAttribute('height', H); $('qLaneN').textContent = lvl.lanes.length;
+  $('qLaneMinus').disabled = lvl.lanes.length <= C.LANE_MIN; $('qLanePlus').disabled = lvl.lanes.length >= C.LANE_MAX;
+  const selSet = new Set(sel.kind === 'box' ? sel.list.map(([l, i]) => l + ':' + i) : []);
+  // lane problems next to the lanes: the boxes of a bad connection get a red rim
+  const qw = check.warnings.filter(w => /^link|^key/.test(w.kind)), badLink = new Set();
+  lvl.lanes.flat().forEach(b => { if (b.link != null && qw.some(w => w.msg.includes(`Link ${b.link}`) || w.kind === 'link-deadlock')) badLink.add(b.link); });
+  $('qWarn').innerHTML = qw.slice(0, 3).map(w => `<div class="iwarn" title="${esc(w.msg)}">⚠ ${esc(w.msg.length > 90 ? w.msg.slice(0, 88) + '…' : w.msg)}</div>`).join('');
+  $('qWarn').querySelectorAll('.iwarn').forEach((d, k) => d.onclick = () => { const w = qw[k], id = (/Link (\S+?)[:\s]/.exec(w.msg) || [])[1];
+    const list = []; lvl.lanes.forEach((ln, l) => ln.forEach((b, i) => { if (id != null && String(b.link) === id) list.push([l, i]); })); if (list.length){ sel = {kind:'box', list}; renderAll(); } });
+  let out = '<defs><pattern id="bellow" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8b919c"/><rect width="3" height="6" fill="#bfc4cc"/></pattern>'
+    + '<pattern id="bellowH" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8b919c"/><rect width="6" height="3" fill="#bfc4cc"/></pattern></defs>';
+  lvl.lanes.forEach((ln, l) => { out += `<text x="${QX[l] + QW/2}" y="16" fill="#97a1ba" font-size="11" text-anchor="middle">Lane ${l + 1}</text>`;
+    out += `<rect class="lane" data-lane="${l}" x="${QX[l] - 3}" y="${QTOP - 4}" width="${QW + 6}" height="${H - QTOP}" rx="8" fill="#141927" stroke="#2c3550"/>`;
+    // an empty lane says so, with its own "Add box"
+    if (!ln.length) out += `<g class="qadd" data-lane="${l}" style="cursor:pointer"><title>Add a box to lane ${l + 1}</title><rect x="${QX[l]}" y="${QTOP + 8}" width="${QW}" height="72" fill="rgba(0,0,0,0)"/>`
+      + `<text x="${QX[l] + QW/2}" y="${QTOP + 26}" fill="#97a1ba" font-size="11" text-anchor="middle">No boxes</text><text x="${QX[l] + QW/2}" y="${QTOP + 40}" fill="#97a1ba" font-size="11" text-anchor="middle">yet</text>`
+      + `<rect x="${QX[l] + 3}" y="${QTOP + 50}" width="${QW - 6}" height="26" rx="7" fill="#25426b" stroke="#4aa8ff"/><text x="${QX[l] + QW/2}" y="${QTOP + 67}" fill="#fff" font-size="12" font-weight="700" text-anchor="middle">+ Add</text></g>`; });
+  if (!items.length) out += `<text x="${W/2}" y="${QTOP + 104}" fill="#c6cde0" font-size="12" text-anchor="middle">No boxes yet – Add box</text>`;
+  // bellows between connected boxes (in group order)
+  const groups = {}; items.forEach(q => { if (q.b.link != null) (groups[q.b.link] = groups[q.b.link] || []).push(q); });
+  Object.values(groups).forEach(ms => { ms.sort((a, b) => a.l - b.l || a.i - b.i);
+    for (let k = 1; k < ms.length; k++){      // each member joins its nearest earlier member: lanes first, then places
+      const b = ms[k], a = ms.slice(0, k).reduce((m, q) => Math.abs(q.l - b.l)*10 + Math.abs(q.i - b.i) < Math.abs(m.l - b.l)*10 + Math.abs(m.i - b.i) ? q : m);
+      if (a.l === b.l) out += `<rect x="${a.x + 12}" y="${a.y + a.h - 2}" width="${QW - 24}" height="${b.y - a.y - a.h + 4}" fill="url(#bellowH)" stroke="#5d6472" rx="2"/>`;
+      else { const left = a.x < b.x ? a : b, right = a.x < b.x ? b : a, x0 = left.x + QW - 8, y0 = left.y + left.h/2, x1 = right.x + 8, y1 = right.y + right.h/2;
+        const len = Math.hypot(x1 - x0, y1 - y0), ang = Math.atan2(y1 - y0, x1 - x0)*180/Math.PI;   // a pleated band, pleats across the link
+        out += `<rect transform="translate(${x0},${y0}) rotate(${ang.toFixed(2)})" x="0" y="-12" width="${len.toFixed(1)}" height="24" rx="3" fill="url(#bellow)" stroke="#4a505c" stroke-width="1.5"/>`; } } });
+  items.forEach(q => { const b = q.b, k = q.l + ':' + q.i, isSel = selSet.has(k), hid = b.hidden;
+    // the holes: two columns, size/2 rows, as on the real box's perforated plate
+    let holes = ''; const rows = b.size/2, hy = (q.h - 14)/rows;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) holes += `<circle cx="${q.x + q.w/2 + (c - 0.5)*q.w*0.36}" cy="${q.y + 7 + hy*(r + 0.5)}" r="${Math.min(5.5, hy*0.32)}" fill="#0004"/>`;
+    out += `<g class="qbox${isSel ? ' sel' : ''}" data-key="${k}"><title>Lane ${q.l + 1}, box ${q.i + 1}: ${b.color} ${b.size} holes${hid ? ', hidden' : ''}${b.link != null ? ', connected (' + esc(b.link) + ')' : ''}${b.key ? ', carries key ' + esc(b.key) : ''}</title>`
+      + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="7" fill="${hid ? '#9aa1ad' : C.HEX[b.color]}" stroke="${isSel ? '#ffc531' : badLink.has(b.link) ? '#ff3b3b' : hid ? C.HEX[b.color] : '#0006'}" stroke-width="${isSel || hid || badLink.has(b.link) ? 4 : 1.5}"${badLink.has(b.link) && !isSel ? ' stroke-dasharray="6 3"' : ''}/>`
+      + holes
+      + `<text x="${q.x + q.w/2}" y="${q.y + q.h/2 + 5}" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" stroke="#0006" stroke-width="3" paint-order="stroke">${hid ? '?' : b.size}</text>`
+      + (hid ? `<text x="${q.x + q.w - 9}" y="${q.y + 14}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">${b.size}</text>` : '')
+      + (b.key ? `<g transform="translate(${q.x + 4},${q.y + q.h - 22})"><circle cx="9" cy="9" r="9" fill="#ffd34d" stroke="#8a5a00"/><text x="9" y="13" text-anchor="middle" font-size="11" font-weight="800" fill="#6b4200">${esc(String(b.key)).slice(0, 2)}</text></g>` : '')
+      + `</g>`; });
+  if (qDrag && qDrag.band && qDrag.x1 != null){ const x0 = Math.min(qDrag.x0, qDrag.x1), y0 = Math.min(qDrag.y0, qDrag.y1);
+    out += `<rect x="${x0}" y="${y0}" width="${Math.abs(qDrag.x1 - qDrag.x0)}" height="${Math.abs(qDrag.y1 - qDrag.y0)}" fill="rgba(74,168,255,.15)" stroke="#4aa8ff" stroke-dasharray="4 3"/>`; }
+  if (qDrag && qDrag.target){ const [tl, ti] = qDrag.target, lane = items.filter(q => q.l === tl), y = ti < lane.length ? lane[ti].y - 5 : (lane.length ? lane[lane.length - 1].y + lane[lane.length - 1].h + 3 : QTOP);
+    out += `<rect x="${QX[tl] - 2}" y="${y}" width="${QW + 4}" height="3" rx="1.5" fill="#4aa8ff"/>`; }
+  svg.innerHTML = out;
+  if (qDrag && qDrag.key) { const g = svg.querySelector(`.qbox[data-key="${qDrag.key}"]`); if (g) g.classList.add('drag'); }
+}
+function queueHit(ev){ const svg = $('queueSvg'), r = svg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; return {x, y, items:queueLayout()}; }
+$('queueSvg').addEventListener('pointerdown', ev => {
+  focusPane = 'queue';
+  const g = ev.target.closest('.qbox'), add = ev.target.closest('.qadd'), {x, y} = queueHit(ev);
+  if (ev.button === 2){ ev.preventDefault();
+    if (g){ const key = g.dataset.key.split(':').map(Number); if (!(sel.kind === 'box' && sel.list.some(k => k[0] === key[0] && k[1] === key[1]))){ sel = {kind:'box', list:[key]}; renderAll(); } }
+    let lane = QX.findIndex(qx => x >= qx - 8 && x <= qx + QW + 8); openCtx(ev.clientX, ev.clientY, g ? 'box' : 'queue', {lane:Math.max(0, lane)}); return; }
+  if (add){ openBoxPop(+add.dataset.lane, add); return; }
+  if (!g){ qDrag = {band:true, x0:x, y0:y, sx:ev.clientX, sy:ev.clientY, moved:false, multi:ev.shiftKey || ev.ctrlKey || ev.metaKey};
+    try { $('queueSvg').setPointerCapture(ev.pointerId); } catch (e) {} return; }
+  const [l, i] = g.dataset.key.split(':').map(Number);
+  qDrag = {key:g.dataset.key, l, i, sx:ev.clientX, sy:ev.clientY, moved:false, multi:ev.shiftKey || ev.ctrlKey || ev.metaKey};
+  try { $('queueSvg').setPointerCapture(ev.pointerId); } catch (e) {}
+});
+$('queueSvg').addEventListener('pointermove', ev => {
+  if (!qDrag) return;
+  if (!qDrag.moved && Math.hypot(ev.clientX - qDrag.sx, ev.clientY - qDrag.sy) < 5) return;
+  qDrag.moved = true;
+  const {x, y, items} = queueHit(ev);
+  if (qDrag.band){ qDrag.x1 = x; qDrag.y1 = y; renderQueue(); return; }
+  let tl = QX.findIndex(qx => x >= qx - 8 && x <= qx + QW + 8); if (tl < 0){ qDrag.target = null; renderQueue(); return; }
+  const lane = items.filter(q => q.l === tl); let ti = lane.length; for (let k = 0; k < lane.length; k++) if (y < lane[k].y + lane[k].h/2){ ti = k; break; }
+  qDrag.target = [tl, ti]; renderQueue();
+});
+$('queueSvg').addEventListener('pointerup', () => {
+  const d = qDrag; qDrag = null; if (!d) return;
+  if (d.band){                                        // a click on empty space deselects; a band selects every box it touches
+    if (!d.moved){ if (!d.multi){ sel = {kind:'level'}; renderAll(); } return; }
+    const x0 = Math.min(d.x0, d.x1), x1 = Math.max(d.x0, d.x1), y0 = Math.min(d.y0, d.y1), y1 = Math.max(d.y0, d.y1);
+    const hit = queueLayout().filter(q => q.x < x1 && q.x + q.w > x0 && q.y < y1 && q.y + q.h > y0).map(q => [q.l, q.i]);
+    const base = d.multi && sel.kind === 'box' ? sel.list.slice() : [];
+    hit.forEach(k => { if (!base.some(o => o[0] === k[0] && o[1] === k[1])) base.push(k); });
+    sel = base.length ? {kind:'box', list:base} : {kind:'level'}; renderAll(); return; }
+  if (!d.moved){ const key = [d.l, d.i], now = performance.now();
+    // a second click on the same box within 350 ms toggles hidden (the lanes are redrawn on every click, so the
+    // browser's own dblclick never sees the same element twice)
+    if (!d.multi && lastBoxClick && lastBoxClick.key === d.key && now - lastBoxClick.t < 350){ lastBoxClick = null; toggleHidden(d.l, d.i); return; }
+    lastBoxClick = {key:d.key, t:now};
+    if (d.multi && sel.kind === 'box'){ const has = sel.list.findIndex(k => k[0] === d.l && k[1] === d.i); if (has >= 0) sel.list.splice(has, 1); else sel.list.push(key); if (!sel.list.length) sel = {kind:'level'}; }
+    else sel = {kind:'box', list:[key]};
+    renderAll(); return; }
+  if (d.target){ const [tl, ti] = d.target;
+    edit(n => { const [b] = n.lanes[d.l].splice(d.i, 1); let at = ti; if (tl === d.l && ti > d.i) at--; n.lanes[tl].splice(at, 0, b); });
+    const ni = tl === d.l && ti > d.i ? ti - 1 : ti; sel = {kind:'box', list:[[tl, ni]]}; renderAll(); }
+  else renderQueue();
+});
+let lastBoxClick = null;
+function toggleHidden(l, i){ edit(n => { const o = n.lanes[l][i]; if (o.hidden) delete o.hidden; else o.hidden = true; }); sel = {kind:'box', list:[[l, i]]}; renderAll(); }
+$('queueSvg').addEventListener('contextmenu', e => e.preventDefault());
+/* lanes: 2-5; removing the last lane moves its boxes to the lane before it */
+function setLanes(n){
+  n = Math.max(C.LANE_MIN, Math.min(C.LANE_MAX, n)); const cur = lvl.lanes.length; if (n === cur) return;
+  let moved = 0;
+  edit(o => { while (o.lanes.length < n) o.lanes.push([]);
+    while (o.lanes.length > n){ const last = o.lanes.pop(); moved += last.length; o.lanes[o.lanes.length - 1].push(...last); }
+    o.laneCount = n; });
+  if (sel.kind === 'box') sel = {kind:'level'};
+  renderAll(); toast(`${n} lanes` + (moved ? ` · ${moved} box${moved > 1 ? 'es' : ''} moved to lane ${n}` : ''));
+}
+$('qLaneMinus').onclick = () => setLanes(lvl.lanes.length - 1);
+$('qLanePlus').onclick = () => setLanes(lvl.lanes.length + 1);
+/* "Add box": a small form (lane, colour, holes, hidden) that remembers its last choice */
+const BP = {lane:0, color:'red', size:6, hidden:false};
+function addBox(l, o){
+  o = Object.assign({}, BP, o || {}); l = Math.max(0, Math.min(lvl.lanes.length - 1, l));
+  edit(n => { const b = {color:o.color, size:o.size}; if (o.hidden) b.hidden = true; n.lanes[l].push(b); });
+  sel = {kind:'box', list:[[l, lvl.lanes[l].length - 1]]}; renderAll();
+  toast(`Added a ${o.hidden ? 'hidden ' : ''}${o.color} ${o.size}-hole box to lane ${l + 1}`);
+}
+function renderBoxPop(){
+  $('bpLanes').innerHTML = lvl.lanes.map((_, l) => `<button data-l="${l}" class="${BP.lane === l ? 'on' : ''}" title="Lane ${l + 1}">${l + 1}</button>`).join('');
+  $('bpColors').innerHTML = C.COLORS.map(c => `<div class="sw ${BP.color === c ? 'on' : ''}" data-c="${c}" title="${c}" style="background:${C.HEX[c]}"></div>`).join('');
+  $('bpSizes').innerHTML = C.SIZES.map(c => `<button data-size="${c}" class="${BP.size === c ? 'on' : ''}">${c}</button>`).join('');
+  $('bpHidden').classList.toggle('on', BP.hidden); $('bpHidden').lastChild.textContent = BP.hidden ? ' Hidden (grey ?)' : ' Visible';
+  $('bpLanes').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { BP.lane = +b.dataset.l; renderBoxPop(); });
+  $('bpColors').querySelectorAll('[data-c]').forEach(b => b.onclick = () => { BP.color = b.dataset.c; renderBoxPop(); });
+  $('bpSizes').querySelectorAll('[data-size]').forEach(b => b.onclick = () => { BP.size = size = +b.dataset.size; renderBoxPop(); renderPalette(); });
+}
+function openBoxPop(lane, anchor){
+  if (lane != null) BP.lane = Math.min(lane, lvl.lanes.length - 1); else BP.lane = Math.min(BP.lane, lvl.lanes.length - 1);
+  BP.color = BP.color || color; renderBoxPop(); const p = $('boxPop'); p.classList.add('show');
+  const r = (anchor || $('addBoxBtn')).getBoundingClientRect(), h = p.offsetHeight || 230, w = p.offsetWidth || 236;
+  p.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width/2 - w/2)) + 'px'; p.style.top = Math.max(8, r.top - h - 8) + 'px';
+}
+const closeBoxPop = () => $('boxPop').classList.remove('show');
+$('addBoxBtn').onclick = () => openBoxPop(sel.kind === 'box' ? sel.list[0][0] : null, $('addBoxBtn'));
+$('bpHidden').onclick = () => { BP.hidden = !BP.hidden; renderBoxPop(); };
+$('bpAdd').onclick = () => addBox(BP.lane);
+$('bpClose').onclick = closeBoxPop;
+function linkSelected(){
+  const list = sel.kind === 'box' ? sel.list : [];
+  if (list.length < 2 || list.length > 3){ toast('Select 2 or 3 boxes in the lanes to connect them'); return false; }
+  const used = new Set(lvl.lanes.flat().map(b => b.link).filter(x => x != null)); let id = 'A';
+  for (let k = 0; used.has(id); k++) id = k < 25 ? String.fromCharCode(66 + k) : 'G' + k;
+  const trial = clone(lvl); list.forEach(([l, i]) => { trial.lanes[l][i].link = id; });
+  const G = C.linkGroups(C.normalizeLevel(trial)).find(g => g.id === id);
+  if (!G || !G.connected || !G.consecutive){ toast('Connected boxes must touch: one after another in a lane, or neighbouring lanes at most one row apart'); return false; }
+  const bad = C.checkLevel(trial).warnings.find(w => /^link-/.test(w.kind) && !check.warnings.some(o => o.kind === w.kind && o.msg === w.msg));
+  if (bad){ toast('Not connected: ' + bad.msg); return false; }          // a shape the game can't send, or a lane deadlock
+  edit(n => { list.forEach(([l, i]) => { n.lanes[l][i].link = id; }); }); toast('Connected as ' + id); return true;
+}
+function unlinkSelected(){ if (sel.kind !== 'box') return; edit(n => { sel.list.forEach(([l, i]) => { const b = n.lanes[l][i]; if (!b || b.link == null) return; const id = b.link;
+  n.lanes.forEach(ln => ln.forEach(o => { if (o.link === id) delete o.link; })); }); }); toast('Disconnected'); }
+$('qLinkBtn').onclick = linkSelected; $('qUnlinkBtn').onclick = unlinkSelected;
+
+/* =============================== PALETTE =============================== */
+function renderPalette(){
+  const el = $('palette'); let html = ''; let g = null;
+  TOOLS.forEach(t => { if (t.g !== g){ if (g) html += '</div>'; g = t.g; html += `<div class="grp"><h3>${t.g}</h3>`; }
+    const num = t.noDigit ? null : (DIGIT_TOOLS.indexOf(t) + 1) % 10;      // (the cut and toy tools have their letters only)
+    html += `<button class="tool ${tool === t.id ? 'on' : ''}" data-tool="${t.id}" title="${esc(t.tip)} (${num != null ? num + ' or ' : ''}${t.key})">${icon(t.icon)}<span>${t.label}</span><kbd>${num != null ? num : t.key}</kbd></button>`;
+    if (t.id === 'toy') html += `<div class="toyk" id="toyKinds">${Object.keys(C.TOY_KINDS).map(k => `<button data-toyk="${k}" class="${TOY_DEF.kind === k ? 'on' : ''}" title="${TOY_NAME[k]} (decorative)"><i style="background:${TOY_COL[k]}"></i>${TOY_NAME[k]}</button>`).join('')}</div>`;
+    if (t.id === 'hide') html += `<div class="swatches">${C.COLORS.map((c, i) => `<div class="sw ${color === c ? 'on' : ''}" data-color="${c}" title="${c} (${esc(kb('Shift ' + (i + 1)))})" style="background:${C.HEX[c]}"><small>⇧${i + 1}</small></div>`).join('')}</div>
+      <div class="row"><button id="fillBtn" title="Fill the selected tray with random runs of the colours in use">${icon('shuffle')} Fill random</button></div>`;
+    if (t.id === 'link') html += `<h3 style="margin-top:8px">New box</h3><div class="caps">${C.SIZES.map(c => `<button class="${size === c ? 'on' : ''}" data-size="${c}" title="${c} holes">${c}</button>`).join('')}</div>
+      <div class="hint" style="margin-top:4px">The holes the next box starts with in <b>Add box</b> (under the lanes).</div>`;
+  });
+  html += '</div>'; el.innerHTML = html;
+  el.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
+  el.querySelectorAll('[data-toyk]').forEach(b => b.onclick = () => { TOY_DEF.kind = b.dataset.toyk; if (sel.kind === 'toy') toyAction(TOY_DEF.kind, sel.i); if (tool !== 'toy') setTool('toy'); else renderPalette(); });
+  el.querySelectorAll('[data-color]').forEach(b => b.onclick = () => { color = b.dataset.color; if (!['paint', 'disp'].includes(tool)) setTool('paint'); else renderPalette();
+    if (sel.kind === 'disp') edit(n => { n.trays[sel.tray].dispensers[sel.i].color = color; }); });
+  el.querySelectorAll('[data-size]').forEach(b => b.onclick = () => { size = BP.size = +b.dataset.size; renderPalette(); if ($('boxPop').classList.contains('show')) renderBoxPop(); });
+  $('fillBtn').onclick = () => { if (sel.tray == null || !lvl.trays[sel.tray]){ toast('Select a tray first'); return; } trayAction('fill'); };
+}
+function setTool(t){
+  if (t === 'link'){ if (sel.kind === 'box' && sel.list.length >= 2) { linkSelected(); return; } toast('Shift-click 2 or 3 boxes in the lanes, then press L'); }
+  tool = t; renderPalette(); renderAll(true);
+}
+
+/* ============================== INSPECTOR ============================== */
+function h(html){ const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+function renderInspector(){
+  const el = $('insp'); el.innerHTML = '';
+  if (!selValid()) sel = {kind:'level'};
+  const many = selCount() > 1 && ['point', 'tray', 'disp', 'crate'].includes(sel.kind);
+  if (many) inspMany(el); else if (sel.kind === 'point') inspPoint(el); else if (sel.kind === 'tray') inspTray(el); else if (sel.kind === 'disp') inspDisp(el);
+  else if (sel.kind === 'crate') inspCrate(el); else if (sel.kind === 'gap') inspGap(el); else if (sel.kind === 'toy') inspToy(el); else if (sel.kind === 'box') inspBox(el);
+  else if (sel.kind === 'cells') inspCells(el); else inspLevel(el);
+  const ws = selWarnings(); if (ws.length && el.firstChild){ const card = el.firstChild, after = card.querySelector('h2');
+    ws.slice(0, 4).forEach(w => { const d = h(`<div class="iwarn">⚠ <b>${esc(shortWarn(w))}</b><br>${esc(w.msg)}</div>`); d.onclick = () => { highlight = w; draw(); setTimeout(() => { highlight = null; draw(); }, 1600); };
+      after ? after.after(d) : card.prepend(d); }); }
+}
+/* the checker's warnings about what is selected (shown in the inspector next to it) */
+function selWarnings(){
+  const W = check.warnings, near = (w, x, z, r) => w.x != null && Math.hypot(w.x - x, w.z - z) < r;
+  if (sel.kind === 'point') return W.filter(w => (['zone-slide', 'slide-tight', 'slide-clear', 'slide-sorter'].includes(w.kind) && ptList().some(i => lvl.slide.points[i] && near(w, lvl.slide.points[i].x, lvl.slide.points[i].z, 1.6)))
+    || (w.kind === 'zone-start' && ptList().includes(0)));
+  if (sel.kind === 'tray') return W.filter(w => w.tray != null && trayList().includes(w.tray));
+  if (sel.kind === 'gap') return W.filter(w => w.gap === sel.i);
+  if (sel.kind === 'toy') return W.filter(w => w.toy === sel.i);
+  if (sel.kind === 'disp' || sel.kind === 'crate' || sel.kind === 'cells') return W.filter(w => w.tray === sel.tray && (sel.kind === 'cells' || /blocker|disp|lock|count/.test(w.kind)));
+  if (sel.kind === 'box'){ const links = new Set(sel.list.map(([l, i]) => lvl.lanes[l][i].link).filter(x => x != null)), keys = new Set(sel.list.map(([l, i]) => lvl.lanes[l][i].key).filter(Boolean));
+    return W.filter(w => (/^link/.test(w.kind) && [...links].some(id => w.msg.includes(`Link ${id}`))) || w.kind === 'link-deadlock' || ([...keys].some(k => w.msg.includes(k)) && /key|lock/.test(w.kind))); }
+  return [];
+}
+const ROLES = ['Tutorial', 'Teach', 'Teach + POPUP', 'Practice', 'Challenge', 'Milestone', 'Relax', 'Fun', 'Finale'];
+function inspMany(el){
+  const n = selCount(), kind = sel.kind, name = KIND_NAME[kind];
+  const c = h(`<div class="card"><h2>${icon(kind === 'point' ? 'slide' : kind === 'tray' ? 'tray' : kind === 'disp' ? 'disp' : 'lock')} ${esc(plural(n, name))} selected</h2>
+    <div class="row"><button data-m="copy">${icon('copy')} Copy <kbd>${kb('Ctrl C')}</kbd></button><button data-m="dup">${icon('copy')} Duplicate <kbd>${kb('Ctrl D')}</kbd></button></div>
+    <div class="row"><button data-m="cut">Cut <kbd>${kb('Ctrl X')}</kbd></button><button data-m="del" class="danger">${icon('trash')} Delete <kbd>Del</kbd></button></div>
+    <div class="hint">Arrow keys move them all (Shift: further)${kind === 'tray' ? '; trays slide along the slide' : ''}. Shift- or ${MAC ? '⌘' : 'Ctrl'}-click adds or removes one; Esc deselects.</div></div>`);
+  c.querySelectorAll('[data-m]').forEach(b => b.onclick = () => ({copy:copySel, dup:duplicateSel, cut:cutSel, del:deleteSelection})[b.dataset.m]());
+  el.append(c);
+}
+function inspCells(el){
+  const rd = lvl.trays[sel.tray], ms = sel.cells.map(([c, k]) => C.parseCell(rd.columns[c][k])).filter(Boolean), hid = ms.filter(m => m.hidden).length;
+  const c = h(`<div class="card"><h2>${icon('brush')} ${esc(plural(sel.cells.length, 'cell'))} · tray ${sel.tray + 1}</h2>
+    <div class="row"><label>Marbles</label><span>${ms.length} (${hid} hidden) · ${sel.cells.length - ms.length} empty</span></div>
+    <div class="row"><label>Paint</label><div class="swatches" style="flex:1">${C.COLORS.map(cc => `<div class="sw" data-c="${cc}" title="${cc}" style="background:${C.HEX[cc]}"></div>`).join('')}</div></div>
+    <div class="row"><button id="cHide">${icon('hidden')} Hide / show</button><button id="cClear">${icon('eraser')} Empty</button></div>
+    <div class="hint">Copy and paste them into another spot or tray (paste goes to the hovered cell); the arrow keys move them a cell.</div></div>`);
+  const disp = (n, cc, k) => (n.trays[sel.tray].dispensers || []).some(t => cc >= t.col && cc < t.col + t.w && k >= t.row && k < t.row + t.h);
+  c.querySelectorAll('[data-c]').forEach(b => b.onclick = () => edit(n => { const cols = n.trays[sel.tray].columns; sel.cells.forEach(([cc, k]) => { if (!disp(n, cc, k)){ const m = C.parseCell(cols[cc][k]); cols[cc][k] = C.cellStr({color:b.dataset.c, hidden:m ? m.hidden : false}); } }); }));
+  c.querySelector('#cHide').onclick = () => edit(n => { const cols = n.trays[sel.tray].columns, on = !sel.cells.every(([cc, k]) => { const m = C.parseCell(cols[cc][k]); return !m || m.hidden; });
+    sel.cells.forEach(([cc, k]) => { const m = C.parseCell(cols[cc][k]); if (m) cols[cc][k] = C.cellStr({color:m.color, hidden:on}); }); });
+  c.querySelector('#cClear').onclick = deleteSelection;
+  el.append(c);
+}
+function inspLevel(el){
+  const nb = lvl.lanes.flat().length, m = lvl.meta || {}, role = m.role || '', diff = m.diff, ms = lvl.marbleScale || 1;
+  const roles = ROLES.includes(role) || !role ? ROLES : [role].concat(ROLES);
+  const c = h(`<div class="card"><h2>${icon('file')} Level</h2>
+    <div class="row"><label>Id</label><input type="text" id="lvId" value="${esc(lvl.id)}" style="flex:1" title="Unique id: letters, digits, - and _"></div>
+    <div class="row"><label>Name</label><input type="text" id="lvName" value="${esc(lvl.name || '')}" style="flex:1"></div>
+    <div class="row"><label>Role</label><select id="lvRole" style="flex:1"><option value="">—</option>${roles.map(r => `<option ${r === role ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+    <div class="row"><label>Target difficulty</label><span class="stepper"><button id="dMinus" title="Easier">−</button><b>${diff != null ? diff : '–'}</b><button id="dPlus" title="Harder">+</button></span><span class="hint">${diff != null ? 'of 10' : 'not set'}</span></div>
+    <div class="row"><label>Box lanes</label><span class="stepper"><button id="lnMinus" ${lvl.lanes.length <= C.LANE_MIN ? 'disabled' : ''}>−</button><b>${lvl.lanes.length}</b><button id="lnPlus" ${lvl.lanes.length >= C.LANE_MAX ? 'disabled' : ''}>+</button></span><span class="hint">${C.LANE_MIN}-${C.LANE_MAX}</span></div>
+    <div class="row"><label>Slide</label><span>${lvl.slide.points.length} points · length ${L.SLIDE.tailS.toFixed(1)}</span></div>
+    <div class="row"><label>Trays</label><span>${lvl.trays.length}</span></div>
+    <div class="row"><label>Marble size</label><span class="stepper"><button id="msMinus" title="Smaller" ${ms <= 0.8 + 1e-9 ? 'disabled' : ''}>−</button><b>×${ms.toFixed(2)}</b><button id="msPlus" title="Larger" ${ms >= C.MARBLE_SCALE_MAX - 1e-9 ? 'disabled' : ''}>+</button></span><button id="msAuto" title="The largest size the level's free space allows (its trays grow with their marbles)">Auto</button></div>
+    <div class="row"><label>Toy pieces</label><span>${(lvl.slide.toys || []).length}</span><label style="min-width:0;margin-left:8px">Gaps</label><span>${(lvl.slide.gaps || []).length}</span></div>
+    <div class="row"><label>Boxes</label><span>${nb}</span></div>
+    <div class="row"><button id="fitBtn">${icon('fit')} Fit view <kbd>F</kbd></button></div>
+    <div class="hint">Select something in the view or the lanes to edit it.</div></div>`);
+  c.querySelector('#fitBtn').onclick = () => { fitView(); draw(); };
+  c.querySelector('#lvId').onchange = e => { if (!renameId(e.target.value)) e.target.value = lvl.id; };
+  c.querySelector('#lvName').onchange = e => edit(n => { n.name = e.target.value.trim() || 'Untitled level'; });
+  c.querySelector('#lvRole').onchange = e => edit(n => { n.meta = Object.assign({}, n.meta); if (e.target.value) n.meta.role = e.target.value; else delete n.meta.role; if (!Object.keys(n.meta).length) delete n.meta; });
+  const setDiff = d => edit(n => { n.meta = Object.assign({}, n.meta); const v = (n.meta.diff != null ? n.meta.diff : 4) + d; n.meta.diff = Math.max(1, Math.min(10, v)); });
+  c.querySelector('#dMinus').onclick = () => setDiff(-1); c.querySelector('#dPlus').onclick = () => setDiff(1);
+  c.querySelector('#lnMinus').onclick = () => setLanes(lvl.lanes.length - 1); c.querySelector('#lnPlus').onclick = () => setLanes(lvl.lanes.length + 1);
+  // the marbles' size: their trays grow with them (a size the level has no room for shows as warnings)
+  const setMS = v => edit(n => { v = Math.round(Math.max(0.8, Math.min(C.MARBLE_SCALE_MAX, v))*100)/100; if (Math.abs(v - 1) > 1e-9) n.marbleScale = v; else delete n.marbleScale; });
+  c.querySelector('#msMinus').onclick = () => setMS(ms - 0.05); c.querySelector('#msPlus').onclick = () => setMS(ms + 0.05);
+  c.querySelector('#msAuto').onclick = () => { const v = C.autoMarbleScale(clone(lvl)); setMS(v); toast('Marble size ×' + v.toFixed(2) + (v > 1 ? ' (the most this level has room for)' : ' (no room for larger ones)')); };
+  el.append(c);
+}
+function inspPoint(el){
+  const i = sel.i, p = lvl.slide.points[i], n = lvl.slide.points.length, o = {}; C.pathAt(L.SLIDE, L.SLIDE.pointS[i], o, 0);
+  const c = h(`<div class="card"><h2>${icon(i === 0 ? 'node' : 'slide')} ${i === 0 ? 'Start tower' : 'Slide point ' + (i + 1) + ' / ' + n}</h2>
+    <div class="row"><label>Position</label><span>x ${p.x.toFixed(2)} · z ${p.z.toFixed(2)}</span></div>
+    <div class="row"><label>Height</label><span>${o.y.toFixed(2)}${p.y != null ? ' (pinned)' : ' (auto)'}</span><button data-y="down" title="Pin it lower">↓</button><button data-y="up" title="Pin it higher">↑</button>${p.y != null ? '<button data-y="auto">Auto</button>' : ''}</div>
+    <div class="row" id="spRow"></div><div class="row" id="spR"></div><div class="row" id="delRow"></div>
+    <div class="hint">${i === 0 ? 'The slide starts here, at the top of the start tower with its hopper and flag.' : 'A spiral turns the stretch after this point into a loop that passes over itself (the slide climbs to clear it).'}
+      Heights are automatic (falling toward the sorter, higher where the slide crosses itself); a pinned height raises it here.</div></div>`);
+  if (i > 0 && i < n - 1){
+    const sp = h(`<button class="${p.spiral ? 'on' : ''}">${icon('spiral')} Spiral ${p.spiral ? 'on' : 'off'}</button>`);
+    sp.onclick = () => slideEdit(nn => { const q = nn.slide.points[i]; if (q.spiral) delete q.spiral; else q.spiral = {r:0.9, side:1}; });
+    c.querySelector('#spRow').append(sp);
+    if (p.spiral){ const sd = h(`<button>Loop ${p.spiral.side > 0 ? 'right' : 'left'}</button>`); sd.onclick = () => slideEdit(nn => { const q = nn.slide.points[i].spiral; q.side = -(q.side || 1); }); c.querySelector('#spRow').append(sd);
+      const rr = h(`<span class="stepper"><label style="color:var(--mute);margin-right:6px">Radius</label><button>−</button><b>${p.spiral.r.toFixed(2)}</b><button>+</button></span>`);
+      const [mi, pl] = rr.querySelectorAll('button'); mi.onclick = () => slideEdit(nn => { const q = nn.slide.points[i].spiral; q.r = round(Math.max(0.75, q.r - 0.05)); });
+      pl.onclick = () => slideEdit(nn => { const q = nn.slide.points[i].spiral; q.r = round(Math.min(1.6, q.r + 0.05)); }); c.querySelector('#spR').append(rr); }
+  }
+  c.querySelectorAll('[data-y]').forEach(b => b.onclick = () => slideEdit(nn => { const q = nn.slide.points[i];
+    if (b.dataset.y === 'auto') delete q.y; else q.y = round(Math.max(0.5, o.y + (b.dataset.y === 'up' ? 0.25 : -0.25))); }));
+  if (n > 3){ const d = h(`<button class="danger">${icon('trash')} Delete point</button>`); d.onclick = () => deletePoint(i); c.querySelector('#delRow').append(d); }
+  el.append(c);
+}
+function stepper(label, val, a){ return `<div class="row"><label>${label}</label><span class="stepper"><button data-a="${a}-">−</button><b>${val}</b><button data-a="${a}+">+</button></span></div>`; }
+function turnText(r, rd){ if (rd.tilt != null) return 'tilted ' + rd.tilt + '° on screen'; if (!rd.shape) return 'the default angle (' + C.TRAY_TILT + '°)';
+  const o = {}; C.pathAt(L.SLIDE, r.s, o, 0); const nx = -o.dz*r.side, nz = o.dx*r.side, a = Math.round(Math.abs(Math.atan2(nx*r.dir[1] - nz*r.dir[0], nx*r.dir[0] + nz*r.dir[1]))*180/Math.PI);
+  return a < 1 ? 'square to the slide' : 'turned ' + a + '° from square'; }
+function inspTray(el){
+  const i = sel.tray, rd = lvl.trays[i], lr = trayOf(i);
+  const c = h(`<div class="card"><h2>${icon('tray')} Tray ${i + 1}</h2>
+    <div class="row"><label>Slide</label><span class="pill ok">merges</span><span class="hint">at ${lr.s.toFixed(1)} along the slide</span></div>
+    ${stepper('Columns', lr.cols, 'c')}${stepper('Rows', lr.rows, 'r')}
+    <div class="row"><label>Side</label><button data-a="flip">Flip (${lr.side > 0 ? 'right' : 'left'})</button></div>
+    <div class="row"><label>Direction</label><span>${turnText(lr, rd)}</span></div>
+    <div class="row"><label></label><button data-a="t-" title="Tilt it down 5°">↘</button><button data-a="t+" title="Tilt it up 5°">↗</button><button data-a="square" title="Point the tray straight out from the slide">Square</button><button data-a="default" title="The game's default angle">Default</button></div>
+    ${stepper('Push out', (rd.push || 0).toFixed(1), 'p')}
+    <div class="row"><button data-a="fill">${icon('shuffle')} Fill random</button><button data-a="clear">Clear</button><button data-a="del" class="danger">${icon('trash')} Delete</button></div>
+    <div class="hint">Drag the green diamond (front node) along the slide to move the merge point; drag the white square (back node) to turn the tray. The marbles always lie in a regular grid; where the slide curves, a small apron fills in to the slide's edge. Its front column's marble rolls down a short chute onto the slide.</div></div>`);
+  c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => trayAction(b.dataset.a, i));
+  el.append(c);
+  const list = (rd.dispensers || []).map((t, k) => ['disp', k, `Dispenser · ${t.color} · ${t.count}`]).concat((rd.crates || []).map((b, k) => ['crate', k, b.lock != null ? `Lock crate · key ${b.lock}` : `Count crate · ${b.count}`]));
+  if (list.length){ const c2 = h(`<div class="card"><h2>${icon('disp')} Blockers on this tray</h2></div>`);
+    list.forEach(([kind, k, txt]) => { const b = h(`<div class="row"><button>${icon(kind === 'disp' ? 'disp' : 'lock')} ${esc(txt)}</button></div>`); b.firstChild.onclick = () => { sel = {kind, tray:i, i:k}; renderAll(); }; c2.append(b); });
+    el.append(c2); }
+}
+function inspGap(el){
+  const i = sel.i, g = lvl.slide.gaps[i], q = (L.SLIDE.gaps || [])[i]; if (!q) return;
+  const c = h(`<div class="card"><h2>${icon('gap')} Gap ${i + 1}</h2>
+    <div class="row"><label>Slide</label><span class="hint">cut from ${q.s0.toFixed(1)} to ${q.s1.toFixed(1)} along the slide</span></div>
+    ${stepper('Length', g.len.toFixed(1), 'len')}
+    <div class="row"><label>Ends</label><button data-a="flat" class="${g.ramp !== 'updown' ? 'on' : ''}">Flat</button><button data-a="updown" class="${g.ramp === 'updown' ? 'on' : ''}">Take-off + landing ramps</button></div>
+    <div class="row"><button data-a="del" class="danger">${icon('trash')} Delete gap</button></div>
+    <div class="hint">Marbles fly over the gap in an arc and land back in the half-pipe, never faster or closer than on the plain slide. Keep merge points and spirals off a gap and the stretch just after it. Drag the gap along the slide, or use the arrow keys.</div></div>`);
+  c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => gapAction(b.dataset.a, i));
+  el.append(c);
+}
+function inspToy(el){
+  const i = sel.i, t = lvl.slide.toys[i], q = (L.SLIDE.toys || [])[i]; if (!q) return;
+  const c = h(`<div class="card"><h2>${icon('toy')} ${TOY_NAME[t.kind]}</h2>
+    <div class="row"><label>Slide</label><span class="hint">from ${q.s0.toFixed(1)} to ${q.s1.toFixed(1)} along the slide</span></div>
+    <div class="row"><label>Piece</label><div class="toyk" style="flex:1">${Object.keys(C.TOY_KINDS).map(k => `<button data-a="${k}" class="${t.kind === k ? 'on' : ''}"><i style="background:${TOY_COL[k]}"></i>${TOY_NAME[k]}</button>`).join('')}</div></div>
+    ${stepper('Length', t.len.toFixed(1), 'len')}
+    <div class="row"><button data-a="del" class="danger">${icon('trash')} Delete toy piece</button></div>
+    <div class="hint">Toy pieces are decorative: they play a note, ring, spin or bend the marbles' path, but never change their speed, spacing or order. Keep them off spirals, overpasses, gaps and merge points. Drag one along the slide, or use the arrow keys.</div></div>`);
+  c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => toyAction(b.dataset.a, i));
+  el.append(c);
+}
+function blockerRows(o){
+  return `<div class="row"><label>Cells</label><span>column ${o.col + 1}${o.w > 1 ? '-' + (o.col + o.w) : ''}, row ${o.row + 1}${o.h > 1 ? '-' + (o.row + o.h) : ''}</span></div>
+    ${stepper('Column', o.col + 1, 'col')}${stepper('Row', o.row + 1, 'row')}${stepper('Width', o.w, 'w')}${stepper('Depth', o.h, 'h')}`;
+}
+function moveBlocker(kind, a){
+  const src = sel.tray, k = sel.i;
+  edit(n => { const rd = n.trays[src], o = rd[kind === 'disp' ? 'dispensers' : 'crates'][k], cols = rd.columns.length, rows = rd.rows;
+    const d = a.endsWith('+') ? 1 : -1, f = a.slice(0, -1), nx = Object.assign({}, o);
+    if (f === 'col') nx.col += d; if (f === 'row') nx.row += d; if (f === 'w') nx.w += d; if (f === 'h') nx.h += d;
+    if (nx.w < 1 || nx.h < 1 || nx.col < 0 || nx.row < (kind === 'disp' ? 1 : 0) || nx.col + nx.w > cols || nx.row + nx.h > rows) return;
+    const others = (rd.dispensers || []).filter(x => x !== o).concat((rd.crates || []).filter(x => x !== o));
+    if (others.some(x => x.col < nx.col + nx.w && nx.col < x.col + x.w)){ toast('One blocker per column'); return; }
+    Object.assign(o, nx);
+    if (kind === 'disp') for (let c = o.col; c < o.col + o.w; c++) for (let r = o.row; r < o.row + o.h; r++) rd.columns[c][r] = null; });
+}
+function inspDisp(el){
+  const t = lvl.trays[sel.tray].dispensers[sel.i];
+  const c = h(`<div class="card"><h2>${icon('disp')} Marble dispenser</h2>
+    <div class="row"><label>Tray</label><span>${sel.tray + 1}</span></div>
+    <div class="row"><label>Colour</label><div class="swatches" style="flex:1">${C.COLORS.map(cc => `<div class="sw ${t.color === cc ? 'on' : ''}" data-c="${cc}" title="${cc}" style="background:${C.HEX[cc]}"></div>`).join('')}</div></div>
+    <div class="row"><label>Marbles</label><input type="number" id="tCount" min="1" max="99" value="${t.count}"></div>
+    ${blockerRows(t)}
+    <div class="row"><button class="danger" id="tDel">${icon('trash')} Delete dispenser</button></div>
+    <div class="hint">Its marbles count toward the colour totals. It drops one into each empty cell directly in front of it; at 0 it disappears and the marbles behind it roll on.</div></div>`);
+  c.querySelectorAll('[data-c]').forEach(s => s.onclick = () => edit(n => { n.trays[sel.tray].dispensers[sel.i].color = s.dataset.c; }));
+  c.querySelector('#tCount').onchange = e => edit(n => { n.trays[sel.tray].dispensers[sel.i].count = Math.max(1, Math.min(99, Math.round(+e.target.value || 1))); });
+  c.querySelectorAll('[data-a]').forEach(b => b.onclick = () => moveBlocker('disp', b.dataset.a));
+  c.querySelector('#tDel').onclick = () => { const r = sel.tray, i = sel.i; edit(n => { n.trays[r].dispensers.splice(i, 1); }); sel = {kind:'tray', tray:r}; renderAll(); };
+  el.append(c);
+}
+const boxLabel = (l, i, b) => `Lane ${l + 1} · #${i + 1} · ${b.color} ${b.size}`;
+function inspCrate(el){
+  const b = lvl.trays[sel.tray].crates[sel.i], isLock = b.lock != null, nb = lvl.lanes.flat().length;
+  let keyHolder = null; lvl.lanes.forEach((ln, l) => ln.forEach((x, i) => { if (isLock && x.key === b.lock) keyHolder = l + ':' + i; }));
+  const opts = lvl.lanes.flatMap((ln, l) => ln.map((x, i) => `<option value="${l}:${i}" ${keyHolder === l + ':' + i ? 'selected' : ''}>${esc(boxLabel(l, i, x))}</option>`)).join('');
+  const c = h(`<div class="card"><h2>${icon(isLock ? 'lock' : 'count')} ${isLock ? 'Lock crate' : 'Count crate'}</h2>
+    <div class="row"><label>Variant</label><button data-v="lock" class="${isLock ? 'on' : ''}">${icon('lock')} Lock</button><button data-v="count" class="${!isLock ? 'on' : ''}">${icon('count')} Count</button></div>
+    ${isLock ? `<div class="row"><label>Lock id</label><input type="text" id="bLock" value="${esc(b.lock)}" style="width:80px"></div>
+      <div class="row"><label>Key box</label><select id="bKey" style="flex:1"><option value="">— pick a box —</option>${opts}</select></div>`
+      : `<div class="row"><label>Opens after</label><input type="number" id="bCount" min="1" max="${nb}" value="${b.count}"><span class="hint">completed boxes (of ${nb})</span></div>`}
+    ${blockerRows(b)}
+    <div class="row"><button class="danger" id="bDel">${icon('trash')} Delete crate</button></div>
+    <div class="hint">${isLock ? 'Its key box carries the key: when that box is complete, the key flies to this crate and it lifts away.' : 'It lifts away once that many boxes have been completed, counted from the start of the level.'}</div></div>`);
+  c.querySelectorAll('[data-v]').forEach(btn => btn.onclick = () => edit(n => { const o = n.trays[sel.tray].crates[sel.i];
+    if (btn.dataset.v === 'lock' && o.lock == null){ delete o.count; o.lock = nextLock(n); }
+    if (btn.dataset.v === 'count' && o.count == null){ const id = o.lock; delete o.lock; o.count = Math.min(3, Math.max(1, nb)); n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); } }));
+  if (isLock){
+    c.querySelector('#bLock').onchange = e => { const v = e.target.value.trim(); if (!v) return; edit(n => { const o = n.trays[sel.tray].crates[sel.i], old = o.lock; o.lock = v; n.lanes.forEach(ln => ln.forEach(x => { if (x.key === old) x.key = v; })); }); };
+    c.querySelector('#bKey').onchange = e => { const v = e.target.value; edit(n => { n.lanes.forEach(ln => ln.forEach(x => { if (x.key === b.lock) delete x.key; }));
+      if (v){ const [l, i] = v.split(':').map(Number); n.lanes[l][i].key = b.lock; } }); };
+  } else c.querySelector('#bCount').onchange = e => edit(n => { n.trays[sel.tray].crates[sel.i].count = Math.max(1, Math.round(+e.target.value || 1)); });
+  c.querySelectorAll('[data-a]').forEach(btn => btn.onclick = () => moveBlocker('crate', btn.dataset.a));
+  c.querySelector('#bDel').onclick = () => { const id = b.lock, r = sel.tray, k = sel.i; edit(n => { n.trays[r].crates.splice(k, 1); if (id) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === id) delete x.key; })); });
+    sel = {kind:'tray', tray:r}; renderAll(); };
+  el.append(c);
+}
+function inspBox(el){
+  const list = sel.list, locks = lvl.trays.flatMap(r => (r.crates || []).map(x => x.lock)).filter(x => x != null);
+  if (list.length > 1){
+    const c = h(`<div class="card"><h2>${icon('box')} ${list.length} boxes</h2>
+      ${list.map(([l, i]) => `<div class="row">${esc(boxLabel(l, i, lvl.lanes[l][i]))}</div>`).join('')}
+      <div class="row"><button class="primary" id="mLink">${icon('link')} Connect <kbd>L</kbd></button><button id="mUnlink">${icon('unlink')} Disconnect</button></div>
+      <div class="row"><button id="mHide">${icon('hidden')} Toggle hidden</button><button class="danger" id="mDel">${icon('trash')} Delete</button></div>
+      <div class="hint">2-3 touching boxes (one after another in a lane, or neighbouring lanes at most one row apart) can be connected: they leave together and need that many free slots.</div></div>`);
+    c.querySelector('#mLink').onclick = linkSelected; c.querySelector('#mUnlink').onclick = unlinkSelected;
+    c.querySelector('#mHide').onclick = () => edit(n => { const on = !list.every(([l, i]) => n.lanes[l][i].hidden); list.forEach(([l, i]) => { if (on) n.lanes[l][i].hidden = true; else delete n.lanes[l][i].hidden; }); });
+    c.querySelector('#mDel').onclick = () => { const keys = list.slice().sort((a, b) => b[1] - a[1]); edit(n => { keys.forEach(([l, i]) => n.lanes[l].splice(i, 1)); }); sel = {kind:'level'}; renderAll(); };
+    el.append(c); return;
+  }
+  const [l, i] = list[0], b = lvl.lanes[l][i], mates = b.link != null ? lvl.lanes.flatMap((ln, ll) => ln.map((x, ii) => [ll, ii, x])).filter(([, , x]) => x.link === b.link) : [];
+  const c = h(`<div class="card"><h2>${icon('box')} Box · lane ${l + 1} · #${i + 1}</h2>
+    <div class="row"><label>Colour</label><div class="swatches" style="flex:1">${C.COLORS.map(cc => `<div class="sw ${b.color === cc ? 'on' : ''}" data-c="${cc}" title="${cc}" style="background:${C.HEX[cc]}"></div>`).join('')}</div></div>
+    <div class="row"><label>Holes</label><div class="caps" style="flex:1">${C.SIZES.map(cc => `<button class="${b.size === cc ? 'on' : ''}" data-size="${cc}" title="2 × ${cc/2}">${cc}</button>`).join('')}</div></div>
+    <div class="row"><label>Hidden</label><button id="bHide" class="${b.hidden ? 'on' : ''}">${icon('hidden')} ${b.hidden ? 'Hidden (grey ?)' : 'Visible'}</button></div>
+    <div class="row"><label>Key</label><select id="bKey"><option value="">none</option>${locks.map(k => `<option ${b.key === k ? 'selected' : ''}>${esc(k)}</option>`).join('')}</select>${locks.length ? '' : '<span class="hint">add a lock crate first</span>'}</div>
+    <div class="row"><label>Connected</label>${b.link != null ? `<span>${esc(b.link)}: ${mates.map(([ll, ii]) => `L${ll + 1}#${ii + 1}`).join(' + ')}</span><button id="bUnlink">${icon('unlink')}</button>` : '<span class="hint">Shift-click 1-2 neighbours, then L</span>'}</div>
+    <div class="row"><button id="bUp" ${i === 0 ? 'disabled' : ''}>↑ Earlier</button><button id="bDown" ${i === lvl.lanes[l].length - 1 ? 'disabled' : ''}>↓ Later</button><button class="danger" id="bDel">${icon('trash')}</button></div></div>`);
+  c.querySelectorAll('[data-c]').forEach(s => s.onclick = () => edit(n => { n.lanes[l][i].color = s.dataset.c; }));
+  c.querySelectorAll('[data-size]').forEach(s => s.onclick = () => edit(n => { n.lanes[l][i].size = +s.dataset.size; }));
+  c.querySelector('#bHide').onclick = () => edit(n => { const o = n.lanes[l][i]; if (o.hidden) delete o.hidden; else o.hidden = true; });
+  c.querySelector('#bKey').onchange = e => { const v = e.target.value; edit(n => { if (v) n.lanes.forEach(ln => ln.forEach(x => { if (x.key === v) delete x.key; })); if (v) n.lanes[l][i].key = v; else delete n.lanes[l][i].key; }); };
+  if (c.querySelector('#bUnlink')) c.querySelector('#bUnlink').onclick = unlinkSelected;
+  c.querySelector('#bUp').onclick = () => { edit(n => { const ln = n.lanes[l]; [ln[i - 1], ln[i]] = [ln[i], ln[i - 1]]; }); sel = {kind:'box', list:[[l, i - 1]]}; renderAll(); };
+  c.querySelector('#bDown').onclick = () => { edit(n => { const ln = n.lanes[l]; [ln[i + 1], ln[i]] = [ln[i], ln[i + 1]]; }); sel = {kind:'box', list:[[l, i + 1]]}; renderAll(); };
+  c.querySelector('#bDel').onclick = () => { edit(n => { n.lanes[l].splice(i, 1); }); sel = {kind:'level'}; renderAll(); };
+  el.append(c);
+}
+
+/* ================================ CHECKS ================================ */
+const LABEL_COL = {Easy:'#3fbf62', Medium:'#4aa8ff', Hard:'#ffb020', 'Very Hard':'#ff5a5f'};
+function renderChecks(){
+  const el = $('checks'), ck = check, sizes = Object.entries(ck.sizes).filter(([, v]) => v).map(([k, v]) => `${v}×${k}`).join(' · ');
+  el.innerHTML = `<h3>Checks <span style="flex:1"></span>${ck.ok ? '<span class="pill ok">ready</span>' : '<span class="pill bad">' + (ck.warnings.length + (ck.balanced ? 0 : 1)) + ' to fix</span>'}</h3>
+    <div class="cgrid">${ck.perColor.filter(p => p.marbles || p.holes).map(p => `<div class="cc ${p.ok ? 'ok' : 'bad'}" title="${p.color}: ${p.marbles} marbles vs ${p.holes} holes"><i style="background:${C.HEX[p.color]}"></i>${p.marbles}/${p.holes}</div>`).join('')}</div>
+    <div class="row" style="font-size:12px">Marbles <b>${ck.totalMarbles}</b> · holes <b>${ck.totalHoles}</b> · boxes <b>${ck.boxes}</b>${sizes ? ' (' + sizes + ')' : ''}${ck.hiddenMarbles ? ` · ${ck.hiddenMarbles} hidden` : ''}</div>
+    <div id="warnList"></div><div id="testOut"></div>`;
+  const wl = el.querySelector('#warnList');
+  if (!ck.warnings.length && ck.balanced) wl.append(h(`<div class="okline">✓ colours balanced, no warnings</div>`));
+  if (!ck.balanced) wl.append(h(`<div class="warn">⚠ Marbles and holes differ for some colours</div>`));
+  ck.warnings.forEach(w => { const d = h(`<div class="warn">⚠ <span>${esc(w.msg)}</span></div>`);
+    d.onclick = () => { highlight = w; if (w.tray != null && lvl.trays[w.tray]) sel = {kind:'tray', tray:w.tray}; else if (w.gap != null) sel = {kind:'gap', i:w.gap}; else if (w.toy != null) sel = {kind:'toy', i:w.toy};
+      renderAll(); setTimeout(() => { highlight = null; draw(); }, 1600); }; wl.append(d); });
+  showTest();
+}
+function showTest(){
+  const out = $('testOut'), r = lastTest; if (!out || !r) return;
+  if (r.pending){ out.textContent = 'Testing in the background… (greedy bot + 200 random bots)'; return; }
+  if (r.error){ out.textContent = 'Test failed: ' + r.error; return; }
+  const stale = r.snap !== JSON.stringify(lvl);
+  out.innerHTML = `Greedy bot: <b style="color:${r.greedy.result === 'win' ? '#9be7ad' : '#ffb4b4'}">${String(r.greedy.result).toUpperCase()}</b> · ${r.greedy.sends} sends · ${r.greedy.t.toFixed(1)} s
+Random bots: <b>${r.wins}/${r.runs}</b> wins (${(r.rate*100).toFixed(1)}%)
+Difficulty: <span class="badge" style="background:${LABEL_COL[r.label]}">${r.label}</span>${(r.warnings || []).map(w => `\n<span class="warn">⚠ ${esc(w.msg)}</span>`).join('')}${stale ? '\n<span class="hint">(the level changed since this test)</span>' : ''}`;
+}
+function runTest(){
+  const id = ++testRun, snapshot = JSON.stringify(lvl);
+  lastTest = {pending:true}; showTest();
+  S.testInBackground(clone(lvl), 200).then(r => { if (id !== testRun) return; lastTest = Object.assign(r, {snap:snapshot}); showTest(); })
+    .catch(e => { if (id !== testRun) return; lastTest = {error:e.message}; showTest(); });
+}
+
+/* =========================== LEVELS & ORDER =========================== */
+function openLevels(){ $('levelsModal').classList.add('show'); if (!lvSelId) lvSelId = lvl.id; renderLevels(); }
+function closeModals(){ document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); }
+function renderLevels(){
+  if (!$('levelsModal').classList.contains('show')) return;
+  const slots = S.loadSlots(), q = ($('levelSearch').value || '').toLowerCase();
+  const ids = Object.keys(slots).filter(id => !q || id.toLowerCase().includes(q) || (slots[id].name || '').toLowerCase().includes(q))
+    .sort((a, b) => a.localeCompare(b, undefined, {numeric:true}));
+  const list = $('levelList'); list.innerHTML = '';
+  ids.forEach(id => { const sl = slots[id];
+    const row = h(`<div class="lrow ${id === lvl.id ? 'cur' : ''} ${id === lvSelId ? 'sel' : ''}" data-id="${esc(id)}" title="Click to highlight · double-click opens · ${esc(kb('Ctrl D'))} duplicates · Del deletes"><code title="${esc(id)}">${esc(id)}</code><span class="nm" title="${esc(sl.name)}">${esc(sl.name)}</span>
+      <span class="acts"><button data-a="open" title="Open">Open</button><button data-a="order" title="Add to the level order">${icon('order')}</button><button data-a="dup" title="Duplicate">${icon('copy')}</button><button data-a="del" class="danger" title="Delete">${icon('trash')}</button></span></div>`);
+    row.querySelectorAll('button').forEach(b => b.onclick = () => { const a = b.dataset.a;
+      if (a === 'open'){ if (openLevel(id)) closeModals(); } if (a === 'order') orderAdd(id); if (a === 'dup') duplicateLevel(id); if (a === 'del') deleteLevel(id); });
+    row.addEventListener('click', e => { if (e.target.closest('button')) return; lvSelId = id; renderLevels(); });
+    row.addEventListener('dblclick', e => { if (e.target.closest('button')) return; if (openLevel(id)) closeModals(); });
+    list.append(row); });
+  if (!ids.length) list.append(h(`<div class="hint">No saved levels${q ? ' match' : ''}.</div>`));
+  $('orderIds').innerHTML = Object.keys(slots).map(id => `<option value="${esc(id)}">`).join('');
+  const st = orderState(), ol = $('orderList'); ol.innerHTML = '';
+  $('orderWarn').innerHTML = st.warns.map(w => `<div class="owarn">⚠ ${esc(w)}</div>`).join('');
+  st.ids.forEach((id, i) => {
+    const row = h(`<div class="orow ${st.bad.has(i) ? 'bad' : ''}" draggable="true" data-i="${i}"><span class="n">${i + 1}</span><code>${esc(id)}</code><span class="nm">${esc(st.slots[id] ? st.slots[id].name : 'unknown id')}</span><button class="ghost" title="Remove">${icon('x')}</button></div>`);
+    row.querySelector('button').onclick = () => orderRemove(i);
+    row.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', String(i)); row.classList.add('dragging'); });
+    row.addEventListener('dragend', () => row.classList.remove('dragging'));
+    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('over'); });
+    row.addEventListener('dragleave', () => row.classList.remove('over'));
+    row.addEventListener('drop', e => { e.preventDefault(); row.classList.remove('over'); const from = +e.dataTransfer.getData('text/plain'); if (from !== i) orderMove(from, i); });
+    ol.append(row); });
+  const tail = h(`<div style="height:34px" class="dropTail"></div>`);
+  tail.addEventListener('dragover', e => e.preventDefault()); tail.addEventListener('drop', e => { e.preventDefault(); orderMove(+e.dataTransfer.getData('text/plain'), st.ids.length); });
+  ol.append(tail);
+  if (!st.ids.length) ol.prepend(h(`<div class="hint">Add level ids above (or with ${icon('order')} in the list) to build the order the exported game plays them in.</div>`));
+}
+$('levelsClose').onclick = closeModals; $('helpClose').onclick = closeModals;
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => { if (e.target === m) closeModals(); }));
+$('levelSearch').oninput = renderLevels;
+$('lvNew').onclick = () => { closeModals(); newLevel(); };
+$('lvSave').onclick = () => saveLevel(false);
+$('lvImport').onclick = () => pickFile(importLevel);
+$('orderAddBtn').onclick = () => { orderAdd($('orderAdd').value); $('orderAdd').value = ''; };
+$('orderAdd').onkeydown = e => { if (e.key === 'Enter'){ orderAdd($('orderAdd').value); $('orderAdd').value = ''; } };
+$('orderExport').onclick = exportOrderJSON;
+$('orderImport').onclick = () => pickFile(importOrder);
+$('orderHtml').onclick = () => exportHtml('order');
+function pickFile(fn){ const f = $('fileIn'); f.value = ''; f.onchange = () => { const file = f.files[0]; if (file) file.text().then(fn); }; f.click(); }
+function importLevel(txt){
+  let o; try { o = JSON.parse(txt); C.buildLayout(clone(o)); } catch (e) { toast('Import failed: ' + e.message); return false; }
+  if (isDirty() && !confirm(`Discard the unsaved changes to "${lvl.id}"?`)) return false;
+  const slots = S.loadSlots(); if (!o.id || !ID_RE.test(String(o.id))) o.id = nextId();
+  if (slots[o.id] && JSON.stringify(C.normalizeLevel(clone(slots[o.id].level))) !== JSON.stringify(C.normalizeLevel(clone(o)))){ const nid = nextId(); toast(`Id "${o.id}" is taken: imported as "${nid}"`); o.id = nid; }
+  setLevel(o); renderLevels(); toast(`Imported "${lvl.id}" (save to keep it)`); return true;
+}
+
+/* ============================== TOP BAR ============================== */
+function renderBar(){
+  $('levelId').value = lvl.id; $('levelName').value = lvl.name || '';
+  const dirty = isDirty(); $('saveState').textContent = savedJSON == null ? 'not saved yet · draft kept' : dirty ? 'unsaved · draft kept' : 'saved'; $('saveState').classList.toggle('dirty', dirty);
+  $('dirtyDot').classList.toggle('on', dirty); document.title = (dirty ? '● ' : '') + (lvl.name || lvl.id) + ' — Marble Run Editor';
+  $('undoBtn').disabled = !undoStack.length; $('redoBtn').disabled = !redoStack.length;
+}
+document.querySelectorAll('.menu').forEach(m => { m.querySelector('[data-menu]').onclick = e => { e.stopPropagation(); const open = !m.classList.contains('open');
+  document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); m.classList.toggle('open', open); }; });
+addEventListener('pointerdown', e => { if (!e.target.closest('.menu')) document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); });
+document.querySelectorAll('.menu [data-act]').forEach(b => b.onclick = () => { document.querySelectorAll('.menu').forEach(x => x.classList.remove('open')); ACT[b.dataset.act](); });
+const ACT = {new:newLevel, levels:() => IN_SHOWCASE ? hostPost({type:'pick'}) : openLevels(), save:() => saveLevel(false), saveAs:() => saveLevel(true), import:() => pickFile(importLevel),
+  dupLevel:duplicateCurrentLevel, exportJSON:exportLevelJSON, exportHtmlLevel:() => exportHtml('level'), exportHtmlOrder:() => exportHtml('order'), exportOrder:exportOrderJSON, playTab:playInTab};
+$('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
+$('levelId').onchange = e => { if (!renameId(e.target.value)) e.target.value = lvl.id; };
+$('levelName').onchange = e => edit(n => { n.name = e.target.value.trim() || 'Untitled level'; });
+$('runBtn').onclick = run;
+$('watchBtn').onclick = () => { send('watch'); $('status').textContent = 'preview: greedy bot playing…'; };
+$('testBtn').onclick = runTest;
+$('autoBtn').onclick = () => { autoRun = !autoRun; $('autoBtn').classList.toggle('on', autoRun); if (autoRun) scheduleAuto(); };
+$('previewBtn').onclick = () => { const d = $('previewDock'); d.classList.toggle('hide'); $('previewBtn').classList.toggle('on', !d.classList.contains('hide')); fitPhone(); setTimeout(resize, 30); };
+$('helpBtn').onclick = () => $('helpModal').classList.add('show');
+
+/* ============================ SELECTION + CLIPBOARD ============================
+   One kind of thing selected at a time (slide points, trays, dispensers, crates, marble cells, boxes, a gap, a toy
+   piece, or the level itself), one or several of it. Copy / cut / paste / duplicate / delete / nudge / select all
+   work on it. */
+const ptList = () => sel.kind === 'point' ? (sel.list || [sel.i]) : [];
+const trayList = () => sel.kind === 'tray' ? (sel.list || [sel.tray]) : [];
+const blkList = () => sel.kind === 'disp' || sel.kind === 'crate' ? (sel.list || [{tray:sel.tray, i:sel.i}]) : [];
+function toggleSel(kind, item){
+  const same = (a, b) => typeof a === 'object' ? a.tray === b.tray && a.i === b.i : a === b;
+  let list = kind === 'point' ? ptList() : kind === 'tray' ? trayList() : sel.kind === kind ? blkList() : [];
+  if (sel.kind !== kind) list = [];
+  list = list.some(o => same(o, item)) ? list.filter(o => !same(o, item)) : list.concat([item]);
+  if (!list.length) sel = {kind:'level'};
+  else if (kind === 'point') sel = {kind, i:list[list.length - 1], list};
+  else if (kind === 'tray') sel = {kind, tray:list[list.length - 1], list};
+  else sel = {kind, tray:list[list.length - 1].tray, i:list[list.length - 1].i, list};
+  renderAll();
+}
+/* a band dragged over empty space: slide points (slide tool), trays (select tool, by their front node or middle) or
+   blockers (blocker tools) inside it */
+function bandSelect(d){
+  const x0 = Math.min(d.sx0, d.sx1), x1 = Math.max(d.sx0, d.sx1), y0 = Math.min(d.sy0, d.sy1), y1 = Math.max(d.sy0, d.sy1);
+  const inBand = (x, z) => { const [sx, sy] = W2S(x, z); return sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1; };
+  const add = (kind, items) => { if (!items.length){ if (!d.multi) sel = {kind:'level'}; renderAll(); return; }
+    if (d.multi && sel.kind === kind){ items = (kind === 'point' ? ptList() : kind === 'tray' ? trayList() : blkList()).concat(items); }
+    const last = items[items.length - 1];
+    sel = kind === 'point' ? {kind, i:last, list:items} : kind === 'tray' ? {kind, tray:last, list:items} : {kind, tray:last.tray, i:last.i, list:items}; renderAll(); };
+  const pts = () => lvl.slide.points.map((p, i) => i).filter(i => inBand(lvl.slide.points[i].x, lvl.slide.points[i].z));
+  if (tool === 'slide') return add('point', pts());
+  if (BLOCK.includes(tool)){ const kind = tool === 'disp' ? 'disp' : 'crate', out = [];
+    L.TRAYS.forEach(r => (lvl.trays[r.src][kind === 'disp' ? 'dispensers' : 'crates'] || []).forEach((o, i) => { if (kind === 'crate' && (tool === 'lock') !== (o.lock != null)) return;
+      if (o.col + o.w > r.cols || o.row + o.h > r.rows) return; const q = cellQuad(r, o.col, o.row, o.w, o.h);
+      if (inBand(q.reduce((a, p) => a + p[0], 0)/4, q.reduce((a, p) => a + p[1], 0)/4)) out.push({tray:r.src, i}); }));
+    return add(kind, out); }
+  const trays = L.TRAYS.filter(r => inBand(r.lip[0], r.lip[1]) || inBand((r.lip[0] + r.tip[0])/2, (r.lip[1] + r.tip[1])/2)).map(r => r.src);
+  if (trays.length || tool !== 'select') return add('tray', trays);
+  add('point', pts());
+}
+/* a band dragged over a tray: its marble cells */
+function cellBandSelect(d){
+  const r = trayOf(d.tray); if (!r) return;
+  const x0 = Math.min(d.sx0, d.sx1), x1 = Math.max(d.sx0, d.sx1), y0 = Math.min(d.sy0, d.sy1), y1 = Math.max(d.sy0, d.sy1), cells = [];
+  for (let c = 0; c < r.cols; c++) for (let k = 0; k < r.rows; k++){ const [sx, sy] = W2S(r.slots[c][k].x, r.slots[c][k].z); if (sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1) cells.push([c, k]); }
+  sel = cells.length ? {kind:'cells', tray:d.tray, cells} : {kind:'tray', tray:d.tray}; renderAll();
+  if (cells.length) toast(`${cells.length} cell${cells.length > 1 ? 's' : ''} selected · copy, cut, paste, Delete, arrows`);
+}
+function selectAll(){
+  if (focusPane === 'queue' || tool === 'link'){ const list = []; lvl.lanes.forEach((ln, l) => ln.forEach((b, i) => list.push([l, i]))); sel = list.length ? {kind:'box', list} : {kind:'level'}; }
+  else if (tool === 'slide'){ const list = lvl.slide.points.map((p, i) => i); sel = {kind:'point', i:list[list.length - 1], list}; }
+  else if (PAINT.includes(tool)){ const ri = sel.tray != null && lvl.trays[sel.tray] ? sel.tray : 0, r = lvl.trays[ri]; if (!r){ toast('No trays yet'); return; }
+    const cells = []; r.columns.forEach((col, c) => col.forEach((_, k) => cells.push([c, k]))); sel = {kind:'cells', tray:ri, cells}; }
+  else if (BLOCK.includes(tool)){ const kind = tool === 'disp' ? 'disp' : 'crate', list = [];
+    lvl.trays.forEach((r, ri) => (r[kind === 'disp' ? 'dispensers' : 'crates'] || []).forEach((o, i) => { if (kind === 'crate' && (tool === 'lock') !== (o.lock != null)) return; list.push({tray:ri, i}); }));
+    sel = list.length ? {kind, tray:list[0].tray, i:list[0].i, list} : {kind:'level'}; }
+  else { const list = lvl.trays.map((r, i) => i); sel = list.length ? {kind:'tray', tray:list[list.length - 1], list} : {kind:'level'}; }
+  renderAll(); const n = selCount(); toast(n ? `Selected ${n}` : 'Nothing to select here');
+}
+function selCount(){ return sel.kind === 'box' ? sel.list.length : sel.kind === 'cells' ? sel.cells.length : ptList().length || trayList().length || blkList().length; }
+/* a tray as plain data at its current place (merge point written out) */
+function trayData(i){ const rd = clone(lvl.trays[i]), r = trayOf(i); if (!r) return rd; if (rd.at == null){ rd.at = round(r.s, 3); delete rd.cp; } return rd; }
+let CLIP = null;
+function clipOf(){
+  switch (sel.kind){
+    case 'point': { const items = ptList().slice().sort((a, b) => a - b).map(i => clone(lvl.slide.points[i])); return items.length ? {kind:'point', items} : null; }
+    case 'tray': return {kind:'tray', items:trayList().slice().sort((a, b) => a - b).map(trayData)};
+    case 'disp': case 'crate': return {kind:sel.kind, tray:blkList()[0].tray, items:blkList().map(o => clone(lvl.trays[o.tray][sel.kind === 'disp' ? 'dispensers' : 'crates'][o.i]))};
+    case 'cells': { const c0 = Math.min(...sel.cells.map(q => q[0])), k0 = Math.min(...sel.cells.map(q => q[1])), cols = lvl.trays[sel.tray].columns;
+      return {kind:'cells', items:sel.cells.map(([c, k]) => [c - c0, k - k0, cols[c][k]])}; }
+    case 'box': { const l0 = Math.min(...sel.list.map(q => q[0]));
+      return {kind:'box', items:sel.list.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([l, i]) => { const b = clone(lvl.lanes[l][i]); delete b.link; delete b.key; return [l - l0, b]; })}; }
+    case 'gap': return {kind:'gap', items:[clone(lvl.slide.gaps[sel.i])]};
+    case 'toy': return {kind:'toy', items:[clone(lvl.slide.toys[sel.i])]};
+    default: return {kind:'level', level:clone(lvl)};
+  }
+}
+const KIND_NAME = {point:'slide point', tray:'tray', disp:'dispenser', crate:'crate', cells:'cell', box:'box', gap:'gap', toy:'toy piece', level:'level'};
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : w === 'box' ? 'es' : 's'}`;
+function copySel(){
+  const c = clipOf(); if (!c){ toast('Nothing to copy'); return false; } CLIP = c;
+  try { navigator.clipboard.writeText(JSON.stringify(c.kind === 'level' ? c.level : {marbleRunClip:c}, null, c.kind === 'level' ? 2 : 0)).catch(() => {}); } catch (e) {}
+  toast(c.kind === 'level' ? `Copied the level "${lvl.id}"` : `Copied ${plural(c.items.length, KIND_NAME[c.kind])}`); return true;
+}
+function cutSel(){ if (sel.kind === 'level'){ toast('Select something to cut'); return; } if (copySel()){ deleteSelection(); toast(`Cut ${plural(CLIP.items.length, KIND_NAME[CLIP.kind])}`); } }
+function duplicateSel(){ const c = clipOf(); if (!c) return; if (c.kind === 'level') duplicateCurrentLevel(); else pasteClip(c, true); }
+function duplicateCurrentLevel(){
+  const slots = S.loadSlots(); let nid = lvl.id + '_copy', k = 2; while (slots[nid]) nid = lvl.id + '_copy' + (k++);
+  const lv = Object.assign(clone(lvl), {id:nid, name:(lvl.name || 'Level') + ' copy'}); slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots); renderLevels();
+  toast(`Duplicated as "${nid}" (in Levels)`); return nid;
+}
+/* paste: next to the selection (or where the copies came from), never over what is there */
+function pasteClip(clip, dup){
+  clip = clip || CLIP; if (!clip){ toast('Nothing to paste'); return false; }
+  const n0 = clip.items ? clip.items.length : 1;
+  if (clip.kind === 'level'){
+    const lv = clone(clip.level), slots = S.loadSlots(); let nid = (lv.id || 'level') + '_copy', k = 2; while (slots[nid]) nid = (lv.id || 'level') + '_copy' + (k++);
+    lv.id = nid; slots[nid] = {name:lv.name, level:lv, updated:Date.now()}; S.saveSlots(slots); renderLevels(); toast(`Pasted the level as "${nid}" (in Levels)`); return true; }
+  if (clip.kind === 'point'){
+    const pts = lvl.slide.points, after = sel.kind === 'point' ? Math.max(...ptList()) : pts.length - 2, at = Math.min(after, pts.length - 1);
+    slideEdit(n => { clip.items.forEach((p, k) => { const [x, z] = clampToZone(p.x + 0.6, p.z); const q = clone(p); q.x = round(x); q.z = round(z); n.slide.points.splice(at + 1 + k, 0, q); }); });
+    const list = clip.items.map((_, k) => at + 1 + k); sel = {kind:'point', i:list[list.length - 1], list}; }
+  else if (clip.kind === 'tray'){
+    const first = lvl.trays.length;
+    edit(n => { clip.items.forEach((rd0, k) => { const rd = clone(rd0);
+      if (rd.at != null){ rd.at = round(Math.min(L.SLIDE.tailS - 0.8, rd.at + 1.4*(k + 1)), 3);
+        if (rd.shape){ const t = clone(n); t.trays.push(clone(rd0)); const a = C.buildLayout(t).TRAYS.find(q => q.src === t.trays.length - 1);
+          const t2 = clone(n); t2.trays.push(Object.assign(clone(rd0), {at:rd.at})); const b = C.buildLayout(t2).TRAYS.find(q => q.src === t2.trays.length - 1);
+          const dx = b.lip[0] - a.lip[0], dz = b.lip[1] - a.lip[1]; rd.shape = rd.shape.map(q => [round(q[0] + dx), round(q[1] + dz)]); } }
+      (rd.crates || []).forEach(o => { if (o.lock != null) o.lock = nextLock(n); });
+      n.trays.push(rd); }); });
+    const list = clip.items.map((_, k) => first + k); sel = {kind:'tray', tray:list[list.length - 1], list}; }
+  else if (clip.kind === 'disp' || clip.kind === 'crate'){
+    const ri = sel.tray != null && lvl.trays[sel.tray] ? sel.tray : clip.tray; if (!lvl.trays[ri]){ toast('Select a tray to paste into'); return false; }
+    const key = clip.kind === 'disp' ? 'dispensers' : 'crates', placed = [];
+    edit(n => { const rd = n.trays[ri], cols = rd.columns.length;
+      clip.items.forEach(o0 => { const o = clone(o0), taken = c => (rd.dispensers || []).concat(rd.crates || []).some(x => c >= x.col && c < x.col + x.w);
+        if (o.row + o.h > rd.rows || o.w > cols) return;
+        let col = null; for (let d = 0; d < cols && col == null; d++) for (const c of [o.col + d, o.col - d]) if (c >= 0 && c + o.w <= cols && ![...Array(o.w).keys()].some(j => taken(c + j))){ col = c; break; }
+        if (col == null) return; o.col = col;
+        if (o.lock != null) o.lock = nextLock(n);
+        if (clip.kind === 'disp') for (let c = o.col; c < o.col + o.w; c++) for (let r = o.row; r < o.row + o.h; r++) rd.columns[c][r] = null;
+        rd[key] = (rd[key] || []).concat([o]); placed.push(rd[key].length - 1); }); });
+    if (!placed.length){ toast('No free columns on that tray'); return false; }
+    const list = placed.map(i => ({tray:ri, i})); sel = {kind:clip.kind, tray:ri, i:placed[placed.length - 1], list}; }
+  else if (clip.kind === 'cells'){
+    const ri = sel.tray != null && lvl.trays[sel.tray] ? sel.tray : 0; if (!lvl.trays[ri]){ toast('Select a tray to paste into'); return false; }
+    let a = [0, 0]; if (sel.kind === 'cells' && sel.tray === ri){ a = [Math.min(...sel.cells.map(q => q[0])), Math.min(...sel.cells.map(q => q[1]))]; if (dup) a[0] += 1 + Math.max(...clip.items.map(q => q[0])); }
+    else if (hover && hover.cell && hover.tray === ri) a = hover.cell;
+    const cells = [];
+    edit(n => { const rd = n.trays[ri], disp = (c, k) => (rd.dispensers || []).some(t => c >= t.col && c < t.col + t.w && k >= t.row && k < t.row + t.h);
+      clip.items.forEach(([dc, dk, v]) => { const c = a[0] + dc, k = a[1] + dk; if (c < rd.columns.length && k < rd.rows && !disp(c, k)){ rd.columns[c][k] = v; cells.push([c, k]); } }); });
+    sel = cells.length ? {kind:'cells', tray:ri, cells} : {kind:'tray', tray:ri}; }
+  else if (clip.kind === 'box'){
+    const last = sel.kind === 'box' ? sel.list.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]).pop() : null, l0 = last ? last[0] : 0, list = [];
+    edit(n => { const nl = n.lanes.length, at = {};
+      clip.items.forEach(([dl, b]) => { const l = Math.min(nl - 1, l0 + dl), i = at[l] != null ? at[l] : (last && l === last[0] ? last[1] + 1 : n.lanes[l].length);
+        n.lanes[l].splice(i, 0, clone(b)); at[l] = i + 1; list.push([l, i]); }); });
+    sel = {kind:'box', list}; }
+  else if (clip.kind === 'gap' || clip.kind === 'toy'){
+    const key = clip.kind === 'gap' ? 'gaps' : 'toys', o = clone(clip.items[0]), G = lvl.slide[key] || [];
+    // the first free stretch after where it was copied from
+    for (let s = o.at + o.len + 1.2; s < L.SLIDE.tailS - 1; s += 0.2){ if (!G.some(q => Math.abs(q.at - s) < (q.len + o.len)/2 + 0.6)){ o.at = round(s, 2); break; } }
+    edit(n => { n.slide[key] = (n.slide[key] || []).concat([o]); });
+    const i = (lvl.slide[key] || []).findIndex(q => q.at === o.at); sel = i >= 0 ? {kind:clip.kind, i} : {kind:'level'}; }
+  renderAll(); toast(`${dup ? 'Duplicated' : 'Pasted'} ${plural(n0, KIND_NAME[clip.kind])}`); return true;
+}
+/* arrows: slide points move (0.1, Shift 0.5), trays, gaps and toy pieces slide along the slide, blockers and cells
+   move a cell, boxes move up / down their lane or to the next lane */
+function nudge(dx, dz, big){
+  const st = big ? 0.5 : 0.1;
+  if (sel.kind === 'gap'){ const g = lvl.slide.gaps[sel.i]; if (g) slideGap(sel.i, g.at + (dx - dz)*st*2, false); return; }
+  if (sel.kind === 'toy'){ const g = lvl.slide.toys[sel.i]; if (g) slideToy(sel.i, g.at + (dx - dz)*st*2, false); return; }
+  if (sel.kind === 'point'){ const list = ptList(); if (!list.length) return;
+    slideEdit(n => list.forEach(i => { const p = n.slide.points[i]; p.x = round(p.x + dx*st); p.z = round(p.z + dz*st); })); return; }
+  if (sel.kind === 'tray'){ const list = trayList();
+    edit(n => list.forEach(i => { const rd = n.trays[i], r = trayOf(i); if (!r) return;
+      const old = r.lip; rd.at = round(Math.max(0.8, Math.min(L.SLIDE.tailS - 0.6, r.s + (dx - dz)*st*2)), 3); delete rd.cp;
+      if (rd.shape){ const nr = C.buildLayout(clone(n)).TRAYS.find(q => q.src === i), ddx = nr.lip[0] - old[0], ddz = nr.lip[1] - old[1];
+        rd.shape = rd.shape.map(p => [round(p[0] + ddx), round(p[1] + ddz)]); } })); return; }
+  if (sel.kind === 'disp' || sel.kind === 'crate'){ const key = sel.kind === 'disp' ? 'dispensers' : 'crates', list = blkList(); let blocked = false;
+    edit(n => list.forEach(o => { const rd = n.trays[o.tray], b = rd[key][o.i], nx = Object.assign({}, b, {col:b.col + dx, row:b.row + dz});
+      if (nx.col < 0 || nx.row < (sel.kind === 'disp' ? 1 : 0) || nx.col + nx.w > rd.columns.length || nx.row + nx.h > rd.rows){ blocked = true; return; }
+      const others = (rd.dispensers || []).concat(rd.crates || []).filter(x => x !== b);
+      if (others.some(x => x.col < nx.col + nx.w && nx.col < x.col + x.w)){ blocked = true; return; }
+      Object.assign(b, nx); if (sel.kind === 'disp') for (let c = b.col; c < b.col + b.w; c++) for (let r = b.row; r < b.row + b.h; r++) rd.columns[c][r] = null; }));
+    if (blocked) toast('It cannot move there'); return; }
+  if (sel.kind === 'cells'){ const rd = lvl.trays[sel.tray], moved = sel.cells.map(([c, k]) => [c + dx, k + dz]);
+    if (moved.some(([c, k]) => c < 0 || k < 0 || c >= rd.columns.length || k >= rd.rows)){ toast('The cells would leave the tray'); return; }
+    const vals = sel.cells.map(([c, k]) => rd.columns[c][k]);
+    edit(n => { const cols = n.trays[sel.tray].columns; sel.cells.forEach(([c, k]) => { cols[c][k] = null; }); moved.forEach(([c, k], j) => { cols[c][k] = vals[j]; }); });
+    sel = {kind:'cells', tray:sel.tray, cells:moved}; renderAll(); return; }
+  if (sel.kind === 'box' && sel.list.length === 1){ const [l, i] = sel.list[0], nl = lvl.lanes.length;
+    if (dz){ const j = i + dz; if (j < 0 || j >= lvl.lanes[l].length) return; edit(n => { const ln = n.lanes[l]; [ln[i], ln[j]] = [ln[j], ln[i]]; }); sel = {kind:'box', list:[[l, j]]}; }
+    else { const t = l + dx; if (t < 0 || t >= nl) return; const j = Math.min(i, lvl.lanes[t].length); edit(n => { const [b] = n.lanes[l].splice(i, 1); n.lanes[t].splice(j, 0, b); }); sel = {kind:'box', list:[[t, j]]}; }
+    renderAll(); }
+}
+
+/* =============================== CONTEXT MENU =============================== */
+const MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
+// "Ctrl Shift S" -> "Ctrl+Shift+S" (or ⌘⇧S on a Mac); only before a key name, so "Shift / Ctrl adds" stays prose
+const KEY_AHEAD = '(?=(?:Ctrl|Shift|Alt|Enter|Del|Backspace|[A-Z0-9])(?:\\b|$))';
+const kb = s => MAC ? s.replace(new RegExp('Ctrl ' + KEY_AHEAD, 'g'), '⌘').replace(new RegExp('Shift ' + KEY_AHEAD, 'g'), '⇧').replace(new RegExp('Alt ' + KEY_AHEAD, 'g'), '⌥')
+  : s.replace(new RegExp('(Ctrl|Shift|Alt) ' + KEY_AHEAD, 'g'), '$1+');
+let ctxInfo = null;
+function openCtx(cx, cy, kind, info){
+  ctxInfo = Object.assign({kind}, info || {}); const items = [], has = !!CLIP, sep = () => items.push(null);
+  const it = (label, key, fn, ok = true, icn) => items.push({label, key, fn, ok, icn});
+  const common = (canPaste = true) => { it('Cut', 'Ctrl X', cutSel, true, 'copy'); it('Copy', 'Ctrl C', copySel, true, 'copy'); it('Paste', 'Ctrl V', () => pasteClip(), has && canPaste, 'upload');
+    it('Duplicate', 'Ctrl D', duplicateSel, true, 'copy'); it('Delete', 'Del', deleteSelection, true, 'trash'); };
+  let title = '';
+  if (kind === 'point'){ const n = ptList().length; title = n > 1 ? plural(n, 'slide point') : sel.i === 0 ? 'Start tower' : 'Slide point'; common();
+    if (n === 1 && sel.i > 0 && sel.i < lvl.slide.points.length - 1){ sep(); const p = lvl.slide.points[sel.i]; it(p.spiral ? 'Spiral off' : 'Spiral on', '', () => slideEdit(nn => { const q = nn.slide.points[sel.i]; if (q.spiral) delete q.spiral; else q.spiral = {r:0.9, side:1}; }), true, 'spiral'); } }
+  else if (kind === 'tray'){ const n = trayList().length; title = n > 1 ? plural(n, 'tray') : 'Tray ' + (sel.tray + 1); common();
+    if (n === 1){ sep(); it('Flip side', '', () => trayAction('flip'), true, 'shuffle'); it('Square to slide', '', () => trayAction('square'), true, 'node'); it('Default angle', '', () => trayAction('default'), true, 'node');
+      it('Fill random', '', () => trayAction('fill'), true, 'shuffle'); it('Clear marbles', '', () => trayAction('clear'), true, 'eraser');
+      if (info && info.cell){ sep(); it('Select this cell', '', () => { sel = {kind:'cells', tray:sel.tray, cells:[info.cell]}; renderAll(); }, true, 'select'); } } }
+  else if (kind === 'gap'){ const g = lvl.slide.gaps[sel.i]; title = 'Gap ' + (sel.i + 1);
+    it('Longer', '', () => gapAction('len+', sel.i), g.len < C.GAP_LEN[1] - 1e-6, 'plus'); it('Shorter', '', () => gapAction('len-', sel.i), g.len > C.GAP_LEN[0] + 1e-6, 'plus');
+    it(g.ramp === 'updown' ? 'Flat ends' : 'Take-off + landing ramps', '', () => gapAction(g.ramp === 'updown' ? 'flat' : 'updown', sel.i), true, 'gap');
+    sep(); common(); }
+  else if (kind === 'toy'){ const t = lvl.slide.toys[sel.i]; title = TOY_NAME[t.kind];
+    Object.keys(C.TOY_KINDS).filter(k => k !== t.kind).forEach(k => it('Make it: ' + TOY_NAME[k], '', () => toyAction(k, sel.i), true, 'toy'));
+    sep(); common(); }
+  else if (kind === 'disp' || kind === 'crate'){ const n = blkList().length; title = n > 1 ? plural(n, KIND_NAME[kind]) : kind === 'disp' ? 'Marble dispenser' : 'Crate'; common(); }
+  else if (kind === 'cells'){ title = plural(sel.cells.length, 'cell'); common();
+    sep(); it('Hide / show marbles', 'H', () => edit(nn => { const cols = nn.trays[sel.tray].columns, on = !sel.cells.every(([c, k]) => { const m = C.parseCell(cols[c][k]); return !m || m.hidden; });
+      sel.cells.forEach(([c, k]) => { const m = C.parseCell(cols[c][k]); if (m) cols[c][k] = C.cellStr({color:m.color, hidden:on}); }); }), true, 'hidden');
+    it(`Paint ${color}`, '', () => edit(nn => { const cols = nn.trays[sel.tray].columns; sel.cells.forEach(([c, k]) => { cols[c][k] = color; }); }), true, 'brush'); }
+  else if (kind === 'box'){ const n = sel.list.length; title = n > 1 ? plural(n, 'box') : boxLabel(sel.list[0][0], sel.list[0][1], lvl.lanes[sel.list[0][0]][sel.list[0][1]]); common();
+    sep(); it('Toggle hidden', 'double-click', () => edit(nn => { const on = !sel.list.every(([l, i]) => nn.lanes[l][i].hidden); sel.list.forEach(([l, i]) => { if (on) nn.lanes[l][i].hidden = true; else delete nn.lanes[l][i].hidden; }); }), true, 'hidden');
+    it('Connect', 'L', linkSelected, n >= 2 && n <= 3, 'link'); it('Disconnect', '', unlinkSelected, sel.list.some(([l, i]) => lvl.lanes[l][i].link != null), 'unlink');
+    if (n === 1){ sep(); lvl.lanes.forEach((_, l) => { if (l !== sel.list[0][0]) it(`Move to lane ${l + 1}`, '', () => { const [ol, oi] = sel.list[0], j = lvl.lanes[l].length;
+      edit(nn => { const [b] = nn.lanes[ol].splice(oi, 1); nn.lanes[l].push(b); }); sel = {kind:'box', list:[[l, j]]}; renderAll(); }, true, 'box'); }); } }
+  else if (kind === 'queue'){ title = 'Box lanes'; it('Add box…', '', () => openBoxPop(info.lane), true, 'plus'); it('Paste', 'Ctrl V', () => pasteClip(), has && CLIP.kind === 'box', 'upload');
+    it('Select all boxes', 'Ctrl A', () => { focusPane = 'queue'; selectAll(); }, true, 'select'); sep();
+    it('Add a lane', '', () => setLanes(lvl.lanes.length + 1), lvl.lanes.length < C.LANE_MAX, 'plus'); it('Remove the last lane', '', () => setLanes(lvl.lanes.length - 1), lvl.lanes.length > C.LANE_MIN, 'trash'); }
+  else { title = 'Level'; it('Paste', 'Ctrl V', () => pasteClip(), has, 'upload'); it('Add a tray here', 'R', () => addTrayAt(info.x, info.z), true, 'tray');
+    const near = nearestSlideS(info.x, info.z); if (near.d < RAD + 0.4) it('Add a slide point here', '', () => addPointAt(info.x, info.z, near.s), true, 'slide');
+    if (near.d < RAD + 0.4){ it('Cut the slide here (gap)', 'G', () => addGapAt(near.s), true, 'gap'); it(`Put a ${TOY_NAME[TOY_DEF.kind].toLowerCase()} here`, 'Y', () => addToyAt(near.s), true, 'toy'); }
+    sep(); it('Select all', 'Ctrl A', selectAll, true, 'select'); it('Copy the level', 'Ctrl C', () => { sel = {kind:'level'}; copySel(); }, true, 'copy'); it('Fit view', 'F', () => { fitView(); draw(); }, true, 'fit'); }
+  const m = $('ctx'); m.innerHTML = (title ? `<div class="ttl">${esc(title)}</div>` : '') + items.map((x, k) => x ? `<button data-k="${k}" ${x.ok ? '' : 'disabled'}>${icon(x.icn || 'select')}<span>${esc(x.label)}</span>${x.key ? `<kbd>${esc(kb(x.key))}</kbd>` : ''}</button>` : '<hr>').join('');
+  m.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { const x = items[+b.dataset.k]; closeCtx(); x.fn(); });
+  m.classList.add('show'); const w = m.offsetWidth, hh = m.offsetHeight;
+  m.style.left = Math.max(4, Math.min(innerWidth - w - 4, cx)) + 'px'; m.style.top = Math.max(4, Math.min(innerHeight - hh - 4, cy)) + 'px';
+}
+function closeCtx(){ $('ctx').classList.remove('show'); ctxInfo = null; }
+addEventListener('pointerdown', e => { if (!e.target.closest('#ctx')) closeCtx(); if (!e.target.closest('#boxPop') && !e.target.closest('#addBoxBtn') && !e.target.closest('.qadd')) closeBoxPop(); }, true);
+
+/* ============================ KEYBOARD + HELP ============================ */
+const KEYS = [['1 – 9, 0', 'Tools (select, slide, tray, paint, eraser, hide, dispenser, lock, count, connect)'], ['V P R B E H D K N', 'The same tools by letter'],
+  ['G', 'Cut the slide (gap tool)'], ['Y', 'Toy piece tool'], ['Shift 1 – 8', 'Pick a colour'], ['L', 'Connect the selected boxes'],
+  ['Ctrl S', 'Save'], ['Ctrl Shift S', 'Save as a new level'], ['Ctrl N', 'New level'], ['Ctrl O', 'Open a level (Levels & order)'], ['Ctrl E', 'Export the level JSON'], ['Ctrl Shift E', 'Export a playable HTML of the level'],
+  ['Ctrl Z', 'Undo'], ['Ctrl Shift Z / Ctrl Y', 'Redo'],
+  ['Ctrl C / Ctrl X / Ctrl V', 'Copy / cut / paste (slide points, trays, blockers, marble cells, boxes, gaps, toys, the whole level)'], ['Ctrl D', 'Duplicate (in Levels: the highlighted level)'],
+  ['Del / Backspace', 'Delete the selection'], ['Ctrl A', 'Select all of the current tool\'s things'],
+  ['Shift-click / Ctrl-click', 'Add to / remove from the selection'], ['Drag on empty space', 'Band select (on a tray: its cells)'], ['Arrows', 'Nudge (Shift: further)'], ['Esc', 'Deselect / close'],
+  ['Space-drag / middle mouse', 'Pan'], ['Wheel / pinch', 'Zoom'], ['F', 'Fit the view'], ['Ctrl Enter', 'Run the preview'], ['Right-click', 'Menu with the same actions'], ['Double-click a box', 'Hidden on / off'], ['?', 'This help']];
+$('keysList').innerHTML = KEYS.map(([k, t]) => `<div><span>${esc(t)}</span><kbd>${esc(kb(k))}</kbd></div>`).join('');
+const TOOL_KEYS = {v:'select', p:'slide', r:'tray', g:'gap', y:'toy', b:'paint', e:'erase', h:'hide', d:'disp', k:'lock', n:'count'};
+let lvSelId = null;                                   // the highlighted row of the Levels list (keyboard actions)
+const typing = t => t && t.matches && t.matches('input,textarea,select,[contenteditable]');
+addEventListener('keydown', e => {
+  if (e.key === ' ' && !typing(e.target)){ spaceDown = true; if (e.target === document.body || e.target === cv) e.preventDefault(); }
+  const k = e.key.toLowerCase(), code = e.code || '', mod = e.ctrlKey || e.metaKey, modal = document.querySelector('.modal.show');
+  const stop = () => { e.preventDefault(); e.stopPropagation(); };
+  // file shortcuts work everywhere, even while typing in a field (the field's change is committed first)
+  if (mod && !e.altKey && ['s', 'n', 'o', 'e'].includes(k)){ stop(); if (typing(e.target)) e.target.blur();
+    if (k === 's') saveLevel(e.shiftKey); else if (k === 'n') newLevel(); else if (k === 'o') ACT.levels(); else e.shiftKey ? exportHtml('level') : exportLevelJSON(); return; }
+  if (mod && k === 'enter'){ stop(); run(); return; }
+  if (typing(e.target)){ if (k === 'escape') e.target.blur(); return; }
+  if (k === 'escape'){ if ($('ctx').classList.contains('show')) closeCtx(); else if ($('boxPop').classList.contains('show')) closeBoxPop();
+    else if (modal) closeModals(); else if (sel.kind !== 'level'){ sel = {kind:'level'}; renderAll(); } return; }
+  if (mod && k === 'z'){ stop(); e.shiftKey ? redo() : undo(); return; }
+  if (mod && k === 'y'){ stop(); redo(); return; }
+  if (modal){ if (modal.id === 'levelsModal') levelsKey(e, k, mod, stop); return; }
+  if (mod && k === 'c'){ stop(); copySel(); return; }
+  if (mod && k === 'x'){ stop(); cutSel(); return; }
+  if (mod && k === 'v'){ if (CLIP){ stop(); pasteClip(); } return; }       // nothing copied here: the paste event reads the system clipboard
+  if (mod && k === 'd'){ stop(); duplicateSel(); return; }
+  if (mod && k === 'a'){ stop(); selectAll(); return; }
+  if (mod) return;
+  if (e.key === '?'){ $('helpModal').classList.add('show'); return; }
+  if (k === 'delete' || k === 'backspace'){ e.preventDefault(); deleteSelection(); return; }
+  if (k.startsWith('arrow')){ e.preventDefault(); const d = {arrowleft:[-1, 0], arrowright:[1, 0], arrowup:[0, -1], arrowdown:[0, 1]}[k]; nudge(d[0], d[1], e.shiftKey); return; }
+  const dg = /^Digit(\d)$/.exec(code) || /^Numpad(\d)$/.exec(code);
+  if (dg && e.shiftKey){ const i = +dg[1]; if (i >= 1 && i <= C.COLORS.length){ color = C.COLORS[i - 1]; renderPalette(); toast(`Colour: ${color}`); } return; }
+  if (dg){ const i = (+dg[1] + 9) % 10; if (DIGIT_TOOLS[i]) setTool(DIGIT_TOOLS[i].id); return; }
+  if (TOOL_KEYS[k]){ setTool(TOOL_KEYS[k]); return; }
+  if (k === 'l'){ linkSelected(); return; }
+  if (k === 'f'){ fitView(); draw(); return; }
+});
+addEventListener('keyup', e => { if (e.key === ' ') spaceDown = false; });
+addEventListener('blur', () => { spaceDown = false; });
+/* the system clipboard: a level JSON (or a copied selection from another editor tab) pasted with Ctrl+V */
+addEventListener('paste', e => {
+  if (typing(e.target)) return; const txt = (e.clipboardData && e.clipboardData.getData('text')) || ''; if (!txt.trim()) return;
+  let o; try { o = JSON.parse(txt); } catch (err) { return; } e.preventDefault();
+  if (o && o.marbleRunClip) pasteClip(o.marbleRunClip);
+  else if (o && o.trays && o.lanes){ try { C.buildLayout(clone(o)); } catch (err) { toast('That JSON is not a level'); return; } pasteClip({kind:'level', level:o}); openLevels(); }
+});
+/* Levels list: arrows move the highlight, Enter opens, Ctrl+D / Ctrl+C+V duplicate, Delete deletes */
+function levelsKey(e, k, mod, stop){
+  if (typing(e.target)) return; const rows = [...document.querySelectorAll('#levelList .lrow')].map(r => r.dataset.id); if (!rows.length) return;
+  let i = rows.indexOf(lvSelId);
+  if (k === 'arrowdown' || k === 'arrowup'){ stop(); i = Math.max(0, Math.min(rows.length - 1, i + (k === 'arrowdown' ? 1 : -1))); lvSelId = rows[i]; renderLevels(); return; }
+  if (i < 0) return; const id = rows[i];
+  if (k === 'enter'){ stop(); if (openLevel(id)) closeModals(); return; }
+  if (mod && k === 'd'){ stop(); duplicateLevel(id); return; }
+  if (mod && k === 'c'){ stop(); const sl = S.loadSlots()[id]; if (sl){ CLIP = {kind:'level', level:clone(sl.level)}; toast(`Copied the level "${id}"`); } return; }
+  if (mod && k === 'v'){ if (CLIP && CLIP.kind === 'level'){ stop(); pasteClip(); } return; }
+  if (k === 'delete' || k === 'backspace'){ stop(); deleteLevel(id); }
+}
+function deleteSelection(){
+  if (sel.kind === 'point'){ const list = ptList().slice().sort((a, b) => b - a);
+    if (lvl.slide.points.length - list.length < 3){ toast('The slide needs at least 3 points'); return; }
+    slideEdit(n => { list.forEach(i => n.slide.points.splice(i, 1)); }); sel = {kind:'level'}; renderAll(); toast(`Deleted ${plural(list.length, 'slide point')}`); }
+  else if (sel.kind === 'tray'){ const list = trayList().slice().sort((a, b) => b - a), ids = list.flatMap(i => (lvl.trays[i].crates || []).map(c => c.lock).filter(Boolean));
+    edit(n => { list.forEach(i => n.trays.splice(i, 1)); if (ids.length) n.lanes.forEach(ln => ln.forEach(x => { if (ids.includes(x.key)) delete x.key; })); }); sel = {kind:'level'}; renderAll(); toast(`Deleted ${plural(list.length, 'tray')}`); }
+  // (edit() drops a selection that no longer exists, so keep the tray index first)
+  else if (sel.kind === 'disp' || sel.kind === 'crate'){ const key = sel.kind === 'disp' ? 'dispensers' : 'crates', list = blkList().slice().sort((a, b) => b.tray - a.tray || b.i - a.i), r = sel.tray;
+    const ids = sel.kind === 'crate' ? list.map(o => lvl.trays[o.tray].crates[o.i].lock).filter(Boolean) : [];
+    edit(n => { list.forEach(o => n.trays[o.tray][key].splice(o.i, 1)); if (ids.length) n.lanes.forEach(ln => ln.forEach(x => { if (ids.includes(x.key)) delete x.key; })); });
+    sel = {kind:'tray', tray:r}; renderAll(); }
+  else if (sel.kind === 'cells'){ const r = sel.tray, cells = sel.cells; edit(n => { cells.forEach(([c, k]) => { n.trays[r].columns[c][k] = null; }); }); toast(`Emptied ${plural(cells.length, 'cell')}`); }
+  else if (sel.kind === 'box'){ const keys = sel.list.slice().sort((a, b) => b[1] - a[1]); edit(n => { keys.forEach(([l, i]) => n.lanes[l].splice(i, 1)); }); sel = {kind:'level'}; renderAll(); }
+  else if (sel.kind === 'gap') gapAction('del', sel.i);
+  else if (sel.kind === 'toy') toyAction('del', sel.i);
+}
+
+/* ================================ RENDER ================================ */
+const HINTS = {select:'click to select (Shift / Ctrl adds) · drag points, tray nodes (the diamond follows the slide), gaps and toys · drag empty space to band-select · Space-drag pans · wheel zooms · right-click for a menu',
+  slide:'click the slide to add a point · drag to move · drag empty space to select several · Del deletes', tray:'click next to the slide: a tray appears there, on that side',
+  paint:'drag over tray cells to paint marbles (Shift 1-8 picks the colour) · Ctrl A selects a whole tray', erase:'drag over tray cells to empty them', hide:'drag over marbles to hide / show them (grey "?")',
+  gap:'click the slide to cut a gap there · drag a gap to slide it along · the inspector sets its length and its ends (flat, or take-off and landing ramps)',
+  toy:'pick a toy piece in the palette, then click the slide to place it · drag one to slide it along · decorative only',
+  disp:'drag across empty cells of a tray (not the front row) to place a marble dispenser', lock:'drag across tray cells to place a lock crate', count:'drag across tray cells to place a count crate',
+  link:'Shift-click 2 or 3 touching boxes in the lanes, then press L'};
+function renderAll(light){
+  draw(); renderQueue(); if (!light) renderInspector(); renderChecks(); renderBar(); renderEmpty();
+  const t = TOOLS.find(x => x.id === tool); $('modeTag').textContent = t.label; $('hint').textContent = kb(HINTS[tool]);
+}
+/* empty states: a level without trays says what to do next, with the button for it */
+function renderEmpty(){
+  const ev = $('emptyView'), none = !lvl.trays.length; ev.classList.toggle('show', none); if (!none){ ev.innerHTML = ''; ev.dataset.k = ''; return; }
+  if (ev.dataset.k === 'trays') return; ev.dataset.k = 'trays';
+  ev.innerHTML = `<span>No trays yet – add one next to the slide</span><button class="primary" id="evAddTray">${icon('tray')} Add tray</button><span class="hint">or press <kbd>3</kbd> and click by the slide</span>`;
+  ev.querySelector('#evAddTray').onclick = () => { const SL = L.SLIDE, o = {}; C.pathAt(SL, SL.tailS*0.3, o, 0); addTrayAt(o.x - o.dz*1.5, o.z + o.dx*1.5); };
+}
+// the phone fits the dock's height and leaves the work area its room: palette 190 + view 320 + the lanes pane
+// (wider for 4-5 lanes) + inspector 280
+function fitPhone(){ const d = $('previewDock'); if (d.classList.contains('hide')) return;
+  const work = 190 + 320 + (+$('app').dataset.qw || 258) + 280;
+  const k = Math.max(0.4, Math.min(1, (d.clientHeight - 16 - 36 - 30)/(844 + 28), (innerWidth - work - 20)/(390 + 28)));   // (the camera switch and zoom above it)
+  $('phone').style.transform = `scale(${k})`; d.style.width = Math.round((390 + 28)*k + 20) + 'px'; }
+addEventListener('resize', fitPhone);
+// the preview's camera: Perspective or Orthographic, and its zoom (the game's own settings, remembered with its prefs)
+function setPreviewCam(v, quiet){ v = v === 'ortho' ? 'ortho' : 'persp'; if (!quiet) S.savePrefs({view:v});
+  $('camSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  try { preview.contentWindow.postMessage({type:'camera', view:v, id:'cam' + Date.now()}, '*'); } catch (e) {}
+  if (quiet) try { preview.contentWindow.postMessage({type:'zoom', zoom:zoomNow()/100, id:'zoom' + Date.now()}, '*'); } catch (e) {} }
+$('camSeg').onclick = e => { const b = e.target.closest('button'); if (b) setPreviewCam(b.dataset.v); zoomShow(); };
+const zoomNow = () => Math.max(80, Math.min(125, Math.round((+S.loadPrefs().zoom || 1)*100)));
+function zoomShow(){ const z = zoomNow(); $('edZoom').value = z; $('edZoomReset').disabled = z === 100; $('edZoomVal').textContent = z + '%'; }
+function setPreviewZoom(z){ z = Math.max(80, Math.min(125, Math.round(+z))); S.savePrefs({zoom:z/100}); zoomShow();
+  try { preview.contentWindow.postMessage({type:'zoom', zoom:z/100, id:'zoom' + Date.now()}, '*'); } catch (e) {} }
+$('edZoom').oninput = () => setPreviewZoom($('edZoom').value);
+$('edZoomReset').onclick = () => setPreviewZoom(100);
+zoomShow();
+$('camSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === (S.loadPrefs().view === 'ortho' ? 'ortho' : 'persp')));
+
+/* ================================ START ================================ */
+(function start(){
+  migrateAndSeed();
+  // shortcut labels in the platform's words: ⌘ ⇧ on a Mac, Ctrl+Shift+ elsewhere
+  document.querySelectorAll('#bar kbd, .modal kbd').forEach(k => { k.textContent = kb(k.textContent); });
+  document.querySelectorAll('[title]').forEach(el => { if (/Ctrl|Shift/.test(el.title)) el.title = el.title.replace(/\((.*?)\)/g, (m, t) => '(' + kb(t) + ')'); });
+  renderPalette();
+  const initial = draftLoad() || Object.assign(clone(C.LEVEL_DATA), {id:'marble-run'});
+  try { setLevel(initial); } catch (e) { setLevel(Object.assign(clone(C.LEVEL_DATA), {id:'marble-run'})); }
+  fitPhone(); resize();
+})();
+
+/* ======================= INSIDE THE SHOWCASE =======================
+   The showcase sends the level to edit (any of its levels or one of My Levels). Save never changes the level it came
+   from: the showcase keeps a copy under the next free suffix of its id (f30 -> f30_1, f30_2, ...) in My Levels and
+   answers with that id. Open asks the showcase for its level list; the close button goes back to the showcase. */
+function hostPost(msg){ if (IN_SHOWCASE) window.parent.postMessage(Object.assign({source:'mr-editor'}, msg), '*'); }
+if (IN_SHOWCASE){
+  const back = h(`<button id="hostClose" class="primary" title="Back to the showcase (the edits stay as a draft)">${icon('x')} Showcase</button>`);
+  back.onclick = () => hostPost({type:'close'}); $('bar').prepend(back);
+  document.querySelector('[data-act="levels"]').innerHTML = `${icon('list')} Open a showcase level… <kbd>${kb('Ctrl O')}</kbd>`;
+  document.querySelector('[data-act="save"]').innerHTML = `${icon('save')} Save to My Levels (a new copy) <kbd>${kb('Ctrl S')}</kbd>`;
+  addEventListener('message', e => { const m = e.data || {}; if (m.source !== 'mr-showcase') return;
+    if (m.type === 'open'){ setLevel(m.level); savedJSON = m.mine ? JSON.stringify(lvl) : null; sel = {kind:'level'}; fitView(); renderAll(); run();
+      toast(m.mine ? `Editing "${lvl.id}" from My Levels` : `Editing "${lvl.id}": saving keeps a copy in My Levels, the original never changes`); }
+    if (m.type === 'saved'){ lvl.id = m.id; savedJSON = JSON.stringify(lvl); draftSave(); renderAll(); toast(`Saved as "${m.id}" in My Levels`); }
+  });
+  hostPost({type:'ready'});
+}
+/* test hooks */
+window.__ed = {get level(){ return lvl; }, get hover(){ return hover; }, get layout(){ return L; }, get check(){ return check; }, get sel(){ return sel; }, set sel(v){ sel = v; renderAll(); },
+  get tool(){ return tool; }, setTool, get color(){ return color; }, set color(v){ color = v; renderPalette(); }, set size(v){ size = BP.size = v; renderPalette(); }, get toyKind(){ return TOY_DEF.kind; }, set toyKind(v){ TOY_DEF.kind = v; renderPalette(); },
+  get undoDepth(){ return undoStack.length; }, get redoDepth(){ return redoStack.length; }, get lastTest(){ return lastTest; }, get dirty(){ return isDirty(); },
+  setLevel:o => { pushUndo(); setLevel(o, true); }, edit, undo, redo, run, send, levelJSON, importLevel, saveLevel, renameId, openLevel, newLevel,
+  orderAdd, orderRemove, orderMove, orderJSON, importOrder, orderState, exportHtml, playableHTML, gameTemplate, exportLevelJSON, exportOrderJSON,
+  linkSelected, unlinkSelected, addTrayAt, trayAction, addGapAt, slideGap, gapAction, hitGap, addToyAt, slideToy, toyAction, hitToy, slideEdit, addPointAt, nearestSlideS,
+  W2S, S2W, snapFront, fitView, openLevels, closeModals, runTest,
+  copySel, cutSel, pasteClip, duplicateSel, duplicateLevel, selectAll, nudge, setLanes, addBox, openBoxPop, openCtx, closeCtx, toggleSel, deleteSelection,
+  get CLIP(){ return CLIP; }, set CLIP(v){ CLIP = v; }, get focusPane(){ return focusPane; }, set focusPane(v){ focusPane = v; }, get lvSelId(){ return lvSelId; }, kb};
+</script>
+</body>
+</html>

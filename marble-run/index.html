@@ -117,6 +117,52 @@
   #app.nav #levelPill{box-sizing:border-box;left:112px;width:310px;max-width:310px;height:84px;padding:0 14px;justify-content:center;font-size:40px}
   #app.nav #btnHome{display:none} #app.home #btnHome{display:flex;left:20px} #app.home.nav #btnPrev{left:112px} #app.home.nav #levelPill{left:204px;width:220px;font-size:34px} #app.home.nav #btnNextLv{left:432px}
   #btnHome{display:none}
+  /* ---- showcase (window.MR_SHARE.showcase): a start menu of level cards by category, one settings panel ---- */
+  #menuPanel{z-index:40;display:none;flex-direction:column;align-items:stretch;justify-content:flex-start;
+    background:linear-gradient(#ffe7bd,#fbf1de 30%,#f3e2c4);overflow:hidden}
+  #menuPanel.show{display:flex}
+  #menuHead{position:relative;flex:none;padding:46px 40px 26px;text-align:center}
+  #menuHead h1{margin:0;font-size:84px;font-weight:900;color:#fff;letter-spacing:1px;
+    text-shadow:0 6px 0 #c4621a,0 10px 18px rgba(0,0,0,.25),-3px -3px 0 #c4621a,3px -3px 0 #c4621a,-3px 3px 0 #c4621a,3px 3px 0 #c4621a}
+  #menuHead p{margin:10px 0 0;font-size:30px;font-weight:800;color:#7a4a1c}
+  #menuSet{position:absolute;right:30px;top:44px;width:84px;height:84px}
+  #menuEdit{position:absolute;left:30px;top:44px;width:84px;height:84px}
+  #menuList{flex:1;overflow-y:auto;padding:0 30px 60px;touch-action:pan-y}
+  .mcat{margin:26px 0 8px;font-size:46px;font-weight:900;color:#5a3418}
+  .mgrp{margin:18px 4px 10px;font-size:30px;font-weight:900;color:#9a6a3a;text-transform:uppercase;letter-spacing:1px}
+  .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .mcard{position:relative;border-radius:30px;background:#fff;border:5px solid #ffcf3a;box-shadow:0 7px 0 #d39a1c,0 12px 20px rgba(80,50,20,.18);
+    overflow:hidden;cursor:pointer;text-align:left}
+  .mcard.last{border-color:#ff8a2a;box-shadow:0 7px 0 #c4621a,0 12px 20px rgba(80,50,20,.25)}
+  .mcard img{display:block;width:100%;aspect-ratio:5/6;object-fit:cover;background:#ead2a6}
+  .mcard b{display:block;padding:12px 14px 4px;font-size:29px;font-weight:900;color:#4a2c14;line-height:1.1}
+  .mcard .tags{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 14px}
+  .tag{padding:4px 10px;border-radius:12px;font-size:19px;font-weight:900;color:#fff;background:#a58e72;white-space:nowrap}
+  .tag.d1{background:#3fb24f} .tag.d2{background:#e8a91c} .tag.d3{background:#ef7b2d} .tag.d4{background:#d9433a}
+  .tag.ln{background:#4a5aa8} .tag.bk{background:#8b5cd6} .tag.ty{background:#e94f9a}
+  /* the funnel: numbered tiles played in order (a check on the won ones, the next one to play highlighted) */
+  .mcard .mnum{display:flex;align-items:center;justify-content:center;aspect-ratio:5/4;font-size:96px;font-weight:900;color:#fff;
+    background:linear-gradient(#ffb36b,#ff8a2a 60%,#e06a12);text-shadow:0 6px 0 #a3480a}
+  .mcard.won .mnum{background:linear-gradient(#8fe07a,#3fae2a 60%,#2b8a1c);text-shadow:0 6px 0 #1d6612}
+  .mcard.won .mnum::after{content:'✓';position:absolute;right:16px;top:10px;font-size:44px}
+  .mcard.nextup{border-color:#4a5aa8;box-shadow:0 7px 0 #25306e,0 0 0 6px rgba(74,90,168,.35),0 12px 20px rgba(80,50,20,.25)}
+  .mtools{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 14px} .mtools button,.mcathead button{font:inherit;font-size:17px;font-weight:900;color:#fff;border:3px solid #fff;
+    border-radius:14px;padding:6px 7px;background:linear-gradient(#8f9fe0,#4a5aa8);box-shadow:0 4px 0 #25306e;cursor:pointer}
+  .mtools button.del{background:linear-gradient(#ff8a65,#e0483a);box-shadow:0 4px 0 #a8321f}
+  .mcathead{display:flex;align-items:center;justify-content:space-between;gap:16px} .mcathead button{font-size:24px;padding:8px 16px}
+  /* the editor inside the showcase: over the whole window (not the scaled game), and its level picker */
+  #edHost{position:fixed;inset:0;z-index:1000;display:none;background:#16203a} #edHost.show{display:block}
+  #edHost iframe{width:100%;height:100%;border:0;display:block}
+  #edPick{position:fixed;inset:0;z-index:1001;display:none;align-items:center;justify-content:center;background:rgba(30,18,10,.55);font-family:system-ui,sans-serif}
+  #edPick.show{display:flex}
+  #edPick .box{width:min(560px,94vw);max-height:86vh;display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.4);overflow:hidden}
+  #edPick header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:#5a3418;color:#fff;font-weight:800;font-size:18px}
+  #edPick header button{font:inherit;font-size:16px;border:0;border-radius:10px;padding:6px 12px;background:#ffcf3a;color:#5a3418;cursor:pointer}
+  #edPick .list{overflow-y:auto;padding:8px 14px 16px}
+  #edPick h4{margin:14px 0 6px;font-size:14px;letter-spacing:.6px;text-transform:uppercase;color:#9a6a3a}
+  #edPick .lv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;font-size:16px;padding:8px 10px;margin:2px 0;border:0;border-radius:10px;background:#fbf1de;cursor:pointer}
+  #edPick .lv:hover{background:#ffe2b0} #edPick .lv code{font-size:13px;color:#9a6a3a}
+  #statsBody tr.cur td{background:rgba(255,207,58,.28)} #statsBody tr.tot td{border-top:4px solid #ffcf3a;background:rgba(0,0,0,.12)} #statsBody .none{opacity:.45}
   #levelStep{left:30px;top:200px;padding:4px 16px;border-radius:16px;background:rgba(40,25,15,.55);color:#fff;font-size:26px;font-weight:800;display:none}
 </style>
 </head>
@@ -162,6 +208,10 @@
     <div class="setrow"><label>Speed</label><div class="chips" id="setSpeed"></div></div>
     <div class="setrow"><label>Sound</label><div class="chips" id="setSound"></div></div>
     <button class="close spring" id="setClose">Done</button></div></div>
+  <div class="panel" id="menuPanel"><div id="menuHead"><h1>Marble Run</h1><p>Showcase: pick a level to try</p>
+    <div class="rbtn spring" id="menuSet" title="Settings"><svg viewBox="0 0 48 48"><path fill="#fff" d="M27.6 4l1.3 5.2a15.7 15.7 0 0 1 4.1 2.4l5.1-1.6 3.6 6.2-3.9 3.7a15.9 15.9 0 0 1 0 4.8l3.9 3.7-3.6 6.2-5.1-1.6a15.7 15.7 0 0 1-4.1 2.4L27.6 44h-7.2l-1.3-5.2a15.7 15.7 0 0 1-4.1-2.4l-5.1 1.6-3.6-6.2 3.9-3.7a15.9 15.9 0 0 1 0-4.8L6.3 19.6l3.6-6.2 5.1 1.6a15.7 15.7 0 0 1 4.1-2.4L20.4 4zM24 17a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></div>
+    <div class="rbtn spring" id="menuEdit" title="Editor: edit any level (the originals never change; saved copies go to My Levels)"><svg viewBox="0 0 48 48"><path d="M9 33l-2 9 9-2 23-23-7-7z" fill="#fff"/><path d="M29 13l7 7" stroke="#c4621a" stroke-width="3"/></svg></div></div>
+    <div id="menuList"></div></div>
 </div>
 
 <!-- shared with editor.html: rules core, level format, checker, layout builder -->
@@ -625,8 +675,9 @@ const V = {boxes:[], marbles:[], crates:[], disps:[], keys:[], dom:null, flash:0
 let acc = 0, timeScale = clamp(+prefs.speed || 1, 1, 3), paused = false, botOn = params.has('bot'), botT = 0, introOpen = false;
 const RAIL_X0 = C.RAIL.x0;
 function clearWorld(){ while (world.children.length){ const o = world.children.pop(); o.traverse(q => { if (q.isMesh && q.geometry && !Object.values(boxGeoCache).some(x => Object.values(x).includes(q.geometry)) && q.geometry !== bellowsGeo && q.geometry !== keyGeo) q.geometry.dispose(); }); } }
-function loadLevel(lv, source){
+function loadLevel(lv, source, opts){
   N = C.normalizeLevel(JSON.parse(JSON.stringify(lv))); L = C.buildLayout(N); levelSource = source || 'builtin'; levelSerial++;
+  if (opts && opts.bot != null) setBot(opts.bot);
   clearWorld();
   toys = buildSlideWorld(L, world);
   L.TRAYS.forEach(r => buildTrayMesh(r, world));
@@ -634,6 +685,7 @@ function loadLevel(lv, source){
   $('levelPill').textContent = N.name || 'Marble Run';
   resetGame();
   logLevel();
+  if (parent !== window) parent.postMessage({type:'game-status', source:levelSource, name:N.name, marbles:game.total, boxes:game.boxes.length, serial:levelSerial}, '*');
   return true;
 }
 function resetGame(){
@@ -866,7 +918,7 @@ function hidePanels(){ for (const id of ['winPanel', 'failPanel', 'donePanel']) 
 function endPanels(rt){
   if (V.win && !$('winPanel').classList.contains('show') && rt - V.win.t > C.WIN_DELAY + 0.9){
     $('winText').textContent = `All ${game.total} marbles sorted.`; $('winStats').textContent = `${game.sends} boxes sent · ${Math.floor(game.resultT/60)}:${String(Math.floor(game.resultT % 60)).padStart(2, '0')}`;
-    $('btnNext').textContent = pack && packIdx < pack.length - 1 ? 'Next level' : pack ? 'Finish' : 'Play again';
+    $('btnNext').textContent = SC ? (packIdx < catRange(packIdx)[1] ? 'Next level' : 'Back to menu') : pack && packIdx < pack.length - 1 ? 'Next level' : pack ? 'Finish' : 'Play again';
     $('winPanel').classList.add('show'); sfx.win(); recordWin();
     for (let i = 0; i < 4; i++) setTimeout(() => burst(new THREE.Vector3((frand() - 0.5)*6, 4, -6 - frand()*5), C.HEX[C.COLORS[i*2 % 8]], 30, 1.6), i*120);
     if (EMBED) parent.postMessage({type:'game-result', result:'win', t:game.resultT}, '*');
@@ -921,15 +973,18 @@ $('btnRetry').addEventListener('click', () => { audio(); resetGame(); });
 /* ------------------------------ level pack ------------------------------
    window.MR_SHARE.levels: a frozen pack played in order (previous / next, "Level x / n", per-level stats) */
 let pack = null, packIdx = 0;
-const statsKey = () => 'stats:' + ((SHARE && SHARE.title) || 'pack');
-function recordWin(){ if (!pack) return; const st = store.get(statsKey(), {}), id = levelId(); const s = st[id] || {fails:[], wins:0}; s.wins++; s.time = +game.resultT.toFixed(1); st[id] = s; store.set(statsKey(), st); }
-function recordFail(){ if (!pack) return; const st = store.get(statsKey(), {}), id = levelId(); const s = st[id] || {fails:[], wins:0}; s.fails.push(+game.resultT.toFixed(1)); st[id] = s; store.set(statsKey(), st); }
+const statsKey = () => 'stats:' + ((SHARE && (SHARE.statsKey || SHARE.title)) || 'pack');
+function recordWin(){ if (!pack || botOn) return; const st = store.get(statsKey(), {}), id = levelId(); const s = st[id] || {fails:[], wins:0}; s.wins++; if (s.time == null) s.time = +game.resultT.toFixed(1); st[id] = s; store.set(statsKey(), st); }
+function recordFail(){ if (!pack || botOn) return; const st = store.get(statsKey(), {}), id = levelId(); const s = st[id] || {fails:[], wins:0}; s.fails.push(+game.resultT.toFixed(1)); st[id] = s; store.set(statsKey(), st); }
 const levelId = () => (N && (N.id || N.name)) || 'level';
-function goPack(i){ packIdx = clamp(i, 0, pack.length - 1); loadLevel(pack[packIdx], 'pack'); $('levelStep').textContent = `Level ${packIdx + 1} / ${pack.length}`; }
-$('btnNext').addEventListener('click', () => { audio(); if (pack){ if (packIdx < pack.length - 1) goPack(packIdx + 1); else { hidePanels(); $('donePanel').classList.add('show'); } } else resetGame(); });
+function goPack(i){ packIdx = clamp(i, 0, pack.length - 1); loadLevel(pack[packIdx], 'pack'); $('levelStep').textContent = `Level ${packIdx + 1} / ${pack.length}`;
+  if (SC){ const [a, b] = catRange(packIdx); $('btnPrev').classList.toggle('dis', packIdx <= a); $('btnNextLv').classList.toggle('dis', packIdx >= b); } }
+function packStep(d){ if (!pack) return; if (SC){ const [a, b] = catRange(packIdx), j = packIdx + d; if (j < a || j > b) return; } goPack(packIdx + d); }
+$('btnNext').addEventListener('click', () => { audio(); if (SC){ hidePanels(); if (packIdx < catRange(packIdx)[1]) goPack(packIdx + 1); else openMenu(); return; }
+  if (pack){ if (packIdx < pack.length - 1) goPack(packIdx + 1); else { hidePanels(); $('donePanel').classList.add('show'); } } else resetGame(); });
 $('btnAgain').addEventListener('click', () => { audio(); goPack(0); });
-$('btnPrev').addEventListener('click', () => { audio(); if (pack) goPack(packIdx - 1); });
-$('btnNextLv').addEventListener('click', () => { audio(); if (pack) goPack(packIdx + 1); });
+$('btnPrev').addEventListener('click', () => { audio(); packStep(-1); });
+$('btnNextLv').addEventListener('click', () => { audio(); packStep(1); });
 function showStats(){
   const st = store.get(statsKey(), {}), rows = (pack || []).map((lv, i) => { const s = st[lv.id || lv.name] || {fails:[], wins:0};
     return `<tr><td>${i + 1}</td><td>${(lv.name || '').replace(/</g, '&lt;')}</td><td>${s.time != null ? s.time + ' s' : '–'}</td><td>${s.fails.length}</td><td>${s.fails.join(', ') || '–'}</td></tr>`; });
@@ -995,23 +1050,184 @@ function logLevel(){
     console.log(`[sim] random bot: ${r.wins}/${r.runs} wins (${(r.rate*100).toFixed(1)}%) — difficulty ${r.label}`); }).catch(e => console.warn('[sim] failed', e));
 }
 
+/* ------------------------------ the showcase ------------------------------
+   window.MR_SHARE.showcase: {categories:[{name, ordered?, groups:[{name, levels:[ids]}]}], cards:{id:{diff, blockers, toys,
+   num, role}}, thumbs:{id:data url}} over the pack of every level.  It opens on a start menu of level cards by category;
+   in play the home button goes back to it and previous / next stay inside the level's category.  The menu's pencil
+   opens the level editor (carried inside as base64) over the whole window: it edits a copy of any level, and Save keeps
+   that copy in My Levels under the next free suffix of its id (f30 -> f30_1, f30_2, ...) - the showcase's own levels
+   never change.  My Levels is the menu's last category: play, edit again, export as JSON, delete, or export them all. */
+const SC = SHARE && SHARE.showcase && pack ? SHARE.showcase : null;
+const SC_LAST = 'showcase-last', DIFF_N = {'Easy':1, 'Medium':2, 'Hard':3, 'Very Hard':4};
+const escH = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'})[c]);
+let menuOpen = false;
+function catRange(i){
+  if (!SC) return [0, pack ? pack.length - 1 : 0];
+  const id = pack[i] && pack[i].id, cat = SC.categories.find(c => c.groups.some(g => g.levels.includes(id)));
+  if (!cat) return [0, pack.length - 1];
+  const idx = cat.groups.flatMap(g => g.levels).map(x => pack.findIndex(l => l.id === x)).filter(k => k >= 0);
+  return [Math.min(...idx), Math.max(...idx)];
+}
+function buildMenu(){
+  syncMyLevels();
+  const st = store.get(statsKey(), {}), last = store.get(SC_LAST, null), list = $('menuList'); list.innerHTML = '';
+  for (const cat of SC.categories){
+    const h = document.createElement('div'); h.className = 'mcat'; h.textContent = cat.name; list.append(h);
+    if (cat.mine){ h.className = 'mcat mcathead'; h.innerHTML = `<span>${escH(cat.name)}</span><button id="myExportAll">Export all</button>`;
+      h.querySelector('button').onclick = e => { e.stopPropagation(); audio(); exportMine(null); }; }
+    // the funnel: played in order - the first level not won yet is the one to play next
+    const nextUp = cat.ordered ? cat.groups[0].levels.find(id => !(st[id] && st[id].wins)) : null;
+    for (const grp of cat.groups){
+      if (grp.name){ const g = document.createElement('div'); g.className = 'mgrp'; g.textContent = grp.name; list.append(g); }
+      const grid = document.createElement('div'); grid.className = 'mgrid'; list.append(grid);
+      for (const id of grp.levels){
+        const i = pack.findIndex(l => l.id === id); if (i < 0) continue;
+        const lv = pack[i], c = (SC.cards && SC.cards[id]) || {}, card = document.createElement('div'), won = !!(st[id] && st[id].wins);
+        card.className = 'mcard spring' + (id === last ? ' last' : '') + (c.num && won ? ' won' : '') + (id === nextUp ? ' nextup' : ''); card.dataset.id = id;
+        const tags = [];
+        if (c.role) tags.push(`<span class="tag">${escH(c.role)}</span>`);
+        if (c.diff) tags.push(`<span class="tag d${DIFF_N[c.diff] || 2}">${escH(c.diff)}</span>`);
+        tags.push(`<span class="tag ln">${(lv.lanes || []).length} lanes</span>`);
+        (c.blockers || []).forEach(b => tags.push(`<span class="tag bk">${escH(b)}</span>`));
+        (c.toys || []).forEach(b => tags.push(`<span class="tag ty">${escH(b)}</span>`));
+        const pic = c.num ? `<div class="mnum">${c.num}</div>` : `<img alt="" src="${(SC.thumbs && SC.thumbs[id]) || c.pic || ''}">`;
+        card.innerHTML = `${pic}<b>${escH(lv.name || id)}</b><div class="tags">${tags.join('')}</div>` +
+          (cat.mine ? `<div class="mtools"><button data-a="edit">Edit</button><button data-a="export">Export</button><button data-a="del" class="del">Delete</button></div>` : '');
+        card.addEventListener('click', e => { const a = e.target.closest('[data-a]'); audio();
+          if (a){ e.stopPropagation(); if (a.dataset.a === 'edit') openEditor(lv, true); else if (a.dataset.a === 'export') exportMine(id); else deleteMine(id); return; }
+          store.set(SC_LAST, id); closeMenu(); goPack(i); });
+        grid.append(card);
+      }
+    }
+  }
+}
+function openMenu(){
+  if (paused) closePause(); for (const id of ['winPanel', 'failPanel', 'donePanel', 'statsPanel', 'setPanel', 'introPanel']) $(id).classList.remove('show');
+  buildMenu(); $('menuPanel').classList.add('show'); menuOpen = true;
+  const cur = $('menuList').querySelector('.mcard.last'); if (cur) cur.scrollIntoView({block:'center'});
+}
+function closeMenu(){ $('menuPanel').classList.remove('show'); menuOpen = false; }
+const MY_KEY = 'my-levels';
+const myLevels = () => (store.get(MY_KEY, {levels:[]}).levels || []).filter(l => l && l.id && l.slide && l.lanes);
+function syncMyLevels(){                            // My Levels: in the pack and as the menu's last category
+  if (!SC) return;
+  const mine = myLevels(), ids = mine.map(l => l.id);
+  mine.forEach(lv => { lv.mine = true; const k = pack.findIndex(l => l.id === lv.id); if (k >= 0) pack[k] = lv; else pack.push(lv); });
+  for (let k = pack.length - 1; k >= 0; k--) if (pack[k].mine && !ids.includes(pack[k].id)) pack.splice(k, 1);
+  mine.forEach(lv => { SC.cards = SC.cards || {}; SC.cards[lv.id] = Object.assign({}, SC.cards[lv.id], {pic:miniMap(lv)}); });
+  SC.categories = SC.categories.filter(c => !c.mine);
+  if (mine.length) SC.categories.push({name:'My Levels', mine:true, groups:[{name:null, levels:ids}]});
+}
+const miniCache = new Map();
+function miniMap(lv){                               // a small picture of a level: its slide and trays from above
+  const key = JSON.stringify([lv.slide, lv.trays.map(r => [r.at, r.side, r.shape, r.tilt, r.rows, r.columns.length])]); if (miniCache.has(key)) return miniCache.get(key);
+  let url = '';
+  try { const Lm = C.buildLayout(C.normalizeLevel(JSON.parse(JSON.stringify(lv)))), SLm = Lm.SLIDE, cv = document.createElement('canvas'); cv.width = 250; cv.height = 300;
+    const pts = []; for (let i = 0; i < SLm.n; i += 4) pts.push([SLm.P[i*3], SLm.P[i*3+2]]);
+    Lm.TRAYS.forEach(r => r.outline.forEach(q => pts.push(q)));
+    const x0 = Math.min(...pts.map(q => q[0])) - 1, x1 = Math.max(...pts.map(q => q[0])) + 1, z0 = Math.min(...pts.map(q => q[1])) - 1, z1 = Math.max(...pts.map(q => q[1])) + 1;
+    const k = Math.min(250/(x1 - x0), 300/(z1 - z0)), ox = (250 - (x1 - x0)*k)/2, oz = (300 - (z1 - z0)*k)/2;
+    const x = cv.getContext('2d'), sx = v => ox + (v - x0)*k, sz = v => oz + (v - z0)*k; x.fillStyle = '#e6c999'; x.fillRect(0, 0, 250, 300);
+    x.lineCap = x.lineJoin = 'round'; x.strokeStyle = '#ff8a2a'; x.lineWidth = 2*C.RO*k; x.beginPath();
+    for (let i = 0; i < SLm.n; i += 2){ const X = sx(SLm.P[i*3]), Z = sz(SLm.P[i*3+2]); i ? x.lineTo(X, Z) : x.moveTo(X, Z); } x.stroke();
+    Lm.TRAYS.forEach(r => { x.beginPath(); r.outline.forEach((q, j) => j ? x.lineTo(sx(q[0]), sz(q[1])) : x.moveTo(sx(q[0]), sz(q[1]))); x.closePath(); x.fillStyle = '#c99a5a'; x.fill(); x.strokeStyle = '#7a5428'; x.lineWidth = 2; x.stroke();
+      lv.trays[r.src].columns.forEach((col, ci) => col.forEach((cell, ri) => { const m = C.parseCell(cell); if (!m) return; const q = r.slots[ci][ri];
+        x.beginPath(); x.arc(sx(q.x), sz(q.z), Math.max(1.5, C.R_M*k*0.9), 0, 7); x.fillStyle = m.hidden ? '#9aa1ad' : C.HEX[m.color]; x.fill(); })); });
+    url = cv.toDataURL('image/png'); } catch (e) {}
+  miniCache.set(key, url); return url;
+}
+function saveMine(level){                           // a copy under the next free suffix of its id: never over another level
+  const base = String(level.id || 'level').replace(/_\d+$/, ''), taken = new Set(pack.map(l => l.id).concat(myLevels().map(l => l.id)));
+  let n = 1; while (taken.has(base + '_' + n)) n++;
+  const lv = JSON.parse(JSON.stringify(level)); delete lv.mine; lv.id = base + '_' + n;
+  const all = myLevels().map(l => { const o = Object.assign({}, l); delete o.mine; return o; }); all.push(lv); store.set(MY_KEY, {levels:all});
+  return lv.id;
+}
+function deleteMine(id){ store.set(MY_KEY, {levels:myLevels().filter(l => l.id !== id).map(l => { const o = Object.assign({}, l); delete o.mine; return o; })}); buildMenu(); }
+function exportMine(id){                            // one level as <id>.json, or all of them as my-levels.json
+  const clean = l => { const o = JSON.parse(JSON.stringify(l)); delete o.mine; return o; }, mine = myLevels();
+  const data = id ? clean(mine.find(l => l.id === id)) : {type:'marble-run-levels', version:1, levels:mine.map(clean)};
+  const a = document.createElement('a'), url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}));
+  a.href = url; a.download = (id || 'my-levels') + '.json'; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+let edPending = null, edReady = false;
+function openEditor(level, mine){
+  let host = $('edHost');
+  if (!host){ const src = document.getElementById('mr-editor'); if (!src) return false;
+    host = document.createElement('div'); host.id = 'edHost'; document.body.append(host);
+    const bin = atob(src.textContent.trim()), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const html = new TextDecoder().decode(bytes).replace('<head>', '<head><script>window.MR_EDITOR_HOST = "showcase";<\/script>');
+    const f = document.createElement('iframe'); f.id = 'edFrame'; f.title = 'Level editor'; host.append(f); f.srcdoc = html; }
+  host.classList.add('show'); closeMenu(); edFit();
+  if (game && !game.result && !paused) openPause();                 // (the game waits behind the editor)
+  edPending = {level:JSON.parse(JSON.stringify(level)), mine:!!mine}; delete edPending.level.mine;
+  if (edReady) edSend();
+  return true;
+}
+// the editor is laid out for a desktop window: in a narrower one (a phone) it is laid out 1280 px wide and scaled down
+// to the window's width, so every part of it stays on the screen
+const ED_W = 1280;
+function edFit(){ const f = $('edFrame'); if (!f) return; const k = Math.min(1, innerWidth/ED_W);
+  Object.assign(f.style, k < 1 ? {width:ED_W + 'px', height:innerHeight/k + 'px', transform:`scale(${k})`, transformOrigin:'0 0'} : {width:'', height:'', transform:'', transformOrigin:''}); }
+addEventListener('resize', edFit);
+function edSend(){ if (!edPending) return; $('edFrame').contentWindow.postMessage({source:'mr-showcase', type:'open', level:edPending.level, mine:edPending.mine}, '*'); edPending = null; }
+function closeEditor(){ const h = $('edHost'); if (h) h.classList.remove('show'); $('edPick').classList.remove('show'); openMenu(); }
+function openPicker(){                              // every level of the showcase (and My Levels): pick one to edit
+  syncMyLevels(); const box = $('edPick').querySelector('.list'); box.innerHTML = '';
+  for (const cat of SC.categories){ const h4 = document.createElement('h4'); h4.textContent = cat.name; box.append(h4);
+    for (const id of cat.groups.flatMap(g => g.levels)){ const lv = pack.find(l => l.id === id); if (!lv) continue;
+      const b = document.createElement('button'); b.className = 'lv'; b.innerHTML = `<span>${escH(lv.name || id)}</span><code>${escH(id)}</code>`;
+      b.onclick = () => { $('edPick').classList.remove('show'); openEditor(lv, !!cat.mine); }; box.append(b); } }
+  $('edPick').classList.add('show');
+}
+if (SC){
+  window.MR_SC = {openMenu};
+  app.classList.add('home', 'sc');
+  const pk = document.createElement('div'); pk.id = 'edPick'; pk.innerHTML = '<div class="box"><header><span>Edit a level</span><button>Close</button></header><div class="list"></div></div>';
+  pk.querySelector('header button').onclick = () => pk.classList.remove('show'); document.body.append(pk);
+  $('menuEdit').addEventListener('click', () => { audio(); openPicker(); });
+  $('menuSet').addEventListener('click', () => { audio(); openSettings(); });
+  $('btnHome').addEventListener('click', () => { audio(); openMenu(); });
+  addEventListener('message', e => { const m = e.data || {}; if (m.source !== 'mr-editor') return; const f = $('edFrame');
+    if (m.type === 'ready'){ edReady = true; edSend(); }
+    else if (m.type === 'save' && m.level){ const id = saveMine(m.level); syncMyLevels(); f.contentWindow.postMessage({source:'mr-showcase', type:'saved', id}, '*'); }
+    else if (m.type === 'pick') openPicker();
+    else if (m.type === 'close') closeEditor(); });
+}
+
 /* ------------------------------ start ------------------------------ */
+function setBot(on){ botOn = !!on; botT = 0; $('botTag').style.display = botOn ? 'block' : 'none'; }
 if (botOn) $('botTag').style.display = 'block';
-if (SHARE && Array.isArray(SHARE.levels) && SHARE.levels.length){ pack = SHARE.levels; if (SHARE.nav !== false && pack.length > 1){ app.classList.add('nav'); $('levelStep').style.display = 'block'; }
-  goPack(clamp((+params.get('n') || 1) - 1, 0, pack.length - 1)); }
+if (SHARE && Array.isArray(SHARE.levels) && SHARE.levels.length){ pack = SHARE.levels; if (SHARE.nav !== false && pack.length > 1){ app.classList.add('nav'); if (!SC) $('levelStep').style.display = 'block'; }
+  goPack(clamp((+params.get('n') || 1) - 1, 0, pack.length - 1));
+  if (SC && !params.has('n')) openMenu(); }                  // the showcase opens on its menu
 else {
   const id = params.get('level') || (SHARE && SHARE.level), lv = id && C.PRESETS[id];
   loadLevel(lv || C.LEVEL_DATA, lv ? 'preset' : 'builtin');
 }
-if (EMBED){ addEventListener('message', e => { const d = e.data || {}; if (d.type === 'level' && d.level){ try { loadLevel(d.level, 'editor'); } catch (err) { console.warn(err); } } });
-  parent.postMessage({type:'game-ready'}, '*'); }
+/* the editor's preview: it sends {type:'run'|'watch', level} (watch: the greedy bot plays it), 'restart', and its
+   camera switch and zoom; the game answers 'hello' when it is ready and 'game-status' after each level it loads */
+function onMessage(d){
+  if (!d || typeof d !== 'object') return;
+  try {
+    if ((d.type === 'run' || d.type === 'watch' || d.type === 'level') && d.level) loadLevel(d.level, 'editor', {bot:d.type === 'watch'});
+    else if (d.type === 'restart') resetGame();
+    else if (d.type === 'camera') setView(d.view);
+    else if (d.type === 'zoom') setZoom(d.zoom);
+  } catch (err) { console.warn(err); }
+}
+if (EMBED && !SHARE){ addEventListener('message', e => { if (e.source === parent) onMessage(e.data); });
+  parent.postMessage({type:'hello'}, '*'); }
 requestAnimationFrame(frame);
 
 /* test hooks */
 window.__mr = {
-  C, THREE, get game(){ return game; }, get L(){ return L; }, get N(){ return N; }, get camera(){ return camera; }, prefs, V, sorter, toys,
+  C, THREE, get game(){ return game; }, get L(){ return L; }, get N(){ return N; }, get camera(){ return camera; }, prefs, V, sorter, get toys(){ return toys; },
   loadLevel, resetGame, tap, laneAt, screenOf, setTheme, setSupports, setView, setZoom, setSpeed, openPause, closePause, openSettings,
-  get paused(){ return paused; }, get timeScale(){ return timeScale; },
+  get paused(){ return paused; }, get timeScale(){ return timeScale; }, get levelSource(){ return levelSource; }, get serial(){ return levelSerial; },
+  get embed(){ return EMBED; }, get botOn(){ return botOn; }, setBot, get pack(){ return pack; }, get packIdx(){ return packIdx; }, goPack,
+  get showcase(){ return SC; }, openMenu, closeMenu, get menuOpen(){ return menuOpen; }, catRange, openEditor, saveMine, myLevels, syncMyLevels, packStep,
+  stats(){ return store.get(statsKey(), {}); },
   advance(sec){ const n = Math.round(sec/C.SIM_DT); for (let i = 0; i < n && !(game.result === 'fail' && acc > 3); i++) pump(C.SIM_DT/timeScale); },
   render(){ renderer.render(scene, camera); }, renderer, scene,
   marbleWorld(id){ const p = marblePos(game.marbles[id], V.marbles[id], game.t + acc, new THREE.Vector3()); return p ? [p.x, p.y, p.z] : null; },

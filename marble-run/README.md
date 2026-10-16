@@ -19,7 +19,8 @@ level files and builds, retargeted.
 
 - **`index.html`**: the game. It loads three.js 0.160.0 from a pinned CDN through an import map, with no other
   libraries and no build step. Portrait 9:19.5, scaled to fit, mouse and touch.
-- **`shared/sync.js`**: stored settings and the background bot worker. **`shared/bundle.js`**: packs the game into
+- **`editor.html`**: the level editor (see *The editor*). It previews the real game in a phone frame.
+- **`shared/sync.js`**: stored settings, the editor's saved levels and level order, and the background bot worker. **`shared/bundle.js`**: packs the game into
   one self-contained HTML file.
 - **`shared/core.js`**: the rules, the level format, the layout builder (slide, trays, sorter, pillars), the
   checker, the bots and the difficulty test.
@@ -31,7 +32,8 @@ level files and builds, retargeted.
   - the slide and tray geometry (`funnel/geometry.js`);
   - the plan-method content generator (`funnel/content.js`);
   - the demo levels (`make-demos.js`);
-  - the presets copy (`sync-presets.js`).
+  - the presets copy (`sync-presets.js`);
+  - the single-file editor (`editor-file.js`).
 - **`levels/`**: one JSON per level (the blocker demos now).
 - **`tests/`**: the headless suites (see *Verification*).
 - **`vendor/three.module.min.js`**: three.js r160 (MIT), for the offline single-file builds.
@@ -42,8 +44,8 @@ Built in phases, each committed and pushed:
 
 1. **Core**: the rules, the level format, the layout, the checker, the bots, every blocker, gaps and toy pieces, the
    demo levels and the headless tests.
-2. **The game page** (this phase): the look, the juice and the settings.
-3. The editor.
+2. **The game page**: the look, the juice and the settings.
+3. **The editor** (this phase).
 4. The showcase.
 5. The 40-level funnel.
 6. Every test suite, the screenshots and the dist builds.
@@ -181,6 +183,46 @@ Screenshots (390 × 844, `node tools/shoot-game.js`):
 - [all slots full](screenshots/game-full-390.png);
 - [the fail panel](screenshots/game-fail-390.png).
 
+## The editor
+
+`editor.html` is Match Express's editor, retargeted. Everything it has carries over: the file menu, undo and redo, unique
+level ids, drafts, the unsaved dot, the levels list and the level order, exports, the right-click menu, copy / cut /
+paste / duplicate / delete / nudge on whatever is selected, band selection, keyboard shortcuts for every tool and the
+`?` help sheet.
+
+![The editor](screenshots/editor.png)
+
+- **The view** is the table from above: the slide (overpasses drawn over the stretch below them), the trays with their
+  marbles, the start tower, the sorter's bowl and rail, the 5 slots, the box lanes and the toy chest. The game's slide
+  zone is the yellow frame; whatever leaves it turns red.
+- **The slide** (tool `P`, or `2`): click it to add a point (pulled into the zone if it lands outside), drag points,
+  right-click or long-press to delete. The first point is the start tower; after the last one the slide runs on along
+  its fixed tail into the sorter. A point's inspector turns its stretch into a spiral (left or right, its radius) and
+  pins its height. Trays, gaps and toy pieces stay where they are on the table when the slide changes.
+- **Trays** (`R`, or `3`): click beside the slide; the tool finds the nearest spot free of warnings. The front node
+  (the green diamond) always snaps to the slide's edge and sets the merge point; drag it along the slide. The back node
+  turns the tray. The inspector sets columns, rows, side, tilt (or square to the slide, or the default 35°), push and
+  fills it at random.
+- **Marbles**: paint (`B`), erase (`E`) and the hidden brush (`H`) in 8 colours (`Shift 1-8`).
+- **Blockers**: drag across tray cells with the marble dispenser (`D`), the lock crate (`K`, with a key-box picker) or
+  the count crate (`N`). One blocker per column; a dispenser needs a cell in front of it.
+- **Gaps**: the cut tool (`G`) cuts the slide where it is clicked; drag a gap along the slide; the inspector sets its
+  length and its ends (flat, or take-off and landing ramps).
+- **Toy pieces** (new, `Y`): pick xylophone, bells, paddle wheel, zig-zag stairs, vortex or loop and click the slide;
+  drag them along it; the inspector changes the piece and its length. They are decorative: the checker keeps them off
+  spirals, overpasses, gaps and merge points.
+- **Box lanes**: 2–5 lanes; *Add box* picks lane, colour, holes (4/6/8/12) and hidden; drag boxes within and between
+  lanes; double-click toggles hidden; Shift-click 2-3 touching boxes (also across neighbouring lanes) and press `L` to
+  connect them.
+- **The level card**: id, name, role, target difficulty, lane count, `marbleScale` (− / + / Auto: the largest the level
+  has room for).
+- **Checks**: marbles against holes per colour, every checker warning (click one to see it), and **Test**: the greedy
+  bot and 200 random bots in a background Web Worker running the same core, with the difficulty label.
+- **The preview** is the real game page in an iframe, fed by `postMessage`: *Run* restarts it, *Auto* restarts it
+  500 ms after each edit, *Watch* lets the greedy bot play, and its camera switch and zoom are the game's own settings.
+- **Exports** are frozen copies: the level JSON (with its id), a playable single-file HTML of the level or of the whole
+  level order (three.js inside, no network), the order JSON. The game page never reads the editor's storage.
+
 ## Blockers (all of Match Express's, with the same data and checker spirit)
 
 - **Hidden box** (`hidden` on a lane box):
@@ -309,6 +351,10 @@ node tests/trays.test.js      # 8 checks: regular grids, the lean, apron and chu
 node tests/browser.test.js    # 22 checks (Playwright): a real tap, the glow, the drawn spacing on the slide, the game
                               # at 2.25x = a headless run for the same taps, refusals, hidden "?", every box leaving
                               # off the side of the screen, win, the dominoes fail, pause, settings, speed, timer, boosters
+node tests/editor.test.js     # 139 checks (Playwright): the shell and its preview, shortcuts, selection and the clipboard
+                              # for every kind of thing, the slide, trays, blockers, gaps, toy pieces, box lanes, the
+                              # level card, drafts and ids, the level order, exports opened from file:// and won level
+                              # by level, the bot worker (the same numbers as the core headless), Watch, camera and zoom
 ```
 
-All 135 checks pass.
+All 274 checks pass.
