@@ -2312,12 +2312,19 @@ function loadLevel(lv, source, opts){
   toys = buildSlideWorld(L, world);
   L.TRAYS.forEach(r => buildTrayMesh(r, world));
   buildSorter(world); slotTray = buildSlotTray(world); chest = buildLanes(L, world);
-  $('levelPill').textContent = N.name || 'Marble Run';
+  $('levelPill').textContent = N.name || 'Marble Run'; fitPill();
   resetGame();
   levelIntro();
   logLevel();
   if (parent !== window) parent.postMessage({type:'game-status', source:levelSource, name:N.name, marbles:game.total, boxes:game.boxes.length, serial:levelSerial}, '*');
   return true;
+}
+function fitPill(){                                  // a long level name shrinks its type to fit the title pill
+  const el = $('levelPill'); el.style.fontSize = ''; if (!el.offsetWidth) return;
+  const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(el);
+  for (let fs = parseFloat(cs.fontSize); fs > 18; fs -= 2){ el.style.fontSize = fs + 'px';
+    const k = el.getBoundingClientRect().width/el.offsetWidth, inner = (el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))*k;
+    if (r.getBoundingClientRect().width <= inner) break; }
 }
 function resetGame(){
   // dynamic objects of the last game
@@ -2326,6 +2333,7 @@ function resetGame(){
   game = C.createGame(N, {}); acc = 0; V.win = null; V.fail = null; V.flash = 0; V.keys = []; glowN = 0;
   hidePanels(); updateTimer(true);
   V.boxes = game.boxes.map(b => { const vb = makeBoxMesh(b); vb.pos = new THREE.Vector3(); vb.home = null; vb.from = null; vb.punch = -9; vb.shake = -9; vb.pop = -9; vb.squash = -9; vb.dir = 1; laneTarget(b, vb); vb.pos.copy(vb.home); return vb; });
+  for (const vm of V.marbles) if (vm.q) fx.remove(vm.q);          // the last game's hidden-marble "?" marks
   V.marbles = game.marbles.map(m => ({pos:null, hop:-9, pop:-9, squash:-9, p0:null, ps:-1, gate:false}));
   V.bellows = game.groups.map(grp => ({grp, g:new THREE.Group(), parts:[]})); V.bellows.forEach(bw => { world.add(bw.g);
     for (let k = 1; k < bw.grp.members.length; k++){ const m = mesh(bellowsGeo, bellowsMat); bw.g.add(m); bw.parts.push(m); } });

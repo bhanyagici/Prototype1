@@ -33,17 +33,59 @@ level files and builds, retargeted.
   - the plan-method content generator (`funnel/content.js`);
   - the demo levels (`make-demos.js`);
   - the presets copy (`sync-presets.js`);
-  - the single-file editor (`editor-file.js`);
+  - the single-file editor (`editor-file.js`), the editor and play files (`build-standalone.js`) and the level packs
+    and zip (`export-levels.js`);
   - the showcase levels (`make-showcase.js` from `showcase/specs.js`), their pictures (`shoot-showcase-thumbs.js`) and the
     single file (`build-showcase.js`);
   - the funnel (`make-funnel.js` from `funnel/specs.js`, `funnel-bots.js`, `funnel-table.js`, `make-funnel-xlsx.py`,
-    `build-funnel.js`, `shoot-funnel.js`).
+    `build-funnel.js`, `shoot-funnel.js`), and the showcase screenshots (`shoot-showcase.js`).
 - **`levels/`**: one JSON per level: the blocker demos, and `showcase/<category>/<id>.json` with `showcase-order.json`
   and the card pictures (`showcase/thumbs/`).
 - **`levels/funnel/`**: the 40 funnel levels, their order, `funnel-report.json` and `funnel-bots.json`.
-- **`dist/`**: the single-file builds (`marble-run-showcase.html`, `marble-run-funnel-40.html`) and `funnel.xlsx`.
+- **`dist/`**: the single-file builds, the level packs, the zip and `funnel.xlsx` (see *Downloads*).
+- **`screenshots/`**: the game, `showcase/` and `funnel/` (see *Screenshots*).
 - **`tests/`**: the headless suites (see *Verification*).
 - **`vendor/three.module.min.js`**: three.js r160 (MIT), for the offline single-file builds.
+
+## Downloads (single files, double-click, no server, no network)
+
+| File | What it is |
+|---|---|
+| [marble-run-showcase.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/marble-run-showcase.html) | Everything to try: the 38 showcase levels by category, the 40-level funnel, settings, stats, the editor inside and My Levels |
+| [marble-run-funnel-40.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/marble-run-funnel-40.html) | The 40-level funnel in order: tutorials, popups, previous / next, "Level x / 40", stats with CSV |
+| [marble-run-editor.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/marble-run-editor.html) | The level editor, with the game inside for its preview and its exports |
+| [marble-run-play.html](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/marble-run-play.html) | The game with the built-in level |
+| [funnel.xlsx](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/funnel.xlsx) | The funnel sheet, the curves and the summary |
+| [funnel-40.json](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/funnel-40.json) · [all-levels.json](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/all-levels.json) | The funnel, and every level, as one JSON pack each |
+| [marble-run-levels.zip](https://github.com/bhanyagici/Prototype1/raw/claude/sweet-einstein-si64t3/marble-run/dist/marble-run-levels.zip) | One file per level: `funnel/f01.json` … `f40.json` and `showcase/<category>/<id>.json`, with both orders |
+
+```
+node tools/build-showcase.js      # -> dist/marble-run-showcase.html (with the funnel once it is built)
+node tools/build-funnel.js        # -> dist/marble-run-funnel-40.html
+node tools/build-standalone.js    # -> dist/marble-run-editor.html, dist/marble-run-play.html
+node tools/export-levels.js       # -> dist/funnel-40.json, dist/all-levels.json, dist/marble-run-levels.zip
+python3 tools/make-funnel-xlsx.py # -> dist/funnel.xlsx (then recalculate, e.g. LibreOffice, so it opens with values)
+```
+
+### Screenshots
+
+- the game (`node tools/shoot-game.js`): [start](screenshots/game-start-390.png), [in play](screenshots/game-play-390.png),
+  [every blocker](screenshots/game-blockers-390.png), [a box leaving](screenshots/game-complete-390.png),
+  [all slots full](screenshots/game-full-390.png), [the fail panel](screenshots/game-fail-390.png);
+- the showcase (`node tools/shoot-showcase.js`): [the menu](screenshots/showcase/menu.png),
+  [Layouts](screenshots/showcase/menu-layouts.png), [the funnel's tiles](screenshots/showcase/menu-funnel.png),
+  [settings](screenshots/showcase/settings.png), [a level in play](screenshots/showcase/play.png),
+  [the editor inside](screenshots/showcase/editor.png);
+- the funnel (`node tools/shoot-funnel.js`): levels [1](screenshots/funnel/level-01.png) (tutorial hand),
+  [3](screenshots/funnel/level-03-box-waits.png) (the box waits), [7](screenshots/funnel/level-07.png),
+  [13](screenshots/funnel/level-13.png), [17](screenshots/funnel/level-17.png), [20](screenshots/funnel/level-20.png),
+  [22](screenshots/funnel/level-22.png), [26](screenshots/funnel/level-26.png), [30](screenshots/funnel/level-30.png),
+  [32](screenshots/funnel/level-32.png), [40](screenshots/funnel/level-40.png); the popups
+  [hidden box](screenshots/funnel/popup-hidden-box.png), [connected](screenshots/funnel/popup-connected.png),
+  [hidden marbles](screenshots/funnel/popup-hidden-marbles.png), [dispenser](screenshots/funnel/popup-dispenser.png),
+  [lock & key](screenshots/funnel/popup-lock.png); lane counts [2](screenshots/funnel/lanes-2.png),
+  [4](screenshots/funnel/lanes-4.png), [5](screenshots/funnel/lanes-5.png); [the stats panel](screenshots/funnel/stats-panel.png);
+- the editor (`tests/editor.test.js`): [editor.png](screenshots/editor.png).
 
 ## Status
 
@@ -54,9 +96,10 @@ Built in phases, each committed and pushed:
 2. **The game page**: the look, the juice and the settings.
 3. **The editor**.
 4. **The showcase**: its 38 levels, the menu, My Levels and the editor inside.
-5. **The 40-level funnel** (this phase): the design table, the levels, tutorials and popups, the report, the bots and the
+5. **The 40-level funnel**: the design table, the levels, tutorials and popups, the report, the bots and the
    spreadsheet.
-6. Every test suite, the screenshots and the dist builds.
+6. **Every test suite, the screenshots and the dist builds** (this phase): the single-file editor and play file, the
+   level packs and the zip, all screenshots, and all 13 suites passing (see *Verification*).
 
 ## The rules
 
@@ -545,6 +588,9 @@ node tests/funnel.test.js     # 39 checks (Playwright): the 40 levels against th
                               # level 3 box waits; then the pack: both tutorials (the hand, blocked taps), the popups
                               # (first time only, they hold the game), the hint, previous / next, speeds, a fail then a
                               # win in the stats, Finish, the stats panel, CSV and Reset
+node tests/standalone.test.js # 15 checks (Playwright): the packs and the zip hold every level byte for byte; the play
+                              # file from file:// (built-in level, saved editor levels ignored, a win); the single-file
+                              # editor (its srcdoc preview, Run, Play in a new tab, the playable HTML export)
 ```
 
-All 350 checks pass.
+All 365 checks pass.

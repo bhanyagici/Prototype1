@@ -2312,12 +2312,19 @@ function loadLevel(lv, source, opts){
   toys = buildSlideWorld(L, world);
   L.TRAYS.forEach(r => buildTrayMesh(r, world));
   buildSorter(world); slotTray = buildSlotTray(world); chest = buildLanes(L, world);
-  $('levelPill').textContent = N.name || 'Marble Run';
+  $('levelPill').textContent = N.name || 'Marble Run'; fitPill();
   resetGame();
   levelIntro();
   logLevel();
   if (parent !== window) parent.postMessage({type:'game-status', source:levelSource, name:N.name, marbles:game.total, boxes:game.boxes.length, serial:levelSerial}, '*');
   return true;
+}
+function fitPill(){                                  // a long level name shrinks its type to fit the title pill
+  const el = $('levelPill'); el.style.fontSize = ''; if (!el.offsetWidth) return;
+  const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(el);
+  for (let fs = parseFloat(cs.fontSize); fs > 18; fs -= 2){ el.style.fontSize = fs + 'px';
+    const k = el.getBoundingClientRect().width/el.offsetWidth, inner = (el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))*k;
+    if (r.getBoundingClientRect().width <= inner) break; }
 }
 function resetGame(){
   // dynamic objects of the last game

@@ -24,11 +24,12 @@ const ROOT = path.join(__dirname, '..'), OUT = path.join(ROOT, 'screenshots', 's
   await p.click('#menuList .mcard[data-id="toy-parade"]');
   await p.evaluate(() => { const g = __mr.game; for (let i = 0; i < 12 && !g.result; i++){ const a = __mr.C.greedyPick(g); if (a) __mr.tap(a.idx); __mr.advance(0.4); } __mr.render(); });
   await shot('play.png');
-  // the editor is a desktop tool: its picture at 1440 x 900
+  // the editor is a desktop tool: its picture at 1440 x 900 (the phone page closed first: one game less to draw)
+  await p.close();
   const d = await (await b.newContext({viewport:{width:1440, height:900}})).newPage();
   await d.goto(pathToFileURL(path.join(ROOT, 'dist', 'marble-run-showcase.html')).href); await d.waitForFunction(() => window.__mr && __mr.game, null, {timeout:90000});
   await d.evaluate(() => __mr.openEditor(__mr.pack.find(l => l.id === 'slide-hairpin')));
   await d.waitForFunction(() => { const f = document.querySelector('#edHost iframe'); return f && f.contentWindow.__ed; }, null, {timeout:60000});
-  await d.waitForTimeout(3000); await d.screenshot({path:path.join(OUT, 'editor.png')}); console.log('screenshots/showcase/editor.png');
+  await d.waitForTimeout(3000); await d.screenshot({path:path.join(OUT, 'editor.png'), timeout:180000}); console.log('screenshots/showcase/editor.png');
   await b.close();
 })().catch(e => { console.error(e); process.exit(1); });
