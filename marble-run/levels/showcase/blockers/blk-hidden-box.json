@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "blk-hidden-box",
+  "name": "Hidden box",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "yellow", "yellow", "yellow", "yellow", "red"], ["yellow", "yellow", "yellow", "blue", "blue", "yellow"], ["yellow", "yellow", "red", "red", "red", "yellow"]], "at": 3.15, "side": 1},
+    {"rows": 6, "columns": [["yellow", "yellow", "blue", "blue", "yellow", "yellow"], ["green", "green", "green", "green", "blue", "blue"], ["green", "green", "green", "red", "blue", "blue"]], "at": 8, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["yellow", "yellow", "red", "red", "red", "yellow"], ["green", "green", "red", "red", "red", "red"], ["green", "green", "blue", "blue", "red", "red"]], "at": 11.05, "side": -1, "shape": [[4.08, -3.87]]},
+    {"rows": 6, "columns": [["red", "red", "red", "red", "red", "yellow"], ["green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "blue", "blue", "blue", "blue"]], "at": 15.301, "side": 1, "shape": [[-1.61, -9.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 8},
+      {"color": "yellow", "size": 4},
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 8},
+      {"color": "green", "size": 6, "hidden": true}
+    ],
+    [
+      {"color": "red", "size": 4},
+      {"color": "blue", "size": 6, "hidden": true},
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 6, "hidden": true}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 4},
+      {"color": "red", "size": 8},
+      {"color": "red", "size": 4, "hidden": true}
+    ]
+  ],
+  "meta": {
+    "category": "Blockers",
+    "title": "Hidden box",
+    "slide": "scurve",
+    "difficulty": "Easy",
+    "random": 0.585,
+    "greedyT": 19
+  }
+}

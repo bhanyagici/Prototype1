@@ -157,7 +157,8 @@ function generate(spec, base, h, rng){
   lanes.forEach(ln => { ln.forEach(b => { b.k = b.plan + rng()*win; }); ln.sort((a, c) => a.k - c.k); ln.forEach(b => { delete b.k; }); });
   // traps: boxes whose colour is nowhere at the fronts when the level starts, moved up to the heads of two lanes.  Sent
   // early, such a box holds its slot until its marbles are dug out; the plan sends it only when nothing else matches
-  const nTrap = spec.n <= 5 ? 0 : Math.floor(h*h*(Math.min(spec.trapMax || 4, Math.floor(boxes.length/4)) + 0.99));
+  // (h above 1 is for the hardest targets: up to 40% of the boxes may be traps)
+  const nTrap = spec.n <= 5 ? 0 : Math.floor(Math.min(1, h*h)*(Math.min(spec.trapMax || 4, Math.floor(boxes.length/(h > 1 ? 2.5 : 4))) + 0.99));
   if (nTrap > 0){
     const open = new Set(content.map(c => c[0]).filter(Boolean));
     const firstLane = lanes.findIndex(ln => ln.some(b => b.plan === 0)), trapLanes = lanes.map((_, l) => l).filter(l => l !== firstLane);

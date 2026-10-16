@@ -1,0 +1,52 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "lanes-2",
+  "name": "2 lanes",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["red", "blue", "green", "green", "yellow"], ["red", "purple", "purple", "green", "green"], ["red", "red", "blue", "blue", "yellow"]], "at": 2.018, "side": -1},
+    {"rows": 5, "columns": [["red", "red", "blue", "green", "yellow"], ["purple", "purple", "blue", "blue", "yellow"], ["purple", "blue", "blue", "yellow", "yellow"]], "at": 12.326, "side": -1},
+    {"rows": 5, "columns": [["red", "red", "blue", "blue", "yellow"], ["purple", "blue", "green", "green", "yellow"], ["purple", "purple", "purple", "green", "green"]], "at": 14.926, "side": -1, "shape": [[4.14, -3.66]]},
+    {"rows": 5, "columns": [["red", "purple", "blue", "green", "yellow"], ["purple", "purple", "blue", "blue", "yellow"], ["red", "purple", "purple", "green", "green"]], "at": 19.562, "side": 1, "shape": [[-2.84, -9.22]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 8},
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 12},
+      {"color": "purple", "size": 8},
+      {"color": "red", "size": 4},
+      {"color": "purple", "size": 6}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 6},
+      {"color": "yellow", "size": 6}
+    ]
+  ],
+  "laneCount": 2,
+  "meta": {
+    "category": "Layouts",
+    "title": "2 lanes",
+    "group": "Lane counts",
+    "slide": "classic",
+    "h": 1.05,
+    "difficulty": "Medium",
+    "random": 0.335,
+    "greedyT": 24.9
+  }
+}

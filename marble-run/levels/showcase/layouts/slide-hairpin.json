@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "slide-hairpin",
+  "name": "Hairpin",
+  "slide": {
+    "points": [
+      {"x": -2.2, "z": -13},
+      {"x": -2.3, "z": -12},
+      {"x": -2.3, "z": -10.8},
+      {"x": -2, "z": -9.8},
+      {"x": -1.3, "z": -9.3},
+      {"x": -0.5, "z": -9.6},
+      {"x": -0.2, "z": -10.6},
+      {"x": -0.2, "z": -11.8},
+      {"x": 0.2, "z": -12.8},
+      {"x": 1, "z": -13.2},
+      {"x": 1.8, "z": -12.8},
+      {"x": 2.1, "z": -11.8},
+      {"x": 2.2, "z": -10.4},
+      {"x": 2.2, "z": -8.8},
+      {"x": 1.7, "z": -7.2},
+      {"x": 0.3, "z": -6.3},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "yellow", "purple", "red", "red", "red"], ["blue", "blue", "green", "green", "orange", "orange"], ["green", "green", "green", "purple", "purple", "red"]], "at": 10.321, "side": -1},
+    {"rows": 6, "columns": [["yellow", "yellow", "green", "purple", "purple", "red"], ["yellow", "yellow", "purple", "purple", "purple", "red"], ["yellow", "yellow", "green", "green", "orange", "orange"]], "at": 3.669, "side": 1, "shape": [[-4.09, -6.6]]},
+    {"rows": 6, "columns": [["blue", "blue", "blue", "purple", "purple", "red"], ["blue", "blue", "blue", "orange", "orange", "red"], ["yellow", "yellow", "purple", "purple", "orange", "orange"]], "at": 16.057, "side": -1, "shape": [[4.07, -4.28]]},
+    {"rows": 6, "columns": [["blue", "blue", "red", "red", "orange", "orange"], ["yellow", "yellow", "green", "green", "orange", "orange"], ["green", "green", "purple", "purple", "orange", "orange"]], "at": 17.698, "side": -1, "shape": [[1.7, -2.82]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 4},
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 6},
+      {"color": "yellow", "size": 6},
+      {"color": "green", "size": 12}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "red", "size": 4},
+      {"color": "purple", "size": 6},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "purple", "size": 8},
+      {"color": "orange", "size": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Hairpin",
+    "group": "Slides",
+    "slide": "hairpin",
+    "h": 0.85,
+    "difficulty": "Medium",
+    "random": 0.41,
+    "greedyT": 20.2
+  }
+}

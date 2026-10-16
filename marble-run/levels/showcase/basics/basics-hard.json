@@ -1,0 +1,53 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "basics-hard",
+  "name": "Hard",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["red", "red", "purple", "blue", "green", "green"], ["yellow", "red", "purple", "purple", "green", "cyan"], ["red", "purple", "purple", "orange", "orange", "cyan"]], "at": 12.664, "side": -1},
+    {"rows": 6, "columns": [["yellow", "red", "red", "orange", "cyan", "cyan"], ["red", "red", "purple", "blue", "cyan", "cyan"], ["yellow", "yellow", "purple", "orange", "orange", "cyan"]], "at": 1.479, "side": 1, "shape": [[-3.76, -9.3]]},
+    {"rows": 6, "columns": [["red", "red", "orange", "orange", "green", "cyan"], ["yellow", "purple", "orange", "orange", "green", "cyan"], ["yellow", "yellow", "purple", "purple", "green", "green"]], "at": 15.563, "side": -1, "shape": [[4.02, -3.49]]},
+    {"rows": 6, "columns": [["red", "red", "red", "blue", "blue", "cyan"], ["yellow", "purple", "orange", "blue", "blue", "cyan"], ["red", "purple", "orange", "orange", "green", "cyan"]], "at": 1.69, "side": -1, "shape": [[2.96, -12.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "cyan", "size": 6},
+      {"color": "cyan", "size": 6, "hidden": true},
+      {"color": "blue", "size": 6}
+    ],
+    [
+      {"color": "red", "size": 8},
+      {"color": "purple", "size": 6},
+      {"color": "red", "size": 6},
+      {"color": "yellow", "size": 8}
+    ],
+    [
+      {"color": "purple", "size": 6},
+      {"color": "orange", "size": 12, "hidden": true},
+      {"color": "green", "size": 8}
+    ]
+  ],
+  "meta": {
+    "category": "Basics",
+    "title": "Hard",
+    "slide": "spiral",
+    "h": 1.05,
+    "difficulty": "Hard",
+    "random": 0.09,
+    "greedyT": 16.3
+  }
+}

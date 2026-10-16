@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "jump-spiral",
+  "name": "Spiral and gap",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ],
+    "gaps": [
+      {"at": 16.25, "len": 1.2, "ramp": "updown"}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["purple", "orange", "blue", "red", "red"], ["yellow", "yellow", "orange", "red", "green"], ["yellow", "orange", "orange", "red", "green"]], "at": 12.664, "side": -1},
+    {"rows": 5, "columns": [["purple", "orange", "orange", "green", "green"], ["purple", "yellow", "red", "red", "red"], ["purple", "orange", "orange", "red", "green"]], "at": 1.479, "side": 1, "shape": [[-3.38, -9.46]]},
+    {"rows": 5, "columns": [["purple", "orange", "blue", "blue", "green"], ["purple", "orange", "blue", "blue", "green"], ["yellow", "orange", "orange", "red", "green"]], "at": 17.763, "side": -1, "shape": [[-0.23, -2.53]]},
+    {"rows": 5, "columns": [["purple", "yellow", "yellow", "red", "green"], ["purple", "yellow", "blue", "red", "red"], ["purple", "purple", "blue", "blue", "green"]], "at": 19.89, "side": 1, "shape": [[-2.57, -9.24]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "size": 12},
+      {"color": "green", "size": 4},
+      {"color": "orange", "size": 8},
+      {"color": "orange", "size": 4}
+    ],
+    [
+      {"color": "purple", "size": 4},
+      {"color": "yellow", "size": 4},
+      {"color": "purple", "size": 6}
+    ],
+    [
+      {"color": "green", "size": 6},
+      {"color": "yellow", "size": 4},
+      {"color": "blue", "size": 8}
+    ]
+  ],
+  "meta": {
+    "category": "Jumps",
+    "title": "Spiral and gap",
+    "slide": "spiral",
+    "h": 1.05,
+    "difficulty": "Easy",
+    "random": 0.515,
+    "greedyT": 20.3
+  }
+}

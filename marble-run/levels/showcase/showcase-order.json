@@ -1,0 +1,109 @@
+{
+  "type": "marble-run-showcase",
+  "version": 1,
+  "categories": [
+    {
+      "name": "Basics",
+      "dir": "basics",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "basics-easy",
+            "basics-medium",
+            "basics-hard",
+            "basics-very-hard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blockers",
+      "dir": "blockers",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "blk-hidden-box",
+            "blk-connected-pairs",
+            "blk-connected-triples",
+            "blk-dispenser",
+            "blk-hidden-marbles",
+            "blk-lock-key",
+            "blk-count-crate",
+            "blk-all"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Layouts",
+      "dir": "layouts",
+      "groups": [
+        {
+          "name": "Slides",
+          "levels": [
+            "slide-spiral",
+            "slide-s-curve",
+            "slide-hairpin",
+            "slide-zigzag",
+            "slide-winding"
+          ]
+        },
+        {
+          "name": "Tray shapes",
+          "levels": [
+            "tray-default",
+            "tray-square",
+            "tray-steep",
+            "tray-deep",
+            "tray-wide"
+          ]
+        },
+        {
+          "name": "Lane counts",
+          "levels": [
+            "lanes-2",
+            "lanes-3",
+            "lanes-4",
+            "lanes-5"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Jumps",
+      "dir": "jumps",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "jump-first",
+            "jump-ramps",
+            "jump-double",
+            "jump-long",
+            "jump-spiral"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Toy pieces",
+      "dir": "toy-pieces",
+      "groups": [
+        {
+          "name": null,
+          "levels": [
+            "toy-xylophone",
+            "toy-bells",
+            "toy-wheel",
+            "toy-stairs",
+            "toy-vortex",
+            "toy-loop",
+            "toy-parade"
+          ]
+        }
+      ]
+    }
+  ]
+}

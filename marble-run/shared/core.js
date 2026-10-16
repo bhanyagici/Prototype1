@@ -1304,7 +1304,7 @@ function depthScore(g, color){                      // how near the tray fronts 
 }
 function greedyPick(g){
   const acts = legalSends(g); if (!acts.length) return null;
-  let best = null, bs = -1;
+  let best = null, bs = -Infinity;
   for (const a of acts){ const w = whatIf(g, a), b = g.boxes[a.box];
     const sc = w.now*10 + w.fills*25 - (w.n - 1)*2 + depthScore(g, b.color)*0.01;
     if (sc > bs){ best = a; bs = sc; a.now = w.now; } }

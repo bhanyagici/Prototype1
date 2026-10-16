@@ -1,0 +1,53 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "blk-connected-triples",
+  "name": "Connected triples",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["green", "green", "green", "red", "red", "orange"], ["green", "blue", "blue", "yellow", "yellow", "yellow"], ["blue", "blue", "purple", "purple", "purple", "orange"]], "at": 12.664, "side": -1},
+    {"rows": 6, "columns": [["blue", "blue", "red", "yellow", "yellow", "orange"], ["green", "green", "red", "red", "yellow", "orange"], ["green", "blue", "red", "red", "orange", "orange"]], "at": 1.479, "side": 1, "shape": [[-3.76, -9.3]]},
+    {"rows": 6, "columns": [["blue", "blue", "red", "red", "red", "orange"], ["blue", "blue", "purple", "yellow", "yellow", "orange"], ["green", "purple", "purple", "purple", "yellow", "yellow"]], "at": 15.563, "side": -1, "shape": [[4.02, -3.49]]},
+    {"rows": 6, "columns": [["green", "green", "purple", "yellow", "yellow", "yellow"], ["blue", "purple", "purple", "yellow", "yellow", "yellow"], ["green", "green", "red", "red", "orange", "orange"]], "at": 1.69, "side": -1, "shape": [[2.96, -12.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 6},
+      {"color": "purple", "size": 6, "link": "G2"},
+      {"color": "yellow", "size": 8}
+    ],
+    [
+      {"color": "green", "size": 8},
+      {"color": "red", "size": 12, "link": "G2"},
+      {"color": "orange", "size": 4, "link": "G2"}
+    ],
+    [
+      {"color": "yellow", "size": 8},
+      {"color": "blue", "size": 12, "link": "G1"},
+      {"color": "green", "size": 4, "link": "G1"},
+      {"color": "purple", "size": 4, "link": "G1"}
+    ]
+  ],
+  "meta": {
+    "category": "Blockers",
+    "title": "Connected triples",
+    "slide": "spiral",
+    "h": 0.85,
+    "difficulty": "Medium",
+    "random": 0.4,
+    "greedyT": 21.8
+  }
+}

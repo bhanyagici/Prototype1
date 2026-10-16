@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "tray-steep",
+  "name": "Steep",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "purple", "purple", "red", "red", "orange"], ["purple", "purple", "blue", "red", "red", "orange"], ["yellow", "yellow", "red", "green", "green", "orange"]], "at": 8.342, "side": -1, "tilt": 60},
+    {"rows": 6, "columns": [["yellow", "yellow", "blue", "green", "orange", "orange"], ["purple", "purple", "blue", "blue", "red", "red"], ["green", "green", "blue", "green", "green", "orange"]], "at": 3.14, "side": 1, "tilt": 60},
+    {"rows": 6, "columns": [["green", "green", "blue", "blue", "orange", "orange"], ["purple", "purple", "purple", "green", "green", "orange"], ["yellow", "yellow", "blue", "blue", "orange", "orange"]], "at": 13.267, "side": 1, "tilt": 60},
+    {"rows": 6, "columns": [["yellow", "purple", "blue", "green", "red", "orange"], ["purple", "purple", "blue", "blue", "red", "red"], ["yellow", "yellow", "blue", "blue", "red", "red"]], "at": 15.952, "side": 1, "shape": [[-4, -9.36]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "size": 4},
+      {"color": "blue", "size": 6},
+      {"color": "blue", "size": 4},
+      {"color": "red", "size": 4}
+    ],
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "blue", "size": 4},
+      {"color": "purple", "size": 4},
+      {"color": "purple", "size": 4}
+    ],
+    [
+      {"color": "red", "size": 4},
+      {"color": "yellow", "size": 6},
+      {"color": "green", "size": 4},
+      {"color": "purple", "size": 4},
+      {"color": "green", "size": 8},
+      {"color": "orange", "size": 12}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Steep",
+    "group": "Tray shapes",
+    "slide": "scurve",
+    "h": 0.95,
+    "difficulty": "Medium",
+    "random": 0.41,
+    "greedyT": 22.1
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "slide-spiral",
+  "name": "Spiral",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "purple", "red", "red", "blue", "blue"], ["yellow", "orange", "purple", "purple", "green", "green"], ["orange", "orange", "purple", "green", "blue", "blue"]], "at": 12.664, "side": -1},
+    {"rows": 6, "columns": [["orange", "orange", "red", "red", "green", "green"], ["yellow", "purple", "red", "green", "green", "blue"], ["yellow", "purple", "red", "green", "blue", "blue"]], "at": 1.479, "side": 1, "shape": [[-3.76, -9.3]]},
+    {"rows": 6, "columns": [["yellow", "yellow", "red", "red", "blue", "blue"], ["yellow", "purple", "purple", "red", "green", "green"], ["orange", "orange", "red", "green", "blue", "blue"]], "at": 15.563, "side": -1, "shape": [[4.02, -3.49]]},
+    {"rows": 6, "columns": [["yellow", "orange", "purple", "purple", "blue", "blue"], ["yellow", "purple", "purple", "red", "blue", "blue"], ["yellow", "orange", "orange", "red", "green", "blue"]], "at": 1.69, "side": -1, "shape": [[2.96, -12.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "red", "size": 12}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 6},
+      {"color": "purple", "size": 4},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 8},
+      {"color": "green", "size": 12},
+      {"color": "orange", "size": 4},
+      {"color": "blue", "size": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Spiral",
+    "group": "Slides",
+    "slide": "spiral",
+    "h": 1.05,
+    "difficulty": "Medium",
+    "random": 0.305,
+    "greedyT": 25.4
+  }
+}

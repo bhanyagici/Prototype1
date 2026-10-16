@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "blk-connected-pairs",
+  "name": "Connected pairs",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["red", "blue", "yellow", "yellow", "purple", "purple"], ["red", "red", "yellow", "yellow", "purple", "purple"], ["red", "blue", "blue", "blue", "green", "purple"]], "at": 1.891, "side": -1},
+    {"rows": 6, "columns": [["red", "blue", "yellow", "yellow", "purple", "purple"], ["red", "blue", "blue", "yellow", "green", "purple"], ["red", "red", "blue", "blue", "green", "green"]], "at": 1.631, "side": 1, "shape": [[-3.55, -9.32]]},
+    {"rows": 6, "columns": [["red", "blue", "yellow", "yellow", "green", "green"], ["red", "red", "blue", "yellow", "green", "purple"], ["red", "red", "yellow", "yellow", "green", "purple"]], "at": 12.68, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["red", "blue", "yellow", "yellow", "purple", "green"], ["red", "red", "yellow", "yellow", "green", "green"], ["red", "red", "blue", "blue", "green", "purple"]], "at": 15.243, "side": -1, "shape": [[4, -2.99]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 4},
+      {"color": "red", "size": 4, "link": "G1"},
+      {"color": "red", "size": 8, "link": "G1"}
+    ],
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "purple", "size": 4},
+      {"color": "yellow", "size": 6, "link": "G2"},
+      {"color": "blue", "size": 4},
+      {"color": "purple", "size": 4},
+      {"color": "purple", "size": 4}
+    ],
+    [
+      {"color": "yellow", "size": 6},
+      {"color": "blue", "size": 6, "link": "G2"},
+      {"color": "red", "size": 6},
+      {"color": "green", "size": 12}
+    ]
+  ],
+  "meta": {
+    "category": "Blockers",
+    "title": "Connected pairs",
+    "slide": "classic",
+    "h": 1.05,
+    "difficulty": "Medium",
+    "random": 0.415,
+    "greedyT": 24
+  }
+}

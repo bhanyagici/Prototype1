@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "tray-deep",
+  "name": "Deep and narrow",
+  "slide": {
+    "points": [
+      {"x": 1.8, "z": -12.8},
+      {"x": 1.05, "z": -12.8},
+      {"x": 0.3, "z": -12.8},
+      {"x": -0.5, "z": -12.79},
+      {"x": -1.17, "z": -12.4},
+      {"x": -1.36, "z": -11.65},
+      {"x": -0.96, "z": -10.99},
+      {"x": -0.2, "z": -10.8},
+      {"x": 0.55, "z": -10.8},
+      {"x": 1.3, "z": -10.8},
+      {"x": 2.05, "z": -10.8},
+      {"x": 2.85, "z": -10.78},
+      {"x": 3.48, "z": -10.32},
+      {"x": 3.59, "z": -9.55},
+      {"x": 3.12, "z": -8.93},
+      {"x": 2.35, "z": -8.8},
+      {"x": 1.6, "z": -8.8},
+      {"x": 0.85, "z": -8.8},
+      {"x": 0.1, "z": -8.8},
+      {"x": -0.61, "z": -8.58},
+      {"x": -0.97, "z": -7.93},
+      {"x": -0.97, "z": -7.38},
+      {"x": -1.3, "z": -6.2},
+      {"x": -2, "z": -5.8},
+      {"x": -2.9, "z": -5.7}
+    ]
+  },
+  "trays": [
+    {"rows": 9, "columns": [["green", "green", "purple", "purple", "blue", "blue", "yellow", "orange", "orange"], ["green", "red", "purple", "purple", "blue", "yellow", "red", "orange", "orange"]], "at": 14.702, "side": 1},
+    {"rows": 9, "columns": [["green", "green", "red", "blue", "blue", "yellow", "red", "orange", "orange"], ["red", "red", "purple", "purple", "blue", "yellow", "red", "orange", "orange"]], "at": 11.14, "side": -1, "shape": [[3.95, -3.95]]},
+    {"rows": 9, "columns": [["green", "green", "purple", "purple", "blue", "yellow", "yellow", "orange", "orange"], ["green", "red", "red", "purple", "purple", "blue", "red", "orange", "orange"]], "at": 17.757, "side": 1, "tilt": 55}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 12},
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 8}
+    ],
+    [
+      {"color": "green", "size": 4},
+      {"color": "purple", "size": 4}
+    ],
+    [
+      {"color": "yellow", "size": 6},
+      {"color": "purple", "size": 6},
+      {"color": "green", "size": 4},
+      {"color": "red", "size": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Deep and narrow",
+    "group": "Tray shapes",
+    "slide": "winding",
+    "h": 1.05,
+    "difficulty": "Medium",
+    "random": 0.415,
+    "greedyT": 17.5
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "lanes-5",
+  "name": "5 lanes",
+  "slide": {
+    "points": [
+      {"x": 1.8, "z": -12.8},
+      {"x": 1.05, "z": -12.8},
+      {"x": 0.3, "z": -12.8},
+      {"x": -0.5, "z": -12.79},
+      {"x": -1.17, "z": -12.4},
+      {"x": -1.36, "z": -11.65},
+      {"x": -0.96, "z": -10.99},
+      {"x": -0.2, "z": -10.8},
+      {"x": 0.55, "z": -10.8},
+      {"x": 1.3, "z": -10.8},
+      {"x": 2.05, "z": -10.8},
+      {"x": 2.85, "z": -10.78},
+      {"x": 3.48, "z": -10.32},
+      {"x": 3.59, "z": -9.55},
+      {"x": 3.12, "z": -8.93},
+      {"x": 2.35, "z": -8.8},
+      {"x": 1.6, "z": -8.8},
+      {"x": 0.85, "z": -8.8},
+      {"x": 0.1, "z": -8.8},
+      {"x": -0.61, "z": -8.58},
+      {"x": -0.97, "z": -7.93},
+      {"x": -0.97, "z": -7.38},
+      {"x": -1.3, "z": -6.2},
+      {"x": -2, "z": -5.8},
+      {"x": -2.9, "z": -5.7}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["orange", "orange", "red", "blue", "blue", "yellow"], ["orange", "orange", "green", "blue", "blue", "yellow"], ["orange", "green", "red", "red", "red", "yellow"]], "at": 3.082, "side": 1},
+    {"rows": 6, "columns": [["purple", "purple", "green", "green", "blue", "blue"], ["purple", "green", "red", "red", "blue", "yellow"], ["green", "green", "green", "cyan", "blue", "blue"]], "at": 14.872, "side": 1},
+    {"rows": 6, "columns": [["purple", "purple", "purple", "cyan", "cyan", "cyan"], ["purple", "purple", "purple", "red", "red", "yellow"], ["orange", "orange", "orange", "blue", "cyan", "yellow"]], "at": 12.821, "side": -1, "shape": [[1.24, -5.05]]},
+    {"rows": 6, "columns": [["purple", "purple", "cyan", "cyan", "blue", "yellow"], ["purple", "green", "green", "green", "cyan", "yellow"], ["purple", "purple", "green", "blue", "cyan", "cyan"]], "at": 18.984, "side": 1, "shape": [[-4.09, -9.25]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 4},
+      {"color": "red", "size": 8}
+    ],
+    [
+      {"color": "blue", "size": 12},
+      {"color": "orange", "size": 4},
+      {"color": "cyan", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 4},
+      {"color": "orange", "size": 4},
+      {"color": "purple", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 4},
+      {"color": "green", "size": 4}
+    ],
+    [
+      {"color": "green", "size": 4},
+      {"color": "cyan", "size": 4},
+      {"color": "yellow", "size": 4}
+    ]
+  ],
+  "laneCount": 5,
+  "meta": {
+    "category": "Layouts",
+    "title": "5 lanes",
+    "group": "Lane counts",
+    "slide": "winding",
+    "h": 0.85,
+    "difficulty": "Medium",
+    "random": 0.355,
+    "greedyT": 19.5
+  },
+  "marbleScale": 1.05
+}

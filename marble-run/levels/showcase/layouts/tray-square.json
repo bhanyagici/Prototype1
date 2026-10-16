@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "tray-square",
+  "name": "Square to the slide",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["blue", "blue", "purple", "purple", "red", "red"], ["yellow", "yellow", "green", "green", "purple", "purple"], ["blue", "blue", "green", "green", "orange", "orange"]], "at": 8.342, "side": -1, "shape": [[3.49, -12.48]]},
+    {"rows": 6, "columns": [["yellow", "yellow", "green", "purple", "purple", "orange"], ["blue", "blue", "green", "green", "red", "orange"], ["yellow", "yellow", "yellow", "red", "red", "orange"]], "at": 6.14, "side": 1, "shape": [[-1.64, -6.25]]},
+    {"rows": 6, "columns": [["blue", "yellow", "yellow", "purple", "purple", "orange"], ["blue", "green", "purple", "purple", "red", "orange"], ["yellow", "green", "green", "purple", "red", "orange"]], "at": 11.267, "side": -1, "shape": [[3.82, -3.67]]},
+    {"rows": 6, "columns": [["yellow", "yellow", "green", "purple", "red", "orange"], ["blue", "blue", "green", "green", "orange", "orange"], ["yellow", "yellow", "green", "purple", "purple", "orange"]], "at": 3.552, "side": 1, "shape": [[-4.77, -13.8]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 4},
+      {"color": "green", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 8},
+      {"color": "yellow", "size": 6},
+      {"color": "green", "size": 4},
+      {"color": "yellow", "size": 8},
+      {"color": "blue", "size": 6},
+      {"color": "red", "size": 8}
+    ],
+    [
+      {"color": "orange", "size": 12},
+      {"color": "green", "size": 4},
+      {"color": "purple", "size": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Square to the slide",
+    "group": "Tray shapes",
+    "slide": "scurve",
+    "h": 1,
+    "difficulty": "Medium",
+    "random": 0.19,
+    "greedyT": 24.5
+  }
+}

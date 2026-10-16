@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "jump-first",
+  "name": "First jump",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ],
+    "gaps": [
+      {"at": 9.15, "len": 1, "ramp": "flat"}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["red", "red", "red", "yellow", "yellow"], ["green", "yellow", "yellow", "yellow", "yellow"], ["green", "yellow", "yellow", "yellow", "red"]], "at": 3.142, "side": 1},
+    {"rows": 5, "columns": [["blue", "blue", "blue", "yellow", "yellow"], ["blue", "blue", "blue", "blue", "red"], ["green", "green", "green", "green", "green"]], "at": 6.94, "side": 1, "shape": [[-0.81, -6.54]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "red", "red"], ["green", "green", "green", "green", "green"], ["blue", "blue", "red", "red", "red"]], "at": 11.067, "side": -1, "shape": [[4.22, -4.51]]},
+    {"rows": 5, "columns": [["blue", "red", "red", "yellow", "yellow"], ["red", "red", "red", "yellow", "yellow"], ["blue", "blue", "blue", "blue", "red"]], "at": 15.752, "side": 1, "shape": [[-2.66, -9.19]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "size": 6},
+      {"color": "red", "size": 8},
+      {"color": "yellow", "size": 6},
+      {"color": "yellow", "size": 6}
+    ],
+    [
+      {"color": "green", "size": 6},
+      {"color": "blue", "size": 6},
+      {"color": "yellow", "size": 6}
+    ],
+    [
+      {"color": "blue", "size": 8},
+      {"color": "red", "size": 8}
+    ]
+  ],
+  "meta": {
+    "category": "Jumps",
+    "title": "First jump",
+    "slide": "scurve",
+    "h": 0.15,
+    "difficulty": "Easy",
+    "random": 1,
+    "greedyT": 12.7
+  }
+}

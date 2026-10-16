@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "blk-count-crate",
+  "name": "Count crate",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 6,
+      "columns": [
+        ["yellow", "yellow", "yellow", "yellow", "green", "green"],
+        ["blue", "blue", "blue", "blue", "green", "green"],
+        ["red", "red", "red", "yellow", "yellow", "green"]
+      ],
+      "at": 1.712,
+      "side": -1
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["red", "red", "red", "yellow", "yellow", "green"],
+        ["red", "red", "red", "red", "green", "green"],
+        ["blue", "blue", "blue", "blue", "green", "green"]
+      ],
+      "at": 12.805,
+      "side": -1
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["red", "red", "red", "red", "green", "green"],
+        ["blue", "blue", "blue", "blue", "blue", "green"],
+        ["red", "red", "yellow", "yellow", "yellow", "green"]
+      ],
+      "at": 15.613,
+      "side": -1,
+      "shape": [[3.85, -3.37]]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["blue", "blue", "blue", "yellow", "green", "green"],
+        ["red", "red", "blue", "blue", "yellow", "yellow"],
+        ["red", "red", "blue", "blue", "yellow", "yellow"]
+      ],
+      "at": 19.884,
+      "side": 1,
+      "shape": [[-2.59, -9.66]],
+      "crates": [
+        {"col": 0, "row": 4, "w": 3, "h": 2, "count": 2}
+      ]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 4},
+      {"color": "green", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 8},
+      {"color": "blue", "size": 8},
+      {"color": "yellow", "size": 4}
+    ],
+    [
+      {"color": "red", "size": 8},
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Blockers",
+    "title": "Count crate",
+    "slide": "spiral",
+    "difficulty": "Easy",
+    "random": 0.95,
+    "greedyT": 18.9
+  }
+}

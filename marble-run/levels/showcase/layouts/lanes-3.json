@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "lanes-3",
+  "name": "3 lanes",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["blue", "blue", "red", "green", "green", "orange"], ["yellow", "yellow", "red", "green", "green", "orange"], ["blue", "blue", "red", "red", "purple", "purple"]], "at": 3.142, "side": 1},
+    {"rows": 6, "columns": [["blue", "blue", "red", "green", "purple", "orange"], ["blue", "blue", "red", "red", "orange", "orange"], ["blue", "blue", "red", "green", "orange", "orange"]], "at": 8.14, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["blue", "yellow", "yellow", "purple", "purple", "orange"], ["blue", "blue", "green", "green", "purple", "purple"], ["yellow", "yellow", "green", "green", "purple", "orange"]], "at": 11.067, "side": -1, "shape": [[4.06, -3.85]]},
+    {"rows": 6, "columns": [["blue", "blue", "green", "purple", "purple", "orange"], ["blue", "yellow", "yellow", "green", "orange", "orange"], ["yellow", "yellow", "red", "red", "orange", "orange"]], "at": 15.352, "side": 1, "shape": [[-1.62, -9.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 8},
+      {"color": "purple", "size": 6},
+      {"color": "red", "size": 6},
+      {"color": "yellow", "size": 4},
+      {"color": "green", "size": 4}
+    ],
+    [
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 6},
+      {"color": "purple", "size": 4}
+    ],
+    [
+      {"color": "orange", "size": 6},
+      {"color": "red", "size": 4},
+      {"color": "blue", "size": 12},
+      {"color": "green", "size": 4},
+      {"color": "green", "size": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "3 lanes",
+    "group": "Lane counts",
+    "slide": "scurve",
+    "h": 0.95,
+    "difficulty": "Medium",
+    "random": 0.365,
+    "greedyT": 26.2
+  }
+}

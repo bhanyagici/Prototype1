@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "tray-wide",
+  "name": "Wide and shallow",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 3, "columns": [["yellow", "blue", "red"], ["orange", "blue", "purple"], ["yellow", "green", "purple"], ["yellow", "blue", "red"], ["orange", "green", "purple"]], "at": 13.064, "side": -1},
+    {"rows": 3, "columns": [["yellow", "yellow", "red"], ["orange", "blue", "purple"], ["yellow", "green", "red"], ["yellow", "blue", "blue"], ["orange", "orange", "red"]], "at": 20.279, "side": 1, "shape": [[-3.68, -8.13]]},
+    {"rows": 3, "columns": [["yellow", "green", "red"], ["orange", "blue", "purple"], ["yellow", "green", "green"], ["orange", "blue", "purple"], ["green", "green", "purple"]], "at": 15.163, "side": -1, "shape": [[4.17, -5.48]]},
+    {"rows": 3, "columns": [["yellow", "blue", "purple"], ["orange", "blue", "red"], ["orange", "orange", "red"], ["orange", "green", "purple"], ["orange", "green", "purple"]], "at": 19.09, "side": -1, "shape": [[-1.59, -3.41]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "size": 4},
+      {"color": "yellow", "size": 6},
+      {"color": "green", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 4},
+      {"color": "red", "size": 8},
+      {"color": "blue", "size": 4},
+      {"color": "orange", "size": 12}
+    ],
+    [
+      {"color": "purple", "size": 6},
+      {"color": "yellow", "size": 4},
+      {"color": "blue", "size": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Wide and shallow",
+    "group": "Tray shapes",
+    "slide": "spiral",
+    "h": 1.1,
+    "difficulty": "Medium",
+    "random": 0.18,
+    "greedyT": 14.6
+  },
+  "marbleScale": 1.05
+}

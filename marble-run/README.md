@@ -33,8 +33,12 @@ level files and builds, retargeted.
   - the plan-method content generator (`funnel/content.js`);
   - the demo levels (`make-demos.js`);
   - the presets copy (`sync-presets.js`);
-  - the single-file editor (`editor-file.js`).
-- **`levels/`**: one JSON per level (the blocker demos now).
+  - the single-file editor (`editor-file.js`);
+  - the showcase levels (`make-showcase.js` from `showcase/specs.js`), their pictures (`shoot-showcase-thumbs.js`) and the
+    single file (`build-showcase.js`).
+- **`levels/`**: one JSON per level: the blocker demos, and `showcase/<category>/<id>.json` with `showcase-order.json`
+  and the card pictures (`showcase/thumbs/`).
+- **`dist/`**: the single-file builds (`marble-run-showcase.html` so far).
 - **`tests/`**: the headless suites (see *Verification*).
 - **`vendor/three.module.min.js`**: three.js r160 (MIT), for the offline single-file builds.
 
@@ -45,8 +49,8 @@ Built in phases, each committed and pushed:
 1. **Core**: the rules, the level format, the layout, the checker, the bots, every blocker, gaps and toy pieces, the
    demo levels and the headless tests.
 2. **The game page**: the look, the juice and the settings.
-3. **The editor** (this phase).
-4. The showcase.
+3. **The editor**.
+4. **The showcase** (this phase): its 38 levels, the menu, My Levels and the editor inside.
 5. The 40-level funnel.
 6. Every test suite, the screenshots and the dist builds.
 
@@ -222,6 +226,53 @@ paste / duplicate / delete / nudge on whatever is selected, band selection, keyb
   500 ms after each edit, *Watch* lets the greedy bot play, and its camera switch and zoom are the game's own settings.
 - **Exports** are frozen copies: the level JSON (with its id), a playable single-file HTML of the level or of the whole
   level order (three.js inside, no network), the order JSON. The game page never reads the editor's storage.
+
+## The showcase
+
+`dist/marble-run-showcase.html` is one file to try everything (double-click, no server, no network), like Match
+Express's. It opens on a start menu of level cards in categories:
+
+- **Basics**: the same idea at four difficulties, Easy to Very Hard.
+- **Blockers**: hidden box, connected pairs, connected triples, marble dispenser, hidden marbles, lock & key crate,
+  count crate, all combined.
+- **Layouts**: *Slides* (spiral, S-curve, hairpin, zig-zag, winding), *Tray shapes* (tilted, square to the slide,
+  steep, deep and narrow, wide and shallow) and *Lane counts* (2-5).
+- **Jumps**: a first gap, take-off ramps, two gaps, a long jump, a spiral and a gap.
+- **Toy pieces**: one level per piece (xylophone, bells, paddle wheel, zig-zag stairs, vortex, loop-the-loop) and a
+  parade of three.
+- **Funnel**: the 40 levels as numbered tiles, played in order (the won ones ticked, the next one to play
+  highlighted).
+- **My Levels**: levels saved from the editor inside the showcase (below).
+
+Each card has the level's picture, its name and tags: difficulty (the random bot's win rate), lanes, blockers, gaps,
+toy pieces. In play: home, previous / next inside the category, the timer, pause (`P`) with Resume, Restart,
+Settings and Back to menu, the three booster placeholders, and the stats panel (completion time, fails and the second
+of each fail per level, CSV export, reset). Settings (theme, supports, box motion, camera and zoom, speed 1x-3x in
+quarters, sound) open from the menu and in play and are remembered.
+
+The menu's pencil opens the level editor over the showcase with any level. Saving never changes that level: the
+showcase keeps a copy under the next free suffix of its id (`slide-hairpin_1`, `_2`, ...) in My Levels, where each
+card can be played, edited again, exported as JSON or deleted, and *Export all* saves them together.
+
+The levels are made by `tools/make-showcase.js` from `tools/showcase/specs.js` (slides as point lists or turtle
+programs, tray requests, gaps and toy pieces on clean stretches, content from the plan method tuned to a target
+label) into `levels/showcase/<category>/<id>.json`; `tools/shoot-showcase-thumbs.js` takes the card pictures and
+`tools/build-showcase.js` packs the single file.
+
+
+The labels are measured, not chosen (`meta.difficulty`, from 100 random-bot games; `meta.random` holds the rate):
+
+| Category | Levels (label, random-bot win rate) |
+|---|---|
+| Basics | Easy 100%, Medium 25%, Hard 9%, Very Hard 0% |
+| Blockers | hidden box Easy 59%, pairs Medium 42%, triples Medium 40%, dispenser Easy 54%, hidden marbles Easy 75%, lock & key Easy 66%, count crate Easy 95%, all combined Easy 86% |
+| Layouts | every slide, tray shape and lane count Medium (18-42%) |
+| Jumps | first jump Easy 100%, ramps Medium 35%, two gaps Medium 37%, long jump Easy 55%, spiral and gap Easy 52% |
+| Toy pieces | each piece Medium (32-44%), the parade Easy 61% |
+
+The blocker levels keep the demo levels' content (the point is to see the blocker, not to fight it), so most of them
+are Easy. Two levels the search aimed at Medium came out Easy, at the closest it found: the long jump and the spiral
+with a gap (55% and 52%), and the toy parade (61%).
 
 ## Blockers (all of Match Express's, with the same data and checker spirit)
 

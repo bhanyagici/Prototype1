@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "slide-s-curve",
+  "name": "S-curve",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["orange", "orange", "green", "purple", "purple", "blue"], ["orange", "orange", "green", "purple", "purple", "blue"], ["orange", "orange", "green", "yellow", "yellow", "yellow"]], "at": 3.142, "side": 1},
+    {"rows": 6, "columns": [["orange", "orange", "green", "green", "yellow", "yellow"], ["red", "red", "green", "purple", "yellow", "blue"], ["orange", "orange", "yellow", "purple", "yellow", "blue"]], "at": 8.14, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["red", "orange", "green", "purple", "purple", "blue"], ["orange", "orange", "green", "purple", "purple", "blue"], ["red", "red", "green", "yellow", "yellow", "yellow"]], "at": 11.067, "side": -1, "shape": [[4.06, -3.85]]},
+    {"rows": 6, "columns": [["red", "red", "green", "yellow", "yellow", "blue"], ["red", "orange", "yellow", "purple", "purple", "blue"], ["red", "red", "yellow", "yellow", "blue", "blue"]], "at": 15.352, "side": 1, "shape": [[-1.62, -9.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "purple", "size": 12},
+      {"color": "red", "size": 4},
+      {"color": "green", "size": 4},
+      {"color": "orange", "size": 8},
+      {"color": "yellow", "size": 8}
+    ],
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "orange", "size": 6},
+      {"color": "blue", "size": 6},
+      {"color": "blue", "size": 4}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "green", "size": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "S-curve",
+    "group": "Slides",
+    "slide": "scurve",
+    "h": 0.95,
+    "difficulty": "Medium",
+    "random": 0.33,
+    "greedyT": 28.9
+  }
+}

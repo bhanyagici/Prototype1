@@ -1,0 +1,52 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "basics-easy",
+  "name": "Easy",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "yellow"], ["blue", "blue", "blue", "blue", "blue"]], "at": 2.018, "side": -1},
+    {"rows": 5, "columns": [["yellow", "blue", "blue", "blue", "blue"], ["blue", "red", "red", "red", "red"], ["red", "red", "red", "red", "red"]], "at": 12.326, "side": -1},
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "blue", "blue"], ["red", "red", "red", "red", "red"], ["blue", "blue", "blue", "blue", "red"]], "at": 14.926, "side": -1, "shape": [[4.14, -3.66]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "yellow", "red", "red"], ["blue", "blue", "red", "red", "red"], ["yellow", "yellow", "yellow", "yellow", "yellow"]], "at": 19.562, "side": 1, "shape": [[-2.84, -9.22]]}
+  ],
+  "lanes": [
+    [
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 6},
+      {"color": "red", "size": 6}
+    ],
+    [
+      {"color": "yellow", "size": 8},
+      {"color": "yellow", "size": 6},
+      {"color": "blue", "size": 8},
+      {"color": "red", "size": 8}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "yellow", "size": 6}
+    ]
+  ],
+  "meta": {
+    "category": "Basics",
+    "title": "Easy",
+    "slide": "classic",
+    "h": 0.15,
+    "difficulty": "Easy",
+    "random": 1,
+    "greedyT": 13
+  }
+}

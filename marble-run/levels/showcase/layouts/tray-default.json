@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "tray-default",
+  "name": "Tilted (default)",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["purple", "purple", "red", "yellow", "yellow", "blue"], ["green", "orange", "red", "yellow", "yellow", "blue"], ["green", "green", "orange", "orange", "yellow", "blue"]], "at": 1.891, "side": -1},
+    {"rows": 6, "columns": [["purple", "purple", "red", "red", "yellow", "blue"], ["green", "orange", "orange", "yellow", "blue", "blue"], ["purple", "purple", "orange", "orange", "blue", "blue"]], "at": 1.631, "side": 1, "shape": [[-3.55, -9.32]]},
+    {"rows": 6, "columns": [["green", "green", "red", "yellow", "yellow", "blue"], ["purple", "purple", "orange", "red", "yellow", "yellow"], ["green", "green", "red", "red", "blue", "blue"]], "at": 12.68, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["purple", "purple", "red", "yellow", "yellow", "blue"], ["green", "orange", "red", "red", "yellow", "blue"], ["green", "orange", "red", "yellow", "yellow", "blue"]], "at": 15.243, "side": -1, "shape": [[4, -2.99]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "size": 6},
+      {"color": "purple", "size": 4},
+      {"color": "red", "size": 4},
+      {"color": "red", "size": 8},
+      {"color": "orange", "size": 4}
+    ],
+    [
+      {"color": "yellow", "size": 12},
+      {"color": "yellow", "size": 4},
+      {"color": "purple", "size": 6},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "green", "size": 4},
+      {"color": "blue", "size": 4},
+      {"color": "blue", "size": 4}
+    ]
+  ],
+  "meta": {
+    "category": "Layouts",
+    "title": "Tilted (default)",
+    "group": "Tray shapes",
+    "slide": "classic",
+    "h": 1,
+    "difficulty": "Medium",
+    "random": 0.21,
+    "greedyT": 35.5
+  }
+}
