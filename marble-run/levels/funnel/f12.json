@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f12",
+  "name": "Level 12",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 7, "columns": [["orange", "orange", "purple", "red", "red", "blue", "blue"], ["orange", "purple", "green", "green", "yellow", "yellow", "blue"], ["orange", "purple", "green", "red", "red", "blue", "blue"]], "at": 2.018, "side": -1},
+    {"rows": 7, "columns": [["orange", "orange", "green", "green", "yellow", "blue", "blue"], ["orange", "orange", "purple", "purple", "red", "red", "blue"], ["orange", "orange", "green", "green", "yellow", "yellow", "blue"]], "at": 12.326, "side": -1},
+    {"rows": 7, "columns": [["orange", "orange", "green", "green", "red", "blue", "blue"], ["purple", "purple", "green", "red", "red", "blue", "blue"], ["orange", "purple", "green", "green", "yellow", "blue", "blue"]], "at": 15.126, "side": -1, "shape": [[4.21, -3.22]]},
+    {"rows": 7, "columns": [["orange", "orange", "green", "green", "yellow", "blue", "blue"], ["orange", "purple", "purple", "red", "red", "yellow", "yellow"], ["purple", "purple", "green", "green", "red", "yellow", "blue"]], "at": 19.362, "side": 1, "shape": [[-2.9, -9.56]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 8},
+      {"color": "yellow", "size": 4}
+    ],
+    [
+      {"color": "blue", "size": 12},
+      {"color": "yellow", "size": 6},
+      {"color": "green", "size": 12},
+      {"color": "red", "size": 12, "hidden": true}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "green", "size": 4, "hidden": true},
+      {"color": "orange", "size": 8},
+      {"color": "purple", "size": 12}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Challenge",
+    "diff": 6,
+    "slide": "the spiral early",
+    "trays": "four deeper trays"
+  }
+}

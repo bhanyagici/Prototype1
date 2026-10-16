@@ -96,8 +96,15 @@
   #hint{left:50%;top:150px;transform:translateX(-50%);padding:14px 26px;border-radius:24px;background:rgba(74,90,168,.92);color:#fff;font-size:30px;font-weight:900;
     display:none;white-space:nowrap;z-index:18;pointer-events:none}
   #introPanel .card{width:680px} #introArt{display:flex;gap:18px;justify-content:center;align-items:center;margin:10px 0 26px;font-size:60px}
-  #introArt .m{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900}
-  #introArt .b{width:110px;height:76px;border-radius:18px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900}
+  #introArt svg{width:560px;height:294px}
+  #introArt .ia-flip{transform-box:fill-box;transform-origin:center;animation:iaFlip 3s ease-in-out infinite}
+  @keyframes iaFlip{0%,15%,35%,65%,85%,100%{transform:scaleX(1)}25%,75%{transform:scaleX(0)}}
+  #introArt .ia-q{animation:iaQ 3s linear infinite} @keyframes iaQ{0%,25%{opacity:1}25.5%,75%{opacity:0}75.5%,100%{opacity:1}}
+  #introArt .ia-pair{animation:iaBob 1.6s ease-in-out infinite} @keyframes iaBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  #introArt .ia-reveal{animation:iaReveal 2.6s ease-in-out infinite} @keyframes iaReveal{0%,35%,100%{opacity:1}50%,85%{opacity:0}}
+  #introArt .ia-drop{animation:iaDrop 1.4s ease-in infinite} @keyframes iaDrop{0%{transform:translateY(-44px);opacity:0}30%{opacity:1}70%,100%{transform:translateY(0);opacity:1}}
+  #introArt .ia-key{animation:iaKey 2.6s ease-in-out infinite} @keyframes iaKey{0%,15%{transform:translateX(0)}55%,100%{transform:translateX(52px)}}
+  #introArt .ia-crate{animation:iaCrate 2.6s ease-in-out infinite} @keyframes iaCrate{0%,55%{opacity:1}75%,95%{opacity:.12}100%{opacity:1}}
   /* ---- stats ---- */
   #statsPanel{z-index:30} #statsPanel .card{width:780px;max-height:80%;overflow:auto}
   #statsBody table{width:100%;border-collapse:collapse;font-size:26px} #statsBody td,#statsBody th{padding:6px 8px;border-bottom:2px solid rgba(255,255,255,.3)}
@@ -684,6 +691,7 @@ function loadLevel(lv, source, opts){
   buildSorter(world); slotTray = buildSlotTray(world); chest = buildLanes(L, world);
   $('levelPill').textContent = N.name || 'Marble Run';
   resetGame();
+  levelIntro();
   logLevel();
   if (parent !== window) parent.postMessage({type:'game-status', source:levelSource, name:N.name, marbles:game.total, boxes:game.boxes.length, serial:levelSerial}, '*');
   return true;
@@ -702,6 +710,7 @@ function resetGame(){
   for (const t of toys) t.last.clear();
   marbleIM.count = game.marbles.length; marbleIM.instanceMatrix.needsUpdate = true;
   updateHud(true);
+  startTutorial(N.meta && N.meta.tutorial);       // (again on a retry)
 }
 /* crates (lock: a padlock; count: how many more boxes) and gumball dispensers, on their trays */
 function cellsCenter(R, col, row, w, h){ const q0 = R.slots[col][row], q1 = R.slots[col + w - 1][Math.min(R.rows - 1, row + h - 1)];
@@ -1008,11 +1017,108 @@ function laneAt(px, py){
   let best = -1, bd = 1e9; L.laneX.forEach((x, i) => { const d = Math.abs(hit.x - x); if (d < bd){ bd = d; best = i; } });
   const half = L.laneX.length > 1 ? Math.abs(L.laneX[1] - L.laneX[0])/2 : 1.2; return bd <= Math.max(0.7, half) ? best : -1;
 }
-function tap(l){ if (!game || game.result || paused || introOpen) return null; audio(); const r = C.tapLane(game, l); handleEvents(); return r; }
+function tap(l){ if (!game || game.result || paused || introOpen || (tapFilter && !tapFilter(l))) return null; audio(); const r = C.tapLane(game, l); handleEvents(); return r; }
 canvas.addEventListener('pointerdown', e => {
   const r = canvas.getBoundingClientRect(), px = (e.clientX - r.left)/r.width*DW, py = (e.clientY - r.top)/r.height*DH;
   const l = laneAt(px, py); if (l >= 0) tap(l);
 });
+
+/* ------------------------------ intro popups, hints, tutorials ------------------------------
+   A level's meta can bring a popup (the first time a new blocker appears; once per player, remembered), a short hint
+   (a banner for a few seconds) or a tutorial (a pointing hand and a tip lead the first sends; while a step waits for
+   one box, taps on the other lanes do nothing). */
+const box = (c, n) => `<g><rect x="-34" y="-46" width="68" height="92" rx="12" fill="${c}" stroke="#fff" stroke-width="5"/>${Array.from({length:n}, (_, i) =>
+  `<circle cx="${(i % 2 ? 1 : -1)*15}" cy="${-30 + Math.floor(i/2)*20}" r="7" fill="rgba(0,0,0,.25)"/>`).join('')}</g>`;
+const marble = (c, x, y, r = 16) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#fff" stroke-width="3"/><circle cx="${x - r*0.35}" cy="${y - r*0.35}" r="${r*0.3}" fill="rgba(255,255,255,.6)"/>`;
+const INTRO = {
+  hidden: {title:'Hidden Box', text:'A box with a question mark shows its colour when it reaches the front of its lane.', art:
+    `<svg viewBox="0 0 420 220"><g transform="translate(130 112)">${box('#2a6bff', 6)}</g>
+     <g transform="translate(290 112)"><g class="ia-flip">${box('#ffc21a', 6)}<g class="ia-q">${box('#9aa3b3', 6)}<text y="16" text-anchor="middle" font-size="54" font-weight="900" fill="#fff">?</text></g></g></g></svg>`},
+  connected: {title:'Connected Boxes', text:'Linked boxes leave together, so they need a free slot each.', art:
+    `<svg viewBox="0 0 420 220"><g class="ia-pair"><g transform="translate(150 112)">${box('#ec2b2b', 4)}</g><g transform="translate(270 112)">${box('#33c240', 4)}</g>
+     <path d="M184 112h52" stroke="#5a3b1a" stroke-width="14" stroke-linecap="round"/><path d="M184 112h52" stroke="#ffcf3a" stroke-width="6" stroke-linecap="round" stroke-dasharray="9 7"/></g></svg>`},
+  hiddenMarbles: {title:'Hidden Marbles', text:'Grey marbles show their colour when they roll into the front row.', art:
+    `<svg viewBox="0 0 420 220"><rect x="110" y="40" width="200" height="140" rx="16" fill="#c99a5a" stroke="#fff" stroke-width="5"/>
+     ${marble('#ffc21a', 160, 150)}${marble('#2a6bff', 210, 150)}${marble('#ffc21a', 260, 150)}${marble('#9aa3b3', 160, 100)}${marble('#9aa3b3', 260, 100)}
+     ${marble('#ffc21a', 210, 100)}<g class="ia-reveal">${marble('#9aa3b3', 210, 100)}<text x="210" y="109" text-anchor="middle" font-size="24" font-weight="900" fill="#fff">?</text></g></svg>`},
+  dispenser: {title:'Marble Dispenser', text:'A dispenser drops its marbles, one by one, into the empty cell in front of it.', art:
+    `<svg viewBox="0 0 420 220"><circle cx="210" cy="70" r="52" fill="rgba(220,240,255,.85)" stroke="#fff" stroke-width="5"/>${marble('#8e3ff0', 192, 62, 13)}${marble('#8e3ff0', 226, 78, 13)}${marble('#8e3ff0', 214, 50, 13)}
+     <rect x="194" y="118" width="32" height="20" rx="6" fill="#8e3ff0" stroke="#fff" stroke-width="4"/><g class="ia-drop">${marble('#8e3ff0', 210, 170)}</g></svg>`},
+  lock: {title:'Lock & Key', text:'A locked crate opens when the box carrying its key is complete.', art:
+    `<svg viewBox="0 0 420 220"><g transform="translate(110 112)">${box('#ff7a1c', 6)}<circle cx="0" cy="44" r="16" fill="#ffd34d" stroke="#8a5a00" stroke-width="3"/></g>
+     <g class="ia-key"><circle cx="190" cy="112" r="11" fill="none" stroke="#ffcf3a" stroke-width="7"/><path d="M201 112h26M219 112v9M226 112v7" stroke="#ffcf3a" stroke-width="7" stroke-linecap="round"/></g>
+     <g class="ia-crate"><rect x="250" y="62" width="120" height="100" rx="12" fill="#b0763e" stroke="#fff" stroke-width="5"/><path d="M250 95h120M250 128h120" stroke="#7d4f22" stroke-width="5"/>
+     <rect x="292" y="104" width="36" height="30" rx="6" fill="#ffcf3a" stroke="#7d4f22" stroke-width="3"/></g></svg>`},
+};
+const HINTS = {triple:'Boxes can be linked in <b>threes</b> too: all three leave together.'};
+const SEEN_KEY = 'intro-seen';
+let hintTimer = 0, introKind = null;
+function levelIntro(){
+  const m = (N && N.meta) || {};
+  clearTimeout(hintTimer); $('hint').style.display = 'none';
+  if (introOpen){ introOpen = false; $('introPanel').classList.remove('show'); }     // another level: an unanswered popup goes (and stays unseen)
+  if (m.popup && INTRO[m.popup] && !store.get(SEEN_KEY, []).includes(m.popup)) showIntro(m.popup);
+  if (m.hint && HINTS[m.hint]){ $('hint').innerHTML = HINTS[m.hint]; hintTimer = setTimeout(() => { $('hint').style.display = 'block';
+    hintTimer = setTimeout(() => { $('hint').style.display = 'none'; }, 5500); }, 700); }
+}
+function showIntro(kind){
+  const I = INTRO[kind]; introKind = kind; introOpen = true;
+  $('introTitle').textContent = I.title; $('introText').textContent = I.text; $('introArt').innerHTML = I.art;
+  $('introPanel').dataset.kind = kind; $('introPanel').classList.add('show');
+}
+function closeIntro(){
+  if (!introOpen) return;
+  const seen = store.get(SEEN_KEY, []); if (!seen.includes(introKind)) seen.push(introKind); store.set(SEEN_KEY, seen);
+  introOpen = false; $('introPanel').classList.remove('show');
+}
+$('btnIntroOk').addEventListener('click', () => { audio(); closeIntro(); });
+let TUT = null, tapFilter = null;
+const TUTORIALS = {'first-sends':tutFirstSends, 'slot-wait':tutSlotWait};
+function startTutorial(kind){ tapFilter = null; showTip(null); TUT = kind && TUTORIALS[kind] ? {kind, step:0, t0:0, box:-1, hand:-1} : null; if (!TUT) handAt(-1); }
+function endTutorial(){ TUT = null; tapFilter = null; showTip(null); handAt(-1); }
+function tutStep(T, n, text, hand, allow){ T.step = n; T.t0 = game.t; T.hand = hand; tapFilter = allow; showTip(text); }
+function showTip(text){ const el = $('tip'); if (!text){ el.style.display = 'none'; el.dataset.text = ''; return; }
+  if (el.dataset.text === text) return; el.dataset.text = text; el.textContent = text; el.style.display = 'block'; }
+function handAt(id){ const el = $('hand'), b = id >= 0 && game ? game.boxes[id] : null; if (!b || b.state !== 'lane'){ el.style.display = 'none'; return; }
+  const p = V.boxes[id].g.position, [x, y] = screenOf(p.x, p.y + 0.15, p.z); el.style.left = (x - 30).toFixed(1) + 'px'; el.style.top = (y - 6).toFixed(1) + 'px'; el.style.display = 'block'; }
+function tutorialTick(){
+  if (!TUT) return;
+  if (game.result){ endTutorial(); return; }
+  TUTORIALS[TUT.kind](TUT);
+  if (TUT) handAt(TUT.hand);
+}
+const laneFront = l => game.lanes[l] && game.lanes[l].length ? game.boxes[game.lanes[l][0]] : null;
+function tutorialBox(match){                        // the level names the lane (meta.tutorialLane), else the best match
+  const l = N.meta && N.meta.tutorialLane;
+  if (l != null && laneFront(l)) return laneFront(l);
+  const fc = C.frontColors(game); let best = null;
+  for (let k = 0; k < game.lanes.length; k++){ const b = laneFront(k); if (b && (match ? fc[b.color] > 0 && (!best || fc[b.color] > fc[best.color]) : !best)) best = b; }
+  return best;
+}
+const onlyLane = l => k => k === l;
+function tutFirstSends(T){
+  const b = T.box >= 0 ? game.boxes[T.box] : null;
+  switch (T.step){
+    case 0: { const x = tutorialBox(true); if (!x){ endTutorial(); break; } T.box = x.id; tutStep(T, 1, `Tap the ${x.color} box: its marbles are at the front!`, x.id, onlyLane(x.lane)); break; }
+    case 1: if (b.state !== 'lane') tutStep(T, 2, 'Watch the marbles roll into it!', -1, () => false); break;
+    case 2: if (b.state === 'gone') tutStep(T, 3, 'A full box floats away!', -1, () => false); break;
+    case 3: if (game.t - T.t0 > 2.0){ const fc = C.frontColors(game); let x = null;
+        for (let k = 0; k < game.lanes.length; k++){ const f = laneFront(k); if (f && fc[f.color] > 0) x = f; }
+        if (!x){ endTutorial(); break; } T.box = x.id; tutStep(T, 4, `Now the ${x.color} ones: tap the ${x.color} box!`, x.id, onlyLane(x.lane)); } break;
+    case 4: if (b.state !== 'lane') tutStep(T, 5, 'Fill every box to win!', -1, null); break;
+    case 5: if (game.t - T.t0 > 3) endTutorial(); break;
+  }
+}
+function tutSlotWait(T){
+  const b = T.box >= 0 ? game.boxes[T.box] : null, fc = () => C.frontColors(game);
+  switch (T.step){
+    case 0: { const x = tutorialBox(false); if (!x){ endTutorial(); break; } T.box = x.id; tutStep(T, 1, `Send the ${x.color} box!`, x.id, onlyLane(x.lane)); break; }
+    case 1: if (b.state !== 'lane') tutStep(T, 2, `It takes every ${b.color} marble at the front. Keep sending!`, -1, null); break;
+    case 2: if (b.state === 'gone') endTutorial(); else if (b.state === 'slot' && game.t - T.t0 > 1.2 && !fc()[b.color]) tutStep(T, 3, 'Not full? It waits in its slot until more of its marbles come.', -1, null); break;
+    case 3: if (b.state === 'gone') tutStep(T, 4, 'Its last marbles came from the back of the other tray!', -1, null); break;
+    case 4: if (game.t - T.t0 > 3) endTutorial(); break;
+  }
+}
 
 /* --------------------------------- loop ---------------------------------
    The core steps on its fixed SIM_DT (exactly as every headless run); the speed setting only feeds it faster.  Between
@@ -1022,11 +1128,11 @@ function tick(){
   C.step(game, C.SIM_DT); handleEvents();
 }
 function pump(dt){
-  const gdt = paused ? 0 : dt*timeScale;
+  const gdt = paused || introOpen ? 0 : dt*timeScale;
   if (game && !(game.result === 'fail')){ acc += gdt; let n = 0; while (acc >= C.SIM_DT && n < 40){ tick(); acc -= C.SIM_DT; n++; } if (n === 40) acc = 0; }
   else if (game) acc = Math.min(acc + gdt, 3);
   const rt = game ? game.t + (game.result === 'fail' ? acc : acc) : 0;
-  if (game){ updateScene(rt, gdt); updateHud(); updateTimer(); endPanels(rt); if (params.has('debug')) debugPanel(); }
+  if (game){ updateScene(rt, gdt); tutorialTick(); updateHud(); updateTimer(); endPanels(rt); if (params.has('debug')) debugPanel(); }
 }
 let last = performance.now();
 function frame(now){
@@ -1103,6 +1209,7 @@ function buildMenu(){
 }
 function openMenu(){
   if (paused) closePause(); for (const id of ['winPanel', 'failPanel', 'donePanel', 'statsPanel', 'setPanel', 'introPanel']) $(id).classList.remove('show');
+  introOpen = false; endTutorial(); clearTimeout(hintTimer); $('hint').style.display = 'none';
   buildMenu(); $('menuPanel').classList.add('show'); menuOpen = true;
   const cur = $('menuList').querySelector('.mcard.last'); if (cur) cur.scrollIntoView({block:'center'});
 }
@@ -1228,6 +1335,7 @@ window.__mr = {
   get embed(){ return EMBED; }, get botOn(){ return botOn; }, setBot, get pack(){ return pack; }, get packIdx(){ return packIdx; }, goPack,
   get showcase(){ return SC; }, openMenu, closeMenu, get menuOpen(){ return menuOpen; }, catRange, openEditor, saveMine, myLevels, syncMyLevels, packStep,
   stats(){ return store.get(statsKey(), {}); },
+  showIntro, closeIntro, get introOpen(){ return introOpen; }, get tutorial(){ return TUT; }, tapAllowed(l){ return !tapFilter || tapFilter(l); },
   advance(sec){ const n = Math.round(sec/C.SIM_DT); for (let i = 0; i < n && !(game.result === 'fail' && acc > 3); i++) pump(C.SIM_DT/timeScale); },
   render(){ renderer.render(scene, camera); }, renderer, scene,
   marbleWorld(id){ const p = marblePos(game.marbles[id], V.marbles[id], game.t + acc, new THREE.Vector3()); return p ? [p.x, p.y, p.z] : null; },

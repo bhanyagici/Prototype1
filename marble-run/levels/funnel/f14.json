@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f14",
+  "name": "Level 14",
+  "slide": {
+    "points": [
+      {"x": -0.3160573395434767, "z": -12.063754368573427},
+      {"x": -0.2, "z": -11.32},
+      {"x": 0.37, "z": -10.86},
+      {"x": 1.11, "z": -10.78},
+      {"x": 1.68, "z": -10.32},
+      {"x": 1.8, "z": -9.57},
+      {"x": 1.46, "z": -8.92},
+      {"x": 0.77, "z": -8.69},
+      {"x": -0.03, "z": -8.69},
+      {"x": -0.82, "z": -8.69},
+      {"x": -1.54, "z": -8.52},
+      {"x": -1.94, "z": -7.9},
+      {"x": -1.81, "z": -7.16},
+      {"x": -1.22, "z": -6.73},
+      {"x": -0.47, "z": -6.71},
+      {"x": 0.29, "z": -6.71},
+      {"x": 1.14, "z": -6.71, "spiral": {"r": 0.8984311986947433, "side": -1}},
+      {"x": 0.31, "z": -5.88},
+      {"x": -1.795, "z": -5.4799999999999995}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["blue", "orange", "red", "red", "yellow", "purple"], ["orange", "orange", "red", "red", "green", "green"], ["blue", "blue", "red", "red", "green", "purple"]], "at": 2.857, "side": -1},
+    {"rows": 6, "columns": [["blue", "blue", "red", "yellow", "green", "green"], ["blue", "orange", "orange", "yellow", "yellow", "purple"], ["blue", "orange", "red", "red", "green", "purple"]], "at": 7.592, "side": 1, "tilt": 55},
+    {"rows": 6, "columns": [["blue", "blue", "orange", "orange", "yellow", "yellow"], ["blue", "orange", "orange", "yellow", "green", "green"], ["blue", "orange", "orange", "yellow", "yellow", "purple"]], "at": 20.597, "side": -1, "shape": [[3.24, -3.45]]},
+    {"rows": 6, "columns": [["blue", "blue", "yellow", "yellow", "green", "purple"], ["orange", "orange", "red", "yellow", "green", "purple"], ["blue", "red", "red", "yellow", "yellow", "purple"]], "at": 23.512, "side": 1, "shape": [[-3.96, -8.65]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4, "link": "G4"},
+      {"color": "green", "size": 4, "link": "G4"},
+      {"color": "blue", "size": 4, "link": "G1"},
+      {"color": "blue", "size": 4, "link": "G1"},
+      {"color": "orange", "size": 4},
+      {"color": "yellow", "size": 4, "link": "G3"},
+      {"color": "red", "size": 12, "link": "G3"}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "orange", "size": 4, "link": "G2"},
+      {"color": "yellow", "size": 6, "link": "G5"}
+    ],
+    [
+      {"color": "purple", "size": 8},
+      {"color": "orange", "size": 6, "link": "G2"},
+      {"color": "green", "size": 6, "link": "G5"}
+    ]
+  ],
+  "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four trays"
+  }
+}

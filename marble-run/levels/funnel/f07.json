@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f07",
+  "name": "Level 7",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["green", "green", "red", "red", "red", "blue"], ["green", "green", "green", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "blue", "blue"]], "at": 1.872, "side": -1},
+    {"rows": 6, "columns": [["green", "green", "green", "green", "green", "green"], ["green", "red", "red", "red", "red", "red"], ["green", "green", "green", "green", "blue", "blue"]], "at": 12.708, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["red", "red", "red", "red", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "blue", null], ["yellow", "yellow", "yellow", "yellow", "blue", null]], "at": 15.089, "side": -1, "shape": [[3.95, -2.98]]}
+  ],
+  "lanes": [
+    [
+      {"color": "green", "size": 4},
+      {"color": "yellow", "size": 4, "hidden": true},
+      {"color": "yellow", "size": 4}
+    ],
+    [
+      {"color": "green", "size": 4},
+      {"color": "green", "size": 8, "hidden": true},
+      {"color": "red", "size": 8, "hidden": true}
+    ],
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "red", "size": 4, "hidden": true},
+      {"color": "blue", "size": 12, "hidden": true}
+    ]
+  ],
+  "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "the spiral early",
+    "trays": "three trays",
+    "popup": "hidden"
+  }
+}

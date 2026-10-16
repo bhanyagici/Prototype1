@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f24",
+  "name": "Level 24",
+  "slide": {
+    "points": [
+      {"x": -0.3434848547913134, "z": -12.09039245720487},
+      {"x": -0.25, "z": -11.32},
+      {"x": 0.31, "z": -10.84},
+      {"x": 1.08, "z": -10.8},
+      {"x": 1.73, "z": -10.45},
+      {"x": 1.94, "z": -9.74},
+      {"x": 1.7, "z": -9.05},
+      {"x": 1.03, "z": -8.74},
+      {"x": 0.28, "z": -8.74},
+      {"x": -0.48, "z": -8.74},
+      {"x": -0.83, "z": -8.74, "spiral": {"r": 0.8640852152835579, "side": 1}},
+      {"x": 0.43, "z": -7.85},
+      {"x": 1.17, "z": -7.7},
+      {"x": 1.69, "z": -7.19},
+      {"x": 1.71, "z": -6.43},
+      {"x": 1.29, "z": -5.82},
+      {"x": -1.305, "z": -5.42}
+    ]
+  },
+  "trays": [
+    {"rows": 7, "columns": [["purple", "purple", "purple", "blue", "blue", "yellow", "orange"], ["purple", "purple", "purple", "blue", "blue", "blue", "blue"], ["purple", "blue", "blue", "blue", "blue", "blue", "blue"]], "at": 17.137, "side": -1},
+    {"rows": 7, "columns": [["green", "green", "green", "blue", "blue", "blue", "orange"], ["orange", "orange", "orange", "orange", "blue", "orange", "orange"], ["green", "green", "green", "green", "green", "orange", "orange"]], "at": 2.989, "side": -1},
+    {"rows": 7, "columns": [["purple", "purple", "purple", "purple", "purple", "yellow", "yellow"], ["red", "red", "red", "red", "red", "orange", "orange"], ["green", "green", "green", "green", "yellow", "yellow", "yellow"]], "at": 18.573, "side": -1, "shape": [[4.41, -3.76]]},
+    {"rows": 7, "columns": [["purple", "purple", "purple", "purple", "yellow", "yellow", "yellow"], ["red", "red", "red", "red", "red", "red", "red"], ["orange", "orange", "orange", "orange", "yellow", "yellow", "yellow"]], "at": 21.847, "side": 1, "shape": [[-2.96, -8.75]]}
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "size": 8},
+      {"color": "orange", "size": 8, "link": "G1"},
+      {"color": "orange", "size": 8}
+    ],
+    [
+      {"color": "yellow", "size": 12},
+      {"color": "purple", "size": 8, "link": "G1"},
+      {"color": "blue", "size": 8, "link": "G2"}
+    ],
+    [
+      {"color": "red", "size": 12},
+      {"color": "green", "size": 12},
+      {"color": "blue", "size": 8, "link": "G2"}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "slide": "a meander with a spiral",
+    "trays": "four trays, big boxes"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f13",
+  "name": "Level 13",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["purple", "purple", "red", "red", "green"], ["purple", "purple", "purple", "green", "green"], ["blue", "blue", "yellow", "yellow", "green"]], "at": 8.742, "side": -1},
+    {"rows": 5, "columns": [["blue", "blue", "yellow", "yellow", "green"], ["blue", "blue", "red", "red", "green"], ["blue", "blue", "blue", "green", "green"]], "at": 3.54, "side": 1},
+    {"rows": 5, "columns": [["blue", "blue", "red", "red", "red"], ["yellow", "yellow", "purple", "purple", "purple"], ["blue", "purple", "yellow", "yellow", "green"]], "at": 11.067, "side": -1, "shape": [[4.22, -4.51]]},
+    {"rows": 5, "columns": [["yellow", "yellow", "red", "red", "red"], ["purple", "purple", "purple", "green", "green"], ["purple", "purple", "red", "red", "green"]], "at": 15.352, "side": 1, "shape": [[-1.67, -9.12]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4, "link": "G3"},
+      {"color": "blue", "size": 6, "link": "G2"},
+      {"color": "purple", "size": 6, "link": "G4"},
+      {"color": "yellow", "size": 6}
+    ],
+    [
+      {"color": "red", "size": 4, "link": "G1"},
+      {"color": "purple", "size": 4, "link": "G3"},
+      {"color": "blue", "size": 6, "link": "G2"},
+      {"color": "purple", "size": 4, "link": "G4"}
+    ],
+    [
+      {"color": "red", "size": 8, "link": "G1"},
+      {"color": "green", "size": 12}
+    ]
+  ],
+  "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "S-curve",
+    "trays": "four trays",
+    "popup": "connected"
+  }
+}

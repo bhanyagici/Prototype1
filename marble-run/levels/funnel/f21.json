@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f21",
+  "name": "Level 21",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["orange", "orange", "yellow", "yellow", "red", "red"], ["green", "green", "blue", "purple", "purple", "red"], ["green", "green", "blue", "purple", "purple", "purple"]], "at": 3.142, "side": 1},
+    {"rows": 6, "columns": [["orange", "green", "green", "yellow", "yellow", "yellow"], ["green", "green", "blue", "blue", "red", "red"], ["orange", "orange", "orange", "purple", "purple", "red"]], "at": 8.14, "side": -1, "tilt": 55},
+    {"rows": 6, "columns": [["orange", "orange", "yellow", "yellow", "purple", "purple"], ["green", "green", "blue", "blue", "blue", "red"], ["orange", "orange", "orange", "purple", "purple", "purple"]], "at": 11.067, "side": -1, "shape": [[4.06, -3.85]]},
+    {"rows": 6, "columns": [["green", "green", "blue", "blue", "blue", "red"], ["green", "green", "yellow", "yellow", "yellow", "red"], ["orange", "orange", "orange", "yellow", "yellow", "red"]], "at": 15.352, "side": 1, "shape": [[-1.62, -9.53]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 8, "link": "G2"},
+      {"color": "green", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 12},
+      {"color": "orange", "size": 6, "link": "G2", "hidden": true},
+      {"color": "green", "size": 4, "link": "G3", "hidden": true},
+      {"color": "blue", "size": 4, "link": "G3"},
+      {"color": "yellow", "size": 8},
+      {"color": "red", "size": 6}
+    ],
+    [
+      {"color": "red", "size": 4},
+      {"color": "green", "size": 4, "hidden": true},
+      {"color": "blue", "size": 6, "link": "G1"},
+      {"color": "yellow", "size": 4, "link": "G1"}
+    ]
+  ],
+  "meta": {
+    "role": "Teach (combo, no popup)",
+    "diff": 5,
+    "slide": "S-curve",
+    "trays": "four trays"
+  }
+}

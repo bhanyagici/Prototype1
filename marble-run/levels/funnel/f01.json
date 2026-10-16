@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f01",
+  "name": "Level 1",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 4, "columns": [["red", "red", "blue", "blue"], ["red", "red", "blue", "blue"], ["red", "red", "blue", "blue"], ["red", "red", "blue", "blue"]], "at": 8.833, "side": -1}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 8}
+    ]
+  ],
+  "laneCount": 2,
+  "meta": {
+    "role": "Tutorial",
+    "diff": 1,
+    "slide": "a short S-curve",
+    "trays": "one tray",
+    "tutorial": "first-sends",
+    "tutorialLane": 1
+  },
+  "marbleScale": 1.15
+}

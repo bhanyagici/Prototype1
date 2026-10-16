@@ -121,7 +121,7 @@ const FPATH = path.join(ROOT, 'levels', 'funnel', 'funnel-order.json'), FUNNEL =
   await p.evaluate(() => document.getElementById('winPanel').classList.remove('show'));
   await p.click('#btnStats');
   const st = await p.evaluate(() => ({show:document.getElementById('statsPanel').classList.contains('show'), rows:document.querySelectorAll('#statsBody tr').length, head:document.querySelector('#statsBody tr').textContent,
-    easy:[...document.querySelectorAll('#statsBody tr')].find(r => /\bEasy\b/.test(r.textContent)).textContent}));
+    easy:([...document.querySelectorAll('#statsBody tr')].find(r => r.cells[1] && r.cells[1].textContent === 'Easy') || {}).textContent}));
   chk(st.show && st.rows === total + 1 && /Time/.test(st.head) && /Fails/.test(st.head) && /Fail at/.test(st.head) && /\d+(\.\d)? s/.test(st.easy),
     'the stats panel: completion time, fails and the second of each fail, per level', JSON.stringify(st).slice(0, 160));
   const [dl] = await Promise.all([p.waitForEvent('download', {timeout:10000}).catch(() => null), p.click('#btnCsv')]);

@@ -1,0 +1,102 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f33",
+  "name": "Level 33",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 7,
+      "columns": [
+        ["purple", "purple", "orange", "yellow", "red", "red", "red"],
+        ["blue", "blue", "yellow", "green", "green", "green", "orange"],
+        ["purple", "cyan", "orange", "orange", "red", "red", "orange"]
+      ],
+      "at": 2.018,
+      "side": -1
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["blue", "cyan", "cyan", "green", "green", "green", "orange"],
+        ["blue", "cyan", "cyan", "green", "green", "red", "orange"],
+        ["purple", "purple", "cyan", "cyan", "cyan", "red", "red"]
+      ],
+      "at": 12.326,
+      "side": -1,
+      "crates": [
+        {"col": 1, "row": 5, "w": 2, "h": 2, "lock": "K1"}
+      ]
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["blue", "blue", "blue", "green", "green", "orange", "orange"],
+        ["blue", "blue", "yellow", "yellow", "red", "red", "red"],
+        ["purple", "cyan", "cyan", "yellow", "yellow", "red", "red"]
+      ],
+      "at": 15.126,
+      "side": -1,
+      "shape": [[4.21, -3.22]],
+      "crates": [
+        {"col": 0, "row": 5, "w": 2, "h": 2, "lock": "K2"}
+      ]
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["blue", "blue", "blue", "yellow", "yellow", "red", "orange"],
+        ["purple", "purple", "orange", "yellow", "yellow", "red", "red"],
+        ["purple", "purple", "yellow", "yellow", "green", "green", "orange"]
+      ],
+      "at": 19.362,
+      "side": 1,
+      "shape": [[-2.9, -9.56]],
+      "crates": [
+        {"col": 0, "row": 5, "w": 2, "h": 2, "count": 4}
+      ]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "size": 6},
+      {"color": "orange", "size": 4, "hidden": true, "key": "K2"},
+      {"color": "blue", "size": 6},
+      {"color": "cyan", "size": 6},
+      {"color": "green", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "orange", "size": 8},
+      {"color": "yellow", "size": 12},
+      {"color": "green", "size": 4}
+    ],
+    [
+      {"color": "red", "size": 4},
+      {"color": "purple", "size": 4, "key": "K1"},
+      {"color": "blue", "size": 6, "hidden": true},
+      {"color": "cyan", "size": 4},
+      {"color": "red", "size": 6}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "the spiral early",
+    "trays": "four deeper trays"
+  }
+}

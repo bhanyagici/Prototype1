@@ -1,0 +1,97 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f28",
+  "name": "Level 28",
+  "slide": {
+    "points": [
+      {"x": 1.6, "z": -13},
+      {"x": 0.4, "z": -12.8},
+      {"x": -0.9, "z": -12.4},
+      {"x": -1.7, "z": -11.6},
+      {"x": -1.6, "z": -10.6},
+      {"x": -0.7, "z": -9.9},
+      {"x": 0.6, "z": -9.6},
+      {"x": 1.8, "z": -9.1},
+      {"x": 2.4, "z": -8.1},
+      {"x": 2, "z": -7},
+      {"x": 0.8, "z": -6.4},
+      {"x": -0.6, "z": -6},
+      {"x": -1.8, "z": -5.8},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 6,
+      "columns": [
+        ["green", "green", "green", "red", null, null],
+        ["purple", "purple", null, null, "blue", "blue"],
+        ["yellow", "yellow", "yellow", "yellow", "yellow", null]
+      ],
+      "at": 3.142,
+      "side": 1,
+      "dispensers": [
+        {"col": 1, "row": 2, "w": 1, "h": 2, "color": "red", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["purple", "purple", "purple", "purple", "purple", null],
+        ["purple", "purple", "purple", "red", "red", "red"],
+        ["green", "green", "green", "green", "green", null]
+      ],
+      "at": 8.14,
+      "side": -1,
+      "tilt": 55
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["green", null, null, "blue", "blue", "blue"],
+        ["purple", "purple", "blue", "blue", "blue", null],
+        ["green", "green", "green", "green", "blue", null]
+      ],
+      "at": 11.067,
+      "side": -1,
+      "shape": [[4.06, -3.85]],
+      "dispensers": [
+        {"col": 0, "row": 1, "w": 1, "h": 2, "color": "blue", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["yellow", "yellow", "yellow", "yellow", "red", "blue"],
+        ["yellow", "yellow", "yellow", "red", "red", "red"],
+        ["green", "green", "green", "red", "red", null]
+      ],
+      "at": 15.352,
+      "side": 1,
+      "shape": [[-1.62, -9.53]]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "green", "size": 8},
+      {"color": "yellow", "size": 12},
+      {"color": "green", "size": 8},
+      {"color": "blue", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 8},
+      {"color": "blue", "size": 8}
+    ],
+    [
+      {"color": "purple", "size": 12},
+      {"color": "red", "size": 8}
+    ]
+  ],
+  "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "S-curve",
+    "trays": "four trays"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f34",
+  "name": "Level 34",
+  "slide": {
+    "points": [
+      {"x": -1.6, "z": -13.2},
+      {"x": -0.87, "z": -13.04},
+      {"x": -0.13, "z": -12.89},
+      {"x": 0.65, "z": -12.71},
+      {"x": 1.2, "z": -12.17},
+      {"x": 1.14, "z": -11.4},
+      {"x": 0.52, "z": -10.94},
+      {"x": -0.2, "z": -10.74},
+      {"x": -0.92, "z": -10.53},
+      {"x": -1.64, "z": -10.32},
+      {"x": -2.35, "z": -9.97},
+      {"x": -2.57, "z": -9.23},
+      {"x": -2.15, "z": -8.58},
+      {"x": -1.38, "z": -8.36},
+      {"x": -0.65, "z": -8.21},
+      {"x": 0.08, "z": -8.05},
+      {"x": 0.86, "z": -7.87},
+      {"x": 1.38, "z": -7.3},
+      {"x": 1.28, "z": -6.53},
+      {"x": 0.64, "z": -6.1},
+      {"x": 0.25, "z": -5.99},
+      {"x": -1.5, "z": -5.6},
+      {"x": -2.8, "z": -5.7}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 7,
+      "columns": [
+        ["blue", "blue", "blue", "blue", "yellow", "yellow", null],
+        ["blue", "blue", "blue", "orange", "orange", null, null],
+        ["blue", null, null, "orange", "orange", "orange", "orange"]
+      ],
+      "at": 2.808,
+      "side": -1,
+      "dispensers": [
+        {"col": 2, "row": 1, "w": 1, "h": 2, "color": "green", "count": 6}
+      ]
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["red", "red", "red", "red", "red", "red", null],
+        ["red", "green", "green", "green", "yellow", "yellow", "yellow"],
+        ["red", null, null, "orange", "orange", "orange", "orange"]
+      ],
+      "at": 12.827,
+      "side": -1,
+      "dispensers": [
+        {"col": 2, "row": 1, "w": 1, "h": 2, "color": "purple", "count": 6}
+      ]
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["purple", "purple", "purple", "purple", "purple", "purple", null],
+        ["red", "green", "green", "green", "yellow", "yellow", "yellow"],
+        ["red", "red", "red", "red", "yellow", "yellow", null]
+      ],
+      "at": 7.642,
+      "side": 1,
+      "tilt": 55
+    },
+    {
+      "rows": 7,
+      "columns": [
+        ["blue", "blue", "blue", "blue", "blue", "yellow", "yellow"],
+        ["red", "red", "red", "orange", "orange", "orange", null],
+        ["blue", "blue", "blue", "orange", "orange", "orange", null]
+      ],
+      "at": 18.259,
+      "side": 1,
+      "shape": [[-3.73, -9.28]]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "red", "size": 8, "link": "G1"},
+      {"color": "blue", "size": 8},
+      {"color": "orange", "size": 8, "link": "G3"}
+    ],
+    [
+      {"color": "orange", "size": 8, "link": "G4"},
+      {"color": "red", "size": 8, "link": "G1"},
+      {"color": "purple", "size": 12, "link": "G2"},
+      {"color": "yellow", "size": 12, "link": "G3"}
+    ],
+    [
+      {"color": "blue", "size": 8, "link": "G4"},
+      {"color": "green", "size": 12, "link": "G2"}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "slide": "zig-zag",
+    "trays": "four trays, big boxes"
+  }
+}

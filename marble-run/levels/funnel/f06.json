@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f06",
+  "name": "Level 6",
+  "slide": {
+    "points": [
+      {"x": -2.2, "z": -13},
+      {"x": -2.3, "z": -12},
+      {"x": -2.3, "z": -10.8},
+      {"x": -2, "z": -9.8},
+      {"x": -1.3, "z": -9.3},
+      {"x": -0.5, "z": -9.6},
+      {"x": -0.2, "z": -10.6},
+      {"x": -0.2, "z": -11.8},
+      {"x": 0.2, "z": -12.8},
+      {"x": 1, "z": -13.2},
+      {"x": 1.8, "z": -12.8},
+      {"x": 2.1, "z": -11.8},
+      {"x": 2.2, "z": -10.4},
+      {"x": 2.2, "z": -8.8},
+      {"x": 1.7, "z": -7.2},
+      {"x": 0.3, "z": -6.3},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 5, "columns": [["blue", "green", "green", "red", "red"], ["purple", "purple", "red", "red", "yellow"], ["blue", "blue", "red", "purple", "yellow"]], "at": 10.121, "side": -1},
+    {"rows": 5, "columns": [["blue", "blue", "red", "red", "yellow"], ["blue", "blue", "red", "red", "yellow"], ["blue", "purple", "red", "purple", "yellow"]], "at": 4.069, "side": 1, "shape": [[-2.29, -6.11]]},
+    {"rows": 5, "columns": [["purple", "green", "green", "red", "yellow"], ["blue", "green", "green", "green", "yellow"], ["blue", "blue", "red", "purple", "purple"]], "at": 15.857, "side": -1, "shape": [[4.56, -5.48]]},
+    {"rows": 5, "columns": [["blue", "blue", "green", "green", "green"], ["blue", "green", "green", "yellow", "yellow"], ["blue", "blue", "purple", "purple", "yellow"]], "at": 19.498, "side": -1, "shape": [[-1.18, -2.57]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 4},
+      {"color": "yellow", "size": 4}
+    ],
+    [
+      {"color": "yellow", "size": 6},
+      {"color": "red", "size": 6},
+      {"color": "green", "size": 12},
+      {"color": "blue", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "blue", "size": 4},
+      {"color": "purple", "size": 6},
+      {"color": "purple", "size": 4}
+    ]
+  ],
+  "meta": {
+    "role": "Challenge",
+    "diff": 5,
+    "slide": "hairpin",
+    "trays": "four trays, two each side"
+  }
+}

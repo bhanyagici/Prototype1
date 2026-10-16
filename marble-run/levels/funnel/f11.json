@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f11",
+  "name": "Level 11",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["red", "red", "red", "green", "green", "green"], ["red", "red", "yellow", "yellow", "green", "green"], ["yellow", "yellow", "yellow", "blue", "blue", "green"]], "at": 1.73, "side": -1, "shape": [[3.25, -11.96]]},
+    {"rows": 6, "columns": [["red", "red", "blue", "blue", "blue", "green"], ["red", "red", "blue", "blue", "blue", "blue"], ["yellow", "yellow", "yellow", "yellow", "green", "green"]], "at": 19.899, "side": 1, "shape": [[-2.61, -9.66]]},
+    {"rows": 6, "columns": [["red", "red", "blue", "blue", "green", "green"], ["red", "red", "blue", "blue", "blue", "green"], ["red", "yellow", "yellow", "yellow", "green", "green"]], "at": 16.002, "side": -1, "shape": [[3.23, -2.96]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 8},
+      {"color": "blue", "size": 6},
+      {"color": "green", "size": 8}
+    ],
+    [
+      {"color": "red", "size": 8},
+      {"color": "yellow", "size": 12}
+    ],
+    [
+      {"color": "red", "size": 6},
+      {"color": "green", "size": 6}
+    ]
+  ],
+  "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "spiral",
+    "trays": "three trays square to the slide"
+  }
+}

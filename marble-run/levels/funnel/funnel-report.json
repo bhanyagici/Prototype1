@@ -1,0 +1,2851 @@
+{
+ "levels": {
+  "f01": {
+   "id": "f01",
+   "n": 1,
+   "role": "Tutorial",
+   "diff": 1,
+   "band": [
+    0.7,
+    1
+   ],
+   "lanes": 2,
+   "h": 0,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 5.3,
+   "greedySends": 2,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "trays": [
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "default (35 deg)"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "blue",
+     "marbles": 8
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 2,
+    "12": 0
+   },
+   "nBoxes": 2,
+   "marbles": 16,
+   "marbleScale": 1.15,
+   "slide": "a short S-curve",
+   "trayIdea": "one tray",
+   "blockers": "-",
+   "tutorial": "first-sends",
+   "popup": null,
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f02": {
+   "id": "f02",
+   "n": 2,
+   "role": "Teach",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "lanes": 2,
+   "h": 0.418,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 7.4,
+   "greedySends": 3,
+   "notes": [],
+   "failFree": "yes (1006 games, no loss)",
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 4,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 4,
+     "kind": "default (35 deg)"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "yellow",
+     "marbles": 8
+    },
+    {
+     "color": "blue",
+     "marbles": 8
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 3,
+    "12": 0
+   },
+   "nBoxes": 3,
+   "marbles": 24,
+   "marbleScale": 1,
+   "slide": "the spiral early",
+   "trayIdea": "two small trays",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f04": {
+   "id": "f04",
+   "n": 4,
+   "role": "Teach (box sizes)",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 2,
+   "h": 0.174,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 8.6,
+   "greedySends": 5,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55"
+   ],
+   "failFree": "yes (1006 games, no loss)",
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "yellow",
+     "marbles": 8
+    },
+    {
+     "color": "green",
+     "marbles": 8
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 2,
+    "6": 0,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 5,
+   "marbles": 36,
+   "marbleScale": 1.05,
+   "slide": "S-curve",
+   "trayIdea": "two deep trays",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f05": {
+   "id": "f05",
+   "n": 5,
+   "role": "Fun",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "lanes": 2,
+   "h": 0.453,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 9.5,
+   "greedySends": 5,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag"
+   ],
+   "failFree": "yes (1006 games, no loss)",
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 2,
+    "12": 3
+   },
+   "nBoxes": 5,
+   "marbles": 52,
+   "marbleScale": 1,
+   "slide": "the first big spiral",
+   "trayIdea": "three trays around the spiral",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f07": {
+   "id": "f07",
+   "n": 7,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.11,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 14.6,
+   "greedySends": 9,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 6,
+    "6": 0,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 9,
+   "marbles": 52,
+   "marbleScale": 1,
+   "slide": "the spiral early",
+   "trayIdea": "three trays",
+   "blockers": "5 hidden boxes",
+   "tutorial": null,
+   "popup": "hidden",
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f06": {
+   "id": "f06",
+   "n": 6,
+   "role": "Challenge",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "lanes": 3,
+   "h": 0.916,
+   "rate": 0.36,
+   "wins": 72,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 27.2,
+   "greedySends": 10,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 10
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 4,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 10,
+   "marbles": 60,
+   "marbleScale": 1,
+   "slide": "hairpin",
+   "trayIdea": "four trays, two each side",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.7,
+   "spirals": 0
+  },
+  "f09": {
+   "id": "f09",
+   "n": 9,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 2,
+   "h": 0.624,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 12.7,
+   "greedySends": 7,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 3,
+    "8": 3,
+    "12": 1
+   },
+   "nBoxes": 7,
+   "marbles": 54,
+   "marbleScale": 1.1,
+   "slide": "winding",
+   "trayIdea": "three trays",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f08": {
+   "id": "f08",
+   "n": 8,
+   "role": "Practice",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "lanes": 3,
+   "h": 1.08,
+   "rate": 0.49,
+   "wins": 98,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 23.8,
+   "greedySends": 10,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as tilt 55",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 10
+    },
+    {
+     "color": "purple",
+     "marbles": 10
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 4,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 10,
+   "marbles": 60,
+   "marbleScale": 1,
+   "slide": "zig-zag",
+   "trayIdea": "four trays at the turns",
+   "blockers": "2 hidden boxes",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.1,
+   "spirals": 0
+  },
+  "f11": {
+   "id": "f11",
+   "n": 11,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.745,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 13.1,
+   "greedySends": 7,
+   "notes": [],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 3,
+    "8": 3,
+    "12": 1
+   },
+   "nBoxes": 7,
+   "marbles": 54,
+   "marbleScale": 1,
+   "slide": "spiral",
+   "trayIdea": "three trays square to the slide",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f12": {
+   "id": "f12",
+   "n": 12,
+   "role": "Challenge",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 1.017,
+   "rate": 0.335,
+   "wins": 67,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 29.9,
+   "greedySends": 10,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 18
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 2,
+    "6": 2,
+    "8": 2,
+    "12": 4
+   },
+   "nBoxes": 10,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "the spiral early",
+   "trayIdea": "four deeper trays",
+   "blockers": "2 hidden boxes",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f15": {
+   "id": "f15",
+   "n": 15,
+   "role": "Fun",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.299,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 14.7,
+   "greedySends": 8,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 2
+   },
+   "nBoxes": 8,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "hairpin",
+   "trayIdea": "four trays, big boxes",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.7,
+   "spirals": 0
+  },
+  "f16": {
+   "id": "f16",
+   "n": 16,
+   "role": "Challenge",
+   "diff": 7,
+   "band": [
+    0.18,
+    0.3
+   ],
+   "lanes": 4,
+   "h": 0.662,
+   "rate": 0.23,
+   "wins": 46,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 32.5,
+   "greedySends": 15,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 10
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "cyan",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 7,
+    "6": 6,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 15,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "spiral",
+   "trayIdea": "four deeper trays",
+   "blockers": "2 hidden boxes, 5 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f17": {
+   "id": "f17",
+   "n": 17,
+   "role": "Teach (no popup, short hint)",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "lanes": 3,
+   "h": 0.744,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 24,
+   "greedySends": 12,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 5,
+    "6": 4,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 12,
+   "marbles": 72,
+   "marbleScale": 1.05,
+   "slide": "winding",
+   "trayIdea": "four trays",
+   "blockers": "3 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": "triple",
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f18": {
+   "id": "f18",
+   "n": 18,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.303,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 13.6,
+   "greedySends": 8,
+   "notes": [],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 8
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 4,
+    "8": 3,
+    "12": 1
+   },
+   "nBoxes": 8,
+   "marbles": 60,
+   "marbleScale": 1,
+   "slide": "zig-zag",
+   "trayIdea": "square trays at the turns",
+   "blockers": "-",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.1,
+   "spirals": 0
+  },
+  "f21": {
+   "id": "f21",
+   "n": 21,
+   "role": "Teach (combo, no popup)",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "lanes": 3,
+   "h": 0.735,
+   "rate": 0.665,
+   "wins": 133,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 17.8,
+   "greedySends": 12,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 10
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 10
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 5,
+    "6": 4,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 12,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "S-curve",
+   "trayIdea": "four trays",
+   "blockers": "3 hidden boxes, 3 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f22": {
+   "id": "f22",
+   "n": 22,
+   "role": "Relax + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 2,
+   "h": 0.492,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 11.7,
+   "greedySends": 6,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "yellow",
+     "marbles": 8
+    },
+    {
+     "color": "green",
+     "marbles": 8
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 5,
+    "12": 1
+   },
+   "nBoxes": 6,
+   "marbles": 52,
+   "marbleScale": 1,
+   "slide": "spiral",
+   "trayIdea": "three trays",
+   "blockers": "10 hidden marbles",
+   "tutorial": null,
+   "popup": "hiddenMarbles",
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f23": {
+   "id": "f23",
+   "n": 23,
+   "role": "Challenge",
+   "diff": 7,
+   "band": [
+    0.18,
+    0.3
+   ],
+   "lanes": 4,
+   "h": 0.842,
+   "rate": 0.17,
+   "wins": 34,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 25.1,
+   "greedySends": 15,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 10
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "cyan",
+     "marbles": 10
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 10
+    }
+   ],
+   "boxes": {
+    "4": 8,
+    "6": 4,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 15,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "hairpin",
+   "trayIdea": "four deeper trays",
+   "blockers": "3 hidden boxes, 6 connected pairs, 8 hidden marbles",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.7,
+   "spirals": 0
+  },
+  "f24": {
+   "id": "f24",
+   "n": 24,
+   "role": "Fun",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "lanes": 3,
+   "h": 0.63,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 18.5,
+   "greedySends": 9,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 3
+   },
+   "nBoxes": 9,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four trays, big boxes",
+   "blockers": "2 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 24.5,
+   "spirals": 1
+  },
+  "f27": {
+   "id": "f27",
+   "n": 27,
+   "role": "Practice",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 1.033,
+   "rate": 0.305,
+   "wins": 61,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 29.7,
+   "greedySends": 12,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as tilt 55",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 18
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 4,
+    "8": 1,
+    "12": 3
+   },
+   "nBoxes": 12,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "zig-zag",
+   "trayIdea": "four deeper trays",
+   "blockers": "2 hidden boxes, dispenser (blue, 8), dispenser (purple, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.1,
+   "spirals": 0
+  },
+  "f28": {
+   "id": "f28",
+   "n": 28,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.251,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 13.6,
+   "greedySends": 8,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 2
+   },
+   "nBoxes": 8,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "S-curve",
+   "trayIdea": "four trays",
+   "blockers": "dispenser (red, 6), dispenser (blue, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f30": {
+   "id": "f30",
+   "n": 30,
+   "role": "Milestone",
+   "diff": 9,
+   "band": [
+    0.08,
+    0.15
+   ],
+   "lanes": 3,
+   "h": 0.856,
+   "rate": 0.005,
+   "wins": 1,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 28.2,
+   "greedySends": 15,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 10
+    },
+    {
+     "color": "orange",
+     "marbles": 8
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 8
+    },
+    {
+     "color": "cyan",
+     "marbles": 10
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    },
+    {
+     "color": "pink",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 6,
+    "8": 4,
+    "12": 1
+   },
+   "nBoxes": 15,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "spiral",
+   "trayIdea": "four deep trays",
+   "blockers": "3 hidden boxes, 2 connected triples, dispenser (pink, 8), dispenser (purple, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f31": {
+   "id": "f31",
+   "n": 31,
+   "role": "Relax",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 2,
+   "h": 0.315,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 13.8,
+   "greedySends": 8,
+   "notes": [
+    "tray 4: shape perp did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 2
+   },
+   "nBoxes": 8,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "hairpin",
+   "trayIdea": "square trays",
+   "blockers": "2 hidden boxes",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.7,
+   "spirals": 0
+  },
+  "f32": {
+   "id": "f32",
+   "n": 32,
+   "role": "Teach + POPUP",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "lanes": 3,
+   "h": 0.113,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 18,
+   "greedySends": 9,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 8
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 4,
+    "8": 3,
+    "12": 2
+   },
+   "nBoxes": 9,
+   "marbles": 72,
+   "marbleScale": 1.05,
+   "slide": "winding",
+   "trayIdea": "four trays",
+   "blockers": "2 lock crates & keys",
+   "tutorial": null,
+   "popup": "lock",
+   "hint": null,
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f33": {
+   "id": "f33",
+   "n": 33,
+   "role": "Practice",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 0.891,
+   "rate": 0.31,
+   "wins": 62,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 37,
+   "greedySends": 14,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 16
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "cyan",
+     "marbles": 10
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 10
+    }
+   ],
+   "boxes": {
+    "4": 5,
+    "6": 6,
+    "8": 2,
+    "12": 1
+   },
+   "nBoxes": 14,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "the spiral early",
+   "trayIdea": "four deeper trays",
+   "blockers": "2 hidden boxes, 2 lock crates & keys, count crate (4)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f34": {
+   "id": "f34",
+   "n": 34,
+   "role": "Fun",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "lanes": 3,
+   "h": 0.73,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 16.2,
+   "greedySends": 9,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as tilt 55",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 16
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 3
+   },
+   "nBoxes": 9,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "zig-zag",
+   "trayIdea": "four trays, big boxes",
+   "blockers": "4 connected pairs, dispenser (green, 6), dispenser (purple, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.1,
+   "spirals": 0
+  },
+  "f29": {
+   "id": "f29",
+   "n": 29,
+   "role": "Challenge",
+   "diff": 7,
+   "band": [
+    0.18,
+    0.3
+   ],
+   "lanes": 3,
+   "h": 1.068,
+   "rate": 0.2,
+   "wins": 40,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 47.1,
+   "greedySends": 16,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: 3x8 did not fit, built as 4x6",
+    "meander seed 112"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 4,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 16
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 10
+    },
+    {
+     "color": "cyan",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 9,
+    "6": 2,
+    "8": 3,
+    "12": 2
+   },
+   "nBoxes": 16,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four deep trays",
+   "blockers": "2 hidden boxes, 2 connected pairs, dispenser (green, 8), dispenser (cyan, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 24.7,
+   "spirals": 1
+  },
+  "f36": {
+   "id": "f36",
+   "n": 36,
+   "role": "Relax",
+   "diff": 4,
+   "band": [
+    0.45,
+    0.6
+   ],
+   "lanes": 3,
+   "h": 0.397,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 15.2,
+   "greedySends": 10,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 8
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 6,
+    "8": 3,
+    "12": 1
+   },
+   "nBoxes": 10,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "S-curve",
+   "trayIdea": "four trays",
+   "blockers": "1 hidden box, lock crate & key, count crate (2)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f37": {
+   "id": "f37",
+   "n": 37,
+   "role": "Practice",
+   "diff": 7,
+   "band": [
+    0.18,
+    0.3
+   ],
+   "lanes": 3,
+   "h": 0.897,
+   "rate": 0.295,
+   "wins": 59,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 35.6,
+   "greedySends": 15,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "cyan",
+     "marbles": 10
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 6,
+    "8": 4,
+    "12": 1
+   },
+   "nBoxes": 15,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "hairpin",
+   "trayIdea": "four deep trays",
+   "blockers": "3 hidden boxes, 2 connected pairs, 7 hidden marbles, dispenser (yellow, 8), dispenser (cyan, 8)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.7,
+   "spirals": 0
+  },
+  "f38": {
+   "id": "f38",
+   "n": 38,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "lanes": 5,
+   "h": 0.975,
+   "rate": 0.21,
+   "wins": 42,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 23.2,
+   "greedySends": 14,
+   "notes": [
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "cyan",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    },
+    {
+     "color": "pink",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 5,
+    "6": 4,
+    "8": 2,
+    "12": 3
+   },
+   "nBoxes": 14,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "winding",
+   "trayIdea": "four deep trays",
+   "blockers": "2 hidden boxes, 3 connected pairs, dispenser (green, 8), 2 lock crates & keys",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f39": {
+   "id": "f39",
+   "n": 39,
+   "role": "Fun",
+   "diff": 5,
+   "band": [
+    0.35,
+    0.5
+   ],
+   "lanes": 3,
+   "h": 0.744,
+   "rate": 0.755,
+   "wins": 151,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 20.9,
+   "greedySends": 10,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "cyan",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 16
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 6,
+    "12": 4
+   },
+   "nBoxes": 10,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "spiral",
+   "trayIdea": "four deep trays, big boxes",
+   "blockers": "4 connected pairs, dispenser (orange, 6), dispenser (orange, 6)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 22.2,
+   "spirals": 1
+  },
+  "f35": {
+   "id": "f35",
+   "n": 35,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "lanes": 4,
+   "h": 0.944,
+   "rate": 0.135,
+   "wins": 27,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 48.2,
+   "greedySends": 16,
+   "notes": [
+    "tray 1: shape tilt did not fit, built as tilt 55",
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: 3x8 did not fit, built as 4x6",
+    "meander seed 114"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 4,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 18
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "cyan",
+     "marbles": 18
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 7,
+    "6": 4,
+    "8": 4,
+    "12": 1
+   },
+   "nBoxes": 16,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four deep trays",
+   "blockers": "2 hidden boxes, 7 connected pairs, lock crate & key",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 24.8,
+   "spirals": 1
+  },
+  "f03": {
+   "id": "f03",
+   "n": 3,
+   "role": "Tutorial (box waits)",
+   "diff": 2,
+   "band": [
+    0.7,
+    1
+   ],
+   "lanes": 2,
+   "h": 0,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 7.5,
+   "greedySends": 4,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as diag"
+   ],
+   "failFree": "yes (1006 games, no loss)",
+   "trays": [
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 4,
+     "rows": 4,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 8
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 8
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 0,
+    "8": 4,
+    "12": 0
+   },
+   "nBoxes": 4,
+   "marbles": 32,
+   "marbleScale": 1,
+   "slide": "winding",
+   "trayIdea": "two trays, one each side",
+   "blockers": "-",
+   "tutorial": "slot-wait",
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f13": {
+   "id": "f13",
+   "n": 13,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.706,
+   "rate": 1,
+   "wins": 200,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 21.4,
+   "greedySends": 10,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 5,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 4,
+    "6": 4,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 10,
+   "marbles": 60,
+   "marbleScale": 1,
+   "slide": "S-curve",
+   "trayIdea": "four trays",
+   "blockers": "4 connected pairs",
+   "tutorial": null,
+   "popup": "connected",
+   "hint": null,
+   "slideLen": 17.9,
+   "spirals": 0
+  },
+  "f14": {
+   "id": "f14",
+   "n": 14,
+   "role": "Practice",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 0.97,
+   "rate": 0.4,
+   "wins": 80,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 31.8,
+   "greedySends": 13,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag",
+    "meander seed 308"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 10
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 8
+    }
+   ],
+   "boxes": {
+    "4": 7,
+    "6": 4,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 13,
+   "marbles": 72,
+   "marbleScale": 1,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four trays",
+   "blockers": "5 connected pairs",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 25.5,
+   "spirals": 1
+  }
+ },
+ "generated": "2026-10-16",
+ "totalGreedy1x": 717.4
+}

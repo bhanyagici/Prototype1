@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f22",
+  "name": "Level 22",
+  "slide": {
+    "points": [
+      {"x": -0.6, "z": -12.2},
+      {"x": -0.5, "z": -11.3},
+      {"x": -0.2, "z": -10.5},
+      {"x": 0.2, "z": -9.6, "spiral": {"r": 1, "side": 1}},
+      {"x": 1.6, "z": -9},
+      {"x": 2.4, "z": -7.8},
+      {"x": 1.8, "z": -6.5},
+      {"x": 0.3, "z": -5.9},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "yellow", "yellow", "purple", "purple", "green"], ["blue", "blue", "?blue", "?blue", "?green", "green"], ["blue", "blue", "purple", "?purple", "purple", "purple"]], "at": 1.73, "side": -1},
+    {"rows": 6, "columns": [["yellow", "yellow", "?yellow", "yellow", "green", "?green"], ["blue", "blue", "blue", "blue", "green", "green"], ["blue", "?blue", "purple", "purple", "purple", "purple"]], "at": 12.699, "side": -1},
+    {"rows": 6, "columns": [["yellow", "red", "red", "red", "red", "red"], ["red", "red", "red", "purple", "purple", null], ["blue", "blue", "?blue", "?blue", "?green", null]], "at": 16.202, "side": -1, "shape": [[3.27, -3]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 8},
+      {"color": "red", "size": 8},
+      {"color": "purple", "size": 12}
+    ],
+    [
+      {"color": "yellow", "size": 8},
+      {"color": "blue", "size": 8},
+      {"color": "green", "size": 8}
+    ]
+  ],
+  "laneCount": 2,
+  "meta": {
+    "role": "Relax + POPUP",
+    "diff": 3,
+    "slide": "spiral",
+    "trays": "three trays",
+    "popup": "hiddenMarbles"
+  }
+}
