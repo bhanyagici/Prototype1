@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "demo_connected",
+  "name": "Demo: Connected Boxes",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"at": 1.891, "side": -1, "rows": 6, "columns": [["blue", "blue", "blue", "blue", "red", "red"], ["green", "green", "green", "green", "blue", "blue"], ["blue", "blue", "yellow", "red", "red", "red"]]},
+    {"at": 12.781, "side": -1, "tilt": 55, "rows": 6, "columns": [["green", "green", "green", "red", "red", "red"], ["yellow", "yellow", "yellow", "yellow", "red", "red"], ["blue", "blue", "yellow", "yellow", "red", "blue"]]},
+    {"at": 19.435, "side": 1, "shape": [[-3.09, -9.59]], "rows": 6, "columns": [["blue", "blue", "red", "red", "red", "blue"], ["green", "green", "green", "yellow", "yellow", "yellow"], ["yellow", "yellow", "yellow", "yellow", "green", "blue"]]},
+    {"at": 15.089, "side": -1, "shape": [[3.95, -2.98]], "rows": 6, "columns": [["green", "yellow", "yellow", "yellow", "yellow", "blue"], ["blue", "blue", "blue", "blue", "red", "red"], ["green", "green", "green", "green", "green", "green"]]}
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 4, "link": "G1"},
+      {"color": "green", "size": 4, "link": "G4"},
+      {"color": "red", "size": 6, "link": "G4"},
+      {"color": "blue", "size": 6}
+    ],
+    [
+      {"color": "blue", "size": 6, "link": "G1"},
+      {"color": "blue", "size": 4, "link": "G3"},
+      {"color": "yellow", "size": 8, "link": "G2"},
+      {"color": "yellow", "size": 4, "link": "G2"},
+      {"color": "yellow", "size": 6, "link": "G2"}
+    ],
+    [
+      {"color": "green", "size": 8, "link": "G1"},
+      {"color": "green", "size": 6, "link": "G3"},
+      {"color": "red", "size": 6},
+      {"color": "red", "size": 4}
+    ]
+  ]
+}
