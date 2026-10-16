@@ -2326,6 +2326,7 @@ function resetGame(){
   game = C.createGame(N, {}); acc = 0; V.win = null; V.fail = null; V.flash = 0; V.keys = []; glowN = 0;
   hidePanels(); updateTimer(true);
   V.boxes = game.boxes.map(b => { const vb = makeBoxMesh(b); vb.pos = new THREE.Vector3(); vb.home = null; vb.from = null; vb.punch = -9; vb.shake = -9; vb.pop = -9; vb.squash = -9; vb.dir = 1; laneTarget(b, vb); vb.pos.copy(vb.home); return vb; });
+  for (const vm of V.marbles) if (vm.q) fx.remove(vm.q);          // the last game's hidden-marble "?" marks
   V.marbles = game.marbles.map(m => ({pos:null, hop:-9, pop:-9, squash:-9, p0:null, ps:-1, gate:false}));
   V.bellows = game.groups.map(grp => ({grp, g:new THREE.Group(), parts:[]})); V.bellows.forEach(bw => { world.add(bw.g);
     for (let k = 1; k < bw.grp.members.length; k++){ const m = mesh(bellowsGeo, bellowsMat); bw.g.add(m); bw.parts.push(m); } });

@@ -1,0 +1,11285 @@
+{
+ "type": "marble-run-levels",
+ "version": 1,
+ "name": "Marble Run funnel: 40 levels",
+ "categories": [
+  {
+   "name": "Funnel",
+   "levels": [
+    "f01",
+    "f02",
+    "f03",
+    "f04",
+    "f05",
+    "f06",
+    "f07",
+    "f08",
+    "f09",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14",
+    "f15",
+    "f16",
+    "f17",
+    "f18",
+    "f19",
+    "f20",
+    "f21",
+    "f22",
+    "f23",
+    "f24",
+    "f25",
+    "f26",
+    "f27",
+    "f28",
+    "f29",
+    "f30",
+    "f31",
+    "f32",
+    "f33",
+    "f34",
+    "f35",
+    "f36",
+    "f37",
+    "f38",
+    "f39",
+    "f40"
+   ]
+  }
+ ],
+ "levels": [
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f01",
+   "name": "Level 1",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 4,
+     "columns": [
+      [
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 8.833,
+     "side": -1
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Tutorial",
+    "diff": 1,
+    "slide": "a short S-curve",
+    "trays": "one tray",
+    "tutorial": "first-sends",
+    "tutorialLane": 1
+   },
+   "marbleScale": 1.15
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f02",
+   "name": "Level 2",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 4,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 1.872,
+     "side": -1
+    },
+    {
+     "rows": 4,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 13.143,
+     "side": -1
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Teach",
+    "diff": 2,
+    "slide": "the spiral early",
+    "trays": "two small trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f03",
+   "name": "Level 3",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 4,
+     "columns": [
+      [
+       "red",
+       "blue",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "blue",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "yellow",
+       "blue",
+       "yellow"
+      ],
+      [
+       "red",
+       "blue",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 3.17,
+     "side": 1
+    },
+    {
+     "rows": 4,
+     "columns": [
+      [
+       "yellow",
+       "blue",
+       "yellow",
+       "red"
+      ],
+      [
+       "blue",
+       "yellow",
+       "yellow",
+       "red"
+      ],
+      [
+       "blue",
+       "yellow",
+       "blue",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "red"
+      ]
+     ],
+     "at": 15.076,
+     "side": 1,
+     "shape": [
+      [
+       -3.4,
+       -9.66
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Tutorial (box waits)",
+    "diff": 2,
+    "slide": "winding",
+    "trays": "two trays, one each side",
+    "tutorial": "slot-wait",
+    "tutorialLane": 1
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f04",
+   "name": "Level 4",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "red"
+      ]
+     ],
+     "at": 3.57,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 8.696,
+     "side": -1,
+     "tilt": 55
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 12
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Teach (box sizes)",
+    "diff": 3,
+    "slide": "S-curve",
+    "trays": "two deep trays"
+   },
+   "marbleScale": 1.05
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f05",
+   "name": "Level 5",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 1.73,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "yellow"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 12.699,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       null
+      ],
+      [
+       "blue",
+       "red",
+       "red",
+       "red",
+       "yellow",
+       null
+      ]
+     ],
+     "at": 16.202,
+     "side": -1,
+     "shape": [
+      [
+       3.27,
+       -3
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "green",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 12
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 12
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Fun",
+    "diff": 2,
+    "slide": "the first big spiral",
+    "trays": "three trays around the spiral"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f06",
+   "name": "Level 6",
+   "slide": {
+    "points": [
+     {
+      "x": -2.2,
+      "z": -13
+     },
+     {
+      "x": -2.3,
+      "z": -12
+     },
+     {
+      "x": -2.3,
+      "z": -10.8
+     },
+     {
+      "x": -2,
+      "z": -9.8
+     },
+     {
+      "x": -1.3,
+      "z": -9.3
+     },
+     {
+      "x": -0.5,
+      "z": -9.6
+     },
+     {
+      "x": -0.2,
+      "z": -10.6
+     },
+     {
+      "x": -0.2,
+      "z": -11.8
+     },
+     {
+      "x": 0.2,
+      "z": -12.8
+     },
+     {
+      "x": 1,
+      "z": -13.2
+     },
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 2.1,
+      "z": -11.8
+     },
+     {
+      "x": 2.2,
+      "z": -10.4
+     },
+     {
+      "x": 2.2,
+      "z": -8.8
+     },
+     {
+      "x": 1.7,
+      "z": -7.2
+     },
+     {
+      "x": 0.3,
+      "z": -6.3
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "green",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "purple",
+       "yellow"
+      ]
+     ],
+     "at": 10.121,
+     "side": -1
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "yellow"
+      ],
+      [
+       "blue",
+       "purple",
+       "red",
+       "purple",
+       "yellow"
+      ]
+     ],
+     "at": 4.069,
+     "side": 1,
+     "shape": [
+      [
+       -2.29,
+       -6.11
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "purple",
+       "green",
+       "green",
+       "red",
+       "yellow"
+      ],
+      [
+       "blue",
+       "green",
+       "green",
+       "green",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 15.857,
+     "side": -1,
+     "shape": [
+      [
+       4.56,
+       -5.48
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "green",
+       "green",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       "yellow"
+      ]
+     ],
+     "at": 19.498,
+     "side": -1,
+     "shape": [
+      [
+       -1.18,
+       -2.57
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "purple",
+      "size": 4
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Challenge",
+    "diff": 5,
+    "slide": "hairpin",
+    "trays": "four trays, two each side"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f07",
+   "name": "Level 7",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "red",
+       "red",
+       "red",
+       "blue"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 1.872,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "green",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 12.708,
+     "side": -1,
+     "tilt": 55
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       null
+      ]
+     ],
+     "at": 15.089,
+     "side": -1,
+     "shape": [
+      [
+       3.95,
+       -2.98
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "yellow",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 12,
+      "hidden": true
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "the spiral early",
+    "trays": "three trays",
+    "popup": "hidden"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f08",
+   "name": "Level 8",
+   "slide": {
+    "points": [
+     {
+      "x": -1.6,
+      "z": -13.2
+     },
+     {
+      "x": -0.87,
+      "z": -13.04
+     },
+     {
+      "x": -0.13,
+      "z": -12.89
+     },
+     {
+      "x": 0.65,
+      "z": -12.71
+     },
+     {
+      "x": 1.2,
+      "z": -12.17
+     },
+     {
+      "x": 1.14,
+      "z": -11.4
+     },
+     {
+      "x": 0.52,
+      "z": -10.94
+     },
+     {
+      "x": -0.2,
+      "z": -10.74
+     },
+     {
+      "x": -0.92,
+      "z": -10.53
+     },
+     {
+      "x": -1.64,
+      "z": -10.32
+     },
+     {
+      "x": -2.35,
+      "z": -9.97
+     },
+     {
+      "x": -2.57,
+      "z": -9.23
+     },
+     {
+      "x": -2.15,
+      "z": -8.58
+     },
+     {
+      "x": -1.38,
+      "z": -8.36
+     },
+     {
+      "x": -0.65,
+      "z": -8.21
+     },
+     {
+      "x": 0.08,
+      "z": -8.05
+     },
+     {
+      "x": 0.86,
+      "z": -7.87
+     },
+     {
+      "x": 1.38,
+      "z": -7.3
+     },
+     {
+      "x": 1.28,
+      "z": -6.53
+     },
+     {
+      "x": 0.64,
+      "z": -6.1
+     },
+     {
+      "x": 0.25,
+      "z": -5.99
+     },
+     {
+      "x": -1.5,
+      "z": -5.6
+     },
+     {
+      "x": -2.8,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "purple",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 2.808,
+     "side": -1
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "green",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "green",
+       "green",
+       "purple",
+       "purple"
+      ],
+      [
+       "yellow",
+       "green",
+       "purple",
+       "purple",
+       "red"
+      ]
+     ],
+     "at": 12.827,
+     "side": -1
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "green",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "green",
+       "green",
+       "purple",
+       "red"
+      ]
+     ],
+     "at": 7.642,
+     "side": 1,
+     "tilt": 55
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "green",
+       "purple",
+       "red"
+      ],
+      [
+       "blue",
+       "green",
+       "purple",
+       "red",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 18.259,
+     "side": 1,
+     "shape": [
+      [
+       -3.63,
+       -8.93
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "blue",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 12
+     },
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "hidden": true
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Practice",
+    "diff": 5,
+    "slide": "zig-zag",
+    "trays": "four trays at the turns"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f09",
+   "name": "Level 9",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "green"
+      ]
+     ],
+     "at": 3.102,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 14.94,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "green"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 16.957,
+     "side": -1,
+     "shape": [
+      [
+       2.36,
+       -5.19
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "winding",
+    "trays": "three trays"
+   },
+   "marbleScale": 1.1
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f10",
+   "name": "Level 10",
+   "slide": {
+    "points": [
+     {
+      "x": 0.4724598180036992,
+      "z": -12.036588607355952
+     },
+     {
+      "x": 0.59,
+      "z": -11.29
+     },
+     {
+      "x": 1.18,
+      "z": -10.84
+     },
+     {
+      "x": 1.93,
+      "z": -10.76
+     },
+     {
+      "x": 2.47,
+      "z": -10.25
+     },
+     {
+      "x": 2.53,
+      "z": -9.5
+     },
+     {
+      "x": 2.12,
+      "z": -8.89
+     },
+     {
+      "x": 1.39,
+      "z": -8.74
+     },
+     {
+      "x": 0.59,
+      "z": -8.74
+     },
+     {
+      "x": -0.2,
+      "z": -8.74
+     },
+     {
+      "x": -1.05,
+      "z": -8.74,
+      "spiral": {
+       "r": 0.8688572332961485,
+       "side": 1
+      }
+     },
+     {
+      "x": 0.22,
+      "z": -7.84
+     },
+     {
+      "x": 0.96,
+      "z": -7.71
+     },
+     {
+      "x": 1.54,
+      "z": -7.25
+     },
+     {
+      "x": 1.62,
+      "z": -6.51
+     },
+     {
+      "x": 1.2,
+      "z": -5.9
+     },
+     {
+      "x": -1.35,
+      "z": -5.5
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "red",
+       "red",
+       "blue",
+       "green"
+      ],
+      [
+       "yellow",
+       "orange",
+       "orange",
+       "blue",
+       "purple",
+       "green"
+      ],
+      [
+       "yellow",
+       "orange",
+       "orange",
+       "blue",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 2.805,
+     "side": -1,
+     "shape": [
+      [
+       4.54,
+       -12.95
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "orange",
+       "red",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "orange",
+       "orange",
+       "red",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 22.416,
+     "side": 1,
+     "shape": [
+      [
+       -2.92,
+       -8.48
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "purple",
+       "green"
+      ],
+      [
+       "yellow",
+       "orange",
+       "orange",
+       "blue",
+       "purple",
+       "green"
+      ],
+      [
+       "orange",
+       "orange",
+       "red",
+       "blue",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 18.125,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "purple",
+       "purple"
+      ],
+      [
+       "yellow",
+       "orange",
+       "red",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "purple",
+       "purple",
+       "red",
+       "blue",
+       "purple",
+       "green"
+      ]
+     ],
+     "at": 19.735,
+     "side": -1,
+     "shape": [
+      [
+       2.42,
+       -2.78
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "orange",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "orange",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "orange",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "purple",
+      "size": 6
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Milestone",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f11",
+   "name": "Level 11",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "green",
+       "green"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       "blue",
+       "green"
+      ]
+     ],
+     "at": 1.73,
+     "side": -1,
+     "shape": [
+      [
+       3.25,
+       -11.96
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 19.899,
+     "side": 1,
+     "shape": [
+      [
+       -2.61,
+       -9.66
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "red",
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 16.002,
+     "side": -1,
+     "shape": [
+      [
+       3.23,
+       -2.96
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "spiral",
+    "trays": "three trays square to the slide"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f12",
+   "name": "Level 12",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "purple",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "purple",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "blue"
+      ],
+      [
+       "orange",
+       "purple",
+       "green",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 2.018,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "yellow",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "blue"
+      ]
+     ],
+     "at": 12.326,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "purple",
+       "purple",
+       "green",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "purple",
+       "green",
+       "green",
+       "yellow",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 15.126,
+     "side": -1,
+     "shape": [
+      [
+       4.21,
+       -3.22
+      ]
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "yellow",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "red",
+       "yellow",
+       "blue"
+      ]
+     ],
+     "at": 19.362,
+     "side": 1,
+     "shape": [
+      [
+       -2.9,
+       -9.56
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "orange",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 12
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "red",
+      "size": 12,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "orange",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 12
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Challenge",
+    "diff": 6,
+    "slide": "the spiral early",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f13",
+   "name": "Level 13",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "green"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "green"
+      ]
+     ],
+     "at": 8.742,
+     "side": -1
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 3.54,
+     "side": 1
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "purple",
+       "yellow",
+       "yellow",
+       "green"
+      ]
+     ],
+     "at": 11.067,
+     "side": -1,
+     "shape": [
+      [
+       4.22,
+       -4.51
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "green",
+       "green"
+      ],
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "green"
+      ]
+     ],
+     "at": 15.352,
+     "side": 1,
+     "shape": [
+      [
+       -1.67,
+       -9.12
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "purple",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G4"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "green",
+      "size": 12
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "S-curve",
+    "trays": "four trays",
+    "popup": "connected"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f14",
+   "name": "Level 14",
+   "slide": {
+    "points": [
+     {
+      "x": -0.3160573395434767,
+      "z": -12.063754368573427
+     },
+     {
+      "x": -0.2,
+      "z": -11.32
+     },
+     {
+      "x": 0.37,
+      "z": -10.86
+     },
+     {
+      "x": 1.11,
+      "z": -10.78
+     },
+     {
+      "x": 1.68,
+      "z": -10.32
+     },
+     {
+      "x": 1.8,
+      "z": -9.57
+     },
+     {
+      "x": 1.46,
+      "z": -8.92
+     },
+     {
+      "x": 0.77,
+      "z": -8.69
+     },
+     {
+      "x": -0.03,
+      "z": -8.69
+     },
+     {
+      "x": -0.82,
+      "z": -8.69
+     },
+     {
+      "x": -1.54,
+      "z": -8.52
+     },
+     {
+      "x": -1.94,
+      "z": -7.9
+     },
+     {
+      "x": -1.81,
+      "z": -7.16
+     },
+     {
+      "x": -1.22,
+      "z": -6.73
+     },
+     {
+      "x": -0.47,
+      "z": -6.71
+     },
+     {
+      "x": 0.29,
+      "z": -6.71
+     },
+     {
+      "x": 1.14,
+      "z": -6.71,
+      "spiral": {
+       "r": 0.8984311986947433,
+       "side": -1
+      }
+     },
+     {
+      "x": 0.31,
+      "z": -5.88
+     },
+     {
+      "x": -1.795,
+      "z": -5.4799999999999995
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "orange",
+       "red",
+       "red",
+       "yellow",
+       "purple"
+      ],
+      [
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "green",
+       "purple"
+      ]
+     ],
+     "at": 2.857,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "red",
+       "yellow",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "purple"
+      ],
+      [
+       "blue",
+       "orange",
+       "red",
+       "red",
+       "green",
+       "purple"
+      ]
+     ],
+     "at": 7.592,
+     "side": 1,
+     "tilt": 55
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "purple"
+      ]
+     ],
+     "at": 20.597,
+     "side": -1,
+     "shape": [
+      [
+       3.24,
+       -3.45
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "green",
+       "purple"
+      ],
+      [
+       "orange",
+       "orange",
+       "red",
+       "yellow",
+       "green",
+       "purple"
+      ],
+      [
+       "blue",
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "purple"
+      ]
+     ],
+     "at": 23.512,
+     "side": 1,
+     "shape": [
+      [
+       -3.96,
+       -8.65
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "red",
+      "size": 12,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G5"
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 6,
+      "link": "G5"
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f15",
+   "name": "Level 15",
+   "slide": {
+    "points": [
+     {
+      "x": -2.2,
+      "z": -13
+     },
+     {
+      "x": -2.3,
+      "z": -12
+     },
+     {
+      "x": -2.3,
+      "z": -10.8
+     },
+     {
+      "x": -2,
+      "z": -9.8
+     },
+     {
+      "x": -1.3,
+      "z": -9.3
+     },
+     {
+      "x": -0.5,
+      "z": -9.6
+     },
+     {
+      "x": -0.2,
+      "z": -10.6
+     },
+     {
+      "x": -0.2,
+      "z": -11.8
+     },
+     {
+      "x": 0.2,
+      "z": -12.8
+     },
+     {
+      "x": 1,
+      "z": -13.2
+     },
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 2.1,
+      "z": -11.8
+     },
+     {
+      "x": 2.2,
+      "z": -10.4
+     },
+     {
+      "x": 2.2,
+      "z": -8.8
+     },
+     {
+      "x": 1.7,
+      "z": -7.2
+     },
+     {
+      "x": 0.3,
+      "z": -6.3
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 10.321,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 3.669,
+     "side": 1,
+     "shape": [
+      [
+       -4.09,
+       -6.6
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "green"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 16.057,
+     "side": -1,
+     "shape": [
+      [
+       4.07,
+       -4.28
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 17.698,
+     "side": -1,
+     "shape": [
+      [
+       1.7,
+       -2.82
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 12
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 12
+     },
+     {
+      "color": "purple",
+      "size": 8
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Fun",
+    "diff": 3,
+    "slide": "hairpin",
+    "trays": "four trays, big boxes"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f16",
+   "name": "Level 16",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "green",
+       "purple",
+       "purple"
+      ],
+      [
+       "orange",
+       "orange",
+       "blue",
+       "green",
+       "green",
+       "purple",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "cyan",
+       "cyan",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 1.664,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "red",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 12.679,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "green",
+       "green",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 15.563,
+     "side": -1,
+     "shape": [
+      [
+       3.99,
+       -3.54
+      ]
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "cyan",
+       "orange",
+       "purple",
+       "purple",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       "orange",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 19.69,
+     "side": 1,
+     "shape": [
+      [
+       -2.67,
+       -9.57
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G5"
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "link": "G5"
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 12
+     },
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "hidden": true
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "laneCount": 4,
+   "meta": {
+    "role": "Challenge",
+    "diff": 7,
+    "slide": "spiral",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f17",
+   "name": "Level 17",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "blue"
+      ],
+      [
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "blue",
+       "blue"
+      ],
+      [
+       "purple",
+       "red",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 3.082,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "yellow",
+       "yellow",
+       "green",
+       "green"
+      ],
+      [
+       "yellow",
+       "red",
+       "red",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 14.872,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "blue"
+      ],
+      [
+       "purple",
+       "purple",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue"
+      ],
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 12.821,
+     "side": -1,
+     "shape": [
+      [
+       1.24,
+       -5.05
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "blue",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "blue"
+      ]
+     ],
+     "at": 18.984,
+     "side": 1,
+     "shape": [
+      [
+       -4.09,
+       -9.25
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "yellow",
+      "size": 8,
+      "link": "G2"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "purple",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "red",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G3"
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Teach (no popup, short hint)",
+    "diff": 4,
+    "slide": "winding",
+    "trays": "four trays",
+    "hint": "triple"
+   },
+   "marbleScale": 1.05
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f18",
+   "name": "Level 18",
+   "slide": {
+    "points": [
+     {
+      "x": -1.6,
+      "z": -13.2
+     },
+     {
+      "x": -0.87,
+      "z": -13.04
+     },
+     {
+      "x": -0.13,
+      "z": -12.89
+     },
+     {
+      "x": 0.65,
+      "z": -12.71
+     },
+     {
+      "x": 1.2,
+      "z": -12.17
+     },
+     {
+      "x": 1.14,
+      "z": -11.4
+     },
+     {
+      "x": 0.52,
+      "z": -10.94
+     },
+     {
+      "x": -0.2,
+      "z": -10.74
+     },
+     {
+      "x": -0.92,
+      "z": -10.53
+     },
+     {
+      "x": -1.64,
+      "z": -10.32
+     },
+     {
+      "x": -2.35,
+      "z": -9.97
+     },
+     {
+      "x": -2.57,
+      "z": -9.23
+     },
+     {
+      "x": -2.15,
+      "z": -8.58
+     },
+     {
+      "x": -1.38,
+      "z": -8.36
+     },
+     {
+      "x": -0.65,
+      "z": -8.21
+     },
+     {
+      "x": 0.08,
+      "z": -8.05
+     },
+     {
+      "x": 0.86,
+      "z": -7.87
+     },
+     {
+      "x": 1.38,
+      "z": -7.3
+     },
+     {
+      "x": 1.28,
+      "z": -6.53
+     },
+     {
+      "x": 0.64,
+      "z": -6.1
+     },
+     {
+      "x": 0.25,
+      "z": -5.99
+     },
+     {
+      "x": -1.5,
+      "z": -5.6
+     },
+     {
+      "x": -2.8,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "green"
+      ]
+     ],
+     "at": 2.608,
+     "side": -1,
+     "shape": [
+      [
+       2.96,
+       -15.16
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "purple",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 7.627,
+     "side": 1,
+     "shape": [
+      [
+       -4.34,
+       -12.66
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "green"
+      ]
+     ],
+     "at": 12.442,
+     "side": -1,
+     "shape": [
+      [
+       2.6,
+       -10.71
+      ]
+     ]
+    },
+    {
+     "rows": 5,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "green"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 18.259,
+     "side": 1,
+     "shape": [
+      [
+       -3.63,
+       -8.93
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 6
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "zig-zag",
+    "trays": "square trays at the turns"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f19",
+   "name": "Level 19",
+   "slide": {
+    "points": [
+     {
+      "x": -0.45901371142826974,
+      "z": -12.024271964095533
+     },
+     {
+      "x": -0.43,
+      "z": -11.24
+     },
+     {
+      "x": 0.03,
+      "z": -10.66
+     },
+     {
+      "x": 0.76,
+      "z": -10.56
+     },
+     {
+      "x": 1.5,
+      "z": -10.49
+     },
+     {
+      "x": 1.99,
+      "z": -9.94
+     },
+     {
+      "x": 1.97,
+      "z": -9.17
+     },
+     {
+      "x": 1.46,
+      "z": -8.65
+     },
+     {
+      "x": 0.71,
+      "z": -8.59
+     },
+     {
+      "x": -0.05,
+      "z": -8.59
+     },
+     {
+      "x": -0.81,
+      "z": -8.59
+     },
+     {
+      "x": -1.51,
+      "z": -8.38
+     },
+     {
+      "x": -1.83,
+      "z": -7.72
+     },
+     {
+      "x": -1.59,
+      "z": -7.02
+     },
+     {
+      "x": -0.91,
+      "z": -6.74
+     },
+     {
+      "x": -0.11,
+      "z": -6.74
+     },
+     {
+      "x": 1.03,
+      "z": -6.74,
+      "spiral": {
+       "r": 0.8694479503203184,
+       "side": -1
+      }
+     },
+     {
+      "x": -0.24,
+      "z": -5.86
+     },
+     {
+      "x": -2.07,
+      "z": -5.46
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "green",
+       "green",
+       "purple",
+       "purple",
+       "purple",
+       "yellow"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "red",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 8.449,
+     "side": 1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "red",
+       "blue"
+      ],
+      [
+       "red",
+       "red",
+       "orange",
+       "purple",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 3.362,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "red",
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "yellow"
+      ]
+     ],
+     "at": 23.551,
+     "side": 1,
+     "tilt": 55
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "blue",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "blue",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 21.048,
+     "side": -1,
+     "shape": [
+      [
+       1.98,
+       -2.87
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "purple",
+      "size": 12,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "red",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G2"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f20",
+   "name": "Level 20",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "orange",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ]
+     ],
+     "at": 2.018,
+     "side": -1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "cyan",
+       "cyan",
+       "cyan",
+       "cyan",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "cyan",
+       "cyan",
+       "cyan",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "red"
+      ]
+     ],
+     "at": 12.726,
+     "side": -1,
+     "tilt": 55
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "red"
+      ]
+     ],
+     "at": 15.326,
+     "side": -1,
+     "shape": [
+      [
+       4.19,
+       -3
+      ]
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "cyan",
+       "orange",
+       "orange",
+       "orange",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "cyan",
+       "cyan",
+       "cyan",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "purple",
+       "purple",
+       "cyan",
+       "cyan",
+       "cyan",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 19.362,
+     "side": 1,
+     "shape": [
+      [
+       -2.94,
+       -9.73
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G5"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "purple",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "cyan",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G5",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G2",
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "cyan",
+      "size": 8,
+      "link": "G2"
+     },
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "red",
+      "size": 12
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "laneCount": 4,
+   "meta": {
+    "role": "Milestone",
+    "diff": 8,
+    "slide": "the spiral early",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f21",
+   "name": "Level 21",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "blue",
+       "purple",
+       "purple",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "blue",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 3.142,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "red",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "red"
+      ]
+     ],
+     "at": 8.14,
+     "side": -1,
+     "tilt": 55
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "purple",
+       "purple"
+      ],
+      [
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 11.067,
+     "side": -1,
+     "shape": [
+      [
+       4.06,
+       -3.85
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "red"
+      ]
+     ],
+     "at": 15.352,
+     "side": 1,
+     "shape": [
+      [
+       -1.62,
+       -9.53
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "orange",
+      "size": 8,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 12
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G3",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G1"
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Teach (combo, no popup)",
+    "diff": 5,
+    "slide": "S-curve",
+    "trays": "four trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f22",
+   "name": "Level 22",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "purple",
+       "purple",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "?blue",
+       "?blue",
+       "?green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "purple",
+       "?purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 1.73,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "?yellow",
+       "yellow",
+       "green",
+       "?green"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "?blue",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 12.699,
+     "side": -1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "purple",
+       "purple",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "?blue",
+       "?blue",
+       "?green",
+       null
+      ]
+     ],
+     "at": 16.202,
+     "side": -1,
+     "shape": [
+      [
+       3.27,
+       -3
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Relax + POPUP",
+    "diff": 3,
+    "slide": "spiral",
+    "trays": "three trays",
+    "popup": "hiddenMarbles"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f23",
+   "name": "Level 23",
+   "slide": {
+    "points": [
+     {
+      "x": -2.2,
+      "z": -13
+     },
+     {
+      "x": -2.3,
+      "z": -12
+     },
+     {
+      "x": -2.3,
+      "z": -10.8
+     },
+     {
+      "x": -2,
+      "z": -9.8
+     },
+     {
+      "x": -1.3,
+      "z": -9.3
+     },
+     {
+      "x": -0.5,
+      "z": -9.6
+     },
+     {
+      "x": -0.2,
+      "z": -10.6
+     },
+     {
+      "x": -0.2,
+      "z": -11.8
+     },
+     {
+      "x": 0.2,
+      "z": -12.8
+     },
+     {
+      "x": 1,
+      "z": -13.2
+     },
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 2.1,
+      "z": -11.8
+     },
+     {
+      "x": 2.2,
+      "z": -10.4
+     },
+     {
+      "x": 2.2,
+      "z": -8.8
+     },
+     {
+      "x": 1.7,
+      "z": -7.2
+     },
+     {
+      "x": 0.3,
+      "z": -6.3
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "?red",
+       "red",
+       "red",
+       "cyan"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "?red",
+       "red",
+       "red",
+       "cyan"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       "cyan"
+      ]
+     ],
+     "at": 10.121,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "blue",
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "?yellow",
+       "purple",
+       "purple",
+       "cyan",
+       "cyan"
+      ],
+      [
+       "green",
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 3.869,
+     "side": 1,
+     "shape": [
+      [
+       -3.44,
+       -6.21
+      ]
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "green",
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "orange",
+       "cyan",
+       "cyan"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "red",
+       "?red",
+       "purple",
+       "cyan"
+      ]
+     ],
+     "at": 16.057,
+     "side": -1,
+     "shape": [
+      [
+       4.43,
+       -4.71
+      ]
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       "cyan",
+       "cyan"
+      ],
+      [
+       "green",
+       "green",
+       "orange",
+       "orange",
+       "orange",
+       "cyan",
+       "cyan"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       "?purple"
+      ]
+     ],
+     "at": 17.898,
+     "side": -1,
+     "shape": [
+      [
+       1.27,
+       -2.72
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "green",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "purple",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G3"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "purple",
+      "size": 6,
+      "link": "G4"
+     },
+     {
+      "color": "cyan",
+      "size": 12,
+      "link": "G4"
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G1",
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "orange",
+      "size": 12
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "laneCount": 4,
+   "meta": {
+    "role": "Challenge",
+    "diff": 7,
+    "slide": "hairpin",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f24",
+   "name": "Level 24",
+   "slide": {
+    "points": [
+     {
+      "x": -0.3434848547913134,
+      "z": -12.09039245720487
+     },
+     {
+      "x": -0.25,
+      "z": -11.32
+     },
+     {
+      "x": 0.31,
+      "z": -10.84
+     },
+     {
+      "x": 1.08,
+      "z": -10.8
+     },
+     {
+      "x": 1.73,
+      "z": -10.45
+     },
+     {
+      "x": 1.94,
+      "z": -9.74
+     },
+     {
+      "x": 1.7,
+      "z": -9.05
+     },
+     {
+      "x": 1.03,
+      "z": -8.74
+     },
+     {
+      "x": 0.28,
+      "z": -8.74
+     },
+     {
+      "x": -0.48,
+      "z": -8.74
+     },
+     {
+      "x": -0.83,
+      "z": -8.74,
+      "spiral": {
+       "r": 0.8640852152835579,
+       "side": 1
+      }
+     },
+     {
+      "x": 0.43,
+      "z": -7.85
+     },
+     {
+      "x": 1.17,
+      "z": -7.7
+     },
+     {
+      "x": 1.69,
+      "z": -7.19
+     },
+     {
+      "x": 1.71,
+      "z": -6.43
+     },
+     {
+      "x": 1.29,
+      "z": -5.82
+     },
+     {
+      "x": -1.305,
+      "z": -5.42
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "blue",
+       "blue",
+       "yellow",
+       "orange"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "purple",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 17.137,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "blue",
+       "blue",
+       "blue",
+       "orange"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "blue",
+       "orange",
+       "orange"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 2.989,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "orange",
+       "orange"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 18.573,
+     "side": -1,
+     "shape": [
+      [
+       4.41,
+       -3.76
+      ]
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 21.847,
+     "side": 1,
+     "shape": [
+      [
+       -2.96,
+       -8.75
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "orange",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 12
+     },
+     {
+      "color": "purple",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "blue",
+      "size": 8,
+      "link": "G2"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 12
+     },
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 8,
+      "link": "G2"
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "slide": "a meander with a spiral",
+    "trays": "four trays, big boxes"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f25",
+   "name": "Level 25",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "green",
+       "cyan",
+       "yellow",
+       "yellow",
+       "purple",
+       "?purple"
+      ],
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "cyan",
+       "purple",
+       "?purple",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "cyan",
+       "cyan",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 3.082,
+     "side": 1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "cyan",
+       "cyan",
+       "red",
+       "?red"
+      ],
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "cyan",
+       "yellow",
+       "yellow",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "?blue",
+       "green",
+       "cyan",
+       "cyan",
+       "purple",
+       "?purple"
+      ]
+     ],
+     "at": 14.872,
+     "side": 1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "blue",
+       "blue",
+       "cyan",
+       "purple",
+       "purple",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       "yellow",
+       "yellow",
+       "?red"
+      ],
+      [
+       "orange",
+       "orange",
+       "?green",
+       "green",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 16.821,
+     "side": 1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "yellow",
+       "purple",
+       "purple",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "green",
+       "?green",
+       "?green",
+       "yellow",
+       "yellow",
+       "?red"
+      ],
+      [
+       "orange",
+       "orange",
+       "?blue",
+       "cyan",
+       "cyan",
+       "yellow",
+       "?red",
+       "red"
+      ]
+     ],
+     "at": 17.584,
+     "side": -1,
+     "shape": [
+      [
+       0.92,
+       -3.02
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 12
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "hidden": true
+     },
+     {
+      "color": "orange",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "cyan",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G1",
+      "hidden": true
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "red",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2"
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "meta": {
+    "role": "Challenge",
+    "diff": 8,
+    "slide": "winding",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f26",
+   "name": "Level 26",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "orange",
+       null
+      ],
+      [
+       "yellow",
+       null,
+       null,
+       "orange",
+       "red",
+       "red"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       null,
+       null
+      ]
+     ],
+     "at": 2.018,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "red",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       null,
+       null
+      ],
+      [
+       "blue",
+       null,
+       null,
+       "orange",
+       "orange",
+       "orange"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       null,
+       null
+      ]
+     ],
+     "at": 12.326,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "purple",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "purple",
+       "purple",
+       null,
+       null
+      ],
+      [
+       "blue",
+       null,
+       null,
+       "orange",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "orange",
+       null
+      ]
+     ],
+     "at": 14.926,
+     "side": -1,
+     "shape": [
+      [
+       4.14,
+       -3.65
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "yellow",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "orange",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 19.362,
+     "side": 1,
+     "shape": [
+      [
+       -2.83,
+       -9.21
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "blue",
+      "size": 12
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     },
+     {
+      "color": "orange",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "orange",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "the spiral early",
+    "trays": "four trays",
+    "popup": "dispenser"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f27",
+   "name": "Level 27",
+   "slide": {
+    "points": [
+     {
+      "x": -1.6,
+      "z": -13.2
+     },
+     {
+      "x": -0.87,
+      "z": -13.04
+     },
+     {
+      "x": -0.13,
+      "z": -12.89
+     },
+     {
+      "x": 0.65,
+      "z": -12.71
+     },
+     {
+      "x": 1.2,
+      "z": -12.17
+     },
+     {
+      "x": 1.14,
+      "z": -11.4
+     },
+     {
+      "x": 0.52,
+      "z": -10.94
+     },
+     {
+      "x": -0.2,
+      "z": -10.74
+     },
+     {
+      "x": -0.92,
+      "z": -10.53
+     },
+     {
+      "x": -1.64,
+      "z": -10.32
+     },
+     {
+      "x": -2.35,
+      "z": -9.97
+     },
+     {
+      "x": -2.57,
+      "z": -9.23
+     },
+     {
+      "x": -2.15,
+      "z": -8.58
+     },
+     {
+      "x": -1.38,
+      "z": -8.36
+     },
+     {
+      "x": -0.65,
+      "z": -8.21
+     },
+     {
+      "x": 0.08,
+      "z": -8.05
+     },
+     {
+      "x": 0.86,
+      "z": -7.87
+     },
+     {
+      "x": 1.38,
+      "z": -7.3
+     },
+     {
+      "x": 1.28,
+      "z": -6.53
+     },
+     {
+      "x": 0.64,
+      "z": -6.1
+     },
+     {
+      "x": 0.25,
+      "z": -5.99
+     },
+     {
+      "x": -1.5,
+      "z": -5.6
+     },
+     {
+      "x": -2.8,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "green",
+       null
+      ],
+      [
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "yellow",
+       null,
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       null,
+       null
+      ]
+     ],
+     "at": 2.808,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "orange",
+       "yellow",
+       "yellow",
+       "green",
+       null
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow",
+       "green",
+       null
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 12.827,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       null,
+       null,
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "blue",
+       "blue",
+       "orange",
+       "yellow",
+       "yellow",
+       "green",
+       null
+      ],
+      [
+       "blue",
+       "purple",
+       "purple",
+       "yellow",
+       "yellow",
+       null,
+       null
+      ]
+     ],
+     "at": 7.642,
+     "side": 1,
+     "tilt": 55,
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "purple",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "yellow",
+       "green",
+       null
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "green",
+       null
+      ],
+      [
+       "blue",
+       "orange",
+       null,
+       null,
+       "green",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 18.259,
+     "side": 1,
+     "shape": [
+      [
+       -3.73,
+       -9.28
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "red",
+       "count": 8
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "hidden": true
+     },
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "orange",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "orange",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 6
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "zig-zag",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f28",
+   "name": "Level 28",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "red",
+       null,
+       null
+      ],
+      [
+       "purple",
+       "purple",
+       null,
+       null,
+       "blue",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       null
+      ]
+     ],
+     "at": 3.142,
+     "side": 1,
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "red",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       null
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       null
+      ]
+     ],
+     "at": 8.14,
+     "side": -1,
+     "tilt": 55
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       null,
+       null,
+       "blue",
+       "blue",
+       "blue"
+      ],
+      [
+       "purple",
+       "purple",
+       "blue",
+       "blue",
+       "blue",
+       null
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "blue",
+       null
+      ]
+     ],
+     "at": 11.067,
+     "side": -1,
+     "shape": [
+      [
+       4.06,
+       -3.85
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "blue",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "red",
+       "blue"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "red",
+       "red",
+       null
+      ]
+     ],
+     "at": 15.352,
+     "side": 1,
+     "shape": [
+      [
+       -1.62,
+       -9.53
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     },
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 12
+     },
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "S-curve",
+    "trays": "four trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f29",
+   "name": "Level 29",
+   "slide": {
+    "points": [
+     {
+      "x": 0.012301117414608598,
+      "z": -12.033694186946377
+     },
+     {
+      "x": 0.09,
+      "z": -11.25
+     },
+     {
+      "x": 0.62,
+      "z": -10.75
+     },
+     {
+      "x": 1.41,
+      "z": -10.66
+     },
+     {
+      "x": 1.99,
+      "z": -10.22
+     },
+     {
+      "x": 2.1,
+      "z": -9.46
+     },
+     {
+      "x": 1.68,
+      "z": -8.85
+     },
+     {
+      "x": 0.96,
+      "z": -8.7
+     },
+     {
+      "x": 0.2,
+      "z": -8.7
+     },
+     {
+      "x": -0.56,
+      "z": -8.7
+     },
+     {
+      "x": -1.01,
+      "z": -8.7,
+      "spiral": {
+       "r": 0.8763574160868303,
+       "side": 1
+      }
+     },
+     {
+      "x": 0.24,
+      "z": -7.81
+     },
+     {
+      "x": 1.02,
+      "z": -7.67
+     },
+     {
+      "x": 1.59,
+      "z": -7.22
+     },
+     {
+      "x": 1.67,
+      "z": -6.47
+     },
+     {
+      "x": 1.25,
+      "z": -5.86
+     },
+     {
+      "x": -1.325,
+      "z": -5.46
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       null,
+       null,
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple"
+      ],
+      [
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "cyan",
+       "orange",
+       null,
+       null
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "green",
+       "green",
+       "green",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 17.568,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "green",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple",
+       null,
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "blue",
+       "blue",
+       "orange",
+       "orange"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "orange",
+       null,
+       null
+      ]
+     ],
+     "at": 22.293,
+     "side": 1,
+     "shape": [
+      [
+       -3.25,
+       -8.9
+      ]
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "red",
+       "red",
+       null,
+       null,
+       "orange",
+       "orange",
+       "purple",
+       "purple"
+      ],
+      [
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "blue",
+       "blue",
+       "orange",
+       null
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "cyan",
+       "blue",
+       "blue",
+       null,
+       null
+      ]
+     ],
+     "at": 18.934,
+     "side": -1,
+     "shape": [
+      [
+       4.17,
+       -3.3
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "blue",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "red",
+       "red",
+       "purple",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "cyan",
+       "purple",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 3.07,
+     "side": -1
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G3",
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G3"
+     },
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "cyan",
+      "size": 8
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "orange",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G1",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 12,
+      "link": "G4"
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "meta": {
+    "role": "Challenge",
+    "diff": 7,
+    "slide": "a meander with a spiral",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f30",
+   "name": "Level 30",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       null,
+       null,
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "pink",
+       "pink",
+       "green",
+       "cyan",
+       "cyan",
+       "yellow",
+       "yellow",
+       null
+      ],
+      [
+       "pink",
+       "pink",
+       "pink",
+       "cyan",
+       "yellow",
+       "yellow",
+       null,
+       null
+      ]
+     ],
+     "at": 1.864,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "green",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "yellow",
+       null,
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "purple",
+       null
+      ],
+      [
+       "pink",
+       "orange",
+       "orange",
+       "cyan",
+       "yellow",
+       "yellow",
+       null,
+       null
+      ]
+     ],
+     "at": 12.679,
+     "side": -1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "orange",
+       "green",
+       "cyan",
+       "yellow",
+       "yellow",
+       "purple",
+       null
+      ],
+      [
+       "pink",
+       "pink",
+       "pink",
+       "cyan",
+       "cyan",
+       "cyan",
+       "purple",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       null,
+       null,
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 15.563,
+     "side": -1,
+     "shape": [
+      [
+       4.09,
+       -3.4
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "red",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "pink",
+       "pink",
+       "pink",
+       "red",
+       "red",
+       "yellow",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "blue",
+       "orange",
+       "cyan",
+       "cyan",
+       "yellow",
+       "yellow",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       null
+      ]
+     ],
+     "at": 19.69,
+     "side": 1,
+     "shape": [
+      [
+       -2.7,
+       -9.75
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8,
+      "hidden": true
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "green",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "cyan",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "pink",
+      "size": 12,
+      "link": "G2"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "green",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G3",
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "cyan",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "purple",
+      "size": 8
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "meta": {
+    "role": "Milestone",
+    "diff": 9,
+    "slide": "spiral",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f31",
+   "name": "Level 31",
+   "slide": {
+    "points": [
+     {
+      "x": -2.2,
+      "z": -13
+     },
+     {
+      "x": -2.3,
+      "z": -12
+     },
+     {
+      "x": -2.3,
+      "z": -10.8
+     },
+     {
+      "x": -2,
+      "z": -9.8
+     },
+     {
+      "x": -1.3,
+      "z": -9.3
+     },
+     {
+      "x": -0.5,
+      "z": -9.6
+     },
+     {
+      "x": -0.2,
+      "z": -10.6
+     },
+     {
+      "x": -0.2,
+      "z": -11.8
+     },
+     {
+      "x": 0.2,
+      "z": -12.8
+     },
+     {
+      "x": 1,
+      "z": -13.2
+     },
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 2.1,
+      "z": -11.8
+     },
+     {
+      "x": 2.2,
+      "z": -10.4
+     },
+     {
+      "x": 2.2,
+      "z": -8.8
+     },
+     {
+      "x": 1.7,
+      "z": -7.2
+     },
+     {
+      "x": 0.3,
+      "z": -6.3
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "purple"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "purple"
+      ]
+     ],
+     "at": 16.121,
+     "side": -1,
+     "shape": [
+      [
+       4.33,
+       -4.51
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "purple"
+      ]
+     ],
+     "at": 3.669,
+     "side": 1,
+     "shape": [
+      [
+       -4.09,
+       -6.6
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "purple"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 17.657,
+     "side": -1,
+     "shape": [
+      [
+       1.78,
+       -2.86
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "purple"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 10.298,
+     "side": -1,
+     "shape": [
+      [
+       4.69,
+       -15.17
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "yellow",
+      "size": 8
+     },
+     {
+      "color": "green",
+      "size": 8
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "red",
+      "size": 12,
+      "hidden": true
+     },
+     {
+      "color": "yellow",
+      "size": 8,
+      "hidden": true
+     },
+     {
+      "color": "purple",
+      "size": 12
+     }
+    ]
+   ],
+   "laneCount": 2,
+   "meta": {
+    "role": "Relax",
+    "diff": 3,
+    "slide": "hairpin",
+    "trays": "square trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f32",
+   "name": "Level 32",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "green"
+      ]
+     ],
+     "at": 3.082,
+     "side": 1,
+     "crates": [
+      {
+       "col": 1,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "green",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "purple",
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "red"
+      ]
+     ],
+     "at": 14.872,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 12.821,
+     "side": -1,
+     "shape": [
+      [
+       1.24,
+       -5.05
+      ]
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "red"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "red"
+      ]
+     ],
+     "at": 18.984,
+     "side": 1,
+     "shape": [
+      [
+       -4.09,
+       -9.25
+      ]
+     ],
+     "crates": [
+      {
+       "col": 0,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "lock": "K2"
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 8
+     },
+     {
+      "color": "orange",
+      "size": 6
+     },
+     {
+      "color": "orange",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 12
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 8,
+      "key": "K1"
+     },
+     {
+      "color": "yellow",
+      "size": 12,
+      "key": "K2"
+     },
+     {
+      "color": "red",
+      "size": 6
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Teach + POPUP",
+    "diff": 4,
+    "slide": "winding",
+    "trays": "four trays",
+    "popup": "lock"
+   },
+   "marbleScale": 1.05
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f33",
+   "name": "Level 33",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "green",
+       "green",
+       "cyan",
+       "cyan",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "purple",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "green",
+       "green",
+       "purple",
+       "purple",
+       "blue",
+       "yellow"
+      ]
+     ],
+     "at": 2.018,
+     "side": -1,
+     "crates": [
+      {
+       "col": 0,
+       "row": 5,
+       "w": 3,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "red",
+       "purple",
+       "cyan",
+       "cyan",
+       "red",
+       "blue"
+      ],
+      [
+       "red",
+       "green",
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "purple",
+       "yellow"
+      ]
+     ],
+     "at": 12.326,
+     "side": -1
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "orange",
+       "cyan",
+       "yellow",
+       "blue",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "purple",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 15.126,
+     "side": -1,
+     "shape": [
+      [
+       4.21,
+       -3.22
+      ]
+     ],
+     "crates": [
+      {
+       "col": 0,
+       "row": 4,
+       "w": 1,
+       "h": 2,
+       "count": 3
+      }
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "green",
+       "green",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "purple",
+       "yellow",
+       "yellow",
+       "blue"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "cyan",
+       "cyan",
+       "cyan",
+       "yellow"
+      ]
+     ],
+     "at": 19.362,
+     "side": 1,
+     "shape": [
+      [
+       -2.9,
+       -9.56
+      ]
+     ],
+     "crates": [
+      {
+       "col": 0,
+       "row": 4,
+       "w": 1,
+       "h": 2,
+       "lock": "K2"
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "orange",
+      "size": 8,
+      "key": "K2"
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 12
+     },
+     {
+      "color": "cyan",
+      "size": 6,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "hidden": true,
+      "key": "K1"
+     },
+     {
+      "color": "yellow",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "cyan",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "orange",
+      "size": 6
+     },
+     {
+      "color": "purple",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 4
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "the spiral early",
+    "trays": "four deeper trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f34",
+   "name": "Level 34",
+   "slide": {
+    "points": [
+     {
+      "x": -1.6,
+      "z": -13.2
+     },
+     {
+      "x": -0.87,
+      "z": -13.04
+     },
+     {
+      "x": -0.13,
+      "z": -12.89
+     },
+     {
+      "x": 0.65,
+      "z": -12.71
+     },
+     {
+      "x": 1.2,
+      "z": -12.17
+     },
+     {
+      "x": 1.14,
+      "z": -11.4
+     },
+     {
+      "x": 0.52,
+      "z": -10.94
+     },
+     {
+      "x": -0.2,
+      "z": -10.74
+     },
+     {
+      "x": -0.92,
+      "z": -10.53
+     },
+     {
+      "x": -1.64,
+      "z": -10.32
+     },
+     {
+      "x": -2.35,
+      "z": -9.97
+     },
+     {
+      "x": -2.57,
+      "z": -9.23
+     },
+     {
+      "x": -2.15,
+      "z": -8.58
+     },
+     {
+      "x": -1.38,
+      "z": -8.36
+     },
+     {
+      "x": -0.65,
+      "z": -8.21
+     },
+     {
+      "x": 0.08,
+      "z": -8.05
+     },
+     {
+      "x": 0.86,
+      "z": -7.87
+     },
+     {
+      "x": 1.38,
+      "z": -7.3
+     },
+     {
+      "x": 1.28,
+      "z": -6.53
+     },
+     {
+      "x": 0.64,
+      "z": -6.1
+     },
+     {
+      "x": 0.25,
+      "z": -5.99
+     },
+     {
+      "x": -1.5,
+      "z": -5.6
+     },
+     {
+      "x": -2.8,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       null,
+       null
+      ],
+      [
+       "blue",
+       null,
+       null,
+       "orange",
+       "orange",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 2.808,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "green",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       null
+      ],
+      [
+       "red",
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       null,
+       null,
+       "orange",
+       "orange",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 12.827,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "purple",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       null
+      ],
+      [
+       "red",
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       null
+      ]
+     ],
+     "at": 7.642,
+     "side": 1,
+     "tilt": 55
+    },
+    {
+     "rows": 7,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "orange",
+       "orange",
+       "orange",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "orange",
+       null
+      ]
+     ],
+     "at": 18.259,
+     "side": 1,
+     "shape": [
+      [
+       -3.73,
+       -9.28
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "orange",
+      "size": 8,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 8,
+      "link": "G4"
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "purple",
+      "size": 12,
+      "link": "G2"
+     },
+     {
+      "color": "yellow",
+      "size": 12,
+      "link": "G3"
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 8,
+      "link": "G4"
+     },
+     {
+      "color": "green",
+      "size": 12,
+      "link": "G2"
+     }
+    ]
+   ],
+   "marbleScale": 0.85,
+   "meta": {
+    "role": "Fun",
+    "diff": 4,
+    "slide": "zig-zag",
+    "trays": "four trays, big boxes"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f35",
+   "name": "Level 35",
+   "slide": {
+    "points": [
+     {
+      "x": 0.07819491904228926,
+      "z": -12.021834410028532
+     },
+     {
+      "x": 0.14,
+      "z": -11.23
+     },
+     {
+      "x": 0.66,
+      "z": -10.71
+     },
+     {
+      "x": 1.4,
+      "z": -10.62
+     },
+     {
+      "x": 1.98,
+      "z": -10.16
+     },
+     {
+      "x": 2.02,
+      "z": -9.42
+     },
+     {
+      "x": 1.5,
+      "z": -8.9
+     },
+     {
+      "x": 0.76,
+      "z": -8.84
+     },
+     {
+      "x": -0.04,
+      "z": -8.84
+     },
+     {
+      "x": -0.84,
+      "z": -8.84
+     },
+     {
+      "x": -1.52,
+      "z": -8.56
+     },
+     {
+      "x": -1.76,
+      "z": -7.87
+     },
+     {
+      "x": -1.4,
+      "z": -7.22
+     },
+     {
+      "x": -0.69,
+      "z": -7.04
+     },
+     {
+      "x": 0.07,
+      "z": -7.04
+     },
+     {
+      "x": 1.12,
+      "z": -7.04,
+      "spiral": {
+       "r": 0.8707356944447384,
+       "side": -1
+      }
+     },
+     {
+      "x": -0.12,
+      "z": -6.17
+     },
+     {
+      "x": -0.87,
+      "z": -6.03
+     },
+     {
+      "x": -1.61,
+      "z": -5.9
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "cyan",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "green"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "green"
+      ],
+      [
+       "red",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       "green"
+      ]
+     ],
+     "at": 7.381,
+     "side": 1,
+     "tilt": 55,
+     "crates": [
+      {
+       "col": 2,
+       "row": 5,
+       "w": 1,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "red",
+       "purple",
+       "purple",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "purple",
+       "purple",
+       "blue",
+       "orange",
+       "orange",
+       "green"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "cyan",
+       "purple",
+       "purple",
+       "green",
+       "green"
+      ]
+     ],
+     "at": 22.337,
+     "side": 1,
+     "tilt": 55
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "red",
+       "cyan",
+       "cyan",
+       "blue",
+       "blue",
+       "green",
+       "green"
+      ],
+      [
+       "yellow",
+       "red",
+       "cyan",
+       "cyan",
+       "blue",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "green"
+      ]
+     ],
+     "at": 20.002,
+     "side": -1,
+     "shape": [
+      [
+       2.69,
+       -3.38
+      ]
+     ],
+     "crates": [
+      {
+       "col": 1,
+       "row": 5,
+       "w": 1,
+       "h": 2,
+       "lock": "K2"
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "cyan",
+       "blue",
+       "blue",
+       "green"
+      ],
+      [
+       "yellow",
+       "red",
+       "purple",
+       "purple",
+       "orange",
+       "orange"
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "purple",
+       "orange",
+       "orange"
+      ],
+      [
+       "red",
+       "red",
+       "cyan",
+       "purple",
+       "blue",
+       "blue"
+      ]
+     ],
+     "at": 2.964,
+     "side": -1
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "green",
+      "size": 4
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G1"
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 12,
+      "link": "G2"
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G6",
+      "hidden": true
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G1"
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 8,
+      "link": "G3"
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "link": "G6"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 4,
+      "key": "K2"
+     },
+     {
+      "color": "green",
+      "size": 12,
+      "link": "G3",
+      "hidden": true
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G5"
+     },
+     {
+      "color": "cyan",
+      "size": 8,
+      "link": "G5"
+     },
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "key": "K1"
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "laneCount": 4,
+   "meta": {
+    "role": "Challenge",
+    "diff": 8,
+    "slide": "a meander with a spiral",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f36",
+   "name": "Level 36",
+   "slide": {
+    "points": [
+     {
+      "x": 1.6,
+      "z": -13
+     },
+     {
+      "x": 0.4,
+      "z": -12.8
+     },
+     {
+      "x": -0.9,
+      "z": -12.4
+     },
+     {
+      "x": -1.7,
+      "z": -11.6
+     },
+     {
+      "x": -1.6,
+      "z": -10.6
+     },
+     {
+      "x": -0.7,
+      "z": -9.9
+     },
+     {
+      "x": 0.6,
+      "z": -9.6
+     },
+     {
+      "x": 1.8,
+      "z": -9.1
+     },
+     {
+      "x": 2.4,
+      "z": -8.1
+     },
+     {
+      "x": 2,
+      "z": -7
+     },
+     {
+      "x": 0.8,
+      "z": -6.4
+     },
+     {
+      "x": -0.6,
+      "z": -6
+     },
+     {
+      "x": -1.8,
+      "z": -5.8
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "yellow"
+      ],
+      [
+       "purple",
+       "green",
+       "green",
+       "purple",
+       "red",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 3.142,
+     "side": 1
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "yellow"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "yellow"
+      ]
+     ],
+     "at": 8.14,
+     "side": -1,
+     "tilt": 55,
+     "crates": [
+      {
+       "col": 0,
+       "row": 3,
+       "w": 1,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "orange",
+       "orange",
+       "green",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ]
+     ],
+     "at": 11.067,
+     "side": -1,
+     "shape": [
+      [
+       4.06,
+       -3.85
+      ]
+     ],
+     "crates": [
+      {
+       "col": 1,
+       "row": 3,
+       "w": 2,
+       "h": 2,
+       "count": 2
+      }
+     ]
+    },
+    {
+     "rows": 6,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow"
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "orange",
+       "yellow",
+       "yellow"
+      ]
+     ],
+     "at": 15.352,
+     "side": 1,
+     "shape": [
+      [
+       -1.62,
+       -9.53
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "orange",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 6
+     },
+     {
+      "color": "blue",
+      "size": 8
+     },
+     {
+      "color": "purple",
+      "size": 8,
+      "hidden": true
+     }
+    ],
+    [
+     {
+      "color": "purple",
+      "size": 6,
+      "key": "K1"
+     },
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "red",
+      "size": 8
+     }
+    ]
+   ],
+   "meta": {
+    "role": "Relax",
+    "diff": 4,
+    "slide": "S-curve",
+    "trays": "four trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f37",
+   "name": "Level 37",
+   "slide": {
+    "points": [
+     {
+      "x": -2.2,
+      "z": -13
+     },
+     {
+      "x": -2.3,
+      "z": -12
+     },
+     {
+      "x": -2.3,
+      "z": -10.8
+     },
+     {
+      "x": -2,
+      "z": -9.8
+     },
+     {
+      "x": -1.3,
+      "z": -9.3
+     },
+     {
+      "x": -0.5,
+      "z": -9.6
+     },
+     {
+      "x": -0.2,
+      "z": -10.6
+     },
+     {
+      "x": -0.2,
+      "z": -11.8
+     },
+     {
+      "x": 0.2,
+      "z": -12.8
+     },
+     {
+      "x": 1,
+      "z": -13.2
+     },
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 2.1,
+      "z": -11.8
+     },
+     {
+      "x": 2.2,
+      "z": -10.4
+     },
+     {
+      "x": 2.2,
+      "z": -8.8
+     },
+     {
+      "x": 1.7,
+      "z": -7.2
+     },
+     {
+      "x": 0.3,
+      "z": -6.3
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       null,
+       null,
+       "purple",
+       "purple",
+       "purple",
+       "cyan"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "purple",
+       "cyan",
+       "cyan",
+       null,
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "?yellow",
+       "red",
+       "cyan",
+       "cyan",
+       "cyan",
+       null
+      ]
+     ],
+     "at": 10.321,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "blue",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "green",
+       "green",
+       null,
+       null
+      ],
+      [
+       "green",
+       "green",
+       "red",
+       "red",
+       "red",
+       "green",
+       null,
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "cyan",
+       "cyan",
+       "cyan",
+       "cyan"
+      ]
+     ],
+     "at": 3.869,
+     "side": 1,
+     "shape": [
+      [
+       -4.01,
+       -6.4
+      ]
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "orange",
+       "cyan",
+       "?cyan",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "orange",
+       "orange",
+       "green",
+       null,
+       null
+      ],
+      [
+       "yellow",
+       null,
+       null,
+       "?purple",
+       "purple",
+       "cyan",
+       "?cyan",
+       "cyan"
+      ]
+     ],
+     "at": 16.057,
+     "side": -1,
+     "shape": [
+      [
+       4.14,
+       -4.19
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "red",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "purple",
+       "?purple",
+       "purple",
+       "green",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "orange",
+       "green",
+       "green",
+       "?green",
+       "green",
+       "?green"
+      ],
+      [
+       "green",
+       "orange",
+       "orange",
+       "orange",
+       "?blue",
+       "cyan",
+       "purple",
+       null
+      ]
+     ],
+     "at": 17.698,
+     "side": -1,
+     "shape": [
+      [
+       1.74,
+       -2.71
+      ]
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 4
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 6
+     },
+     {
+      "color": "yellow",
+      "size": 8,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "red",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "green",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 12
+     },
+     {
+      "color": "cyan",
+      "size": 12,
+      "hidden": true
+     },
+     {
+      "color": "cyan",
+      "size": 4
+     },
+     {
+      "color": "purple",
+      "size": 6
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "meta": {
+    "role": "Practice",
+    "diff": 7,
+    "slide": "hairpin",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f38",
+   "name": "Level 38",
+   "slide": {
+    "points": [
+     {
+      "x": 1.8,
+      "z": -12.8
+     },
+     {
+      "x": 1.05,
+      "z": -12.8
+     },
+     {
+      "x": 0.3,
+      "z": -12.8
+     },
+     {
+      "x": -0.5,
+      "z": -12.79
+     },
+     {
+      "x": -1.17,
+      "z": -12.4
+     },
+     {
+      "x": -1.36,
+      "z": -11.65
+     },
+     {
+      "x": -0.96,
+      "z": -10.99
+     },
+     {
+      "x": -0.2,
+      "z": -10.8
+     },
+     {
+      "x": 0.55,
+      "z": -10.8
+     },
+     {
+      "x": 1.3,
+      "z": -10.8
+     },
+     {
+      "x": 2.05,
+      "z": -10.8
+     },
+     {
+      "x": 2.85,
+      "z": -10.78
+     },
+     {
+      "x": 3.48,
+      "z": -10.32
+     },
+     {
+      "x": 3.59,
+      "z": -9.55
+     },
+     {
+      "x": 3.12,
+      "z": -8.93
+     },
+     {
+      "x": 2.35,
+      "z": -8.8
+     },
+     {
+      "x": 1.6,
+      "z": -8.8
+     },
+     {
+      "x": 0.85,
+      "z": -8.8
+     },
+     {
+      "x": 0.1,
+      "z": -8.8
+     },
+     {
+      "x": -0.61,
+      "z": -8.58
+     },
+     {
+      "x": -0.97,
+      "z": -7.93
+     },
+     {
+      "x": -0.97,
+      "z": -7.38
+     },
+     {
+      "x": -1.3,
+      "z": -6.2
+     },
+     {
+      "x": -2,
+      "z": -5.8
+     },
+     {
+      "x": -2.9,
+      "z": -5.7
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "blue",
+       "blue",
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "pink",
+       null
+      ],
+      [
+       "orange",
+       null,
+       null,
+       "pink",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 3.082,
+     "side": 1,
+     "dispensers": [
+      {
+       "col": 2,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "cyan",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "green",
+       "green",
+       "cyan",
+       "cyan",
+       "green",
+       "green",
+       "green",
+       "pink"
+      ],
+      [
+       "orange",
+       "orange",
+       "cyan",
+       "cyan",
+       "red",
+       "red",
+       "pink",
+       null
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "pink",
+       "pink",
+       null
+      ]
+     ],
+     "at": 14.872,
+     "side": 1,
+     "crates": [
+      {
+       "col": 0,
+       "row": 4,
+       "w": 1,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "yellow",
+       "yellow",
+       "yellow",
+       "pink",
+       null
+      ],
+      [
+       "blue",
+       "orange",
+       "orange",
+       "red",
+       "green",
+       "purple",
+       "purple",
+       null
+      ],
+      [
+       "orange",
+       "orange",
+       "cyan",
+       "cyan",
+       "red",
+       "red",
+       "red",
+       "pink"
+      ]
+     ],
+     "at": 16.821,
+     "side": 1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "green",
+       "green",
+       "pink",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "yellow",
+       "yellow",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "orange",
+       "orange",
+       "orange",
+       "red",
+       "red",
+       "purple",
+       "purple",
+       "pink"
+      ]
+     ],
+     "at": 17.584,
+     "side": -1,
+     "shape": [
+      [
+       0.92,
+       -3.02
+      ]
+     ],
+     "crates": [
+      {
+       "col": 2,
+       "row": 5,
+       "w": 1,
+       "h": 2,
+       "lock": "K2"
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "pink",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "red",
+      "size": 4
+     },
+     {
+      "color": "red",
+      "size": 6
+     },
+     {
+      "color": "purple",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "pink",
+      "size": 6,
+      "link": "G2"
+     },
+     {
+      "color": "blue",
+      "size": 4
+     },
+     {
+      "color": "cyan",
+      "size": 4
+     },
+     {
+      "color": "purple",
+      "size": 4
+     }
+    ],
+    [
+     {
+      "color": "green",
+      "size": 8,
+      "key": "K2"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G3",
+      "hidden": true
+     },
+     {
+      "color": "cyan",
+      "size": 6
+     },
+     {
+      "color": "green",
+      "size": 6
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "yellow",
+      "size": 12,
+      "link": "G1",
+      "hidden": true
+     },
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     }
+    ],
+    [
+     {
+      "color": "orange",
+      "size": 6
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "key": "K1"
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "laneCount": 5,
+   "meta": {
+    "role": "Challenge",
+    "diff": 8,
+    "slide": "winding",
+    "trays": "four deep trays"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f39",
+   "name": "Level 39",
+   "slide": {
+    "points": [
+     {
+      "x": -0.6,
+      "z": -12.2
+     },
+     {
+      "x": -0.5,
+      "z": -11.3
+     },
+     {
+      "x": -0.2,
+      "z": -10.5
+     },
+     {
+      "x": 0.2,
+      "z": -9.6,
+      "spiral": {
+       "r": 1,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.6,
+      "z": -9
+     },
+     {
+      "x": 2.4,
+      "z": -7.8
+     },
+     {
+      "x": 1.8,
+      "z": -6.5
+     },
+     {
+      "x": 0.3,
+      "z": -5.9
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "cyan",
+       null
+      ],
+      [
+       "green",
+       null,
+       null,
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       null,
+       null
+      ]
+     ],
+     "at": 1.864,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "orange",
+       "count": 6
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "green",
+       "green",
+       "green",
+       "red",
+       "red",
+       "red",
+       "purple",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "yellow",
+       "cyan",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "red",
+       "red",
+       "red",
+       "red",
+       null
+      ]
+     ],
+     "at": 12.679,
+     "side": -1
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "yellow",
+       "yellow",
+       "green",
+       "red",
+       "red",
+       "red",
+       "red",
+       "red"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "cyan",
+       "cyan",
+       null
+      ],
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       "cyan"
+      ]
+     ],
+     "at": 15.563,
+     "side": -1,
+     "shape": [
+      [
+       4.09,
+       -3.4
+      ]
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "blue",
+       "blue",
+       "blue",
+       "blue",
+       "cyan",
+       "cyan",
+       "cyan",
+       null
+      ],
+      [
+       "yellow",
+       "yellow",
+       null,
+       null,
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "green",
+       "purple",
+       "purple"
+      ]
+     ],
+     "at": 19.69,
+     "side": 1,
+     "shape": [
+      [
+       -2.7,
+       -9.75
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "orange",
+       "count": 6
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "red",
+      "size": 12
+     },
+     {
+      "color": "blue",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "purple",
+      "size": 12,
+      "link": "G2"
+     },
+     {
+      "color": "cyan",
+      "size": 12,
+      "link": "G2"
+     }
+    ],
+    [
+     {
+      "color": "blue",
+      "size": 8,
+      "link": "G1"
+     },
+     {
+      "color": "orange",
+      "size": 12
+     }
+    ],
+    [
+     {
+      "color": "yellow",
+      "size": 8,
+      "link": "G4"
+     },
+     {
+      "color": "yellow",
+      "size": 8,
+      "link": "G4"
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "link": "G3"
+     },
+     {
+      "color": "green",
+      "size": 8,
+      "link": "G3"
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "meta": {
+    "role": "Fun",
+    "diff": 5,
+    "slide": "spiral",
+    "trays": "four deep trays, big boxes"
+   }
+  },
+  {
+   "format": 1,
+   "type": "marble-run-level",
+   "id": "f40",
+   "name": "Level 40",
+   "slide": {
+    "points": [
+     {
+      "x": -0.5,
+      "z": -12
+     },
+     {
+      "x": -0.4,
+      "z": -11.1
+     },
+     {
+      "x": 0.2,
+      "z": -10.1
+     },
+     {
+      "x": 0.3,
+      "z": -9,
+      "spiral": {
+       "r": 0.9,
+       "side": 1
+      }
+     },
+     {
+      "x": 1.7,
+      "z": -8.5
+     },
+     {
+      "x": 2.5,
+      "z": -7.3
+     },
+     {
+      "x": 1.9,
+      "z": -6.1
+     },
+     {
+      "x": 0.3,
+      "z": -5.6
+     },
+     {
+      "x": -1.4,
+      "z": -5.9
+     },
+     {
+      "x": -2.8,
+      "z": -5.8
+     }
+    ]
+   },
+   "trays": [
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "red",
+       "cyan",
+       "cyan",
+       "cyan",
+       "cyan",
+       "blue",
+       null,
+       null
+      ],
+      [
+       "red",
+       null,
+       null,
+       "green",
+       "green",
+       "green",
+       "green",
+       "green"
+      ],
+      [
+       "pink",
+       "pink",
+       "pink",
+       "cyan",
+       "cyan",
+       "cyan",
+       null,
+       null
+      ]
+     ],
+     "at": 2.018,
+     "side": -1,
+     "dispensers": [
+      {
+       "col": 1,
+       "row": 1,
+       "w": 1,
+       "h": 2,
+       "color": "blue",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "pink",
+       "pink",
+       "pink",
+       "pink",
+       "orange",
+       "orange",
+       "green",
+       null
+      ],
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "yellow",
+       "yellow",
+       "yellow",
+       "orange"
+      ],
+      [
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "orange",
+       "orange",
+       null,
+       null
+      ]
+     ],
+     "at": 12.726,
+     "side": -1,
+     "tilt": 55,
+     "crates": [
+      {
+       "col": 0,
+       "row": 4,
+       "w": 1,
+       "h": 2,
+       "lock": "K1"
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "purple",
+       "purple",
+       null,
+       null,
+       "yellow",
+       "yellow",
+       "yellow",
+       "green"
+      ],
+      [
+       "red",
+       "red",
+       "purple",
+       "cyan",
+       "cyan",
+       "cyan",
+       "green",
+       null
+      ],
+      [
+       "purple",
+       "purple",
+       "blue",
+       "orange",
+       "orange",
+       "orange",
+       null,
+       null
+      ]
+     ],
+     "at": 15.326,
+     "side": -1,
+     "shape": [
+      [
+       4.19,
+       -3
+      ]
+     ],
+     "dispensers": [
+      {
+       "col": 0,
+       "row": 2,
+       "w": 1,
+       "h": 2,
+       "color": "yellow",
+       "count": 8
+      }
+     ]
+    },
+    {
+     "rows": 8,
+     "columns": [
+      [
+       "red",
+       "red",
+       "red",
+       "red",
+       "orange",
+       "orange",
+       null,
+       null
+      ],
+      [
+       "cyan",
+       "cyan",
+       "pink",
+       "purple",
+       "purple",
+       "purple",
+       "purple",
+       "purple"
+      ],
+      [
+       "cyan",
+       "cyan",
+       "pink",
+       "pink",
+       "pink",
+       "pink",
+       "orange",
+       "orange"
+      ]
+     ],
+     "at": 19.362,
+     "side": 1,
+     "shape": [
+      [
+       -2.94,
+       -9.73
+      ]
+     ],
+     "crates": [
+      {
+       "col": 1,
+       "row": 3,
+       "w": 1,
+       "h": 2,
+       "count": 3
+      }
+     ]
+    }
+   ],
+   "lanes": [
+    [
+     {
+      "color": "purple",
+      "size": 4,
+      "key": "K1"
+     },
+     {
+      "color": "blue",
+      "size": 6,
+      "link": "G3"
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G6"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "pink",
+      "size": 4,
+      "link": "G3"
+     },
+     {
+      "color": "cyan",
+      "size": 6,
+      "link": "G6"
+     }
+    ],
+    [
+     {
+      "color": "red",
+      "size": 6,
+      "link": "G1"
+     },
+     {
+      "color": "purple",
+      "size": 4,
+      "hidden": true
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G4"
+     },
+     {
+      "color": "green",
+      "size": 4,
+      "link": "G5"
+     }
+    ],
+    [
+     {
+      "color": "cyan",
+      "size": 4,
+      "link": "G1"
+     },
+     {
+      "color": "yellow",
+      "size": 4,
+      "link": "G4",
+      "hidden": true
+     },
+     {
+      "color": "yellow",
+      "size": 6,
+      "link": "G5"
+     }
+    ],
+    [
+     {
+      "color": "pink",
+      "size": 8,
+      "link": "G2"
+     },
+     {
+      "color": "purple",
+      "size": 6,
+      "link": "G2",
+      "hidden": true
+     },
+     {
+      "color": "blue",
+      "size": 4,
+      "link": "G2"
+     },
+     {
+      "color": "orange",
+      "size": 12
+     }
+    ]
+   ],
+   "marbleScale": 0.8,
+   "laneCount": 5,
+   "meta": {
+    "role": "Finale",
+    "diff": 9,
+    "slide": "the spiral early",
+    "trays": "four deep trays, every blocker"
+   }
+  }
+ ]
+}
