@@ -60,7 +60,9 @@ function generate(spec, base, h, rng){
   const nDisp = (spec.blockers && spec.blockers.disp) || 0;
   // a dispenser holds a run of marbles (its count) on 2 cells: its column closes up and ends that many cells short
   const dispCount = nDisp ? (spec.blockers.easy ? 6 : 8) : 0, dispH = 2;
-  const total = cols.reduce((a, c) => a + c.cap, 0);                // the marbles: one per cell (a dispenser's extra marbles leave as many cells empty)
+  // the marbles: one per cell (a dispenser's extra marbles leave as many cells empty); every box size is even, so an
+  // odd number of cells leaves one back cell empty
+  const gcd = sizes.reduce((a, b) => { while (b){ [a, b] = [b, a % b]; } return a; }), cells = cols.reduce((a, c) => a + c.cap, 0), spare = cells % gcd, total = cells - spare;
   const counts = colorCounts(total, spec.colors, sizes, ok, rng, fun ? 0.15 : 0.3);
   if (!counts) return null;
   // boxes: Fun and Relax levels lean to big boxes; the others mix; every listed size appears
@@ -108,6 +110,7 @@ function generate(spec, base, h, rng){
     disp.push({i, d:teach ? 1 : 1 + Math.floor(rng()*Math.min(2, cols[i].cap - 2))});
   }
   const seqCap = cols.map(c => c.cap);
+  for (let e = 0; e < spare; e++){ const i = seqCap.map((c, k) => k).filter(k => !pureCols.has(k)).sort((x, y) => seqCap[y] - seqCap[x] || y - x)[0]; seqCap[i]--; }
   disp.forEach(t => { seqCap[t.i] = cols[t.i].cap - dispH + dispCount; });
   for (let e = 0; e < nDisp*(dispCount - dispH); e++){
     const cand = cols.map((c, i) => i).filter(i => !pureCols.has(i) && !disp.some(t => t.i === i) && seqCap[i] > 2).sort((x, y) => seqCap[y] - seqCap[x] || x - y);

@@ -18,7 +18,7 @@ const halfW0 = (cols, K) => (cols*C.TRAY_SP/2 + 0.12)*(K || 1);
 function turtle(T, start){
   start = start || {};
   let x = start.x != null ? start.x : 0.6, z = start.z != null ? start.z : -11.6, h = start.h != null ? start.h*Math.PI/180 : Math.PI/2;
-  const pts = [[x, z]], STEP = 0.05, EVERY = 1.0; let since = 0;
+  const pts = [[x, z]], STEP = 0.05, EVERY = 0.75; let since = 0;
   const go = (dl, dh) => { h += dh; x += Math.cos(h)*dl; z += Math.sin(h)*dl; since += dl; if (since >= EVERY - 1e-6){ pts.push([+x.toFixed(2), +z.toFixed(2)]); since = 0; } };
   for (const c of T){
     if (c[0] === 'F'){ const n = Math.max(1, Math.round(c[1]/STEP)); for (let i = 0; i < n; i++) go(c[1]/n, 0); }
@@ -90,35 +90,45 @@ function place(spec, level){
   });
   return notes;
 }
-/* a slide that zig-zags down the slide zone: S-bends (and `spirals` loops) from a start near the top to the tail into
-   the sorter; random programs are tried until one raises no slide warning.  opts: spirals (0-2), sway (bend angle
-   scale), seed */
-const SLIDE_BAD = new Set(['zone-slide', 'zone-start', 'slide-tight', 'slide-sorter', 'slide-clear']);
+/* a slide that meanders down a central band of the slide zone (the trays stand on both sides of it): runs across the
+   band joined by U-turns; at a run's end a spiral may loop out and up past the band's edge (its way out heads back
+   down, so it doubles as the U-turn).  From a start near the top down to just above the sorter, then along to the
+   tail into the bowl.  Of the random meanders that raise no slide warning, the longest of `pool` wins.
+   opts: seed, spirals (0-2), band (how far the runs reach either side), pool, minLen */
+const SLIDE_BAD = new Set(['zone-slide', 'zone-start', 'slide-tight', 'slide-clear', 'slide-sorter']);
 function designSlide(opts){
-  opts = opts || {}; const rng = C.mulberry32((opts.seed || 1)*7919 + 3), nsp = opts.spirals || 0, sway = opts.sway || 1;
-  const tail = C.TAIL[0];
-  for (let tries = 0; tries < 4000; tries++){
-    const x0 = (rng()*2 - 1)*1.6, T = [['F', 0.4 + rng()*0.5]]; let side = x0 > 0 ? 1 : -1, sp = 0, legs = 0;
-    const spAt = new Set(); while (spAt.size < nsp) spAt.add(1 + Math.floor(rng()*3));
-    for (let k = 0; k < 6; k++){
-      legs++; const ang = (60 + rng()*80)*sway, r = 1.25 + rng()*0.6;
-      T.push([side > 0 ? 'R' : 'L', Math.min(170, ang), r]); T.push(['F', 0.3 + rng()*1.1]);
-      if (spAt.has(legs) && sp < nsp){ T.push(['S', 0.85 + rng()*0.2, side > 0 ? -1 : 1]); T.push(['F', 0.6]); sp++; }
-      side = -side;
+  opts = opts || {}; const rng = C.mulberry32((opts.seed || 1)*7919 + 3), nsp = opts.spirals || 0, pool = opts.pool || 8, tail = C.TAIL[0];
+  let best = null, found = 0, tries = 0;
+  const end = T => { const P = turtle(T, start); const q = P[P.length - 1]; return q[0] === 'S' ? [q[1], q[2]] : q; };
+  let start = null;
+  for (; tries < 3000 && found < pool; tries++){
+    const band = (opts.band || 0.8) + rng()*0.5, r = 0.82 + rng()*0.2;
+    start = {x:(rng()*2 - 1)*0.5, z:-(12.0 + rng()*0.5)};
+    let dir = rng() < 0.5 ? 1 : -1, sp = 0;
+    const T = [['F', 0.3 + rng()*0.3], [dir > 0 ? 'L' : 'R', 90, r]];
+    for (let leg = 0; leg < 9; leg++){
+      const [x, z] = end(T); if (z > -6.6) break;
+      const target = dir*band*(0.7 + rng()*0.3), F = Math.max(0.2, (target - x)*dir); T.push(['F', F]);
+      const wantSp = sp < nsp && leg >= 1 && rng() < 0.55;
+      if (wantSp){                                   // loop out and up past the band's edge; the way out heads back down
+        T.push(['S', 0.8 + rng()*0.1, -dir]); T.push(['F', 0.25]); sp++;
+        const h = dir > 0 ? 0 : 180, hOut = h + (-dir)*(-110)*(dir > 0 ? 1 : 1);   // the turtle turned by -side*110
+        void hOut; T.push([dir > 0 ? 'R' : 'L', 60, r]);
+      } else { T.push([dir > 0 ? 'R' : 'L', 90, r]); T.push(['F', rng()*0.35]); T.push([dir > 0 ? 'R' : 'L', 90, r]); }
+      dir = -dir;
     }
-    // walk the program, cut it once it is low enough, then head for the tail
-    const pts = turtle(T, {x:x0, z:opts.z0 || -11.9});
-    let cut = pts.findIndex(q => (q[0] === 'S' ? q[2] : q[1]) > -6.4);
-    if (cut < 3) continue;
-    const R = pts.slice(0, cut);
-    const last = R[R.length - 1], lx = last[0] === 'S' ? last[1] : last[0], lz = last[0] === 'S' ? last[2] : last[1];
-    if (Math.hypot(lx - tail[0], lz - tail[1]) < 1.6) continue;
-    R.push([(lx + tail[0])/2 + 0.3, Math.min(lz, tail[1] - 1.2) - 0.2]);
+    const pts = turtle(T, start), zOf = q => q[0] === 'S' ? q[2] : q[1], xOf = q => q[0] === 'S' ? q[1] : q[0];
+    let cut = pts.findIndex(q => zOf(q) > -5.8); if (cut < 0) cut = pts.length; if (cut < 4) continue;
+    const R = pts.slice(0, cut), last = R[R.length - 1], lx = xOf(last), lz = zOf(last);
+    if (Math.hypot(lx - tail[0], lz - tail[1]) < 1.8) continue;
+    if (lx > -1.6) R.push([Math.max(-2.4, Math.min(lx - 1.2, (lx + tail[0])/2)), Math.max(lz + 0.4, -5.9)]);
     const lv = {format:1, type:'marble-run-level', name:'x', slide:slide({R}), trays:[], lanes:[[], [], []]};
     if (lv.slide.points.filter(p => p.spiral).length < nsp) continue;
-    const ws = C.checkLevel(lv).warnings.filter(w => SLIDE_BAD.has(w.kind));
-    if (!ws.length) return {slide:lv.slide, tries};
+    if (C.checkLevel(lv).warnings.some(w => SLIDE_BAD.has(w.kind))) continue;
+    const len = C.buildLayout(lv).SLIDE.tailS; found++;
+    if (opts.minLen && len < opts.minLen) continue;
+    if (!best || len > best.len) best = {slide:lv.slide, len};
   }
-  return null;
+  return best ? {slide:best.slide, len:best.len, tries} : null;
 }
 module.exports = {C, slide, turtle, trayShape, place, trayProblems, trayLength, halfW0, designSlide};

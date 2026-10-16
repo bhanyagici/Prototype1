@@ -17,6 +17,10 @@ level files and builds, retargeted.
 | queue lanes | box lanes (2–5) |
 | `manScale` | `marbleScale` |
 
+- **`index.html`**: the game. It loads three.js 0.160.0 from a pinned CDN through an import map, with no other
+  libraries and no build step. Portrait 9:19.5, scaled to fit, mouse and touch.
+- **`shared/sync.js`**: stored settings and the background bot worker. **`shared/bundle.js`**: packs the game into
+  one self-contained HTML file.
 - **`shared/core.js`**: the rules, the level format, the layout builder (slide, trays, sorter, pillars), the
   checker, the bots and the difficulty test.
   - It is a plain script with no three.js.
@@ -36,9 +40,9 @@ level files and builds, retargeted.
 
 Built in phases, each committed and pushed:
 
-1. **Core** (this phase): the rules, the level format, the layout, the checker, the bots, every blocker, gaps and toy
-   pieces, the demo levels and the headless tests.
-2. The game page: the look, the juice and the settings.
+1. **Core**: the rules, the level format, the layout, the checker, the bots, every blocker, gaps and toy pieces, the
+   demo levels and the headless tests.
+2. **The game page** (this phase): the look, the juice and the settings.
 3. The editor.
 4. The showcase.
 5. The 40-level funnel.
@@ -85,6 +89,97 @@ Built in phases, each committed and pushed:
      could ever be sent then either.
 8. **Level math.** The marbles of each colour equal the holes of that colour's boxes, dispenser marbles included.
    The checker enforces it.
+
+## The game page
+
+![the game](screenshots/game-play-390.png)
+
+**Open it:**
+- `index.html` plays the built-in level;
+- `index.html?level=demo_combo` plays a bundled level;
+- `?bot` lets the greedy bot play;
+- `?debug` shows the core's state.
+
+**How it draws.**
+- The page draws the core's state and nothing else.
+- The core steps on its fixed `SIM_DT`. The speed setting only feeds it faster, so at any speed the game reserves
+  exactly what a headless run does for the same taps; a browser test checks this at 2.25x.
+- Between two steps everything is placed from the core's own timing:
+  - a marble on the slide sits at `phase + V·t`;
+  - in the bowl it is so far round its turn;
+  - on the rail it is so far along;
+  - a box in the air is so far along its arc.
+
+**The look** (after the target image, with the prototype's proportions):
+- **Table:** light wood (or another theme).
+- **Slide:** a warm orange-wood half-pipe swept along the core's slide, on slim white pillars (or stacked toy blocks).
+- **Start:** a wooden start tower with a blue funnel cup and a little flag.
+- **Trays:** wooden trays on stilts. Their floors rise toward the back, and a short chute runs from each lip onto the
+  slide.
+- **The sorter:**
+  - a blue vortex bowl with spinning grooves;
+  - the rail along the back of the slot tray;
+  - a yellow flip gate over each slot, which flips as a marble drops.
+- **The slot tray:** 5 recessed slots.
+- **The lanes:** they slide out from a wooden toy chest, whose lid carries the three round booster placeholders.
+- **Marbles:** glossy, with clearcoat and environment reflections, drawn as one instanced mesh.
+- **Boxes:** a coloured rim and a grey perforated plate; marbles sit half sunk in the holes.
+- **Gaps:** yellow-striped deck ends, and red kickers for take-off and landing.
+- **Toy pieces:**
+  - xylophone bars that light and play a note per marble;
+  - an arch of bells that swing and ring;
+  - a paddle wheel turned by the marbles;
+  - a loop-the-loop and a zig-zag staircase on rails;
+  - a vortex bowl.
+
+**Blockers as drawn:**
+- a grey "?" on a hidden box or marble;
+- cream bellows between connected boxes;
+- a gumball dispenser (a red base, a glass globe with its waiting marbles, a count);
+- a wooden crate with a padlock (lock), or with a number (count);
+- a key on the key box, which flies to its lock.
+
+**Juice:**
+- **A box to its slot:** it lifts, arcs, grows from its queue size, and lands with a squash and a dust puff.
+- **Reservation:** reserved marbles hop and glow, and keep a soft glow while they wait.
+- **Reveals:** a pop and a sparkle.
+- **Marbles:** they spin as they roll; a click and a little punch on the box for each one that lands.
+- **A completed box:**
+  - its lid snaps shut and a ribbon bow ties on;
+  - a balloon in its colour pops up;
+  - it floats off past the left or right edge of the screen (the nearer one; a connected group goes together);
+  - confetti.
+- **Slots full:** the box shakes, the slot tray flashes red, and a toast says "All slots are full!".
+- **Fail:**
+  - the slot boxes wobble like dominoes, then the fail panel;
+  - its text says why: all 5 slots full, or the connected boxes at the lane fronts need more free slots than there
+    are.
+- **Sounds:** synthesised with WebAudio, starting only after the first tap: a soft roll under the marbles on the
+  slide, clicks, pops, chimes, notes and bells.
+
+**Settings** (remembered):
+- theme: Maple, Walnut, Playmat, Picnic;
+- supports: Pillars or Toy blocks;
+- box motion: Rigid, or Jelly (boxes squash and wobble as they land and while they fill);
+- camera: Perspective or Orthographic, with zoom;
+- speed: 1x–3x in 0.25 steps;
+- sound.
+
+**In play:**
+- a pause menu (Resume, Restart, Settings); the P key toggles it;
+- a level timer counting game time;
+- the progress bar (marbles in boxes);
+- three round booster placeholders, which wobble and do nothing yet;
+- a level pack (`window.MR_SHARE.levels`) adds previous / next, "Level x / n" and a stats panel (completion time,
+  fail count and the second of each fail, per level; CSV export and reset).
+
+Screenshots (390 × 844, `node tools/shoot-game.js`):
+- [the start](screenshots/game-start-390.png);
+- [in play](screenshots/game-play-390.png);
+- [every blocker](screenshots/game-blockers-390.png);
+- [a completed box leaving](screenshots/game-complete-390.png);
+- [all slots full](screenshots/game-full-390.png);
+- [the fail panel](screenshots/game-fail-390.png).
 
 ## Blockers (all of Match Express's, with the same data and checker spirit)
 
@@ -211,6 +306,9 @@ node tests/layout.test.js     # 11 checks: the screen zones, the slot tray acros
 node tests/camera.test.js     # 5 checks: perspective and orthographic, the shared slide zone
 node tests/lanes.test.js      # 11 checks: 2-5 lanes, sending from each, connected boxes across lanes
 node tests/trays.test.js      # 8 checks: regular grids, the lean, apron and chute, tilt and push, marbleScale, overlaps
+node tests/browser.test.js    # 22 checks (Playwright): a real tap, the glow, the drawn spacing on the slide, the game
+                              # at 2.25x = a headless run for the same taps, refusals, hidden "?", every box leaving
+                              # off the side of the screen, win, the dominoes fail, pause, settings, speed, timer, boosters
 ```
 
-All 113 checks pass.
+All 135 checks pass.
