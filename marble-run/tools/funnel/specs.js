@@ -25,7 +25,7 @@ module.exports = [
   {n:7, lanes:3, role:'Teach + POPUP', diff:3, colors:4, sizes:[4, 8, 12], blockers:{hidden:5}, slide:'classic', slideIdea:'the spiral early', trays:three(3, 6), trayIdea:'three trays', popup:'hidden'},
   {n:8, lanes:3, role:'Practice', diff:5, colors:5, sizes:[4, 6, 8, 12], blockers:{hidden:2}, slide:'zigzag', slideIdea:'zig-zag', trays:four(3, 5), trayIdea:'four trays at the turns'},
   {n:9, lanes:2, role:'Relax', diff:3, colors:4, sizes:[6, 8, 12], slide:'winding', slideIdea:'winding', trays:three(3, 6), trayIdea:'three trays'},
-  {n:10, lanes:3, role:'Milestone', diff:6, colors:6, sizes:[4, 6, 8, 12], blockers:{hidden:3}, slide:M(3, 1), slideIdea:'a meander with a spiral', trays:four(3, 6), trayIdea:'four trays'},
+  {n:10, lanes:3, role:'Milestone', diff:6, colors:6, sizes:[4, 6, 8, 12], blockers:{hidden:3}, slide:M(3, 1), K:0.85, slideIdea:'a meander with a spiral', trays:four(3, 6), trayIdea:'four trays'},
   {n:11, lanes:3, role:'Relax', diff:3, colors:4, sizes:[6, 8, 12], slide:'spiral', slideIdea:'spiral', trays:three(3, 6, 'perp'), trayIdea:'three trays square to the slide'},
   {n:12, lanes:3, role:'Challenge', diff:6, colors:6, sizes:[4, 6, 8, 12], blockers:{hidden:2}, slide:'classic', K:0.85, slideIdea:'the spiral early', trays:four(3, 7), trayIdea:'four deeper trays'},
   {n:13, lanes:3, role:'Teach + POPUP', diff:3, colors:5, sizes:[4, 6, 8, 12], blockers:{link:'pairs', linkN:4}, slide:'scurve', slideIdea:'S-curve', trays:four(3, 5), trayIdea:'four trays', popup:'connected'},

@@ -125,7 +125,7 @@ function worker(){
     // the hardness range: easy levels low, the bands from 5 up reaching the top (h above 1 is the generator's hardest).
     // The random bot's rate varies a lot between seeds at one h, so the must-land levels first sample the whole range,
     // then search near the h of the best candidate so far
-    const hLo = early ? 0.05 : must ? 0.5 : 0.1, hHi = early ? 0.5 : must ? (spec.diff >= 8 ? 1.16 : spec.diff >= 7 ? 1.12 : 1.08) : 0.75;
+    const hLo = early ? 0.05 : must ? 0.2 : 0.1, hHi = early ? 0.5 : must ? (spec.diff >= 8 ? 1.16 : spec.diff >= 7 ? 1.12 : 1.08) : 0.75;
     const budget = early ? 12 : refine ? 110 : must ? 80 : 40, pool = []; let tries = 0, near = 0;
     for (let k = 0; k < budget && near < 6; k++){
       const top = must && k >= 20 && pool.length ? pool.reduce((x, y) => y.d < x.d || (y.d === x.d && y.gt > x.gt) ? y : x) : null;

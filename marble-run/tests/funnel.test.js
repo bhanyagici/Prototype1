@@ -77,7 +77,7 @@ chk(!lost.length, 'the greedy bot wins all 40 levels', lost.map(([i, g]) => i + 
 { // level 3: the first box sent (the tutorial's) can fill only part of its holes, so it waits in its slot; the level is won
   const lv = clone(LV.f03), g = C.createGame(lv, {headless:true}), l = lv.meta.tutorialLane, b = g.boxes[g.lanes[l][0]];
   C.tapLane(g, l); let waited = false;
-  for (let i = 0; i < 30*20 && !waited; i++){ C.step(g, C.SIM_DT); waited = b.state === 'slot' && b.got > 0 && b.got < b.size && !C.frontColors(g)[b.color] && !g.flow.length; }
+  for (let i = 0; i < 30*20 && !waited; i++){ C.step(g, C.SIM_DT); waited = b.state === 'slot' && b.got > 0 && b.got === b.res && b.got < b.size && !C.frontColors(g)[b.color]; }
   chk(waited, 'level 3: the tutorial\'s box gets some of its marbles, then waits in its slot', `${b.color}${b.size} ${b.state} ${b.got}/${b.size}`); }
 
 /* ---------------------------------------------------------------- the 40-level pack in a browser */

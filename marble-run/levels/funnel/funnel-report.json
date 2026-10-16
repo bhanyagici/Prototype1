@@ -1257,13 +1257,13 @@
     0.3
    ],
    "lanes": 4,
-   "h": 0.842,
-   "rate": 0.17,
-   "wins": 34,
+   "h": 0.767,
+   "rate": 0.22,
+   "wins": 44,
    "runs": 200,
-   "inBand": false,
-   "greedyT": 25.1,
-   "greedySends": 15,
+   "inBand": true,
+   "greedyT": 29.6,
+   "greedySends": 14,
    "notes": [
     "tray 2: shape tilt did not fit, built as diag",
     "tray 3: shape tilt did not fit, built as diag",
@@ -1295,45 +1295,45 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 10
+     "marbles": 12
     },
     {
      "color": "orange",
-     "marbles": 14
+     "marbles": 12
     },
     {
      "color": "yellow",
-     "marbles": 12
+     "marbles": 14
     },
     {
      "color": "green",
-     "marbles": 12
+     "marbles": 10
     },
     {
      "color": "cyan",
-     "marbles": 10
+     "marbles": 12
     },
     {
      "color": "blue",
-     "marbles": 16
+     "marbles": 10
     },
     {
      "color": "purple",
-     "marbles": 10
+     "marbles": 14
     }
    ],
    "boxes": {
-    "4": 8,
+    "4": 7,
     "6": 4,
-    "8": 2,
-    "12": 1
+    "8": 1,
+    "12": 2
    },
-   "nBoxes": 15,
+   "nBoxes": 14,
    "marbles": 84,
    "marbleScale": 0.85,
    "slide": "hairpin",
    "trayIdea": "four deeper trays",
-   "blockers": "3 hidden boxes, 6 connected pairs, 8 hidden marbles",
+   "blockers": "3 hidden boxes, 4 connected pairs, 5 hidden marbles",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -1438,13 +1438,13 @@
     0.4
    ],
    "lanes": 3,
-   "h": 1.033,
-   "rate": 0.305,
-   "wins": 61,
+   "h": 0.943,
+   "rate": 0.31,
+   "wins": 62,
    "runs": 200,
    "inBand": true,
-   "greedyT": 29.7,
-   "greedySends": 12,
+   "greedyT": 30.8,
+   "greedySends": 13,
    "notes": [
     "tray 3: shape tilt did not fit, built as tilt 55",
     "tray 4: shape tilt did not fit, built as diag"
@@ -1475,7 +1475,7 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 12
+     "marbles": 14
     },
     {
      "color": "orange",
@@ -1483,33 +1483,33 @@
     },
     {
      "color": "yellow",
-     "marbles": 14
-    },
-    {
-     "color": "green",
-     "marbles": 14
-    },
-    {
-     "color": "blue",
      "marbles": 12
     },
     {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
      "color": "purple",
-     "marbles": 18
+     "marbles": 14
     }
    ],
    "boxes": {
-    "4": 4,
+    "4": 5,
     "6": 4,
-    "8": 1,
-    "12": 3
+    "8": 2,
+    "12": 2
    },
-   "nBoxes": 12,
+   "nBoxes": 13,
    "marbles": 84,
    "marbleScale": 0.85,
    "slide": "zig-zag",
    "trayIdea": "four deeper trays",
-   "blockers": "2 hidden boxes, dispenser (blue, 8), dispenser (purple, 8)",
+   "blockers": "2 hidden boxes, dispenser (purple, 8), dispenser (red, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -1611,13 +1611,13 @@
     0.15
    ],
    "lanes": 3,
-   "h": 0.856,
-   "rate": 0.005,
-   "wins": 1,
+   "h": 0.81,
+   "rate": 0.095,
+   "wins": 19,
    "runs": 200,
-   "inBand": false,
-   "greedyT": 28.2,
-   "greedySends": 15,
+   "inBand": true,
+   "greedyT": 27.9,
+   "greedySends": 16,
    "notes": [
     "tray 3: shape tilt did not fit, built as diag",
     "tray 4: shape tilt did not fit, built as diag"
@@ -1652,7 +1652,7 @@
     },
     {
      "color": "orange",
-     "marbles": 8
+     "marbles": 10
     },
     {
      "color": "yellow",
@@ -1660,7 +1660,7 @@
     },
     {
      "color": "green",
-     "marbles": 8
+     "marbles": 14
     },
     {
      "color": "cyan",
@@ -1668,7 +1668,7 @@
     },
     {
      "color": "blue",
-     "marbles": 14
+     "marbles": 10
     },
     {
      "color": "purple",
@@ -1676,21 +1676,21 @@
     },
     {
      "color": "pink",
-     "marbles": 16
+     "marbles": 12
     }
    ],
    "boxes": {
-    "4": 4,
+    "4": 6,
     "6": 6,
-    "8": 4,
+    "8": 3,
     "12": 1
    },
-   "nBoxes": 15,
+   "nBoxes": 16,
    "marbles": 96,
    "marbleScale": 0.8,
    "slide": "spiral",
    "trayIdea": "four deep trays",
-   "blockers": "3 hidden boxes, 2 connected triples, dispenser (pink, 8), dispenser (purple, 8)",
+   "blockers": "3 hidden boxes, 3 connected triples, dispenser (green, 8), dispenser (red, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -1878,12 +1878,12 @@
     0.4
    ],
    "lanes": 3,
-   "h": 0.891,
-   "rate": 0.31,
-   "wins": 62,
+   "h": 0.803,
+   "rate": 0.285,
+   "wins": 57,
    "runs": 200,
    "inBand": true,
-   "greedyT": 37,
+   "greedyT": 28.9,
    "greedySends": 14,
    "notes": [
     "tray 3: shape tilt did not fit, built as diag",
@@ -1915,15 +1915,15 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 16
+     "marbles": 14
     },
     {
      "color": "orange",
-     "marbles": 12
+     "marbles": 14
     },
     {
      "color": "yellow",
-     "marbles": 12
+     "marbles": 10
     },
     {
      "color": "green",
@@ -1935,11 +1935,11 @@
     },
     {
      "color": "blue",
-     "marbles": 12
+     "marbles": 10
     },
     {
      "color": "purple",
-     "marbles": 10
+     "marbles": 14
     }
    ],
    "boxes": {
@@ -1953,7 +1953,7 @@
    "marbleScale": 0.85,
    "slide": "the spiral early",
    "trayIdea": "four deeper trays",
-   "blockers": "2 hidden boxes, 2 lock crates & keys, count crate (4)",
+   "blockers": "2 hidden boxes, 2 lock crates & keys, count crate (3)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2058,12 +2058,12 @@
     0.3
    ],
    "lanes": 3,
-   "h": 1.068,
-   "rate": 0.2,
-   "wins": 40,
+   "h": 0.684,
+   "rate": 0.205,
+   "wins": 41,
    "runs": 200,
    "inBand": true,
-   "greedyT": 47.1,
+   "greedyT": 35.6,
    "greedySends": 16,
    "notes": [
     "tray 2: shape tilt did not fit, built as diag",
@@ -2097,7 +2097,7 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 16
+     "marbles": 18
     },
     {
      "color": "orange",
@@ -2105,11 +2105,11 @@
     },
     {
      "color": "yellow",
-     "marbles": 16
+     "marbles": 14
     },
     {
      "color": "green",
-     "marbles": 10
+     "marbles": 14
     },
     {
      "color": "cyan",
@@ -2117,17 +2117,17 @@
     },
     {
      "color": "blue",
-     "marbles": 14
+     "marbles": 16
     },
     {
      "color": "purple",
-     "marbles": 16
+     "marbles": 10
     }
    ],
    "boxes": {
-    "4": 9,
-    "6": 2,
-    "8": 3,
+    "4": 8,
+    "6": 4,
+    "8": 2,
     "12": 2
    },
    "nBoxes": 16,
@@ -2135,7 +2135,7 @@
    "marbleScale": 0.8,
    "slide": "a meander with a spiral",
    "trayIdea": "four deep trays",
-   "blockers": "2 hidden boxes, 2 connected pairs, dispenser (green, 8), dispenser (cyan, 8)",
+   "blockers": "2 hidden boxes, 4 connected pairs, dispenser (green, 8), dispenser (blue, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2241,12 +2241,12 @@
     0.3
    ],
    "lanes": 3,
-   "h": 0.897,
-   "rate": 0.295,
-   "wins": 59,
+   "h": 0.577,
+   "rate": 0.245,
+   "wins": 49,
    "runs": 200,
    "inBand": true,
-   "greedyT": 35.6,
+   "greedyT": 27.5,
    "greedySends": 15,
    "notes": [
     "tray 2: shape tilt did not fit, built as diag",
@@ -2283,7 +2283,7 @@
     },
     {
      "color": "orange",
-     "marbles": 16
+     "marbles": 12
     },
     {
      "color": "yellow",
@@ -2291,11 +2291,11 @@
     },
     {
      "color": "green",
-     "marbles": 12
+     "marbles": 16
     },
     {
      "color": "cyan",
-     "marbles": 10
+     "marbles": 16
     },
     {
      "color": "blue",
@@ -2303,21 +2303,21 @@
     },
     {
      "color": "purple",
-     "marbles": 16
+     "marbles": 10
     }
    ],
    "boxes": {
-    "4": 4,
+    "4": 5,
     "6": 6,
-    "8": 4,
-    "12": 1
+    "8": 2,
+    "12": 2
    },
    "nBoxes": 15,
    "marbles": 96,
    "marbleScale": 0.8,
    "slide": "hairpin",
    "trayIdea": "four deep trays",
-   "blockers": "3 hidden boxes, 2 connected pairs, 7 hidden marbles, dispenser (yellow, 8), dispenser (cyan, 8)",
+   "blockers": "3 hidden boxes, 3 connected pairs, 8 hidden marbles, dispenser (blue, 8), dispenser (red, 8)",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2334,13 +2334,13 @@
     0.22
    ],
    "lanes": 5,
-   "h": 0.975,
-   "rate": 0.21,
-   "wins": 42,
+   "h": 0.701,
+   "rate": 0.135,
+   "wins": 27,
    "runs": 200,
    "inBand": true,
-   "greedyT": 23.2,
-   "greedySends": 14,
+   "greedyT": 36.1,
+   "greedySends": 17,
    "notes": [
     "tray 4: shape tilt did not fit, built as diag"
    ],
@@ -2370,7 +2370,7 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 8
+     "marbles": 16
     },
     {
      "color": "orange",
@@ -2382,37 +2382,37 @@
     },
     {
      "color": "green",
-     "marbles": 16
+     "marbles": 14
     },
     {
      "color": "cyan",
-     "marbles": 12
+     "marbles": 14
     },
     {
      "color": "blue",
-     "marbles": 12
+     "marbles": 10
     },
     {
      "color": "purple",
-     "marbles": 12
+     "marbles": 8
     },
     {
      "color": "pink",
-     "marbles": 12
+     "marbles": 10
     }
    ],
    "boxes": {
-    "4": 5,
-    "6": 4,
-    "8": 2,
-    "12": 3
+    "4": 7,
+    "6": 8,
+    "8": 1,
+    "12": 1
    },
-   "nBoxes": 14,
+   "nBoxes": 17,
    "marbles": 96,
    "marbleScale": 0.8,
    "slide": "winding",
    "trayIdea": "four deep trays",
-   "blockers": "2 hidden boxes, 3 connected pairs, dispenser (green, 8), 2 lock crates & keys",
+   "blockers": "2 hidden boxes, 3 connected pairs, dispenser (cyan, 8), 2 lock crates & keys",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2521,12 +2521,12 @@
     0.22
    ],
    "lanes": 4,
-   "h": 0.944,
-   "rate": 0.135,
-   "wins": 27,
+   "h": 0.87,
+   "rate": 0.14,
+   "wins": 28,
    "runs": 200,
    "inBand": true,
-   "greedyT": 48.2,
+   "greedyT": 48.8,
    "greedySends": 16,
    "notes": [
     "tray 1: shape tilt did not fit, built as tilt 55",
@@ -2561,45 +2561,45 @@
    "colors": [
     {
      "color": "red",
-     "marbles": 14
+     "marbles": 12
     },
     {
      "color": "orange",
-     "marbles": 18
+     "marbles": 14
     },
     {
      "color": "yellow",
-     "marbles": 10
+     "marbles": 16
     },
     {
      "color": "green",
-     "marbles": 12
+     "marbles": 16
     },
     {
      "color": "cyan",
-     "marbles": 18
+     "marbles": 12
     },
     {
      "color": "blue",
-     "marbles": 12
+     "marbles": 10
     },
     {
      "color": "purple",
-     "marbles": 12
+     "marbles": 16
     }
    ],
    "boxes": {
-    "4": 7,
-    "6": 4,
-    "8": 4,
-    "12": 1
+    "4": 9,
+    "6": 2,
+    "8": 3,
+    "12": 2
    },
    "nBoxes": 16,
    "marbles": 96,
    "marbleScale": 0.8,
    "slide": "a meander with a spiral",
    "trayIdea": "four deep trays",
-   "blockers": "2 hidden boxes, 7 connected pairs, lock crate & key",
+   "blockers": "2 hidden boxes, 6 connected pairs, 2 lock crates & keys",
    "tutorial": null,
    "popup": null,
    "hint": null,
@@ -2844,8 +2844,555 @@
    "hint": null,
    "slideLen": 25.5,
    "spirals": 1
+  },
+  "f19": {
+   "id": "f19",
+   "n": 19,
+   "role": "Practice",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 0.58,
+   "rate": 0.4,
+   "wins": 80,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 28.5,
+   "greedySends": 14,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as tilt 55",
+    "tray 4: shape tilt did not fit, built as diag",
+    "meander seed 108"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 7,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 16
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 10
+    },
+    {
+     "color": "purple",
+     "marbles": 16
+    }
+   ],
+   "boxes": {
+    "4": 7,
+    "6": 4,
+    "8": 1,
+    "12": 2
+   },
+   "nBoxes": 14,
+   "marbles": 84,
+   "marbleScale": 0.85,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four deeper trays",
+   "blockers": "1 connected pair, 3 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 25.4,
+   "spirals": 1
+  },
+  "f20": {
+   "id": "f20",
+   "n": 20,
+   "role": "Milestone",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "lanes": 4,
+   "h": 0.5,
+   "rate": 0.14,
+   "wins": 28,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 25,
+   "greedySends": 16,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 14
+    },
+    {
+     "color": "cyan",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    }
+   ],
+   "boxes": {
+    "4": 6,
+    "6": 6,
+    "8": 3,
+    "12": 1
+   },
+   "nBoxes": 16,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "the spiral early",
+   "trayIdea": "four deep trays",
+   "blockers": "2 hidden boxes, 2 connected pairs, 3 connected triples",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f25": {
+   "id": "f25",
+   "n": 25,
+   "role": "Challenge",
+   "diff": 8,
+   "band": [
+    0.12,
+    0.22
+   ],
+   "lanes": 3,
+   "h": 0.99,
+   "rate": 0.135,
+   "wins": 27,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 33.6,
+   "greedySends": 13,
+   "notes": [
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 16
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 16
+    },
+    {
+     "color": "cyan",
+     "marbles": 16
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 5,
+    "6": 2,
+    "8": 2,
+    "12": 4
+   },
+   "nBoxes": 13,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "winding",
+   "trayIdea": "four deep trays",
+   "blockers": "3 hidden boxes, 2 connected triples, 12 hidden marbles",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 20.7,
+   "spirals": 0
+  },
+  "f26": {
+   "id": "f26",
+   "n": 26,
+   "role": "Teach + POPUP",
+   "diff": 3,
+   "band": [
+    0.55,
+    0.75
+   ],
+   "lanes": 3,
+   "h": 0.118,
+   "rate": 0.965,
+   "wins": 193,
+   "runs": 200,
+   "inBand": false,
+   "greedyT": 16.1,
+   "greedySends": 9,
+   "notes": [
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 14
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 12
+    },
+    {
+     "color": "green",
+     "marbles": 8
+    },
+    {
+     "color": "blue",
+     "marbles": 12
+    },
+    {
+     "color": "purple",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 0,
+    "6": 4,
+    "8": 3,
+    "12": 2
+   },
+   "nBoxes": 9,
+   "marbles": 72,
+   "marbleScale": 0.85,
+   "slide": "the spiral early",
+   "trayIdea": "four trays",
+   "blockers": "dispenser (red, 6), dispenser (purple, 6), dispenser (yellow, 6)",
+   "tutorial": null,
+   "popup": "dispenser",
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f40": {
+   "id": "f40",
+   "n": 40,
+   "role": "Finale",
+   "diff": 9,
+   "band": [
+    0.08,
+    0.15
+   ],
+   "lanes": 5,
+   "h": 0.2,
+   "rate": 0.09,
+   "wins": 18,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 25.3,
+   "greedySends": 18,
+   "notes": [
+    "tray 2: shape tilt did not fit, built as tilt 55",
+    "tray 3: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "tilted 55 deg"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 8,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 12
+    },
+    {
+     "color": "yellow",
+     "marbles": 14
+    },
+    {
+     "color": "green",
+     "marbles": 8
+    },
+    {
+     "color": "cyan",
+     "marbles": 14
+    },
+    {
+     "color": "blue",
+     "marbles": 10
+    },
+    {
+     "color": "purple",
+     "marbles": 14
+    },
+    {
+     "color": "pink",
+     "marbles": 12
+    }
+   ],
+   "boxes": {
+    "4": 10,
+    "6": 6,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 18,
+   "marbles": 96,
+   "marbleScale": 0.8,
+   "slide": "the spiral early",
+   "trayIdea": "four deep trays, every blocker",
+   "blockers": "3 hidden boxes, 3 connected pairs, 3 connected triples, dispenser (blue, 8), dispenser (yellow, 8), lock crate & key, count crate (3)",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 21.8,
+   "spirals": 1
+  },
+  "f10": {
+   "id": "f10",
+   "n": 10,
+   "role": "Milestone",
+   "diff": 6,
+   "band": [
+    0.25,
+    0.4
+   ],
+   "lanes": 3,
+   "h": 1.08,
+   "rate": 0.38,
+   "wins": 76,
+   "runs": 200,
+   "inBand": true,
+   "greedyT": 31.9,
+   "greedySends": 13,
+   "notes": [
+    "tray 1: shape tilt did not fit, built as diag",
+    "tray 2: shape tilt did not fit, built as diag",
+    "tray 4: shape tilt did not fit, built as diag"
+   ],
+   "failFree": null,
+   "trays": [
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "default (35 deg)"
+    },
+    {
+     "cols": 3,
+     "rows": 6,
+     "kind": "turned"
+    }
+   ],
+   "colors": [
+    {
+     "color": "red",
+     "marbles": 12
+    },
+    {
+     "color": "orange",
+     "marbles": 14
+    },
+    {
+     "color": "yellow",
+     "marbles": 10
+    },
+    {
+     "color": "green",
+     "marbles": 12
+    },
+    {
+     "color": "blue",
+     "marbles": 14
+    },
+    {
+     "color": "purple",
+     "marbles": 10
+    }
+   ],
+   "boxes": {
+    "4": 7,
+    "6": 4,
+    "8": 1,
+    "12": 1
+   },
+   "nBoxes": 13,
+   "marbles": 72,
+   "marbleScale": 0.85,
+   "slide": "a meander with a spiral",
+   "trayIdea": "four trays",
+   "blockers": "3 hidden boxes",
+   "tutorial": null,
+   "popup": null,
+   "hint": null,
+   "slideLen": 25,
+   "spirals": 1
   }
  },
  "generated": "2026-10-16",
- "totalGreedy1x": 717.4
+ "totalGreedy1x": 868.9
 }

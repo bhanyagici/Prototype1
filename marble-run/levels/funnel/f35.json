@@ -30,23 +30,23 @@
     {
       "rows": 8,
       "columns": [
-        ["orange", "orange", "blue", "blue", "cyan", "cyan", "yellow", "yellow"],
-        ["green", "green", "cyan", "cyan", "red", "red", "purple", "yellow"],
-        ["orange", "orange", "cyan", "cyan", "red", "red", "yellow", "yellow"]
+        ["yellow", "red", "cyan", "purple", "purple", "orange", "orange", "green"],
+        ["yellow", "yellow", "cyan", "purple", "purple", "orange", "orange", "green"],
+        ["red", "cyan", "cyan", "purple", "purple", "orange", "orange", "green"]
       ],
       "at": 7.381,
       "side": 1,
       "tilt": 55,
       "crates": [
-        {"col": 0, "row": 6, "w": 3, "h": 2, "lock": "K1"}
+        {"col": 2, "row": 5, "w": 1, "h": 2, "lock": "K1"}
       ]
     },
     {
       "rows": 8,
       "columns": [
-        ["orange", "orange", "blue", "cyan", "red", "red", "yellow", "yellow"],
-        ["green", "green", "orange", "orange", "red", "red", "purple", "purple"],
-        ["green", "orange", "blue", "cyan", "cyan", "red", "purple", "purple"]
+        ["yellow", "red", "red", "purple", "purple", "green", "green", "green"],
+        ["yellow", "yellow", "purple", "purple", "blue", "orange", "orange", "green"],
+        ["yellow", "yellow", "cyan", "cyan", "purple", "purple", "green", "green"]
       ],
       "at": 22.337,
       "side": 1,
@@ -55,21 +55,24 @@
     {
       "rows": 8,
       "columns": [
-        ["orange", "orange", "blue", "blue", "red", "red", "yellow", "yellow"],
-        ["green", "green", "blue", "blue", "cyan", "cyan", "purple", "purple"],
-        ["green", "green", "orange", "cyan", "red", "purple", "purple", "yellow"]
+        ["yellow", "red", "cyan", "cyan", "blue", "blue", "green", "green"],
+        ["yellow", "red", "cyan", "cyan", "blue", "green", "green", "green"],
+        ["red", "red", "red", "blue", "blue", "orange", "orange", "green"]
       ],
       "at": 20.002,
       "side": -1,
-      "shape": [[2.69, -3.38]]
+      "shape": [[2.69, -3.38]],
+      "crates": [
+        {"col": 1, "row": 5, "w": 1, "h": 2, "lock": "K2"}
+      ]
     },
     {
       "rows": 6,
       "columns": [
-        ["orange", "orange", "blue", "blue", "red", "purple"],
-        ["green", "green", "cyan", "cyan", "red", "purple"],
-        ["green", "orange", "orange", "cyan", "cyan", "purple"],
-        ["orange", "orange", "blue", "blue", "cyan", "cyan"]
+        ["yellow", "yellow", "cyan", "blue", "blue", "green"],
+        ["yellow", "red", "purple", "purple", "orange", "orange"],
+        ["yellow", "yellow", "yellow", "purple", "orange", "orange"],
+        ["red", "red", "cyan", "purple", "blue", "blue"]
       ],
       "at": 2.964,
       "side": -1
@@ -77,28 +80,28 @@
   ],
   "lanes": [
     [
-      {"color": "orange", "size": 8, "link": "G6"},
-      {"color": "green", "size": 8, "link": "G6"},
-      {"color": "orange", "size": 6, "link": "G7"},
-      {"color": "cyan", "size": 4, "link": "G2"}
+      {"color": "green", "size": 4},
+      {"color": "purple", "size": 4, "link": "G4"},
+      {"color": "orange", "size": 6, "link": "G1"}
     ],
     [
-      {"color": "yellow", "size": 4, "link": "G3"},
-      {"color": "cyan", "size": 8, "link": "G7", "hidden": true},
-      {"color": "cyan", "size": 6, "link": "G2"},
-      {"color": "red", "size": 4, "link": "G4"}
+      {"color": "yellow", "size": 12, "link": "G2"},
+      {"color": "red", "size": 8, "link": "G6", "hidden": true},
+      {"color": "purple", "size": 4, "link": "G4"},
+      {"color": "blue", "size": 6, "link": "G1"}
     ],
     [
-      {"color": "yellow", "size": 6, "link": "G3"},
-      {"color": "orange", "size": 4, "link": "G5"},
-      {"color": "blue", "size": 8, "link": "G1"},
-      {"color": "red", "size": 4, "key": "K1"},
-      {"color": "red", "size": 6, "link": "G4"}
+      {"color": "orange", "size": 8, "link": "G3"},
+      {"color": "yellow", "size": 4, "link": "G2"},
+      {"color": "purple", "size": 4, "link": "G6"}
     ],
     [
-      {"color": "green", "size": 4, "link": "G5"},
-      {"color": "purple", "size": 12, "hidden": true},
-      {"color": "blue", "size": 4, "link": "G1"}
+      {"color": "red", "size": 4, "key": "K2"},
+      {"color": "green", "size": 12, "link": "G3", "hidden": true},
+      {"color": "cyan", "size": 4, "link": "G5"},
+      {"color": "cyan", "size": 8, "link": "G5"},
+      {"color": "purple", "size": 4},
+      {"color": "blue", "size": 4, "key": "K1"}
     ]
   ],
   "marbleScale": 0.8,

@@ -1,0 +1,728 @@
+{
+ "generated": "2026-10-16",
+ "runs": 200,
+ "levels": [
+  {
+   "id": "f01",
+   "greedy": {
+    "result": "win",
+    "t1x": 5.3,
+    "t2x": 2.6,
+    "sends": 2
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 16,
+   "boxes": 2
+  },
+  {
+   "id": "f02",
+   "greedy": {
+    "result": "win",
+    "t1x": 7.4,
+    "t2x": 3.7,
+    "sends": 3
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 24,
+   "boxes": 3
+  },
+  {
+   "id": "f03",
+   "greedy": {
+    "result": "win",
+    "t1x": 7.5,
+    "t2x": 3.8,
+    "sends": 4
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 32,
+   "boxes": 4
+  },
+  {
+   "id": "f04",
+   "greedy": {
+    "result": "win",
+    "t1x": 8.6,
+    "t2x": 4.3,
+    "sends": 5
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 36,
+   "boxes": 5
+  },
+  {
+   "id": "f05",
+   "greedy": {
+    "result": "win",
+    "t1x": 9.5,
+    "t2x": 4.8,
+    "sends": 5
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 52,
+   "boxes": 5
+  },
+  {
+   "id": "f06",
+   "greedy": {
+    "result": "win",
+    "t1x": 27.2,
+    "t2x": 13.6,
+    "sends": 10
+   },
+   "random": {
+    "wins": 72,
+    "fails": 128,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.36
+   },
+   "marbles": 60,
+   "boxes": 10
+  },
+  {
+   "id": "f07",
+   "greedy": {
+    "result": "win",
+    "t1x": 14.6,
+    "t2x": 7.3,
+    "sends": 9
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 52,
+   "boxes": 9
+  },
+  {
+   "id": "f08",
+   "greedy": {
+    "result": "win",
+    "t1x": 23.8,
+    "t2x": 11.9,
+    "sends": 10
+   },
+   "random": {
+    "wins": 98,
+    "fails": 102,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.49
+   },
+   "marbles": 60,
+   "boxes": 10
+  },
+  {
+   "id": "f09",
+   "greedy": {
+    "result": "win",
+    "t1x": 12.7,
+    "t2x": 6.3,
+    "sends": 7
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 54,
+   "boxes": 7
+  },
+  {
+   "id": "f10",
+   "greedy": {
+    "result": "win",
+    "t1x": 31.9,
+    "t2x": 15.9,
+    "sends": 13
+   },
+   "random": {
+    "wins": 76,
+    "fails": 124,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.38
+   },
+   "marbles": 72,
+   "boxes": 13
+  },
+  {
+   "id": "f11",
+   "greedy": {
+    "result": "win",
+    "t1x": 13.1,
+    "t2x": 6.5,
+    "sends": 7
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 54,
+   "boxes": 7
+  },
+  {
+   "id": "f12",
+   "greedy": {
+    "result": "win",
+    "t1x": 29.9,
+    "t2x": 14.9,
+    "sends": 10
+   },
+   "random": {
+    "wins": 67,
+    "fails": 133,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.335
+   },
+   "marbles": 84,
+   "boxes": 10
+  },
+  {
+   "id": "f13",
+   "greedy": {
+    "result": "win",
+    "t1x": 21.4,
+    "t2x": 10.7,
+    "sends": 10
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 60,
+   "boxes": 10
+  },
+  {
+   "id": "f14",
+   "greedy": {
+    "result": "win",
+    "t1x": 31.8,
+    "t2x": 15.9,
+    "sends": 13
+   },
+   "random": {
+    "wins": 80,
+    "fails": 120,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.4
+   },
+   "marbles": 72,
+   "boxes": 13
+  },
+  {
+   "id": "f15",
+   "greedy": {
+    "result": "win",
+    "t1x": 14.7,
+    "t2x": 7.3,
+    "sends": 8
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 8
+  },
+  {
+   "id": "f16",
+   "greedy": {
+    "result": "win",
+    "t1x": 32.5,
+    "t2x": 16.2,
+    "sends": 15
+   },
+   "random": {
+    "wins": 46,
+    "fails": 154,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.23
+   },
+   "marbles": 84,
+   "boxes": 15
+  },
+  {
+   "id": "f17",
+   "greedy": {
+    "result": "win",
+    "t1x": 24,
+    "t2x": 12,
+    "sends": 12
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 12
+  },
+  {
+   "id": "f18",
+   "greedy": {
+    "result": "win",
+    "t1x": 13.6,
+    "t2x": 6.8,
+    "sends": 8
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 60,
+   "boxes": 8
+  },
+  {
+   "id": "f19",
+   "greedy": {
+    "result": "win",
+    "t1x": 28.5,
+    "t2x": 14.3,
+    "sends": 14
+   },
+   "random": {
+    "wins": 80,
+    "fails": 120,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.4
+   },
+   "marbles": 84,
+   "boxes": 14
+  },
+  {
+   "id": "f20",
+   "greedy": {
+    "result": "win",
+    "t1x": 25,
+    "t2x": 12.5,
+    "sends": 16
+   },
+   "random": {
+    "wins": 28,
+    "fails": 172,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.14
+   },
+   "marbles": 96,
+   "boxes": 16
+  },
+  {
+   "id": "f21",
+   "greedy": {
+    "result": "win",
+    "t1x": 17.8,
+    "t2x": 8.9,
+    "sends": 12
+   },
+   "random": {
+    "wins": 133,
+    "fails": 67,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.665
+   },
+   "marbles": 72,
+   "boxes": 12
+  },
+  {
+   "id": "f22",
+   "greedy": {
+    "result": "win",
+    "t1x": 11.7,
+    "t2x": 5.8,
+    "sends": 6
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 52,
+   "boxes": 6
+  },
+  {
+   "id": "f23",
+   "greedy": {
+    "result": "win",
+    "t1x": 29.6,
+    "t2x": 14.8,
+    "sends": 14
+   },
+   "random": {
+    "wins": 44,
+    "fails": 156,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.22
+   },
+   "marbles": 84,
+   "boxes": 14
+  },
+  {
+   "id": "f24",
+   "greedy": {
+    "result": "win",
+    "t1x": 18.5,
+    "t2x": 9.2,
+    "sends": 9
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 84,
+   "boxes": 9
+  },
+  {
+   "id": "f25",
+   "greedy": {
+    "result": "win",
+    "t1x": 33.6,
+    "t2x": 16.8,
+    "sends": 13
+   },
+   "random": {
+    "wins": 27,
+    "fails": 173,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.135
+   },
+   "marbles": 96,
+   "boxes": 13
+  },
+  {
+   "id": "f26",
+   "greedy": {
+    "result": "win",
+    "t1x": 16.1,
+    "t2x": 8,
+    "sends": 9
+   },
+   "random": {
+    "wins": 193,
+    "fails": 7,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.965
+   },
+   "marbles": 72,
+   "boxes": 9
+  },
+  {
+   "id": "f27",
+   "greedy": {
+    "result": "win",
+    "t1x": 30.8,
+    "t2x": 15.4,
+    "sends": 13
+   },
+   "random": {
+    "wins": 62,
+    "fails": 138,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.31
+   },
+   "marbles": 84,
+   "boxes": 13
+  },
+  {
+   "id": "f28",
+   "greedy": {
+    "result": "win",
+    "t1x": 13.6,
+    "t2x": 6.8,
+    "sends": 8
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 8
+  },
+  {
+   "id": "f29",
+   "greedy": {
+    "result": "win",
+    "t1x": 35.6,
+    "t2x": 17.8,
+    "sends": 16
+   },
+   "random": {
+    "wins": 41,
+    "fails": 159,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.205
+   },
+   "marbles": 96,
+   "boxes": 16
+  },
+  {
+   "id": "f30",
+   "greedy": {
+    "result": "win",
+    "t1x": 27.9,
+    "t2x": 13.9,
+    "sends": 16
+   },
+   "random": {
+    "wins": 19,
+    "fails": 181,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.095
+   },
+   "marbles": 96,
+   "boxes": 16
+  },
+  {
+   "id": "f31",
+   "greedy": {
+    "result": "win",
+    "t1x": 13.8,
+    "t2x": 6.9,
+    "sends": 8
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 8
+  },
+  {
+   "id": "f32",
+   "greedy": {
+    "result": "win",
+    "t1x": 18,
+    "t2x": 9,
+    "sends": 9
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 9
+  },
+  {
+   "id": "f33",
+   "greedy": {
+    "result": "win",
+    "t1x": 28.9,
+    "t2x": 14.4,
+    "sends": 14
+   },
+   "random": {
+    "wins": 57,
+    "fails": 143,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.285
+   },
+   "marbles": 84,
+   "boxes": 14
+  },
+  {
+   "id": "f34",
+   "greedy": {
+    "result": "win",
+    "t1x": 16.2,
+    "t2x": 8.1,
+    "sends": 9
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 84,
+   "boxes": 9
+  },
+  {
+   "id": "f35",
+   "greedy": {
+    "result": "win",
+    "t1x": 48.8,
+    "t2x": 24.4,
+    "sends": 16
+   },
+   "random": {
+    "wins": 28,
+    "fails": 172,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.14
+   },
+   "marbles": 96,
+   "boxes": 16
+  },
+  {
+   "id": "f36",
+   "greedy": {
+    "result": "win",
+    "t1x": 15.2,
+    "t2x": 7.6,
+    "sends": 10
+   },
+   "random": {
+    "wins": 200,
+    "fails": 0,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 1
+   },
+   "marbles": 72,
+   "boxes": 10
+  },
+  {
+   "id": "f37",
+   "greedy": {
+    "result": "win",
+    "t1x": 27.5,
+    "t2x": 13.7,
+    "sends": 15
+   },
+   "random": {
+    "wins": 49,
+    "fails": 151,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.245
+   },
+   "marbles": 96,
+   "boxes": 15
+  },
+  {
+   "id": "f38",
+   "greedy": {
+    "result": "win",
+    "t1x": 36.1,
+    "t2x": 18,
+    "sends": 17
+   },
+   "random": {
+    "wins": 27,
+    "fails": 173,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.135
+   },
+   "marbles": 96,
+   "boxes": 17
+  },
+  {
+   "id": "f39",
+   "greedy": {
+    "result": "win",
+    "t1x": 20.9,
+    "t2x": 10.4,
+    "sends": 10
+   },
+   "random": {
+    "wins": 151,
+    "fails": 49,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.755
+   },
+   "marbles": 96,
+   "boxes": 10
+  },
+  {
+   "id": "f40",
+   "greedy": {
+    "result": "win",
+    "t1x": 25.3,
+    "t2x": 12.7,
+    "sends": 18
+   },
+   "random": {
+    "wins": 18,
+    "fails": 182,
+    "unfinished": 0,
+    "runs": 200,
+    "rate": 0.09
+   },
+   "marbles": 96,
+   "boxes": 18
+  }
+ ],
+ "totalGreedy1x": 868.9,
+ "totalGreedy2x": 434.5
+}

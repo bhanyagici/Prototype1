@@ -35,10 +35,13 @@ level files and builds, retargeted.
   - the presets copy (`sync-presets.js`);
   - the single-file editor (`editor-file.js`);
   - the showcase levels (`make-showcase.js` from `showcase/specs.js`), their pictures (`shoot-showcase-thumbs.js`) and the
-    single file (`build-showcase.js`).
+    single file (`build-showcase.js`);
+  - the funnel (`make-funnel.js` from `funnel/specs.js`, `funnel-bots.js`, `funnel-table.js`, `make-funnel-xlsx.py`,
+    `build-funnel.js`, `shoot-funnel.js`).
 - **`levels/`**: one JSON per level: the blocker demos, and `showcase/<category>/<id>.json` with `showcase-order.json`
   and the card pictures (`showcase/thumbs/`).
-- **`dist/`**: the single-file builds (`marble-run-showcase.html` so far).
+- **`levels/funnel/`**: the 40 funnel levels, their order, `funnel-report.json` and `funnel-bots.json`.
+- **`dist/`**: the single-file builds (`marble-run-showcase.html`, `marble-run-funnel-40.html`) and `funnel.xlsx`.
 - **`tests/`**: the headless suites (see *Verification*).
 - **`vendor/three.module.min.js`**: three.js r160 (MIT), for the offline single-file builds.
 
@@ -50,8 +53,9 @@ Built in phases, each committed and pushed:
    demo levels and the headless tests.
 2. **The game page**: the look, the juice and the settings.
 3. **The editor**.
-4. **The showcase** (this phase): its 38 levels, the menu, My Levels and the editor inside.
-5. The 40-level funnel.
+4. **The showcase**: its 38 levels, the menu, My Levels and the editor inside.
+5. **The 40-level funnel** (this phase): the design table, the levels, tutorials and popups, the report, the bots and the
+   spreadsheet.
 6. Every test suite, the screenshots and the dist builds.
 
 ## The rules
@@ -274,6 +278,130 @@ The blocker levels keep the demo levels' content (the point is to see the blocke
 are Easy. Two levels the search aimed at Medium came out Easy, at the closest it found: the long jump and the spiral
 with a gap (55% and 52%), and the toy parade (61%).
 
+## The 40-level funnel
+
+Forty levels for a first-session funnel, built with Match Express's method: a design table (role, target
+difficulty 1–10, box lanes, colours, box sizes, blockers, slide and tray idea per level), then geometry, content and
+tuning by the tools.
+- `levels/funnel/f01.json` … `f40.json`, the order `levels/funnel/funnel-order.json`, and the measured data
+  `funnel-report.json` (tuning) and `funnel-bots.json` (the bot table);
+- **`dist/marble-run-funnel-40.html`**: all 40 levels in one file (double-click, no server, no network), with
+  previous / next, "Level x / 40", the stats panel (completion time, fails and the second of each fail, Export CSV,
+  Reset), the tutorials, popups and the hint;
+- **`dist/funnel.xlsx`**: the funnel sheet (one row per level), the curves (target vs measured difficulty, marbles per
+  level) and a summary (playtime, first session, blocker introductions, levels per role and per lane count).
+
+```
+node tools/make-funnel.js                 # slides, trays, content, tuning -> levels/funnel (about 25 minutes on 2 cores)
+node tools/make-funnel.js --refine 6 8    # more candidates for these; the saved level stays unless beaten
+node tools/make-funnel.js --measure 7     # saved levels unchanged, measured again (meta from the design table)
+node tools/funnel-bots.js                 # the bot table -> levels/funnel/funnel-bots.json
+node tools/funnel-table.js                # the table below, as markdown
+python3 tools/make-funnel-xlsx.py         # -> dist/funnel.xlsx
+node tools/build-funnel.js                # -> dist/marble-run-funnel-40.html
+node tools/shoot-funnel.js                # -> screenshots/funnel/
+```
+
+### How a level is made
+
+- **The design table** (`tools/funnel/specs.js`): per level its role (Tutorial, Teach, Practice, Fun, Relax,
+  Challenge, Milestone, Finale), the target difficulty and its band, the box lanes, colours, box sizes, blockers,
+  the slide (a named shape from the showcase, or a designed meander with a spiral) and tray requests (columns x
+  rows, shape, side, the spot along the slide), and the marbles' size where deeper trays need it.
+- **Box lanes**: 2 on levels 1–5, 9, 22 and 31; 4 on 16, 20, 23 and 35; 5 on 38 and 40; 3 on all others.
+- **Geometry** (`tools/funnel/geometry.js`): the slide from its points or turtle program; each tray placed along it
+  inside the slide zone, clear of the slide, the spirals, the sorter, the start tower and the other trays. A tray
+  that does not fit as asked is built in another shape with the same cells (the report lists each one); a designed
+  meander tries further seeds until every tray finds a place.
+- **Content** (`tools/funnel/content.js`): the boxes, an intended send order (the plan), the tray columns filled
+  front to back following the plan (so the plan always wins), the lanes dealt from the plan. One knob, hardness
+  `h`, sets how forgiving the level is to out-of-order play (run lengths, lane drift, and "trap" marbles buried
+  behind other colours, up to a ceiling that rises with the target difficulty). Hidden boxes, connected pairs and
+  triples, dispensers, hidden marbles, lock crates with their key boxes and count crates are placed against the plan.
+- **Tuning** (`tools/make-funnel.js`): many (h, seed, group count) candidates, each with a quick 50-game estimate of
+  the random bot's win rate; the must-land levels first sample the whole hardness range, then search around the best
+  candidate so far; the nearest few are checked with 200 games and the greedy bot must win. Among equally good
+  candidates the longer greedy game wins (playtime).
+- **Levels 1–5 cannot be lost**: their content leaves no losing order. Each was played 1000 times by the random bot
+  and 6 times by an adversarial bot (it sends the box with the fewest matching marbles at the tray fronts, mixed
+  with random play) without a loss. That puts levels 3 and 4 above their bands.
+- **Level 1** (tutorial): one tray, the front rows red, the back rows blue; the hand points at the red box, then the
+  tips walk through the marbles rolling in, the full box floating away and the blue box.
+- **Level 3** (tutorial, "a box waits"): the red box can fill only 4 of its 8 holes from the first tray's front row;
+  its other 4 marbles sit in the back row of the second tray, so it waits in its slot until the boxes in front of
+  them have taken theirs. The tips explain both moments.
+- **Introductions**: level 7 hidden box (popup), 13 connected pairs (popup), 17 connected triples (a short hint, no
+  popup), 21 the first combination (hidden boxes and pairs, no popup), 22 hidden marbles (popup), 26 the marble
+  dispenser (popup), 32 lock & key (popup); 33 brings the count crate and 40 every blocker. A popup shows the first
+  time its blocker appears (remembered per player), holds the game until "Got it", and has a small animated picture.
+  The intro levels lean on their blocker and stay easy.
+
+### Difficulty, measured
+
+Random-bot win rate over 200 games (seeds 1000–1199; the target bands: 1–2 ≥ 70%, 3: 55–75%, 4: 45–60%, 5: 35–50%,
+6: 25–40%, 7: 18–30%, 8: 12–22%, 9: 8–15%). Challenge, Milestone, Finale and Practice levels must land in their
+band, and **all 18 do**; Relax, Fun and Teach levels may be easier, and most of them are (the random bot wins
+them all). Measured diff places the win rate on the same scale (band centres, a straight line between them). The
+greedy bot wins all 40; levels 1–5 cannot be lost.
+
+| Lv | Role | Lanes | Blockers | Target diff | Band | Random wins / fails / unfinished | Win rate | Measured diff | In band | Greedy 1x | Greedy 2x |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Tutorial | 2 | - | 1 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 5.3 s | 2.6 s |
+| 2 | Teach | 2 | - | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 7.4 s | 3.7 s |
+| 3 | Tutorial (box waits) | 2 | - | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 7.5 s | 3.8 s |
+| 4 | Teach (box sizes) | 2 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 8.6 s | 4.3 s |
+| 5 | Fun | 2 | - | 2 | ≥ 70% | 200 / 0 / 0 | 100.0% | 1.0 | yes | 9.5 s | 4.8 s |
+| 6 | Challenge | 3 | - | 5 | 35–50% | 72 / 128 / 0 | 36.0% | 5.7 | yes | 27.2 s | 13.6 s |
+| 7 | Teach + POPUP | 3 | 5 hidden boxes | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 14.6 s | 7.3 s |
+| 8 | Practice | 3 | 2 hidden boxes | 5 | 35–50% | 98 / 102 / 0 | 49.0% | 4.4 | yes | 23.8 s | 11.9 s |
+| 9 | Relax | 2 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 12.7 s | 6.3 s |
+| 10 | Milestone | 3 | 3 hidden boxes | 6 | 25–40% | 76 / 124 / 0 | 38.0% | 5.5 | yes | 31.9 s | 15.9 s |
+| 11 | Relax | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 13.1 s | 6.5 s |
+| 12 | Challenge | 3 | 2 hidden boxes | 6 | 25–40% | 67 / 133 / 0 | 33.5% | 5.9 | yes | 29.9 s | 14.9 s |
+| 13 | Teach + POPUP | 3 | 4 connected pairs | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 21.4 s | 10.7 s |
+| 14 | Practice | 3 | 5 connected pairs | 6 | 25–40% | 80 / 120 / 0 | 40.0% | 5.3 | yes | 31.8 s | 15.9 s |
+| 15 | Fun | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 14.7 s | 7.3 s |
+| 16 | Challenge | 4 | 2 hidden boxes, 5 connected pairs | 7 | 18–30% | 46 / 154 / 0 | 23.0% | 7.1 | yes | 32.5 s | 16.2 s |
+| 17 | Teach (no popup, short hint) | 3 | 3 connected triples | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 24 s | 12 s |
+| 18 | Relax | 3 | - | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 13.6 s | 6.8 s |
+| 19 | Practice | 3 | 1 connected pair, 3 connected triples | 6 | 25–40% | 80 / 120 / 0 | 40.0% | 5.3 | yes | 28.5 s | 14.3 s |
+| 20 | Milestone | 4 | 2 hidden boxes, 2 connected pairs, 3 connected triples | 8 | 12–22% | 28 / 172 / 0 | 14.0% | 8.5 | yes | 25 s | 12.5 s |
+| 21 | Teach (combo, no popup) | 3 | 3 hidden boxes, 3 connected pairs | 5 | 35–50% | 133 / 67 / 0 | 66.5% | 2.9 | easier (allowed) | 17.8 s | 8.9 s |
+| 22 | Relax + POPUP | 2 | 10 hidden marbles | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 11.7 s | 5.8 s |
+| 23 | Challenge | 4 | 3 hidden boxes, 4 connected pairs, 5 hidden marbles | 7 | 18–30% | 44 / 156 / 0 | 22.0% | 7.3 | yes | 29.6 s | 14.8 s |
+| 24 | Fun | 3 | 2 connected pairs | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 18.5 s | 9.2 s |
+| 25 | Challenge | 3 | 3 hidden boxes, 2 connected triples, 12 hidden marbles | 8 | 12–22% | 27 / 173 / 0 | 13.5% | 8.6 | yes | 33.6 s | 16.8 s |
+| 26 | Teach + POPUP | 3 | dispenser (red, 6), dispenser (purple, 6), dispenser (yellow, 6) | 3 | 55–75% | 193 / 7 / 0 | 96.5% | 1.2 | easier (allowed) | 16.1 s | 8 s |
+| 27 | Practice | 3 | 2 hidden boxes, dispenser (purple, 8), dispenser (red, 8) | 6 | 25–40% | 62 / 138 / 0 | 31.0% | 6.2 | yes | 30.8 s | 15.4 s |
+| 28 | Relax | 3 | dispenser (red, 6), dispenser (blue, 6) | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 13.6 s | 6.8 s |
+| 29 | Challenge | 3 | 2 hidden boxes, 4 connected pairs, dispenser (green, 8), dispenser (blue, 8) | 7 | 18–30% | 41 / 159 / 0 | 20.5% | 7.5 | yes | 35.6 s | 17.8 s |
+| 30 | Milestone | 3 | 3 hidden boxes, 3 connected triples, dispenser (green, 8), dispenser (red, 8) | 9 | 8–15% | 19 / 181 / 0 | 9.5% | 9.2 | yes | 27.9 s | 13.9 s |
+| 31 | Relax | 2 | 2 hidden boxes | 3 | 55–75% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 13.8 s | 6.9 s |
+| 32 | Teach + POPUP | 3 | 2 lock crates & keys | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 18 s | 9 s |
+| 33 | Practice | 3 | 2 hidden boxes, 2 lock crates & keys, count crate (3) | 6 | 25–40% | 57 / 143 / 0 | 28.5% | 6.5 | yes | 28.9 s | 14.4 s |
+| 34 | Fun | 3 | 4 connected pairs, dispenser (green, 6), dispenser (purple, 6) | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 16.2 s | 8.1 s |
+| 35 | Challenge | 4 | 2 hidden boxes, 6 connected pairs, 2 lock crates & keys | 8 | 12–22% | 28 / 172 / 0 | 14.0% | 8.5 | yes | 48.8 s | 24.4 s |
+| 36 | Relax | 3 | 1 hidden box, lock crate & key, count crate (2) | 4 | 45–60% | 200 / 0 / 0 | 100.0% | 1.0 | easier (allowed) | 15.2 s | 7.6 s |
+| 37 | Practice | 3 | 3 hidden boxes, 3 connected pairs, 8 hidden marbles, dispenser (blue, 8), dispenser (red, 8) | 7 | 18–30% | 49 / 151 / 0 | 24.5% | 6.9 | yes | 27.5 s | 13.7 s |
+| 38 | Challenge | 5 | 2 hidden boxes, 3 connected pairs, dispenser (cyan, 8), 2 lock crates & keys | 8 | 12–22% | 27 / 173 / 0 | 13.5% | 8.6 | yes | 36.1 s | 18 s |
+| 39 | Fun | 3 | 4 connected pairs, dispenser (orange, 6), dispenser (orange, 6) | 5 | 35–50% | 151 / 49 / 0 | 75.5% | 2.5 | easier (allowed) | 20.9 s | 10.4 s |
+| 40 | Finale | 5 | 3 hidden boxes, 3 connected pairs, 3 connected triples, dispenser (blue, 8), dispenser (yellow, 8), lock crate & key, count crate (3) | 9 | 8–15% | 18 / 182 / 0 | 9.0% | 9.2 | yes | 25.3 s | 12.7 s |
+
+### Playtime: the 35-minute target is not met
+
+The greedy bot plays all 40 levels in **14.5 minutes at 1x, 7.2 minutes at 2x**. The target was at least 35 minutes
+at 2x; this funnel reaches about a fifth of it, and the levels cannot get there under the current rules and screen:
+
+- a level holds at most 96 marbles (four 3×8 trays at marble size 0.8 fill the slide zone), and the marbles roll in
+  single file at the slide's pace, so the greedy bot finishes a full level in 25–50 seconds of game time;
+- 35 minutes at 2x would need about 105 seconds of game time per level on average, roughly three to four times the
+  marbles a level can hold.
+
+A real player takes longer than the greedy bot (reading the popups, thinking, failing and retrying: the hard levels
+lose 80–90% of random games); the Summary sheet multiplies the greedy time by an editable factor for a first-time
+player (1.5 by default). Ways to get closer, none of them applied: more levels, a slower marble flow, or more marbles
+per level (a taller slide zone or more trays).
+
 ## Blockers (all of Match Express's, with the same data and checker spirit)
 
 - **Hidden box** (`hidden` on a lane box):
@@ -406,6 +534,17 @@ node tests/editor.test.js     # 139 checks (Playwright): the shell and its previ
                               # for every kind of thing, the slide, trays, blockers, gaps, toy pieces, box lanes, the
                               # level card, drafts and ids, the level order, exports opened from file:// and won level
                               # by level, the bot worker (the same numbers as the core headless), Watch, camera and zoom
+node tests/showcase.test.js   # 37 checks (Playwright): the 38 levels (each in its place, balanced, won by the greedy bot,
+                              # the Basics from Easy to Very Hard, lanes, toys, jumps, tray shapes), then the single file
+                              # from file://: the menu, cards and tags, settings (remembered), playing a card, previous /
+                              # next inside a category, pause, restart, boosters, stats and CSV, back to the menu, the
+                              # funnel's numbered tiles, the editor inside and My Levels, nothing from the network
+node tests/funnel.test.js     # 39 checks (Playwright): the 40 levels against the design table, lanes, tutorials, popups
+                              # and the hint where the design puts them, the intro levels easy and full of their blocker,
+                              # more blockers after level 20, the greedy bot wins all 40, levels 1-5 cannot be lost, the
+                              # level 3 box waits; then the pack: both tutorials (the hand, blocked taps), the popups
+                              # (first time only, they hold the game), the hint, previous / next, speeds, a fail then a
+                              # win in the stats, Finish, the stats panel, CSV and Reset
 ```
 
-All 274 checks pass.
+All 350 checks pass.

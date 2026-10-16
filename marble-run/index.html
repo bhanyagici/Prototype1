@@ -1113,8 +1113,9 @@ function tutSlotWait(T){
   const b = T.box >= 0 ? game.boxes[T.box] : null, fc = () => C.frontColors(game);
   switch (T.step){
     case 0: { const x = tutorialBox(false); if (!x){ endTutorial(); break; } T.box = x.id; tutStep(T, 1, `Send the ${x.color} box!`, x.id, onlyLane(x.lane)); break; }
-    case 1: if (b.state !== 'lane') tutStep(T, 2, `It takes every ${b.color} marble at the front. Keep sending!`, -1, null); break;
-    case 2: if (b.state === 'gone') endTutorial(); else if (b.state === 'slot' && game.t - T.t0 > 1.2 && !fc()[b.color]) tutStep(T, 3, 'Not full? It waits in its slot until more of its marbles come.', -1, null); break;
+    case 1: if (b.state !== 'lane') tutStep(T, 2, `It takes every ${b.color} marble at the front.`, -1, () => false); break;
+    // (other taps wait until its marbles have landed: the box is not full, and there is no more of its colour in front)
+    case 2: if (b.state === 'gone') endTutorial(); else if (b.state === 'slot' && b.got > 0 && b.got === b.res && b.got < b.size && !fc()[b.color]) tutStep(T, 3, 'Not full? It waits in its slot. Keep sending!', -1, null); break;
     case 3: if (b.state === 'gone') tutStep(T, 4, 'Its last marbles came from the back of the other tray!', -1, null); break;
     case 4: if (game.t - T.t0 > 3) endTutorial(); break;
   }

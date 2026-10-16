@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f20",
+  "name": "Level 20",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {"rows": 8, "columns": [["yellow", "yellow", "yellow", "orange", "orange", "orange", "green", "green"], ["blue", "blue", "blue", "blue", "blue", "red", "red", "red"], ["purple", "purple", "purple", "purple", "blue", "blue", "blue", "red"]], "at": 2.018, "side": -1},
+    {"rows": 8, "columns": [["green", "green", "green", "cyan", "cyan", "cyan", "cyan", "red"], ["yellow", "yellow", "yellow", "cyan", "cyan", "cyan", "red", "red"], ["purple", "purple", "purple", "orange", "orange", "orange", "orange", "red"]], "at": 12.726, "side": -1, "tilt": 55},
+    {"rows": 8, "columns": [["yellow", "yellow", "yellow", "yellow", "blue", "blue", "blue", "red"], ["yellow", "yellow", "yellow", "yellow", "blue", "blue", "blue", "red"], ["purple", "purple", "purple", "orange", "orange", "orange", "orange", "red"]], "at": 15.326, "side": -1, "shape": [[4.19, -3]]},
+    {"rows": 8, "columns": [["green", "green", "green", "cyan", "orange", "orange", "orange", "red"], ["purple", "purple", "cyan", "cyan", "cyan", "green", "green", "green"], ["purple", "purple", "cyan", "cyan", "cyan", "green", "green", "green"]], "at": 19.362, "side": 1, "shape": [[-2.94, -9.73]]}
+  ],
+  "lanes": [
+    [
+      {"color": "orange", "size": 4, "link": "G5"},
+      {"color": "purple", "size": 4, "link": "G3"},
+      {"color": "purple", "size": 6, "link": "G3"},
+      {"color": "cyan", "size": 6, "link": "G4"},
+      {"color": "orange", "size": 6, "link": "G4"},
+      {"color": "blue", "size": 4}
+    ],
+    [
+      {"color": "green", "size": 6, "link": "G1"},
+      {"color": "yellow", "size": 6, "link": "G5", "hidden": true},
+      {"color": "blue", "size": 6, "link": "G3"},
+      {"color": "green", "size": 8}
+    ],
+    [
+      {"color": "blue", "size": 4, "link": "G1"},
+      {"color": "purple", "size": 4, "link": "G2", "hidden": true}
+    ],
+    [
+      {"color": "yellow", "size": 8, "link": "G1"},
+      {"color": "cyan", "size": 8, "link": "G2"},
+      {"color": "orange", "size": 4, "link": "G2"},
+      {"color": "red", "size": 12}
+    ]
+  ],
+  "marbleScale": 0.8,
+  "laneCount": 4,
+  "meta": {
+    "role": "Milestone",
+    "diff": 8,
+    "slide": "the spiral early",
+    "trays": "four deep trays"
+  }
+}

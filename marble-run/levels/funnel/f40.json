@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f40",
+  "name": "Level 40",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 8,
+      "columns": [
+        ["red", "cyan", "cyan", "cyan", "cyan", "blue", null, null],
+        ["red", null, null, "green", "green", "green", "green", "green"],
+        ["pink", "pink", "pink", "cyan", "cyan", "cyan", null, null]
+      ],
+      "at": 2.018,
+      "side": -1,
+      "dispensers": [
+        {"col": 1, "row": 1, "w": 1, "h": 2, "color": "blue", "count": 8}
+      ]
+    },
+    {
+      "rows": 8,
+      "columns": [
+        ["pink", "pink", "pink", "pink", "orange", "orange", "green", null],
+        ["red", "red", "red", "red", "yellow", "yellow", "yellow", "orange"],
+        ["purple", "purple", "purple", "purple", "orange", "orange", null, null]
+      ],
+      "at": 12.726,
+      "side": -1,
+      "tilt": 55,
+      "crates": [
+        {"col": 0, "row": 4, "w": 1, "h": 2, "lock": "K1"}
+      ]
+    },
+    {
+      "rows": 8,
+      "columns": [
+        ["purple", "purple", null, null, "yellow", "yellow", "yellow", "green"],
+        ["red", "red", "purple", "cyan", "cyan", "cyan", "green", null],
+        ["purple", "purple", "blue", "orange", "orange", "orange", null, null]
+      ],
+      "at": 15.326,
+      "side": -1,
+      "shape": [[4.19, -3]],
+      "dispensers": [
+        {"col": 0, "row": 2, "w": 1, "h": 2, "color": "yellow", "count": 8}
+      ]
+    },
+    {
+      "rows": 8,
+      "columns": [
+        ["red", "red", "red", "red", "orange", "orange", null, null],
+        ["cyan", "cyan", "pink", "purple", "purple", "purple", "purple", "purple"],
+        ["cyan", "cyan", "pink", "pink", "pink", "pink", "orange", "orange"]
+      ],
+      "at": 19.362,
+      "side": 1,
+      "shape": [[-2.94, -9.73]],
+      "crates": [
+        {"col": 1, "row": 3, "w": 1, "h": 2, "count": 3}
+      ]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "purple", "size": 4, "key": "K1"},
+      {"color": "blue", "size": 6, "link": "G3"},
+      {"color": "green", "size": 4, "link": "G6"}
+    ],
+    [
+      {"color": "red", "size": 6, "link": "G1"},
+      {"color": "cyan", "size": 4, "link": "G3"},
+      {"color": "pink", "size": 4, "link": "G3"},
+      {"color": "cyan", "size": 6, "link": "G6"}
+    ],
+    [
+      {"color": "red", "size": 6, "link": "G1"},
+      {"color": "purple", "size": 4, "hidden": true},
+      {"color": "yellow", "size": 4, "link": "G4"},
+      {"color": "green", "size": 4, "link": "G5"}
+    ],
+    [
+      {"color": "cyan", "size": 4, "link": "G1"},
+      {"color": "yellow", "size": 4, "link": "G4", "hidden": true},
+      {"color": "yellow", "size": 6, "link": "G5"}
+    ],
+    [
+      {"color": "pink", "size": 8, "link": "G2"},
+      {"color": "purple", "size": 6, "link": "G2", "hidden": true},
+      {"color": "blue", "size": 4, "link": "G2"},
+      {"color": "orange", "size": 12}
+    ]
+  ],
+  "marbleScale": 0.8,
+  "laneCount": 5,
+  "meta": {
+    "role": "Finale",
+    "diff": 9,
+    "slide": "the spiral early",
+    "trays": "four deep trays, every blocker"
+  }
+}

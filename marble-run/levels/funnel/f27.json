@@ -34,22 +34,19 @@
     {
       "rows": 7,
       "columns": [
-        ["orange", null, null, "red", "red", "red", "red"],
-        ["orange", "orange", "purple", "purple", "green", "red", null],
-        ["orange", "orange", "yellow", "purple", "purple", "green", null]
+        ["blue", "blue", "orange", "orange", "yellow", "green", null],
+        ["purple", "purple", "red", "red", "yellow", null, null],
+        ["blue", "blue", "orange", "orange", "yellow", null, null]
       ],
       "at": 2.808,
-      "side": -1,
-      "dispensers": [
-        {"col": 0, "row": 1, "w": 1, "h": 2, "color": "blue", "count": 8}
-      ]
+      "side": -1
     },
     {
       "rows": 7,
       "columns": [
-        ["orange", "orange", "blue", "blue", "green", "green", null],
-        ["yellow", "yellow", "yellow", "yellow", "green", "red", null],
-        ["orange", "yellow", "yellow", "green", "green", "green", null]
+        ["purple", "purple", "orange", "yellow", "yellow", "green", null],
+        ["blue", "orange", "orange", "yellow", "yellow", "green", null],
+        ["blue", "orange", "orange", "orange", "green", "green", "green"]
       ],
       "at": 12.827,
       "side": -1
@@ -57,47 +54,51 @@
     {
       "rows": 7,
       "columns": [
-        ["yellow", "yellow", "blue", "blue", "green", null, null],
-        ["orange", "orange", "yellow", "purple", "purple", null, null],
-        ["orange", "orange", "yellow", "purple", "green", "red", null]
+        ["blue", null, null, "green", "green", "green", "green"],
+        ["blue", "blue", "orange", "yellow", "yellow", "green", null],
+        ["blue", "purple", "purple", "yellow", "yellow", null, null]
       ],
       "at": 7.642,
       "side": 1,
-      "tilt": 55
+      "tilt": 55,
+      "dispensers": [
+        {"col": 0, "row": 1, "w": 1, "h": 2, "color": "purple", "count": 8}
+      ]
     },
     {
       "rows": 7,
       "columns": [
-        ["orange", null, null, "red", "red", "red", "red"],
-        ["yellow", "yellow", "purple", "purple", "green", "red", null],
-        ["orange", "yellow", "purple", "green", "green", "green", null]
+        ["blue", "blue", "red", "red", "yellow", "green", null],
+        ["blue", "orange", "orange", "red", "red", "green", null],
+        ["blue", "orange", null, null, "green", "green", "green"]
       ],
       "at": 18.259,
       "side": 1,
       "shape": [[-3.73, -9.28]],
       "dispensers": [
-        {"col": 0, "row": 1, "w": 1, "h": 2, "color": "purple", "count": 8}
+        {"col": 2, "row": 2, "w": 1, "h": 2, "color": "red", "count": 8}
       ]
     }
   ],
   "lanes": [
     [
       {"color": "green", "size": 4},
-      {"color": "green", "size": 6},
+      {"color": "yellow", "size": 12},
+      {"color": "blue", "size": 4},
+      {"color": "blue", "size": 6, "hidden": true},
+      {"color": "purple", "size": 4},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 4},
+      {"color": "blue", "size": 4},
+      {"color": "red", "size": 8, "hidden": true}
+    ],
+    [
+      {"color": "green", "size": 12},
       {"color": "orange", "size": 8},
       {"color": "purple", "size": 6},
-      {"color": "red", "size": 12}
-    ],
-    [
-      {"color": "orange", "size": 6},
-      {"color": "yellow", "size": 4, "hidden": true},
-      {"color": "purple", "size": 12}
-    ],
-    [
-      {"color": "green", "size": 4},
-      {"color": "blue", "size": 12},
-      {"color": "yellow", "size": 6, "hidden": true},
-      {"color": "yellow", "size": 4}
+      {"color": "red", "size": 6}
     ]
   ],
   "marbleScale": 0.85,

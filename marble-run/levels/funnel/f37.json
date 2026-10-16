@@ -29,22 +29,22 @@
     {
       "rows": 8,
       "columns": [
-        ["red", "red", "yellow", "yellow", "purple", "blue", "blue", null],
-        ["red", "red", null, null, "?blue", "blue", "blue", "?blue"],
-        ["orange", "orange", "green", "purple", "orange", "orange", null, null]
+        ["yellow", "yellow", null, null, "purple", "purple", "purple", "cyan"],
+        ["green", "green", "green", "purple", "cyan", "cyan", null, null],
+        ["yellow", "yellow", "?yellow", "red", "cyan", "cyan", "cyan", null]
       ],
       "at": 10.321,
       "side": -1,
       "dispensers": [
-        {"col": 1, "row": 2, "w": 1, "h": 2, "color": "yellow", "count": 8}
+        {"col": 0, "row": 2, "w": 1, "h": 2, "color": "blue", "count": 8}
       ]
     },
     {
       "rows": 8,
       "columns": [
-        ["red", "red", "green", "purple", "?purple", "purple", "blue", "blue"],
-        ["red", "red", "yellow", "yellow", "purple", "purple", "?blue", null],
-        ["orange", "green", "green", "purple", "purple", "purple", null, null]
+        ["yellow", "yellow", "orange", "orange", "green", "green", null, null],
+        ["green", "green", "red", "red", "red", "green", null, null],
+        ["blue", "blue", "red", "red", "cyan", "cyan", "cyan", "cyan"]
       ],
       "at": 3.869,
       "side": 1,
@@ -53,23 +53,23 @@
     {
       "rows": 8,
       "columns": [
-        ["orange", "orange", null, null, "blue", "blue", "cyan", "cyan"],
-        ["orange", "green", "green", "green", "orange", "orange", null, null],
-        ["red", "red", "green", "purple", "orange", "?orange", "blue", null]
+        ["yellow", "yellow", "orange", "orange", "orange", "cyan", "?cyan", null],
+        ["yellow", "yellow", "orange", "orange", "orange", "green", null, null],
+        ["yellow", null, null, "?purple", "purple", "cyan", "?cyan", "cyan"]
       ],
       "at": 16.057,
       "side": -1,
       "shape": [[4.14, -4.19]],
       "dispensers": [
-        {"col": 0, "row": 2, "w": 1, "h": 2, "color": "cyan", "count": 8}
+        {"col": 2, "row": 1, "w": 1, "h": 2, "color": "red", "count": 8}
       ]
     },
     {
       "rows": 8,
       "columns": [
-        ["red", "red", "green", "green", "purple", "purple", "blue", null],
-        ["orange", "orange", "green", "?green", "purple", "?orange", "orange", null],
-        ["red", "red", "yellow", "yellow", "purple", "purple", "blue", null]
+        ["blue", "blue", "blue", "purple", "?purple", "purple", "green", null],
+        ["yellow", "yellow", "orange", "green", "green", "?green", "green", "?green"],
+        ["green", "orange", "orange", "orange", "?blue", "cyan", "purple", null]
       ],
       "at": 17.698,
       "side": -1,
@@ -78,25 +78,25 @@
   ],
   "lanes": [
     [
-      {"color": "red", "size": 4},
-      {"color": "red", "size": 4, "link": "G2", "hidden": true},
-      {"color": "yellow", "size": 6, "link": "G1"},
-      {"color": "yellow", "size": 8, "link": "G1"}
-    ],
-    [
-      {"color": "blue", "size": 8},
-      {"color": "cyan", "size": 4, "hidden": true},
-      {"color": "red", "size": 6, "link": "G2"},
-      {"color": "orange", "size": 8},
-      {"color": "green", "size": 6},
-      {"color": "cyan", "size": 6},
-      {"color": "blue", "size": 6}
-    ],
-    [
       {"color": "purple", "size": 4},
-      {"color": "green", "size": 6, "hidden": true},
-      {"color": "purple", "size": 12},
-      {"color": "orange", "size": 8}
+      {"color": "yellow", "size": 6, "link": "G2", "hidden": true},
+      {"color": "blue", "size": 4, "link": "G3"},
+      {"color": "blue", "size": 4},
+      {"color": "green", "size": 6}
+    ],
+    [
+      {"color": "green", "size": 6},
+      {"color": "yellow", "size": 8, "link": "G2", "hidden": true},
+      {"color": "blue", "size": 6, "link": "G3"},
+      {"color": "red", "size": 8, "link": "G1"},
+      {"color": "red", "size": 6, "link": "G1"},
+      {"color": "green", "size": 4}
+    ],
+    [
+      {"color": "orange", "size": 12},
+      {"color": "cyan", "size": 12, "hidden": true},
+      {"color": "cyan", "size": 4},
+      {"color": "purple", "size": 6}
     ]
   ],
   "marbleScale": 0.8,

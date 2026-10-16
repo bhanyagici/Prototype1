@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f10",
+  "name": "Level 10",
+  "slide": {
+    "points": [
+      {"x": 0.4724598180036992, "z": -12.036588607355952},
+      {"x": 0.59, "z": -11.29},
+      {"x": 1.18, "z": -10.84},
+      {"x": 1.93, "z": -10.76},
+      {"x": 2.47, "z": -10.25},
+      {"x": 2.53, "z": -9.5},
+      {"x": 2.12, "z": -8.89},
+      {"x": 1.39, "z": -8.74},
+      {"x": 0.59, "z": -8.74},
+      {"x": -0.2, "z": -8.74},
+      {"x": -1.05, "z": -8.74, "spiral": {"r": 0.8688572332961485, "side": 1}},
+      {"x": 0.22, "z": -7.84},
+      {"x": 0.96, "z": -7.71},
+      {"x": 1.54, "z": -7.25},
+      {"x": 1.62, "z": -6.51},
+      {"x": 1.2, "z": -5.9},
+      {"x": -1.35, "z": -5.5}
+    ]
+  },
+  "trays": [
+    {"rows": 6, "columns": [["yellow", "red", "red", "red", "blue", "green"], ["yellow", "orange", "orange", "blue", "purple", "green"], ["yellow", "orange", "orange", "blue", "green", "green"]], "at": 2.805, "side": -1, "shape": [[4.54, -12.95]]},
+    {"rows": 6, "columns": [["yellow", "orange", "red", "blue", "blue", "green"], ["orange", "orange", "red", "blue", "blue", "green"], ["purple", "purple", "orange", "orange", "blue", "blue"]], "at": 22.416, "side": 1, "shape": [[-2.92, -8.48]]},
+    {"rows": 6, "columns": [["yellow", "yellow", "red", "red", "purple", "green"], ["yellow", "orange", "orange", "blue", "purple", "green"], ["orange", "orange", "red", "blue", "green", "green"]], "at": 18.125, "side": -1},
+    {"rows": 6, "columns": [["yellow", "yellow", "red", "red", "purple", "purple"], ["yellow", "orange", "red", "blue", "blue", "green"], ["purple", "purple", "red", "blue", "purple", "green"]], "at": 19.735, "side": -1, "shape": [[2.42, -2.78]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "orange", "size": 4}
+    ],
+    [
+      {"color": "blue", "size": 6},
+      {"color": "red", "size": 4},
+      {"color": "purple", "size": 4, "hidden": true},
+      {"color": "red", "size": 4},
+      {"color": "orange", "size": 4, "hidden": true},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "green", "size": 12},
+      {"color": "blue", "size": 8},
+      {"color": "yellow", "size": 6},
+      {"color": "red", "size": 4, "hidden": true},
+      {"color": "purple", "size": 6}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Milestone",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four trays"
+  }
+}

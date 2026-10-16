@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f19",
+  "name": "Level 19",
+  "slide": {
+    "points": [
+      {"x": -0.45901371142826974, "z": -12.024271964095533},
+      {"x": -0.43, "z": -11.24},
+      {"x": 0.03, "z": -10.66},
+      {"x": 0.76, "z": -10.56},
+      {"x": 1.5, "z": -10.49},
+      {"x": 1.99, "z": -9.94},
+      {"x": 1.97, "z": -9.17},
+      {"x": 1.46, "z": -8.65},
+      {"x": 0.71, "z": -8.59},
+      {"x": -0.05, "z": -8.59},
+      {"x": -0.81, "z": -8.59},
+      {"x": -1.51, "z": -8.38},
+      {"x": -1.83, "z": -7.72},
+      {"x": -1.59, "z": -7.02},
+      {"x": -0.91, "z": -6.74},
+      {"x": -0.11, "z": -6.74},
+      {"x": 1.03, "z": -6.74, "spiral": {"r": 0.8694479503203184, "side": -1}},
+      {"x": -0.24, "z": -5.86},
+      {"x": -2.07, "z": -5.46}
+    ]
+  },
+  "trays": [
+    {"rows": 7, "columns": [["orange", "green", "green", "purple", "purple", "purple", "yellow"], ["green", "green", "green", "red", "yellow", "yellow", "yellow"], ["orange", "orange", "orange", "purple", "purple", "yellow", "yellow"]], "at": 8.449, "side": 1},
+    {"rows": 7, "columns": [["orange", "orange", "orange", "orange", "yellow", "yellow", "yellow"], ["orange", "orange", "orange", "red", "red", "red", "blue"], ["red", "red", "orange", "purple", "yellow", "yellow", "yellow"]], "at": 3.362, "side": -1},
+    {"rows": 7, "columns": [["red", "red", "purple", "purple", "green", "green", "yellow"], ["orange", "orange", "purple", "purple", "green", "green", "yellow"], ["red", "red", "purple", "purple", "purple", "purple", "yellow"]], "at": 23.551, "side": 1, "tilt": 55},
+    {"rows": 7, "columns": [["green", "green", "green", "blue", "blue", "blue", "yellow"], ["red", "red", "red", "red", "blue", "blue", "blue"], ["orange", "orange", "purple", "purple", "blue", "blue", "blue"]], "at": 21.048, "side": -1, "shape": [[1.98, -2.87]]}
+  ],
+  "lanes": [
+    [
+      {"color": "yellow", "size": 4},
+      {"color": "orange", "size": 6, "link": "G4"},
+      {"color": "purple", "size": 12, "link": "G4"},
+      {"color": "blue", "size": 6, "link": "G2"},
+      {"color": "yellow", "size": 12}
+    ],
+    [
+      {"color": "orange", "size": 4, "link": "G3"},
+      {"color": "purple", "size": 4, "link": "G3"},
+      {"color": "red", "size": 4, "link": "G3"},
+      {"color": "blue", "size": 4, "link": "G2"},
+      {"color": "green", "size": 4, "link": "G2"}
+    ],
+    [
+      {"color": "red", "size": 4, "link": "G1"},
+      {"color": "red", "size": 6, "link": "G1"},
+      {"color": "orange", "size": 6, "link": "G1"},
+      {"color": "green", "size": 8}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Practice",
+    "diff": 6,
+    "slide": "a meander with a spiral",
+    "trays": "four deeper trays"
+  }
+}

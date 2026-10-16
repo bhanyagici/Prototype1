@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "type": "marble-run-level",
+  "id": "f26",
+  "name": "Level 26",
+  "slide": {
+    "points": [
+      {"x": -0.5, "z": -12},
+      {"x": -0.4, "z": -11.1},
+      {"x": 0.2, "z": -10.1},
+      {"x": 0.3, "z": -9, "spiral": {"r": 0.9, "side": 1}},
+      {"x": 1.7, "z": -8.5},
+      {"x": 2.5, "z": -7.3},
+      {"x": 1.9, "z": -6.1},
+      {"x": 0.3, "z": -5.6},
+      {"x": -1.4, "z": -5.9},
+      {"x": -2.8, "z": -5.8}
+    ]
+  },
+  "trays": [
+    {
+      "rows": 6,
+      "columns": [
+        ["blue", "blue", "blue", "blue", "orange", null],
+        ["yellow", null, null, "orange", "red", "red"],
+        ["purple", "purple", "purple", "purple", null, null]
+      ],
+      "at": 2.018,
+      "side": -1,
+      "dispensers": [
+        {"col": 1, "row": 1, "w": 1, "h": 2, "color": "red", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["red", "red", "red", "red", null, null],
+        ["blue", null, null, "orange", "orange", "orange"],
+        ["green", "green", "green", "green", null, null]
+      ],
+      "at": 12.326,
+      "side": -1,
+      "dispensers": [
+        {"col": 1, "row": 1, "w": 1, "h": 2, "color": "purple", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["blue", "blue", "purple", "purple", null, null],
+        ["blue", null, null, "orange", "red", "red"],
+        ["green", "green", "green", "green", "orange", null]
+      ],
+      "at": 14.926,
+      "side": -1,
+      "shape": [[4.14, -3.65]],
+      "dispensers": [
+        {"col": 1, "row": 1, "w": 1, "h": 2, "color": "yellow", "count": 6}
+      ]
+    },
+    {
+      "rows": 6,
+      "columns": [
+        ["yellow", "yellow", "orange", "orange", "orange", null],
+        ["yellow", "yellow", "yellow", "orange", "orange", null],
+        ["blue", "blue", "blue", "blue", "orange", "orange"]
+      ],
+      "at": 19.362,
+      "side": 1,
+      "shape": [[-2.83, -9.21]]
+    }
+  ],
+  "lanes": [
+    [
+      {"color": "blue", "size": 12},
+      {"color": "yellow", "size": 12},
+      {"color": "orange", "size": 6}
+    ],
+    [
+      {"color": "purple", "size": 6},
+      {"color": "orange", "size": 8}
+    ],
+    [
+      {"color": "green", "size": 8},
+      {"color": "purple", "size": 6},
+      {"color": "red", "size": 6},
+      {"color": "red", "size": 8}
+    ]
+  ],
+  "marbleScale": 0.85,
+  "meta": {
+    "role": "Teach + POPUP",
+    "diff": 3,
+    "slide": "the spiral early",
+    "trays": "four trays",
+    "popup": "dispenser"
+  }
+}
